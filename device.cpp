@@ -19,7 +19,7 @@ eDevices::~eDevices()
 {
 	for(int i = 0; i < sizeof(items); ++i)
 	{
-		delete(items[i].dev);
+		delete items[i].dev;
 	}
 }
 //=============================================================================

@@ -15,8 +15,8 @@ eUla::eUla() : vram(NULL), border_color(0), screen(NULL)
 //-----------------------------------------------------------------------------
 eUla::~eUla()
 {
-	delete(vram);
-	delete(screen);
+	delete vram;
+	delete screen;
 }
 //=============================================================================
 //	eUla::Init

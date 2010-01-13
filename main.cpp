@@ -2,7 +2,7 @@
 
 #include "speccy.h"
 
-int main(int argc, char** argv)
+int main(int argc, char* argv[])
 {
 	eSpeccy* speccy = new eSpeccy;
 	speccy->Init();
@@ -11,6 +11,6 @@ int main(int argc, char** argv)
 	{
 		speccy->Update();
 	}
-	delete(speccy);
+	delete speccy;
 	return 0;
 }
