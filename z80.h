@@ -16,7 +16,7 @@ union	\
 		byte low;	\
 		byte high;	\
 	};	\
-	unsigned int reg;	\
+	dword reg;	\
 };
 
 enum eFlags
@@ -48,11 +48,11 @@ public:
 	void Step();
 
 protected:
-	byte Fetch(); //m1_cycle data fetch
-	void Out(word port, byte v);
-	byte In(word port) const;
-	void Write(word addr, byte v);
-	byte Read(word addr) const;
+	inline byte Fetch(); //m1_cycle data fetch
+	byte In(dword port) const;
+	void Out(dword port, byte v);
+	inline byte Read(word addr) const;
+	inline void Write(word addr, byte v);
 
 	typedef void (eZ80::*CALLFUNC)();
 	typedef byte (eZ80::*CALLFUNCI)(byte);
@@ -89,7 +89,6 @@ public:
 	DECLARE_REG16(ix, xl, xh)
 	DECLARE_REG16(iy, yl, yh)
 
-	//gpregs order is important used in DDFD()
 	DECLARE_REG16(bc, c, b)
 	DECLARE_REG16(de, e, d)
 	DECLARE_REG16(hl, l, h)

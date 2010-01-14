@@ -11,14 +11,8 @@
 class eRom : public eDevice
 {
 public:
-	eRom();
-	virtual ~eRom();
 	virtual void Init();
-	virtual bool Read(word addr, byte* v) const;
-
-	enum { ROM_START = 0, ROM_SIZE = 0x4000 };
-protected:
-	byte* items;
+	virtual void Reset();
 };
 
 //*****************************************************************************
@@ -27,14 +21,31 @@ protected:
 class eRam : public eDevice
 {
 public:
-	eRam();
-	virtual ~eRam();
-	virtual bool Read(word addr, byte* v) const;
-	virtual void Write(word addr, byte v);
-
-	enum { RAM_START = 0x5b00, RAM_SIZE = 0xa500 };
-protected:
-	byte* items;
+	virtual void Reset();
 };
+
+//*****************************************************************************
+//	eMemory
+//-----------------------------------------------------------------------------
+class eMemory
+{
+public:
+	eMemory();
+	virtual ~eMemory();
+	byte Read(word addr) const;
+	void Write(word addr, byte v);
+	byte* Get(dword offset = 0) { return memory + offset; }
+
+	enum ePage { P_ROM, P_RAM0, P_RAM1, P_RAM2, P_AMOUNT };
+	void SetBank(int idx, ePage p);
+
+	enum { LINEAR_PAGES = 4, PAGE_SIZE = 0x4000, SIZE = P_AMOUNT * PAGE_SIZE };
+protected:
+	byte* bank_read[LINEAR_PAGES];
+	byte* bank_write[LINEAR_PAGES];
+	byte* memory;
+};
+
+extern eMemory memory;
 
 #endif//__MEMORY_H__

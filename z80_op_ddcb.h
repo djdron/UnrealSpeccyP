@@ -131,10 +131,8 @@ inline void DDFD(byte opcode)
 		byte v = (this->*logic_ix_opcodes[opcode])(Read(ptr));
 		if((opcode & 0xC0) == 0x40) { t += 8; return; } // bit n,rm
 
-		// offsets to b,c,d,e,h,l,<unused>,a  from cpu.c
-		int reg_offset[] = { 1,0, 5,4, 9,8, 2,13 };
 		// select destination register for shift/res/set
-		*(&c + reg_offset[opcode & 7]) = v; // ???
+		(this->*reg_offset[opcode & 7]) = v; // ???
 		Write(ptr, v);
 		t += 11;
 		return;

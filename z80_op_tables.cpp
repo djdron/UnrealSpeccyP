@@ -6,6 +6,13 @@
 namespace xZ80
 {
 
+// offsets to b,c,d,e,h,l,<unused>,a  from cpu.c
+REGP reg_offset[] =
+{
+	&eZ80::b, &eZ80::c, &eZ80::d, &eZ80::e,
+	&eZ80::h, &eZ80::l, &eZ80::a, &eZ80::a
+};
+
 // table for daa, contains af
 const byte daatab[] =
 {

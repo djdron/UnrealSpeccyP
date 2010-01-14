@@ -46,6 +46,9 @@ extern byte rrcaf[];
 extern byte rol[];
 extern byte ror[];
 
+typedef byte (eZ80::*REGP);
+extern REGP reg_offset[];
+
 }//namespace xZ80
 
 #endif//__Z80_TABLES_H__

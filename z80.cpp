@@ -1,6 +1,7 @@
 #include "std.h"
 
 #include "z80.h"
+#include "memory.h"
 #include "device.h"
 
 namespace xZ80
@@ -32,7 +33,7 @@ void eZ80::Reset()
 //=============================================================================
 //	eZ80::Fetch
 //-----------------------------------------------------------------------------
-byte eZ80::Fetch()
+inline byte eZ80::Fetch()
 {
 	r_low++;// = (cpu->r & 0x80) + ((cpu->r+1) & 0x7F);
 	t += 4;
@@ -41,30 +42,30 @@ byte eZ80::Fetch()
 //=============================================================================
 //	eZ80::Out
 //-----------------------------------------------------------------------------
-void eZ80::Out(word port, byte v)
+void eZ80::Out(dword port, byte v)
 {
 	devices.IoWrite(port, v);
 }
 //=============================================================================
 //	eZ80::In
 //-----------------------------------------------------------------------------
-byte eZ80::In(word port) const
+byte eZ80::In(dword port) const
 {
 	return devices.IoRead(port);
 }
 //=============================================================================
 //	eZ80::Write
 //-----------------------------------------------------------------------------
-void eZ80::Write(word addr, byte v)
+inline void eZ80::Write(word addr, byte v)
 {
-	devices.Write(addr, v);
+	memory.Write(addr, v);
 }
 //=============================================================================
 //	eZ80::Read
 //-----------------------------------------------------------------------------
-byte eZ80::Read(word addr) const
+inline byte eZ80::Read(word addr) const
 {
-	return devices.Read(addr);
+	return memory.Read(addr);
 }
 //=============================================================================
 //	eZ80::Int
@@ -101,9 +102,9 @@ void eZ80::Nmi()
 //-----------------------------------------------------------------------------
 void eZ80::Step()
 {
-	if(pc_h&even_m1) //wait
+	if(pc_h & even_m1) //wait
 	{
-		t += t&1;
+		t += t & 1;
 	}
 	byte opcode = Fetch();
 	(this->*normal_opcodes[opcode])();

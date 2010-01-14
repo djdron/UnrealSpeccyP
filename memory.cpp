@@ -3,20 +3,6 @@
 #include "memory.h"
 
 //=============================================================================
-//	eRom::eRom
-//-----------------------------------------------------------------------------
-eRom::eRom() : items(NULL)
-{
-	items = new byte[ROM_SIZE];
-}
-//=============================================================================
-//	eRom::~eRom
-//-----------------------------------------------------------------------------
-eRom::~eRom()
-{
-	delete items;
-}
-//=============================================================================
 //	eRom::Init
 //-----------------------------------------------------------------------------
 void eRom::Init()
@@ -24,56 +10,69 @@ void eRom::Init()
 	FILE* f = fopen("D:/emuls/ZX/emuls/US0373/sos.rom", "rb");
 	if(f)
 	{
-		fread(items, 1, ROM_SIZE, f);
+		fread(memory.Get(eMemory::P_ROM), 1, eMemory::PAGE_SIZE, f);
 		fclose(f);
 	}
 }
 //=============================================================================
-//	eRom::Read
+//	eRom::Reset
 //-----------------------------------------------------------------------------
-bool eRom::Read(word addr, byte* v) const
+void eRom::Reset()
 {
-	if(addr >= ROM_START && addr < ROM_SIZE)
-	{
-		*v = items[addr];
-		return true;
-	}
-	return false;
+	memory.SetBank(0, eMemory::P_ROM);
 }
 
 //=============================================================================
-//	eRam::eRam
+//	eRam::Reset
 //-----------------------------------------------------------------------------
-eRam::eRam() : items(NULL)
+void eRam::Reset()
 {
-	items = new byte[RAM_SIZE]; //48k speccy
+	memory.SetBank(1, eMemory::P_RAM0);
+	memory.SetBank(2, eMemory::P_RAM1);
+	memory.SetBank(3, eMemory::P_RAM2);
+}
+
+eMemory memory;
+
+//=============================================================================
+//	eMemory::eMemory
+//-----------------------------------------------------------------------------
+eMemory::eMemory() : memory(NULL)
+{
+	memory = new byte[SIZE];
 }
 //=============================================================================
-//	eRam::~eRam
+//	eMemory::~eMemory
 //-----------------------------------------------------------------------------
-eRam::~eRam()
+eMemory::~eMemory()
 {
-	delete items;
+	delete(memory);
 }
 //=============================================================================
-//	eRam::Read
+//	eMemory::Read
 //-----------------------------------------------------------------------------
-bool eRam::Read(word addr, byte* v) const
+byte eMemory::Read(word addr) const
 {
-	if(addr >= RAM_START && addr < RAM_SIZE)
-	{
-		*v = items[addr];
-		return true;
-	}
-	return false;
+	byte* a = bank_read[(addr >> 14) & 3] + (addr & (PAGE_SIZE - 1));
+	return *a;
 }
 //=============================================================================
-//	eRam::Write
+//	eMemory::Write
 //-----------------------------------------------------------------------------
-void eRam::Write(word addr, byte v)
+void eMemory::Write(word addr, byte v)
 {
-	if(addr >= RAM_START && addr < RAM_SIZE)
-	{
-		items[addr] = v;
-	}
+	byte* a = bank_write[(addr >> 14) & 3];
+	if(!a) //rom write prevent
+		return;
+	a += (addr & (PAGE_SIZE - 1));
+	*a = v;
+}
+//=============================================================================
+//	eMemory::SetBank
+//-----------------------------------------------------------------------------
+void eMemory::SetBank(int idx, ePage p)
+{
+	byte* addr = memory + PAGE_SIZE * p;
+	bank_read[idx] = addr;
+	bank_write[idx] = idx ? addr : 0;
 }
