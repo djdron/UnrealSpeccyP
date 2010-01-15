@@ -7,7 +7,7 @@
 //-----------------------------------------------------------------------------
 void eRom::Init()
 {
-	FILE* f = fopen("D:/emuls/ZX/emuls/US0373/sos.rom", "rb");
+	FILE* f = fopen("rom/sos.rom", "rb");
 	if(f)
 	{
 		fread(memory.Get(eMemory::P_ROM), 1, eMemory::PAGE_SIZE, f);
