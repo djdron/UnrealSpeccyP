@@ -48,20 +48,21 @@ public:
 	void Step();
 
 protected:
-	inline byte Fetch(); //m1_cycle data fetch
+	byte Fetch(); //m1_cycle data fetch
 	byte In(dword port) const;
 	void Out(dword port, byte v);
-	inline byte Read(word addr) const;
-	inline void Write(word addr, byte v);
+	byte Read(word addr) const;
+	void Write(word addr, byte v);
 
 	typedef void (eZ80::*CALLFUNC)();
 	typedef byte (eZ80::*CALLFUNCI)(byte);
-#include "z80_op_noprefix.h"
-#include "z80_op_cb.h"
-#include "z80_op_dd.h"
-#include "z80_op_ed.h"
-#include "z80_op_fd.h"
-#include "z80_op_ddcb.h"
+
+	#include "z80_op_noprefix.h"
+	#include "z80_op_cb.h"
+	#include "z80_op_dd.h"
+	#include "z80_op_ed.h"
+	#include "z80_op_fd.h"
+	#include "z80_op_ddcb.h"
 
 	void InitOpNoPrefix();
 	void InitOpCB();

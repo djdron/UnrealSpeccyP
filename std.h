@@ -8,9 +8,9 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <malloc.h>
-#include <conio.h>
+//#include <conio.h>
 #include <math.h>
-#include <process.h>
+//#include <process.h>
 #include <assert.h>
 
 typedef long long			qshort;

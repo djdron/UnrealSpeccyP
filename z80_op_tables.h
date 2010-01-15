@@ -10,22 +10,22 @@ class eZ80;
 
 void InitTables();
 
-extern inline void inc8(eZ80* cpu, byte& x);
-extern inline void dec8(eZ80* cpu, byte& x);
-extern inline void add8(eZ80* cpu, byte src);
-extern inline void adc8(eZ80* cpu, byte src);
-extern inline void sub8(eZ80* cpu, byte src);
-extern inline void sbc8(eZ80* cpu, byte src);
-extern inline void and8(eZ80* cpu, byte src);
-extern inline void or8(eZ80* cpu, byte src);
-extern inline void xor8(eZ80* cpu, byte src);
-extern inline void bit(eZ80* cpu, byte src, byte bit);
-extern inline void bitmem(eZ80* cpu, byte src, byte bit);
-extern inline void res(byte& src, byte bit);
-extern inline byte resbyte(byte src, byte bit);
-extern inline void set(byte& src, byte bit);
-extern inline byte setbyte(byte src, byte bit);
-extern inline void cp8(eZ80* cpu, byte src);
+void inc8(eZ80* cpu, byte& x);
+void dec8(eZ80* cpu, byte& x);
+void add8(eZ80* cpu, byte src);
+void adc8(eZ80* cpu, byte src);
+void sub8(eZ80* cpu, byte src);
+void sbc8(eZ80* cpu, byte src);
+void and8(eZ80* cpu, byte src);
+void or8(eZ80* cpu, byte src);
+void xor8(eZ80* cpu, byte src);
+void bit(eZ80* cpu, byte src, byte bit);
+void bitmem(eZ80* cpu, byte src, byte bit);
+void res(byte& src, byte bit);
+byte resbyte(byte src, byte bit);
+void set(byte& src, byte bit);
+byte setbyte(byte src, byte bit);
+void cp8(eZ80* cpu, byte src);
 
 extern const byte daatab[];
 extern const byte rlcf[];

@@ -959,83 +959,83 @@ void InitTables()
 	InitRot();
 }
 
-inline void inc8(eZ80* cpu, byte& x)
+void inc8(eZ80* cpu, byte& x)
 {
 	cpu->f = incf[x] | (cpu->f & CF);
 	x++;
 }
-inline void dec8(eZ80* cpu, byte& x)
+void dec8(eZ80* cpu, byte& x)
 {
 	cpu->f = decf[x] | (cpu->f & CF);
 	x--;
 }
-inline void add8(eZ80* cpu, byte src)
+void add8(eZ80* cpu, byte src)
 {
 	cpu->f = adcf[cpu->a + src*0x100];
 	cpu->a += src;
 }
-inline void adc8(eZ80* cpu, byte src)
+void adc8(eZ80* cpu, byte src)
 {
 	byte carry = ((cpu->f) & CF);
 	cpu->f = adcf[cpu->a + src*0x100 + 0x10000*carry];
 	cpu->a += src + carry;
 }
-inline void sub8(eZ80* cpu, byte src)
+void sub8(eZ80* cpu, byte src)
 {
 	cpu->f = sbcf[cpu->a*0x100 + src];
 	cpu->a -= src;
 }
-inline void sbc8(eZ80* cpu, byte src)
+void sbc8(eZ80* cpu, byte src)
 {
 	byte carry = ((cpu->f) & CF);
 	cpu->f = sbcf[cpu->a*0x100 + src + 0x10000*carry];
 	cpu->a -= src + carry;
 }
-inline void and8(eZ80* cpu, byte src)
+void and8(eZ80* cpu, byte src)
 {
 	cpu->a &= src;
 	cpu->f = log_f[cpu->a] | HF;
 }
 
-inline void or8(eZ80* cpu, byte src)
+void or8(eZ80* cpu, byte src)
 {
 	cpu->a |= src;
 	cpu->f = log_f[cpu->a];
 }
 
-inline void xor8(eZ80* cpu, byte src)
+void xor8(eZ80* cpu, byte src)
 {
 	cpu->a ^= src;
 	cpu->f = log_f[cpu->a];
 }
 
-inline void bit(eZ80* cpu, byte src, byte bit)
+void bit(eZ80* cpu, byte src, byte bit)
 {
 	cpu->f = log_f[src & (1 << bit)] | HF | (cpu->f & CF) | (src & (F3|F5));
 }
 
-inline void bitmem(eZ80* cpu, byte src, byte bit)
+void bitmem(eZ80* cpu, byte src, byte bit)
 {
 	cpu->f = log_f[src & (1 << bit)] | HF | (cpu->f & CF);
 	cpu->f = (cpu->f & ~(F3|F5)) | (cpu->mem_h & (F3|F5));
 }
-inline void res(byte& src, byte bit)
+void res(byte& src, byte bit)
 {
 	src &= ~(1 << bit);
 }
-inline byte resbyte(byte src, byte bit)
+byte resbyte(byte src, byte bit)
 {
 	return src & ~(1 << bit);
 }
-inline void set(byte& src, byte bit)
+void set(byte& src, byte bit)
 {
 	src |= (1 << bit);
 }
-inline byte setbyte(byte src, byte bit)
+byte setbyte(byte src, byte bit)
 {
 	return src | (1 << bit);
 }
-inline void cp8(eZ80* cpu, byte src)
+void cp8(eZ80* cpu, byte src)
 {
 	cpu->f = cpf[cpu->a*0x100 + src];
 }

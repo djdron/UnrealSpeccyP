@@ -17,7 +17,7 @@ eDevices::eDevices() : last(-1)
 //-----------------------------------------------------------------------------
 eDevices::~eDevices()
 {
-	for(int i = 0; i < sizeof(items); ++i)
+	for(int i = 0; i < AMOUNT; ++i)
 	{
 		delete items[i].dev;
 	}
