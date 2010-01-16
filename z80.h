@@ -31,7 +31,6 @@ enum eFlags
 	SF = 0x80
 };
 
-extern dword frame_tacts;  // t-states per frame
 extern byte even_m1; // m1_wait = 0xC0 - on wait machines, 0 - no_wait on pentagon
 extern bool unstable_databus;
 
@@ -42,6 +41,7 @@ class eZ80
 {
 public:
 	eZ80();
+	void Init();
 	void Reset();
 	void Int();
 	void Nmi();
@@ -84,7 +84,7 @@ public:
 			byte iff2;
 			byte halted;
 		};
-		unsigned int int_flags;
+		dword int_flags;
 	};
 	DECLARE_REG16(memptr, mem_l, mem_h)	// undocumented register
 	DECLARE_REG16(ix, xl, xh)
@@ -101,10 +101,12 @@ public:
 		DECLARE_REG16(hl, l, h)
 		DECLARE_REG16(af, f, a)
 	} alt;
-	unsigned int t;
-	byte im;
-	unsigned int eipos;
-	unsigned int haltpos;
+
+	dword	t;
+	byte	im;
+	dword	eipos;
+	dword	haltpos;
+	dword	frame_tacts;  // t-states per frame
 	unsigned short last_branch;	//? dbg
 
 protected:

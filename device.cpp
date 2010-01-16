@@ -7,29 +7,18 @@ eDevices devices;
 //=============================================================================
 //	eDevices::eDevices
 //-----------------------------------------------------------------------------
-eDevices::eDevices() : last(-1)
+eDevices::eDevices() : amount(0)
 {
-	items[0].dev = NULL;
-	memcpy(items + 1, items, AMOUNT - 1);
+	memset(items, NULL, MAX_AMOUNT);
 }
 //=============================================================================
 //	eDevices::~eDevices
 //-----------------------------------------------------------------------------
 eDevices::~eDevices()
 {
-	for(int i = 0; i < AMOUNT; ++i)
+	for(int i = 0; i < amount; ++i)
 	{
 		delete items[i].dev;
-	}
-}
-//=============================================================================
-//	eDevices::Init
-//-----------------------------------------------------------------------------
-void eDevices::Init()
-{
-	for(int i = 0; i <= last; ++i)
-	{
-		items[i].dev->Init();
 	}
 }
 //=============================================================================
@@ -37,7 +26,7 @@ void eDevices::Init()
 //-----------------------------------------------------------------------------
 void eDevices::Reset()
 {
-	for(int i = 0; i <= last; ++i)
+	for(int i = 0; i < amount; ++i)
 	{
 		items[i].dev->Reset();
 	}
@@ -47,17 +36,18 @@ void eDevices::Reset()
 //-----------------------------------------------------------------------------
 void eDevices::Add(eDevice* d, int id)
 {
-	++last;
-	assert(last < AMOUNT);
-	items[last].id	= id;
-	items[last].dev	= d;
+	assert(amount <= MAX_AMOUNT);
+	items[amount].id	= id;
+	items[amount].dev	= d;
+	items[amount].dev->Init();
+	++amount;
 }
 //=============================================================================
 //	eDevices::Item
 //-----------------------------------------------------------------------------
 eDevice* eDevices::Item(int id)
 {
-	for(int i = 0; i <= last; ++i)
+	for(int i = 0; i < amount; ++i)
 	{
 		if(items[i].id == id)
 			return items[i].dev;
@@ -70,7 +60,7 @@ eDevice* eDevices::Item(int id)
 byte eDevices::IoRead(dword port) const
 {
 	byte v = 0xff;
-	for(int i = 0; i <= last; ++i)
+	for(int i = 0; i < amount; ++i)
 	{
 		items[i].dev->IoRead(port, &v);
 	}
@@ -81,7 +71,7 @@ byte eDevices::IoRead(dword port) const
 //-----------------------------------------------------------------------------
 void eDevices::IoWrite(dword port, byte v)
 {
-	for(int i = 0; i <= last; ++i)
+	for(int i = 0; i < amount; ++i)
 	{
 		items[i].dev->IoWrite(port, v);
 	}

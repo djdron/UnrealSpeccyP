@@ -2,7 +2,7 @@
 
 #ifdef USE_GL
 
-#include <GL/gl.h>
+#include <GL/glut.h>
 #include <math.h>
 
 namespace xPlatform
@@ -20,7 +20,7 @@ void DrawGL(byte* data)
 		for(int x = 0; x < 320; ++x)
 		{
 			byte r, g, b;
-			r = g = b = data[y*320+x] ? 255 : 0;
+			r = g = b = data[y*320+x];
 			byte* p = &tex[y*320*4+x*4];
 			*p++ = r;
 			*p++ = g;
@@ -36,7 +36,7 @@ void DrawGL(byte* data)
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
+	glOrtho(0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f);
 	glBegin(GL_QUADS);
 	{
 		glTexCoord2f(0.0f, 0.0f);	glVertex2f(0.0f, 0.0f);

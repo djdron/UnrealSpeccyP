@@ -1,13 +1,13 @@
 #include "std.h"
 
 #include "ula.h"
+#include "memory.h"
 
 //=============================================================================
 //	eUla::eUla
 //-----------------------------------------------------------------------------
-eUla::eUla() : vram(NULL), border_color(0), screen(NULL)
+eUla::eUla() : border_color(0), screen(NULL)
 {
-	vram = new byte[VRAM_SIZE];
 	screen = new byte[S_WIDTH * S_HEIGHT];
 }
 //=============================================================================
@@ -15,8 +15,7 @@ eUla::eUla() : vram(NULL), border_color(0), screen(NULL)
 //-----------------------------------------------------------------------------
 eUla::~eUla()
 {
-	delete vram;
-	delete screen;
+	delete[] screen;
 }
 //=============================================================================
 //	eUla::Init
@@ -60,33 +59,11 @@ void eUla::Init()
 //=============================================================================
 //	eUla::IoWrite
 //-----------------------------------------------------------------------------
-void eUla::IoWrite(word port, byte v)
+void eUla::IoWrite(dword port, byte v)
 {
-	if(!port&1) // port #FE
+	if(!port & 1) // port #FE
 	{
-		border_color = v&7;
-	}
-}
-//=============================================================================
-//	eUla::Read
-//-----------------------------------------------------------------------------
-bool eUla::Read(word addr, byte* v) const
-{
-	if(addr >= VRAM_START && addr < VRAM_SIZE)
-	{
-		*v = vram[addr];
-		return true;
-	}
-	return false;
-}
-//=============================================================================
-//	eUla::Write
-//-----------------------------------------------------------------------------
-void eUla::Write(word addr, byte v)
-{
-	if(addr >= VRAM_START && addr < VRAM_SIZE)
-	{
-		vram[addr] = v;
+		border_color = v & 7;
 	}
 }
 //=============================================================================
@@ -94,45 +71,36 @@ void eUla::Write(word addr, byte v)
 //-----------------------------------------------------------------------------
 void eUla::Update()
 {
-	for(int y = 0; y < SZX_HEIGHT; ++y)
-	{
-		for(int x = 0; x < SZX_WIDTH / 8; x++)
-		{
-			byte* dst = screen + y*320;
-			word pix = vram[scrtab[y] + x];
-			for(int b = 0; b < 8; ++b)
-			{
-				*dst++ = ((pix << b) & 0x80) ? 255 : 0;
-			}
-		}
-	}
-	/*	dword b = border_color * 0x11001100;
+	byte* dst = screen;
 	int border_half_width = (S_WIDTH - SZX_WIDTH) / 2;
 	int border_half_height = (S_HEIGHT - SZX_HEIGHT) / 2;
 
-	for(int i = border_half_height * S_WIDTH / 4; i; --i)
+	for(int i = 0; i < border_half_height * S_WIDTH; ++i)
 	{
-		*(dword*)dst = b; dst += 4;
+		*dst++ = border_color;
 	}
 	for(int y = 0; y < SZX_HEIGHT; ++y)
 	{
-		for(int x = border_half_width / 4; x; --x)
+		for(int x = 0; x < border_half_width; ++x)
 		{
-			*(dword*)dst = b; dst += 4;
+			*dst++ = border_color;
 		}
 		for(int x = 0; x < SZX_WIDTH / 8; x++)
 		{
-			*dst++ = vram[scrtab[y] + x];
-			*dst++ = colortab[vram[atrtab[y] + x]];
+			word pix = memory.Read(scrtab[y] + x);
+//			dword c = colortab[memory.Read(atrtab[y] + x)];
+			for(int b = 0; b < 8; ++b)
+			{
+				*dst++ = ((pix << b) & 0x80) ? 0xff : 0;
+			}
 		}
-		for(int x = border_half_width / 4; x; --x)
+		for(int x = 0; x < border_half_width; ++x)
 		{
-			*(dword*)dst = b; dst += 4;
+			*dst++ = border_color;
 		}
 	}
-	for(int i = border_half_height * S_WIDTH / 4; i; --i)
+	for(int i = 0; i < border_half_height * S_WIDTH; ++i)
 	{
-		*(dword*)dst = b; dst += 4;
+		*dst++ = border_color;
 	}
-*/
 }

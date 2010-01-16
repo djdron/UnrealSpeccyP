@@ -24,22 +24,22 @@ class eDevices
 public:
 	eDevices();
 	~eDevices();
-	void Init();
 	void Reset();
 	void Add(eDevice* d, int id);
 	eDevice* Item(int id);
 	byte IoRead(dword port) const;
 	void IoWrite(dword port, byte v);
 
-	enum { AMOUNT = 10 };
-public:
+protected:
+	enum { MAX_AMOUNT = 10 };
+
 	struct eItem
 	{
 		int id;
 		eDevice* dev;
 	};
-	eItem items[AMOUNT];
-	int last;
+	eItem items[MAX_AMOUNT];
+	int amount;
 };
 
 extern eDevices devices;

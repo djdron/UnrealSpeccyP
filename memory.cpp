@@ -8,11 +8,9 @@
 void eRom::Init()
 {
 	FILE* f = fopen("rom/sos.rom", "rb");
-	if(f)
-	{
-		fread(memory.Get(eMemory::P_ROM), 1, eMemory::PAGE_SIZE, f);
-		fclose(f);
-	}
+	assert(f);
+	fread(memory.Get(eMemory::P_ROM), 1, eMemory::PAGE_SIZE, f);
+	fclose(f);
 }
 //=============================================================================
 //	eRom::Reset

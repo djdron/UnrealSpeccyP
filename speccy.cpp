@@ -11,11 +11,15 @@
 //-----------------------------------------------------------------------------
 void eSpeccy::Init()
 {
+	frame_tacts = 71680; //pentagon timing
+	int_len = 32;		 //pentagon timing
+
 	cpu = new xZ80::eZ80;
+	cpu->frame_tacts = frame_tacts;
+	cpu->Init();
 	devices.Add(new eRom, D_ROM);
 	devices.Add(new eRam, D_RAM);
 	devices.Add(new eUla, D_ULA);
-	devices.Init();
 }
 //=============================================================================
 //	eSpeccy::Reset
@@ -42,7 +46,7 @@ void eSpeccy::Update()
 		if(cpu->halted)
 			break;
 	}
-	cpu->eipos = -1;
+	cpu->eipos = 0;
 	while(cpu->t < frame_tacts)
 	{
 		cpu->Step();
@@ -57,7 +61,7 @@ void eSpeccy::Update()
 		}
 	}
 	cpu->t -= frame_tacts;
-	cpu->eipos -= frame_tacts;
+	cpu->eipos = 0; // -= frame_tacts;
 
 	devices.Item(D_ULA)->Update();
 }

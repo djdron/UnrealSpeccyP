@@ -221,6 +221,26 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="platform"
+			>
+			<File
+				RelativePath="..\platform\platform.h"
+				>
+			</File>
+			<Filter
+				Name="gl"
+				>
+				<File
+					RelativePath="..\platform\gl\draw.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\platform\gl\glut.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
 		<File
 			RelativePath="..\main.cpp"
 			>
