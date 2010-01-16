@@ -87,8 +87,7 @@ void eUla::Update()
 		}
 		for(int x = 0; x < SZX_WIDTH / 8; x++)
 		{
-			word pix = memory.Read(scrtab[y] + x);
-//			dword c = colortab[memory.Read(atrtab[y] + x)];
+			byte pix = memory.Read(VRAM_START + scrtab[y] + x);
 			for(int b = 0; b < 8; ++b)
 			{
 				*dst++ = ((pix << b) & 0x80) ? 0xff : 0;
