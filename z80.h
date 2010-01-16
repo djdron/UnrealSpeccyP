@@ -40,19 +40,38 @@ extern bool unstable_databus;
 class eZ80
 {
 public:
-	eZ80();
-	void Init();
+	eZ80(dword frame_tacts = 0);
 	void Reset();
+	void Update(dword int_len, int* nmi_pending);
+
+protected:
 	void Int();
 	void Nmi();
 	void Step();
 
-protected:
 	byte Fetch(); //m1_cycle data fetch
 	byte In(dword port) const;
 	void Out(dword port, byte v);
 	byte Read(word addr) const;
 	void Write(word addr, byte v);
+
+	void inc8(byte& x);
+	void dec8(byte& x);
+	void add8(byte src);
+	void adc8(byte src);
+	void sub8(byte src);
+	void sbc8(byte src);
+	void and8(byte src);
+	void or8(byte src);
+	void xor8(byte src);
+	void cp8(byte src);
+	void bit(byte src, byte bit);
+	void bitmem(byte src, byte bit);
+
+	void res(byte& src, byte bit) const;
+	byte resbyte(byte src, byte bit) const;
+	void set(byte& src, byte bit) const;
+	byte setbyte(byte src, byte bit) const;
 
 	typedef void (eZ80::*CALLFUNC)();
 	typedef byte (eZ80::*CALLFUNCI)(byte);
@@ -71,7 +90,14 @@ protected:
 	void InitOpFD();
 	void InitOpDDCB();
 
-public:
+protected:
+	dword	t;
+	byte	im;
+	dword	eipos;
+	dword	haltpos;
+	dword	frame_tacts;  // t-states per frame
+	unsigned short last_branch;	//? dbg
+
 	DECLARE_REG16(pc, pc_l, pc_h)
 	DECLARE_REG16(sp, sp_l, sp_h)
 	DECLARE_REG16(ir, r_low, i)
@@ -102,20 +128,15 @@ public:
 		DECLARE_REG16(af, f, a)
 	} alt;
 
-	dword	t;
-	byte	im;
-	dword	eipos;
-	dword	haltpos;
-	dword	frame_tacts;  // t-states per frame
-	unsigned short last_branch;	//? dbg
-
-protected:
 	CALLFUNC normal_opcodes[0x100];
 	CALLFUNC logic_opcodes[0x100];
 	CALLFUNC ix_opcodes[0x100];
 	CALLFUNC iy_opcodes[0x100];
 	CALLFUNC ext_opcodes[0x100];
 	CALLFUNCI logic_ix_opcodes[0x100];
+
+	typedef byte (eZ80::*REGP);
+	REGP reg_offset[8];
 };
 
 }//namespace xZ80

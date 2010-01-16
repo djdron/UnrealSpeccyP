@@ -41,10 +41,10 @@ void Opx23() { // inc ix
 	t += 2;
 }
 void Opx24() { // inc xh
-	inc8(this, xh);
+	inc8(xh);
 }
 void Opx25() { // dec xh
-	dec8(this, xh);
+	dec8(xh);
 }
 void Opx26() { // ld xh,nn
 	xh = Read(pc++);
@@ -72,10 +72,10 @@ void Opx2B() { // dec ix
 	t += 2;
 }
 void Opx2C() { // inc xl
-	inc8(this, xl);
+	inc8(xl);
 }
 void Opx2D() { // dec xl
-	dec8(this, xl);
+	dec8(xl);
 }
 void Opx2E() { // ld xl,nn
 	xl = Read(pc++);
@@ -84,14 +84,14 @@ void Opx2E() { // ld xl,nn
 void Opx34() { // inc (ix+nn)
 	signed char ofs = Read(pc++);
 	byte t = Read(ix + ofs);
-	inc8(this, t);
+	inc8(t);
 	Write(ix + ofs, t);
 	t += 15;
 }
 void Opx35() { // dec (ix+nn)
 	signed char ofs = Read(pc++);
 	byte t = Read(ix + ofs);
-	dec8(this, t);
+	dec8(t);
 	Write(ix + ofs, t);
 	t += 15;
 }
@@ -246,91 +246,91 @@ void Opx7E() { // ld a,(ix+nn)
 	t += 11;
 }
 void Opx84() { // add a,xh
-	add8(this, xh);
+	add8(xh);
 }
 void Opx85() { // add a,xl
-	add8(this, xl);
+	add8(xl);
 }
 void Opx86() { // add a,(ix+nn)
 	signed char ofs = Read(pc++);
-	add8(this, Read(ix + ofs));
+	add8(Read(ix + ofs));
 	t += 11;
 }
 void Opx8C() { // adc a,xh
-	adc8(this, xh);
+	adc8(xh);
 }
 void Opx8D() { // adc a,xl
-	adc8(this, xl);
+	adc8(xl);
 }
 void Opx8E() { // adc a,(ix+nn)
 	signed char ofs = Read(pc++);
-	adc8(this, Read(ix + ofs));
+	adc8(Read(ix + ofs));
 	t += 11;
 }
 void Opx94() { // sub xh
-	sub8(this, xh);
+	sub8(xh);
 }
 void Opx95() { // sub xl
-	sub8(this, xl);
+	sub8(xl);
 }
 void Opx96() { // sub (ix+nn)
 	signed char ofs = Read(pc++);
-	sub8(this, Read(ix + ofs));
+	sub8(Read(ix + ofs));
 	t += 11;
 }
 void Opx9C() { // sbc a,xh
-	sbc8(this, xh);
+	sbc8(xh);
 }
 void Opx9D() { // sbc a,xl
-	sbc8(this, xl);
+	sbc8(xl);
 }
 void Opx9E() { // sbc a,(ix+nn)
 	signed char ofs = Read(pc++);
-	sbc8(this, Read(ix + ofs));
+	sbc8(Read(ix + ofs));
 	t += 11;
 }
 void OpxA4() { // and xh
-	and8(this, xh);
+	and8(xh);
 }
 void OpxA5() { // and xl
-	and8(this, xl);
+	and8(xl);
 }
 void OpxA6() { // and (ix+nn)
 	signed char ofs = Read(pc++);
-	and8(this, Read(ix + ofs));
+	and8(Read(ix + ofs));
 	t += 11;
 }
 void OpxAC() { // xor xh
-	xor8(this, xh);
+	xor8(xh);
 }
 void OpxAD() { // xor xl
-	xor8(this, xl);
+	xor8(xl);
 }
 void OpxAE() { // xor (ix+nn)
 	signed char ofs = Read(pc++);
-	xor8(this, Read(ix + ofs));
+	xor8(Read(ix + ofs));
 	t += 11;
 }
 void OpxB4() { // or xh
-	or8(this, xh);
+	or8(xh);
 }
 void OpxB5() { // or xl
-	or8(this, xl);
+	or8(xl);
 }
 void OpxB6() { // or (ix+nn)
 	signed char ofs = Read(pc++);
-	or8(this, Read(ix + ofs));
+	or8(Read(ix + ofs));
 	t += 11;
 }
 void OpxBC() { // cp xh
-	cp8(this, xh);
+	cp8(xh);
 }
 void OpxBD() { // cp xl
-	cp8(this, xl);
+	cp8(xl);
 }
 void OpxBE() { // cp (ix+nn)
 	signed char ofs = Read(pc++);
-	cp8(this, Read(ix + ofs));
+	cp8(Read(ix + ofs));
 	t += 11;
 }
 void OpxE1() { // pop ix

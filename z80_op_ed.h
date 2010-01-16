@@ -351,11 +351,11 @@ void OpeA2() { // ini
 	memptr = bc+1;
 	t += 8;
 	Write(hl++, In(bc));
-	dec8(this, b);
+	dec8(b);
 }
 void OpeA3() { // outi
 	t += 8;
-	dec8(this, b);
+	dec8(b);
 	Out(bc, Read(hl++));
 	f &= ~CF; if (!l) f |= CF;
 	memptr = bc+1;
@@ -380,11 +380,11 @@ void OpeAA() { // ind
 	memptr = bc-1;
 	t += 8;
 	Write(hl--, In(bc));
-	dec8(this, b);
+	dec8(b);
 }
 void OpeAB() { // outd
 	t += 8;
-	dec8(this, b);
+	dec8(b);
 	Out(bc, Read(hl--));
 	f &= ~CF; if (l == 0xFF) f |= CF;
 	memptr = bc-1;
@@ -412,13 +412,13 @@ void OpeB2() { // inir
 	t += 8;
 	memptr = bc+1;
 	Write(hl++, In(bc));
-	dec8(this, b);
+	dec8(b);
 	if (b) f |= PV, pc -= 2, t += 5;
 	else f &= ~PV;
 }
 void OpeB3() { // otir
 	t += 8;
-	dec8(this, b);
+	dec8(b);
 	Out(bc, Read(hl++));
 	if (b) f |= PV, pc -= 2, t += 5;
 	else f &= ~PV;
@@ -448,13 +448,13 @@ void OpeBA() { // indr
 	t += 8;
 	memptr = bc-1;
 	Write(hl--, In(bc));
-	dec8(this, b);
+	dec8(b);
 	if (b) f |= PV, pc -= 2, t += 5;
 	else f &= ~PV;
 }
 void OpeBB() { // otdr
 	t += 8;
-	dec8(this, b);
+	dec8(b);
 	Out(bc, Read(hl--));
 	if (b) f |= PV, pc -= 2, t += 5;
 	else f &= ~PV;

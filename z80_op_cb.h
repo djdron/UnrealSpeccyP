@@ -284,204 +284,204 @@ void Opl3F() { // srl a
 	f = rr0[a], a = (a >> 1);
 }
 void Opl40() { // bit 0,b
-	bit(this, b, 0);
+	bit(b, 0);
 }
 void Opl41() { // bit 0,c
-	bit(this, c, 0);
+	bit(c, 0);
 }
 void Opl42() { // bit 0,d
-	bit(this, d, 0);
+	bit(d, 0);
 }
 void Opl43() { // bit 0,e
-	bit(this, e, 0);
+	bit(e, 0);
 }
 void Opl44() { // bit 0,h
-	bit(this, h, 0);
+	bit(h, 0);
 }
 void Opl45() { // bit 0,l
-	bit(this, l, 0);
+	bit(l, 0);
 }
 void Opl46() { // bit 0,(hl)
-	bitmem(this, Read(hl), 0);
+	bitmem(Read(hl), 0);
 	t += 4;
 }
 void Opl47() { // bit 0,a
-	bit(this, a, 0);
+	bit(a, 0);
 }
 void Opl48() { // bit 1,b
-	bit(this, b, 1);
+	bit(b, 1);
 }
 void Opl49() { // bit 1,c
-	bit(this, c, 1);
+	bit(c, 1);
 }
 void Opl4A() { // bit 1,d
-	bit(this, d, 1);
+	bit(d, 1);
 }
 void Opl4B() { // bit 1,e
-	bit(this, e, 1);
+	bit(e, 1);
 }
 void Opl4C() { // bit 1,h
-	bit(this, h, 1);
+	bit(h, 1);
 }
 void Opl4D() { // bit 1,l
-	bit(this, l, 1);
+	bit(l, 1);
 }
 void Opl4E() { // bit 1,(hl)
-	bitmem(this, Read(hl), 1);
+	bitmem(Read(hl), 1);
 	t += 4;
 }
 void Opl4F() { // bit 1,a
-	bit(this, a, 1);
+	bit(a, 1);
 }
 void Opl50() { // bit 2,b
-	bit(this, b, 2);
+	bit(b, 2);
 }
 void Opl51() { // bit 2,c
-	bit(this, c, 2);
+	bit(c, 2);
 }
 void Opl52() { // bit 2,d
-	bit(this, d, 2);
+	bit(d, 2);
 }
 void Opl53() { // bit 2,e
-	bit(this, e, 2);
+	bit(e, 2);
 }
 void Opl54() { // bit 2,h
-	bit(this, h, 2);
+	bit(h, 2);
 }
 void Opl55() { // bit 2,l
-	bit(this, l, 2);
+	bit(l, 2);
 }
 void Opl56() { // bit 2,(hl)
-	bitmem(this, Read(hl), 2);
+	bitmem(Read(hl), 2);
 	t += 4;
 }
 void Opl57() { // bit 2,a
-	bit(this, a, 2);
+	bit(a, 2);
 }
 void Opl58() { // bit 3,b
-	bit(this, b, 3);
+	bit(b, 3);
 }
 void Opl59() { // bit 3,c
-	bit(this, c, 3);
+	bit(c, 3);
 }
 void Opl5A() { // bit 3,d
-	bit(this, d, 3);
+	bit(d, 3);
 }
 void Opl5B() { // bit 3,e
-	bit(this, e, 3);
+	bit(e, 3);
 }
 void Opl5C() { // bit 3,h
-	bit(this, h, 3);
+	bit(h, 3);
 }
 void Opl5D() { // bit 3,l
-	bit(this, l, 3);
+	bit(l, 3);
 }
 void Opl5E() { // bit 3,(hl)
-	bitmem(this, Read(hl), 3);
+	bitmem(Read(hl), 3);
 	t += 4;
 }
 void Opl5F() { // bit 3,a
-	bit(this, a, 3);
+	bit(a, 3);
 }
 void Opl60() { // bit 4,b
-	bit(this, b, 4);
+	bit(b, 4);
 }
 void Opl61() { // bit 4,c
-	bit(this, c, 4);
+	bit(c, 4);
 }
 void Opl62() { // bit 4,d
-	bit(this, d, 4);
+	bit(d, 4);
 }
 void Opl63() { // bit 4,e
-	bit(this, e, 4);
+	bit(e, 4);
 }
 void Opl64() { // bit 4,h
-	bit(this, h, 4);
+	bit(h, 4);
 }
 void Opl65() { // bit 4,l
-	bit(this, l, 4);
+	bit(l, 4);
 }
 void Opl66() { // bit 4,(hl)
-	bitmem(this, Read(hl), 4);
+	bitmem(Read(hl), 4);
 	t += 4;
 }
 void Opl67() { // bit 4,a
-	bit(this, a, 4);
+	bit(a, 4);
 }
 void Opl68() { // bit 5,b
-	bit(this, b, 5);
+	bit(b, 5);
 }
 void Opl69() { // bit 5,c
-	bit(this, c, 5);
+	bit(c, 5);
 }
 void Opl6A() { // bit 5,d
-	bit(this, d, 5);
+	bit(d, 5);
 }
 void Opl6B() { // bit 5,e
-	bit(this, e, 5);
+	bit(e, 5);
 }
 void Opl6C() { // bit 5,h
-	bit(this, h, 5);
+	bit(h, 5);
 }
 void Opl6D() { // bit 5,l
-	bit(this, l, 5);
+	bit(l, 5);
 }
 void Opl6E() { // bit 5,(hl)
-	bitmem(this, Read(hl), 5);
+	bitmem(Read(hl), 5);
 	t += 4;
 }
 void Opl6F() { // bit 5,a
-	bit(this, a, 5);
+	bit(a, 5);
 }
 void Opl70() { // bit 6,b
-	bit(this, b, 6);
+	bit(b, 6);
 }
 void Opl71() { // bit 6,c
-	bit(this, c, 6);
+	bit(c, 6);
 }
 void Opl72() { // bit 6,d
-	bit(this, d, 6);
+	bit(d, 6);
 }
 void Opl73() { // bit 6,e
-	bit(this, e, 6);
+	bit(e, 6);
 }
 void Opl74() { // bit 6,h
-	bit(this, h, 6);
+	bit(h, 6);
 }
 void Opl75() { // bit 6,l
-	bit(this, l, 6);
+	bit(l, 6);
 }
 void Opl76() { // bit 6,(hl)
-	bitmem(this, Read(hl), 6);
+	bitmem(Read(hl), 6);
 	t += 4;
 }
 void Opl77() { // bit 6,a
-	bit(this, a, 6);
+	bit(a, 6);
 }
 void Opl78() { // bit 7,b
-	bit(this, b, 7);
+	bit(b, 7);
 }
 void Opl79() { // bit 7,c
-	bit(this, c, 7);
+	bit(c, 7);
 }
 void Opl7A() { // bit 7,d
-	bit(this, d, 7);
+	bit(d, 7);
 }
 void Opl7B() { // bit 7,e
-	bit(this, e, 7);
+	bit(e, 7);
 }
 void Opl7C() { // bit 7,h
-	bit(this, h, 7);
+	bit(h, 7);
 }
 void Opl7D() { // bit 7,l
-	bit(this, l, 7);
+	bit(l, 7);
 }
 void Opl7E() { // bit 7,(hl)
-	bitmem(this, Read(hl), 7);
+	bitmem(Read(hl), 7);
 	t += 4;
 }
 void Opl7F() { // bit 7,a
-	bit(this, a, 7);
+	bit(a, 7);
 }
 void Opl80() { // res 0,b
 	res(b, 0);

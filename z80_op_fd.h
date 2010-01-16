@@ -41,10 +41,10 @@ void Opy23() { // inc iy
 	t += 2;
 }
 void Opy24() { // inc yh
-	inc8(this, yh);
+	inc8(yh);
 }
 void Opy25() { // dec yh
-	dec8(this, yh);
+	dec8(yh);
 }
 void Opy26() { // ld yh,nn
 	yh = Read(pc++);
@@ -72,10 +72,10 @@ void Opy2B() { // dec iy
 	t += 2;
 }
 void Opy2C() { // inc yl
-	inc8(this, yl);
+	inc8(yl);
 }
 void Opy2D() { // dec yl
-	dec8(this, yl);
+	dec8(yl);
 }
 void Opy2E() { // ld yl,nn
 	yl = Read(pc++);
@@ -84,14 +84,14 @@ void Opy2E() { // ld yl,nn
 void Opy34() { // inc (iy+nn)
 	signed char ofs = Read(pc++);
 	byte t = Read(iy + ofs);
-	inc8(this, t);
+	inc8(t);
 	Write(iy + ofs, t);
 	t += 15;
 }
 void Opy35() { // dec (iy+nn)
 	signed char ofs = Read(pc++);
 	byte t = Read(iy + ofs);
-	dec8(this, t);
+	dec8(t);
 	Write(iy + ofs, t);
 	t += 15;
 }
@@ -246,91 +246,91 @@ void Opy7E() { // ld a,(iy+nn)
 	t += 11;
 }
 void Opy84() { // add a,yh
-	add8(this, yh);
+	add8(yh);
 }
 void Opy85() { // add a,yl
-	add8(this, yl);
+	add8(yl);
 }
 void Opy86() { // add a,(iy+nn)
 	signed char ofs = Read(pc++);
-	add8(this, Read(iy + ofs));
+	add8(Read(iy + ofs));
 	t += 11;
 }
 void Opy8C() { // adc a,yh
-	adc8(this, yh);
+	adc8(yh);
 }
 void Opy8D() { // adc a,yl
-	adc8(this, yl);
+	adc8(yl);
 }
 void Opy8E() { // adc a,(iy+nn)
 	signed char ofs = Read(pc++);
-	adc8(this, Read(iy + ofs));
+	adc8(Read(iy + ofs));
 	t += 11;
 }
 void Opy94() { // sub yh
-	sub8(this, yh);
+	sub8(yh);
 }
 void Opy95() { // sub yl
-	sub8(this, yl);
+	sub8(yl);
 }
 void Opy96() { // sub (iy+nn)
 	signed char ofs = Read(pc++);
-	sub8(this, Read(iy + ofs));
+	sub8(Read(iy + ofs));
 	t += 11;
 }
 void Opy9C() { // sbc a,yh
-	sbc8(this, yh);
+	sbc8(yh);
 }
 void Opy9D() { // sbc a,yl
-	sbc8(this, yl);
+	sbc8(yl);
 }
 void Opy9E() { // sbc a,(iy+nn)
 	signed char ofs = Read(pc++);
-	sbc8(this, Read(iy + ofs));
+	sbc8(Read(iy + ofs));
 	t += 11;
 }
 void OpyA4() { // and yh
-	and8(this, yh);
+	and8(yh);
 }
 void OpyA5() { // and yl
-	and8(this, yl);
+	and8(yl);
 }
 void OpyA6() { // and (iy+nn)
 	signed char ofs = Read(pc++);
-	and8(this, Read(iy + ofs));
+	and8(Read(iy + ofs));
 	t += 11;
 }
 void OpyAC() { // xor yh
-	xor8(this, yh);
+	xor8(yh);
 }
 void OpyAD() { // xor yl
-	xor8(this, yl);
+	xor8(yl);
 }
 void OpyAE() { // xor (iy+nn)
 	signed char ofs = Read(pc++);
-	xor8(this, Read(iy + ofs));
+	xor8(Read(iy + ofs));
 	t += 11;
 }
 void OpyB4() { // or yh
-	or8(this, yh);
+	or8(yh);
 }
 void OpyB5() { // or yl
-	or8(this, yl);
+	or8(yl);
 }
 void OpyB6() { // or (iy+nn)
 	signed char ofs = Read(pc++);
-	or8(this, Read(iy + ofs));
+	or8(Read(iy + ofs));
 	t += 11;
 }
 void OpyBC() { // cp yh
-	cp8(this, yh);
+	cp8(yh);
 }
 void OpyBD() { // cp yl
-	cp8(this, yl);
+	cp8(yl);
 }
 void OpyBE() { // cp (iy+nn)
 	signed char ofs = Read(pc++);
-	cp8(this, Read(iy + ofs));
+	cp8(Read(iy + ofs));
 	t += 11;
 }
 void OpyE1() { // pop iy

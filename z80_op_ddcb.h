@@ -39,28 +39,28 @@ byte Oplx38(byte v) { // srl (ix+nn)
 	f = rr0[v]; return (v >> 1);
 }
 byte Oplx40(byte v) { // bit 0,(ix+nn)
-	bitmem(this, v, 0); return v;
+	bitmem(v, 0); return v;
 }
 byte Oplx48(byte v) { // bit 1,(ix+nn)
-	bitmem(this, v, 1); return v;
+	bitmem(v, 1); return v;
 }
 byte Oplx50(byte v) { // bit 2,(ix+nn)
-	bitmem(this, v, 2); return v;
+	bitmem(v, 2); return v;
 }
 byte Oplx58(byte v) { // bit 3,(ix+nn)
-	bitmem(this, v, 3); return v;
+	bitmem(v, 3); return v;
 }
 byte Oplx60(byte v) { // bit 4,(ix+nn)
-	bitmem(this, v, 4); return v;
+	bitmem(v, 4); return v;
 }
 byte Oplx68(byte v) { // bit 5,(ix+nn)
-	bitmem(this, v, 5); return v;
+	bitmem(v, 5); return v;
 }
 byte Oplx70(byte v) { // bit 6,(ix+nn)
-	bitmem(this, v, 6); return v;
+	bitmem(v, 6); return v;
 }
 byte Oplx78(byte v) { // bit 7,(ix+nn)
-	bitmem(this, v, 7); return v;
+	bitmem(v, 7); return v;
 }
 byte Oplx80(byte v) { // res 0,(ix+nn)
 	return resbyte(v, 0);

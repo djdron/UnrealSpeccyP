@@ -23,10 +23,10 @@ void Op03() { // inc bc
 	t += 2;
 }
 void Op04() { // inc b
-	inc8(this, b);
+	inc8(b);
 }
 void Op05() { // dec b
-	dec8(this, b);
+	dec8(b);
 }
 void Op06() { // ld b,nn
 	b = Read(pc++);
@@ -60,10 +60,10 @@ void Op0B() { // dec bc
 	t += 2;
 }
 void Op0C() { // inc c
-	inc8(this, c);
+	inc8(c);
 }
 void Op0D() { // dec c
-	dec8(this, c);
+	dec8(c);
 }
 void Op0E() { // ld c,nn
 	c = Read(pc++);
@@ -95,10 +95,10 @@ void Op13() { // inc de
 	t += 2;
 }
 void Op14() { // inc d
-	inc8(this, d);
+	inc8(d);
 }
 void Op15() { // dec d
-	dec8(this, d);
+	dec8(d);
 }
 void Op16() { // ld d,nn
 	d = Read(pc++);
@@ -135,10 +135,10 @@ void Op1B() { // dec de
 	t += 2;
 }
 void Op1C() { // inc e
-	inc8(this, e);
+	inc8(e);
 }
 void Op1D() { // dec e
-	dec8(this, e);
+	dec8(e);
 }
 void Op1E() { // ld e,nn
 	e = Read(pc++);
@@ -175,10 +175,10 @@ void Op23() { // inc hl
 	t += 2;
 }
 void Op24() { // inc h
-	inc8(this, h);
+	inc8(h);
 }
 void Op25() { // dec h
-	dec8(this, h);
+	dec8(h);
 }
 void Op26() { // ld h,nn
 	h = Read(pc++);
@@ -217,10 +217,10 @@ void Op2B() { // dec hl
 	t += 2;
 }
 void Op2C() { // inc l
-	inc8(this, l);
+	inc8(l);
 }
 void Op2D() { // dec l
-	dec8(this, l);
+	dec8(l);
 }
 void Op2E() { // ld l,nn
 	l = Read(pc++);
@@ -256,13 +256,13 @@ void Op33() { // inc sp
 }
 void Op34() { // inc (hl)
 	byte v = Read(hl);
-	inc8(this, v);
+	inc8(v);
 	t += 7;
 	Write(hl, v);
 }
 void Op35() { // dec (hl)
 	byte v = Read(hl);
-	dec8(this, v);
+	dec8(v);
 	t += 7;
 	Write(hl, v);
 }
@@ -301,10 +301,10 @@ void Op3B() { // dec sp
 	t += 2;
 }
 void Op3C() { // inc a
-	inc8(this, a);
+	inc8(a);
 }
 void Op3D() { // dec a
-	dec8(this, a);
+	dec8(a);
 }
 void Op3E() { // ld a,nn
 	a = Read(pc++);
@@ -510,204 +510,204 @@ void Op7E() { // ld a,(hl)
 	t += 3;
 }
 void Op80() { // add a,b
-	add8(this, b);
+	add8(b);
 }
 void Op81() { // add a,c
-	add8(this, c);
+	add8(c);
 }
 void Op82() { // add a,d
-	add8(this, d);
+	add8(d);
 }
 void Op83() { // add a,e
-	add8(this, e);
+	add8(e);
 }
 void Op84() { // add a,h
-	add8(this, h);
+	add8(h);
 }
 void Op85() { // add a,l
-	add8(this, l);
+	add8(l);
 }
 void Op86() { // add a,(hl)
-	add8(this, Read(hl));
+	add8(Read(hl));
 	t += 3;
 }
 void Op87() { // add a,a
-	add8(this, a);
+	add8(a);
 }
 void Op88() { // adc a,b
-	adc8(this, b);
+	adc8(b);
 }
 void Op89() { // adc a,c
-	adc8(this, c);
+	adc8(c);
 }
 void Op8A() { // adc a,d
-	adc8(this, d);
+	adc8(d);
 }
 void Op8B() { // adc a,e
-	adc8(this, e);
+	adc8(e);
 }
 void Op8C() { // adc a,h
-	adc8(this, h);
+	adc8(h);
 }
 void Op8D() { // adc a,l
-	adc8(this, l);
+	adc8(l);
 }
 void Op8E() { // adc a,(hl)
-	adc8(this, Read(hl));
+	adc8(Read(hl));
 	t += 3;
 }
 void Op8F() { // adc a,a
-	adc8(this, a);
+	adc8(a);
 }
 void Op90() { // sub b
-	sub8(this, b);
+	sub8(b);
 }
 void Op91() { // sub c
-	sub8(this, c);
+	sub8(c);
 }
 void Op92() { // sub d
-	sub8(this, d);
+	sub8(d);
 }
 void Op93() { // sub e
-	sub8(this, e);
+	sub8(e);
 }
 void Op94() { // sub h
-	sub8(this, h);
+	sub8(h);
 }
 void Op95() { // sub l
-	sub8(this, l);
+	sub8(l);
 }
 void Op96() { // sub (hl)
-	sub8(this, Read(hl));
+	sub8(Read(hl));
 	t += 3;
 }
 void Op97() { // sub a
 	af = ZF | NF;
 }
 void Op98() { // sbc a,b
-	sbc8(this, b);
+	sbc8(b);
 }
 void Op99() { // sbc a,c
-	sbc8(this, c);
+	sbc8(c);
 }
 void Op9A() { // sbc a,d
-	sbc8(this, d);
+	sbc8(d);
 }
 void Op9B() { // sbc a,e
-	sbc8(this, e);
+	sbc8(e);
 }
 void Op9C() { // sbc a,h
-	sbc8(this, h);
+	sbc8(h);
 }
 void Op9D() { // sbc a,l
-	sbc8(this, l);
+	sbc8(l);
 }
 void Op9E() { // sbc a,(hl)
-	sbc8(this, Read(hl));
+	sbc8(Read(hl));
 	t += 3;
 }
 void Op9F() { // sbc a,a
-	sbc8(this, a);
+	sbc8(a);
 }
 void OpA0() { // and b
-	and8(this, b);
+	and8(b);
 }
 void OpA1() { // and c
-	and8(this, c);
+	and8(c);
 }
 void OpA2() { // and d
-	and8(this, d);
+	and8(d);
 }
 void OpA3() { // and e
-	and8(this, e);
+	and8(e);
 }
 void OpA4() { // and h
-	and8(this, h);
+	and8(h);
 }
 void OpA5() { // and l
-	and8(this, l);
+	and8(l);
 }
 void OpA6() { // and (hl)
-	and8(this, Read(hl));
+	and8(Read(hl));
 	t += 3;
 }
 void OpA7() { // and a
-	and8(this, a); // already optimized by compiler
+	and8(a); // already optimized by compiler
 }
 void OpA8() { // xor b
-	xor8(this, b);
+	xor8(b);
 }
 void OpA9() { // xor c
-	xor8(this, c);
+	xor8(c);
 }
 void OpAA() { // xor d
-	xor8(this, d);
+	xor8(d);
 }
 void OpAB() { // xor e
-	xor8(this, e);
+	xor8(e);
 }
 void OpAC() { // xor h
-	xor8(this, h);
+	xor8(h);
 }
 void OpAD() { // xor l
-	xor8(this, l);
+	xor8(l);
 }
 void OpAE() { // xor (hl)
-	xor8(this, Read(hl));
+	xor8(Read(hl));
 	t += 3;
 }
 void OpAF() { // xor a
 	af = ZF | PV;
 }
 void OpB0() { // or b
-	or8(this, b);
+	or8(b);
 }
 void OpB1() { // or c
-	or8(this, c);
+	or8(c);
 }
 void OpB2() { // or d
-	or8(this, d);
+	or8(d);
 }
 void OpB3() { // or e
-	or8(this, e);
+	or8(e);
 }
 void OpB4() { // or h
-	or8(this, h);
+	or8(h);
 }
 void OpB5() { // or l
-	or8(this, l);
+	or8(l);
 }
 void OpB6() { // or (hl)
-	or8(this, Read(hl));
+	or8(Read(hl));
 	t += 3;
 }
 void OpB7() { // or a
-	or8(this, a);  // already optimized by compiler
+	or8(a);  // already optimized by compiler
 }
 void OpB8() { // cp b
-	cp8(this, b);
+	cp8(b);
 }
 void OpB9() { // cp c
-	cp8(this, c);
+	cp8(c);
 }
 void OpBA() { // cp d
-	cp8(this, d);
+	cp8(d);
 }
 void OpBB() { // cp e
-	cp8(this, e);
+	cp8(e);
 }
 void OpBC() { // cp h
-	cp8(this, h);
+	cp8(h);
 }
 void OpBD() { // cp l
-	cp8(this, l);
+	cp8(l);
 }
 void OpBE() { // cp (hl)
-	cp8(this, Read(hl));
+	cp8(Read(hl));
 	t += 3;
 }
 void OpBF() { // cp a
-	cp8(this, a); // can't optimize: F3,F5 depends on A
+	cp8(a); // can't optimize: F3,F5 depends on A
 }
 void OpC0() { // ret nz
 	if (!(f & ZF)) {
@@ -760,7 +760,7 @@ void OpC5() { // push bc
 	Write(--sp, c);
 }
 void OpC6() { // add a,nn
-	add8(this, Read(pc++));
+	add8(Read(pc++));
 	t += 3;
 }
 void OpC7() { // rst 00
@@ -823,7 +823,7 @@ void OpCD() { // call
 	t += 13;
 }
 void OpCE() { // adc a,nn
-	adc8(this, Read(pc++));
+	adc8(Read(pc++));
 	t += 3;
 }
 void OpCF() { // rst 08
@@ -885,7 +885,7 @@ void OpD5() { // push de
 	Write(--sp, e);
 }
 void OpD6() { // sub nn
-	sub8(this, Read(pc++));
+	sub8(Read(pc++));
 	t += 3;
 }
 void OpD7() { // rst 10
@@ -941,7 +941,7 @@ void OpDC() { // call c,nnnn
 	} else t += 6;
 }
 void OpDE() { // sbc a,nn
-	sbc8(this, Read(pc++));
+	sbc8(Read(pc++));
 	t += 3;
 }
 void OpDF() { // rst 18
@@ -1003,7 +1003,7 @@ void OpE5() { // push hl
 	Write(--sp, l);
 }
 void OpE6() { // and nn
-	and8(this, Read(pc++));
+	and8(Read(pc++));
 	t += 3;
 }
 void OpE7() { // rst 20
@@ -1057,7 +1057,7 @@ void OpEC() { // call pe,nnnn
 	} else t += 6;
 }
 void OpEE() { // xor nn
-	xor8(this, Read(pc++));
+	xor8(Read(pc++));
 	t += 3;
 }
 void OpEF() { // rst 28
@@ -1115,7 +1115,7 @@ void OpF5() { // push af
 	Write(--sp, f);
 }
 void OpF6() { // or nn
-	or8(this, Read(pc++));
+	or8(Read(pc++));
 	t += 3;
 }
 void OpF7() { // rst 30
@@ -1168,7 +1168,7 @@ void OpFC() { // call m,nnnn
 	} else t += 6;
 }
 void OpFE() { // cp nn
-	cp8(this, Read(pc++));
+	cp8(Read(pc++));
 	t += 3;
 }
 void OpFF() { // rst 38

@@ -1,17 +1,8 @@
 #include "std.h"
-
-#include "z80_op_tables.h"
 #include "z80.h"
 
 namespace xZ80
 {
-
-// offsets to b,c,d,e,h,l,<unused>,a  from cpu.c
-const REGP reg_offset[] =
-{
-	&eZ80::b, &eZ80::c, &eZ80::d, &eZ80::e,
-	&eZ80::h, &eZ80::l, &eZ80::a, &eZ80::a
-};
 
 // table for daa, contains af
 static const byte _daatab[] =
@@ -530,7 +521,7 @@ static const byte _daatab[] =
 	0x87,0x96,0x83,0x97,0x8b,0x98,0x8f,0x99
 };
 
-static const byte incf[] =
+static const byte _incf[] =
 {
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,
 	0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x10,
@@ -566,7 +557,7 @@ static const byte incf[] =
 	0xa8,0xa8,0xa8,0xa8,0xa8,0xa8,0xa8,0x50
 };
 
-static const byte decf[] =
+static const byte _decf[] =
 {
 	0xba,0x42,0x02,0x02,0x02,0x02,0x02,0x02,
 	0x02,0x0a,0x0a,0x0a,0x0a,0x0a,0x0a,0x0a,
@@ -865,6 +856,8 @@ static byte _rol[0x100];
 static byte _ror[0x100];
 
 const byte* daatab =	_daatab;
+const byte* incf = 		_incf;
+const byte* decf = 		_decf;
 const byte* rlcf =		_rlcf;
 const byte* rrcf =		_rrcf;
 const byte* rl0 =		_rl0;
@@ -983,87 +976,6 @@ void eTablesInitializer::InitRot()
 		_rol[i] = (i<<1)+(i>>7);
 		_ror[i] = (i>>1)+(i<<7);
 	}
-}
-
-void inc8(eZ80* cpu, byte& x)
-{
-	cpu->f = incf[x] | (cpu->f & CF);
-	x++;
-}
-void dec8(eZ80* cpu, byte& x)
-{
-	cpu->f = decf[x] | (cpu->f & CF);
-	x--;
-}
-void add8(eZ80* cpu, byte src)
-{
-	cpu->f = adcf[cpu->a + src*0x100];
-	cpu->a += src;
-}
-void adc8(eZ80* cpu, byte src)
-{
-	byte carry = ((cpu->f) & CF);
-	cpu->f = adcf[cpu->a + src*0x100 + 0x10000*carry];
-	cpu->a += src + carry;
-}
-void sub8(eZ80* cpu, byte src)
-{
-	cpu->f = sbcf[cpu->a*0x100 + src];
-	cpu->a -= src;
-}
-void sbc8(eZ80* cpu, byte src)
-{
-	byte carry = ((cpu->f) & CF);
-	cpu->f = sbcf[cpu->a*0x100 + src + 0x10000*carry];
-	cpu->a -= src + carry;
-}
-void and8(eZ80* cpu, byte src)
-{
-	cpu->a &= src;
-	cpu->f = log_f[cpu->a] | HF;
-}
-
-void or8(eZ80* cpu, byte src)
-{
-	cpu->a |= src;
-	cpu->f = log_f[cpu->a];
-}
-
-void xor8(eZ80* cpu, byte src)
-{
-	cpu->a ^= src;
-	cpu->f = log_f[cpu->a];
-}
-
-void bit(eZ80* cpu, byte src, byte bit)
-{
-	cpu->f = log_f[src & (1 << bit)] | HF | (cpu->f & CF) | (src & (F3|F5));
-}
-
-void bitmem(eZ80* cpu, byte src, byte bit)
-{
-	cpu->f = log_f[src & (1 << bit)] | HF | (cpu->f & CF);
-	cpu->f = (cpu->f & ~(F3|F5)) | (cpu->mem_h & (F3|F5));
-}
-void res(byte& src, byte bit)
-{
-	src &= ~(1 << bit);
-}
-byte resbyte(byte src, byte bit)
-{
-	return src & ~(1 << bit);
-}
-void set(byte& src, byte bit)
-{
-	src |= (1 << bit);
-}
-byte setbyte(byte src, byte bit)
-{
-	return src | (1 << bit);
-}
-void cp8(eZ80* cpu, byte src)
-{
-	cpu->f = cpf[cpu->a*0x100 + src];
 }
 
 }//namespace xZ80
