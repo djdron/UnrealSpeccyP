@@ -2,7 +2,7 @@
 
 #ifdef USE_GL
 
-#include <GL/glut.h>
+#include <GL/gl.h>
 #include <math.h>
 
 namespace xPlatform
