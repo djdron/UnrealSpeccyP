@@ -1,8 +1,6 @@
 #ifndef	__STD_H__
 #define	__STD_H__
 
-#pragma once
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -13,12 +11,8 @@
 //#include <process.h>
 #include <assert.h>
 
-typedef long long			qshort;
-typedef unsigned long long	qword;
-typedef	unsigned long		dword;
-typedef unsigned short		word;
-typedef unsigned char		byte;
+#include "std_types.h"
 
-enum eZeroValue { ZERO };
+#pragma once
 
 #endif//__STD_H__

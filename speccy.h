@@ -11,7 +11,7 @@ namespace xZ80 { class eZ80; }
 class eSpeccy
 {
 public:
-	eSpeccy() : cpu(NULL) {}
+	eSpeccy() : frame_tacts(71680), int_len(1), nmi_pending(0), cpu(NULL) {}
 	void Init();
 	void Reset();
 	void Load() {}

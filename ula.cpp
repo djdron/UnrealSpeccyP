@@ -94,8 +94,19 @@ void eUla::Write(word addr, byte v)
 //-----------------------------------------------------------------------------
 void eUla::Update()
 {
-	byte* dst = screen;
-	dword b = border_color * 0x11001100;
+	for(int y = 0; y < SZX_HEIGHT; ++y)
+	{
+		for(int x = 0; x < SZX_WIDTH / 8; x++)
+		{
+			byte* dst = screen + y*320;
+			word pix = vram[scrtab[y] + x];
+			for(int b = 0; b < 8; ++b)
+			{
+				*dst++ = ((pix << b) & 0x80) ? 255 : 0;
+			}
+		}
+	}
+	/*	dword b = border_color * 0x11001100;
 	int border_half_width = (S_WIDTH - SZX_WIDTH) / 2;
 	int border_half_height = (S_HEIGHT - SZX_HEIGHT) / 2;
 
@@ -123,4 +134,5 @@ void eUla::Update()
 	{
 		*(dword*)dst = b; dst += 4;
 	}
+*/
 }
