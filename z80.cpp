@@ -30,7 +30,6 @@ void eZ80::Init()
 	InitOpED();
 	InitOpFD();
 	InitOpDDCB();
-	InitTables();
 }
 //=============================================================================
 //	eZ80::Reset

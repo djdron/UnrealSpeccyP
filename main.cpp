@@ -8,6 +8,7 @@ struct eSpeccyHandler : public xPlatform::eHandler
 	eSpeccyHandler(eSpeccy* s) : speccy(s) {}
 	virtual void OnLoop() { speccy->Update(); }
 	virtual byte* DrawData() { return ((eUla*)devices.Item(eSpeccy::D_ULA))->Screen(); }
+	virtual const char* WindowCaption() { return "UnrealSpeccy portable"; }
 	eSpeccy* speccy;
 };
 

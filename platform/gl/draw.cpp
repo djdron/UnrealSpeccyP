@@ -3,7 +3,6 @@
 #ifdef USE_GL
 
 #include <GL/glut.h>
-#include <math.h>
 
 namespace xPlatform
 {

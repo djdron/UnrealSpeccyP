@@ -1,5 +1,3 @@
-#include "../../std.h"
-
 #include "../platform.h"
 
 #ifdef USE_GLUT
@@ -30,7 +28,7 @@ static void OnDraw() { Draw(); }
 static void OnIdle()
 {
 	handler->OnLoop();
-	Draw();
+	glutPostRedisplay();
 }
 
 static void OnKeyPress(unsigned char key, int x, int y)
@@ -49,7 +47,7 @@ bool Init(int argc, char* argv[], eHandler* h)
 	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
 	glutInitWindowSize(320, 240);
 	glutInitWindowPosition(100, 100);
-	window = glutCreateWindow("OpenGL (GLUT)");
+	window = glutCreateWindow(handler->WindowCaption());
 	glutDisplayFunc(&OnDraw);
 //	glutFullScreen();
 	glutIdleFunc(&OnIdle);

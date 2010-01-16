@@ -7,14 +7,14 @@ namespace xZ80
 {
 
 // offsets to b,c,d,e,h,l,<unused>,a  from cpu.c
-REGP reg_offset[] =
+const REGP reg_offset[] =
 {
 	&eZ80::b, &eZ80::c, &eZ80::d, &eZ80::e,
 	&eZ80::h, &eZ80::l, &eZ80::a, &eZ80::a
 };
 
 // table for daa, contains af
-const byte daatab[] =
+static const byte _daatab[] =
 {
 	0x44,0x00,0x00,0x01,0x00,0x02,0x04,0x03,
 	0x00,0x04,0x04,0x05,0x04,0x06,0x00,0x07,
@@ -530,7 +530,7 @@ const byte daatab[] =
 	0x87,0x96,0x83,0x97,0x8b,0x98,0x8f,0x99
 };
 
-const byte incf[] =
+static const byte incf[] =
 {
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,
 	0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x10,
@@ -566,7 +566,7 @@ const byte incf[] =
 	0xa8,0xa8,0xa8,0xa8,0xa8,0xa8,0xa8,0x50
 };
 
-const byte decf[] =
+static const byte decf[] =
 {
 	0xba,0x42,0x02,0x02,0x02,0x02,0x02,0x02,
 	0x02,0x0a,0x0a,0x0a,0x0a,0x0a,0x0a,0x0a,
@@ -602,7 +602,7 @@ const byte decf[] =
 	0xa2,0xaa,0xaa,0xaa,0xaa,0xaa,0xaa,0xaa
 };
 
-const byte rlcf[] = // for rlc r. may be for rlca (0x3B mask)
+static const byte _rlcf[] = // for rlc r. may be for rlca (0x3B mask)
 {
 	0x44,0x00,0x00,0x04,0x08,0x0c,0x0c,0x08,
 	0x00,0x04,0x04,0x00,0x0c,0x08,0x08,0x0c,
@@ -638,7 +638,7 @@ const byte rlcf[] = // for rlc r. may be for rlca (0x3B mask)
 	0xa1,0xa5,0xa5,0xa1,0xad,0xa9,0xa9,0xad
 };
 
-const byte rrcf[] = // rrc r. may be for rlca (0x3B mask)
+static const byte _rrcf[] = // rrc r. may be for rlca (0x3B mask)
 {
 	0x44,0x81,0x00,0x85,0x00,0x85,0x04,0x81,
 	0x00,0x85,0x04,0x81,0x04,0x81,0x00,0x85,
@@ -674,7 +674,7 @@ const byte rrcf[] = // rrc r. may be for rlca (0x3B mask)
 	0x28,0xad,0x2c,0xa9,0x2c,0xa9,0x28,0xad
 };
 
-const byte rl0[] =
+static const byte _rl0[] =
 {
 	0x44,0x00,0x00,0x04,0x08,0x0c,0x0c,0x08,
 	0x00,0x04,0x04,0x00,0x0c,0x08,0x08,0x0c,
@@ -710,7 +710,7 @@ const byte rl0[] =
 	0xa5,0xa1,0xa1,0xa5,0xa9,0xad,0xad,0xa9
 };
 
-const byte rl1[] =
+static const byte _rl1[] =
 {
 	0x00,0x04,0x04,0x00,0x0c,0x08,0x08,0x0c,
 	0x04,0x00,0x00,0x04,0x08,0x0c,0x0c,0x08,
@@ -746,7 +746,7 @@ const byte rl1[] =
 	0xa1,0xa5,0xa5,0xa1,0xad,0xa9,0xa9,0xad
 };
 
-const byte rr0[] =
+static const byte _rr0[] =
 {
 	0x44,0x45,0x00,0x01,0x00,0x01,0x04,0x05,
 	0x00,0x01,0x04,0x05,0x04,0x05,0x00,0x01,
@@ -782,7 +782,7 @@ const byte rr0[] =
 	0x28,0x29,0x2c,0x2d,0x2c,0x2d,0x28,0x29
 };
 
-const byte rr1[] =
+static const byte _rr1[] =
 {
 	0x80,0x81,0x84,0x85,0x84,0x85,0x80,0x81,
 	0x84,0x85,0x80,0x81,0x80,0x81,0x84,0x85,
@@ -818,7 +818,7 @@ const byte rr1[] =
 	0xac,0xad,0xa8,0xa9,0xa8,0xa9,0xac,0xad
 };
 
-const byte sraf[] =
+static const byte _sraf[] =
 {
 	0x44,0x45,0x00,0x01,0x00,0x01,0x04,0x05,
 	0x00,0x01,0x04,0x05,0x04,0x05,0x00,0x01,
@@ -854,20 +854,55 @@ const byte sraf[] =
 	0xac,0xad,0xa8,0xa9,0xa8,0xa9,0xac,0xad
 };
 
-byte adcf[0x20000];
-byte sbcf[0x20000];
-byte cpf[0x10000];	
-byte cpf8b[0x10000];
-byte log_f[0x100];
-byte rlcaf[0x100];
-byte rrcaf[0x100];
-byte rol[0x100];
-byte ror[0x100];
+static byte _adcf[0x20000];
+static byte _sbcf[0x20000];
+static byte _cpf[0x10000];
+static byte _cpf8b[0x10000];
+static byte _log_f[0x100];
+static byte _rlcaf[0x100];
+static byte _rrcaf[0x100];
+static byte _rol[0x100];
+static byte _ror[0x100];
+
+const byte* daatab =	_daatab;
+const byte* rlcf =		_rlcf;
+const byte* rrcf =		_rrcf;
+const byte* rl0 =		_rl0;
+const byte* rl1 =		_rl1;
+const byte* rr0 =		_rr0;
+const byte* rr1 =		_rr1;
+const byte* sraf =		_sraf;
+
+const byte* adcf = 		_adcf;
+const byte* sbcf = 		_sbcf;
+const byte* cpf = 		_cpf;
+const byte* cpf8b = 	_cpf8b;
+const byte* log_f = 	_log_f;
+const byte* rlcaf = 	_rlcaf;
+const byte* rrcaf = 	_rrcaf;
+const byte* rol = 		_rol;
+const byte* ror = 		_ror;
+
+static struct eTablesInitializer
+{
+	eTablesInitializer()
+	{
+		InitAdc();
+		InitSbc();
+		InitLog();
+		InitRot();
+	}
+	void InitAdc();
+	void InitSbc();
+	void InitLog();
+	void InitRot();
+
+}tables_initializer;
 
 //=============================================================================
-//	InitAdc
+//	eTablesInitializer::InitAdc
 //-----------------------------------------------------------------------------
-void InitAdc()
+void eTablesInitializer::InitAdc()
 {
 	for (int c = 0; c < 2; c++)
 	{
@@ -884,15 +919,15 @@ void InitAdc()
 				int ri = (signed char)x + (signed char)y + c;
 				if (ri >= 0x80 || ri <= -0x81) fl |= PV;
 
-				adcf[c*0x10000 + x*0x100 + y] = fl;
+				_adcf[c*0x10000 + x*0x100 + y] = fl;
 			}
 		}
 	}
 }
 //=============================================================================
-//	InitSbc
+//	eTablesInitializer::InitSbc
 //-----------------------------------------------------------------------------
-void InitSbc()
+void eTablesInitializer::InitSbc()
 {
 	for (int c = 0; c < 2; c++)
 	{
@@ -908,21 +943,21 @@ void InitSbc()
 				if (r >= 0x80 || r < -0x80) fl |= PV;
 				if (((x&0x0F)-(res&0x0F)-c) & 0x10) fl |= HF;
 				fl |= NF;
-				sbcf[c*0x10000 + x*0x100 + y] = fl;
+				_sbcf[c*0x10000 + x*0x100 + y] = fl;
 			}
 			for (int i = 0; i < 0x10000; i++)
 			{
-				cpf[i] = (sbcf[i] & ~(F3|F5)) | (i & (F3|F5));
-				byte tempbyte = (i >> 8) - (i & 0xFF) - ((sbcf[i] & HF) >> 4);
-				cpf8b[i] = (sbcf[i] & ~(F3|F5|PV|CF)) + (tempbyte & F3) + ((tempbyte << 4) & F5);
+				_cpf[i] = (_sbcf[i] & ~(F3|F5)) | (i & (F3|F5));
+				byte tempbyte = (i >> 8) - (i & 0xFF) - ((_sbcf[i] & HF) >> 4);
+				_cpf8b[i] = (_sbcf[i] & ~(F3|F5|PV|CF)) + (tempbyte & F3) + ((tempbyte << 4) & F5);
 			}
 		}
 	}
 }
 //=============================================================================
-//	InitLog
+//	eTablesInitializer::InitLog
 //-----------------------------------------------------------------------------
-void InitLog()
+void eTablesInitializer::InitLog()
 {
 	for (int x = 0; x < 0x100; x++)
 	{
@@ -932,31 +967,22 @@ void InitLog()
 		{
 			if (x & i) p ^= PV;
 		}
-		log_f[x] = fl | p;
+		_log_f[x] = fl | p;
 	}
-	log_f[0] |= ZF;
+	_log_f[0] |= ZF;
 }
 //=============================================================================
-//	InitRot
+//	eTablesInitializer::InitRot
 //-----------------------------------------------------------------------------
-void InitRot()
+void eTablesInitializer::InitRot()
 {
 	for (int i = 0; i < 0x100; i++)
 	{
-		rlcaf[i] = rlcf[i] & 0x3B;        // rra,rla uses same tables
-		rrcaf[i] = rrcf[i] & 0x3B;
-		rol[i] = (i<<1)+(i>>7), ror[i] = (i>>1)+(i<<7);
+		_rlcaf[i] = _rlcf[i] & 0x3B;        // rra,rla uses same tables
+		_rrcaf[i] = _rrcf[i] & 0x3B;
+		_rol[i] = (i<<1)+(i>>7);
+		_ror[i] = (i>>1)+(i<<7);
 	}
-}
-//=============================================================================
-//	InitTables
-//-----------------------------------------------------------------------------
-void InitTables()
-{
-	InitAdc();
-	InitSbc();
-	InitLog();
-	InitRot();
 }
 
 void inc8(eZ80* cpu, byte& x)
