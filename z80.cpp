@@ -13,11 +13,11 @@ bool unstable_databus = false;
 //=============================================================================
 //	eZ80::eZ80
 //-----------------------------------------------------------------------------
-eZ80::eZ80() : t(0), im(0), eipos(0), haltpos(0), frame_tacts(0)
+eZ80::eZ80() : t(0), im(0), eipos(0), haltpos(0), frame_tacts(0), last_branch(0)
 {
 	pc = sp = ir = memptr = ix = iy = 0;
 	bc = de = hl = af = alt.bc = alt.de = alt.hl = alt.af = 0;
-	Reset();
+	int_flags = 0;
 }
 //=============================================================================
 //	eZ80::Init
@@ -30,6 +30,7 @@ void eZ80::Init()
 	InitOpED();
 	InitOpFD();
 	InitOpDDCB();
+	InitTables();
 }
 //=============================================================================
 //	eZ80::Reset

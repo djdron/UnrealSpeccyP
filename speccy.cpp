@@ -46,7 +46,7 @@ void eSpeccy::Update()
 		if(cpu->halted)
 			break;
 	}
-	cpu->eipos = 0;
+	cpu->eipos = -1;
 	while(cpu->t < frame_tacts)
 	{
 		cpu->Step();
@@ -61,7 +61,7 @@ void eSpeccy::Update()
 		}
 	}
 	cpu->t -= frame_tacts;
-	cpu->eipos = 0; // -= frame_tacts;
+	cpu->eipos -= frame_tacts;
 
 	devices.Item(D_ULA)->Update();
 }

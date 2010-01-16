@@ -39,10 +39,10 @@ public:
 	enum ePage { P_ROM, P_RAM0, P_RAM1, P_RAM2, P_AMOUNT };
 	void SetBank(int idx, ePage p);
 
-	enum { LINEAR_PAGES = 4, PAGE_SIZE = 0x4000, SIZE = P_AMOUNT * PAGE_SIZE };
+	enum { BANKS_AMOUNT = 4, PAGE_SIZE = 0x4000, SIZE = P_AMOUNT * PAGE_SIZE };
 protected:
-	byte* bank_read[LINEAR_PAGES];
-	byte* bank_write[LINEAR_PAGES];
+	byte* bank_read[BANKS_AMOUNT];
+	byte* bank_write[BANKS_AMOUNT];
 	byte* memory;
 };
 

@@ -52,7 +52,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkIncremental="0"
+				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;..\lib32&quot;"
 				GenerateDebugInformation="true"
 				AssemblyDebug="0"
@@ -119,6 +119,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;..\lib32&quot;"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -285,6 +286,10 @@
 					Name="VCCustomBuildTool"
 				/>
 			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\std_types.h"
+			>
 		</File>
 	</Files>
 	<Globals>
