@@ -19,7 +19,7 @@ void DrawGL(byte* data)
 		for(int x = 0; x < 320; ++x)
 		{
 			byte r, g, b;
-			r = g = b = data[y*320+x];
+			r = g = b = data[y*320+x] ? 0 : 255;
 			byte* p = &tex[y*320*4+x*4];
 			*p++ = r;
 			*p++ = g;
