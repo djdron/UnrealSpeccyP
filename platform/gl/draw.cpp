@@ -7,8 +7,16 @@
 namespace xPlatform
 {
 
-static byte tex[320*240*4];
+static dword tex[320*240];
 
+static const byte brightness = 200;
+static const byte bright_intensity = 55;
+
+#define RGBX(r, g, b)	((b << 16)|(g << 8)|r)
+
+//=============================================================================
+//	DrawGL
+//-----------------------------------------------------------------------------
 void DrawGL(byte* data)
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -19,12 +27,13 @@ void DrawGL(byte* data)
 		for(int x = 0; x < 320; ++x)
 		{
 			byte r, g, b;
-			r = g = b = data[y*320+x] ? 0 : 255;
-			byte* p = &tex[y*320*4+x*4];
-			*p++ = r;
-			*p++ = g;
-			*p++ = b;
-			*p++ = 0;
+			byte c = data[y*320+x];
+			byte i = c&8 ? brightness + bright_intensity : brightness;
+			b = c&1 ? i : 0;
+			r = c&2 ? i : 0;
+			g = c&4 ? i : 0;
+			dword* p = &tex[y*320+x];
+			*p++ = RGBX(r, g ,b);
 		}
 	}
 	glEnable(GL_TEXTURE_2D);

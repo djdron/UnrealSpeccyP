@@ -61,7 +61,7 @@ void eUla::Init()
 //-----------------------------------------------------------------------------
 void eUla::IoWrite(dword port, byte v)
 {
-	if(!port & 1) // port #FE
+	if(!(port & 1)) // port #FE
 	{
 		border_color = v & 7;
 	}
@@ -88,9 +88,12 @@ void eUla::Update()
 		for(int x = 0; x < SZX_WIDTH / 8; x++)
 		{
 			byte pix = memory.Read(VRAM_START + scrtab[y] + x);
+			byte ink = colortab[memory.Read(VRAM_START + atrtab[y] + x)];
+			byte paper = ink >> 4;
+			ink &= 0x0f;
 			for(int b = 0; b < 8; ++b)
 			{
-				*dst++ = ((pix << b) & 0x80) ? 0xff : 0;
+				*dst++ = ((pix << b) & 0x80) ? ink : paper;
 			}
 		}
 		for(int x = 0; x < border_half_width; ++x)

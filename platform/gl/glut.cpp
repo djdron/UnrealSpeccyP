@@ -1,3 +1,5 @@
+#include "../../std.h"
+
 #include "../platform.h"
 
 #ifdef USE_GLUT

@@ -7,7 +7,7 @@
 //-----------------------------------------------------------------------------
 void eRom::Init()
 {
-	FILE* f = fopen("rom/sos.rom", "rb");
+	FILE* f = fopen("rom/service.rom", "rb");
 	assert(f);
 	size_t s = fread(memory.Get(eMemory::P_ROM), 1, eMemory::PAGE_SIZE, f);
 	assert(s == eMemory::PAGE_SIZE);
