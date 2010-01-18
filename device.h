@@ -12,8 +12,8 @@ public:
 	virtual void Init() {}
 	virtual void Reset() {}
 	virtual void Update() {}
-	virtual bool IoRead(dword port, byte* v) { *v = 0xff; return true; }
-	virtual void IoWrite(dword port, byte v)	{}
+	virtual void IoRead(word port, byte* v) {}
+	virtual void IoWrite(word port, byte v)	{}
 };
 
 //*****************************************************************************
@@ -27,8 +27,8 @@ public:
 	void Reset();
 	void Add(eDevice* d, int id);
 	eDevice* Item(int id);
-	byte IoRead(dword port) const;
-	void IoWrite(dword port, byte v);
+	byte IoRead(word port) const;
+	void IoWrite(word port, byte v);
 
 protected:
 	enum { MAX_AMOUNT = 10 };

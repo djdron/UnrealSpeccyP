@@ -57,10 +57,9 @@ void eZ80::Update(dword int_len, int* nmi_pending)
 		if(iff1 && t != eipos) // int enabled in CPU not issued after EI
 		{
 			Int();
+			break;
 		}
 		Step();
-		if(halted)
-			break;
 	}
 	eipos = -1;
 	while(t < frame_tacts)
@@ -91,14 +90,14 @@ byte eZ80::Fetch()
 //=============================================================================
 //	eZ80::Out
 //-----------------------------------------------------------------------------
-void eZ80::Out(dword port, byte v)
+void eZ80::Out(word port, byte v)
 {
 	devices.IoWrite(port, v);
 }
 //=============================================================================
 //	eZ80::In
 //-----------------------------------------------------------------------------
-byte eZ80::In(dword port) const
+byte eZ80::In(word port) const
 {
 	return devices.IoRead(port);
 }

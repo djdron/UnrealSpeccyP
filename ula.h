@@ -14,7 +14,7 @@ public:
 	eUla();
 	virtual ~eUla();
 	virtual void Init();
-	virtual void IoWrite(dword port, byte v);
+	virtual void IoWrite(word port, byte v);
 	byte*	Screen() const { return screen; }
 	void	Update();
 

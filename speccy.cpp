@@ -5,6 +5,7 @@
 #include "z80.h"
 #include "memory.h"
 #include "ula.h"
+#include "input.h"
 
 //=============================================================================
 //	eSpeccy::Init
@@ -17,6 +18,7 @@ void eSpeccy::Init()
 	devices.Add(new eRom, D_ROM);
 	devices.Add(new eRam, D_RAM);
 	devices.Add(new eUla, D_ULA);
+	devices.Add(new eKeyboard, D_KEYBOARD);
 }
 //=============================================================================
 //	eSpeccy::Reset

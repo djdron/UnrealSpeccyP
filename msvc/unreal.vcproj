@@ -221,6 +221,14 @@
 				RelativePath="..\device.h"
 				>
 			</File>
+			<File
+				RelativePath="..\input.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\input.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="platform"

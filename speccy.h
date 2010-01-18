@@ -17,7 +17,7 @@ public:
 	void Load() {}
 	void Update();
 
-	enum eDevice { D_ROM, D_RAM, D_ULA };
+	enum eDevice { D_ROM, D_RAM, D_ULA, D_KEYBOARD };
 protected:
 	dword	frame_tacts;	// t-states per frame
 	dword	int_len;		// length of INT signal (for Z80)

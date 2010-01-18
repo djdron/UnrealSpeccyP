@@ -50,8 +50,8 @@ protected:
 	void Step();
 
 	byte Fetch(); //m1_cycle data fetch
-	byte In(dword port) const;
-	void Out(dword port, byte v);
+	byte In(word port) const;
+	void Out(word port, byte v);
 	byte Read(word addr) const;
 	void Write(word addr, byte v);
 

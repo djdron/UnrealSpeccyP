@@ -59,7 +59,7 @@ void eUla::Init()
 //=============================================================================
 //	eUla::IoWrite
 //-----------------------------------------------------------------------------
-void eUla::IoWrite(dword port, byte v)
+void eUla::IoWrite(word port, byte v)
 {
 	if(!(port & 1)) // port #FE
 	{

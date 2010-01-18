@@ -57,7 +57,7 @@ eDevice* eDevices::Item(int id)
 //=============================================================================
 //	eDevices::IoRead
 //-----------------------------------------------------------------------------
-byte eDevices::IoRead(dword port) const
+byte eDevices::IoRead(word port) const
 {
 	byte v = 0xff;
 	for(int i = 0; i < amount; ++i)
@@ -69,7 +69,7 @@ byte eDevices::IoRead(dword port) const
 //=============================================================================
 //	eDevices::IoWrite
 //-----------------------------------------------------------------------------
-void eDevices::IoWrite(dword port, byte v)
+void eDevices::IoWrite(word port, byte v)
 {
 	for(int i = 0; i < amount; ++i)
 	{
