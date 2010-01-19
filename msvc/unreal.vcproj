@@ -222,11 +222,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\input.cpp"
+				RelativePath="..\keyboard.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\input.h"
+				RelativePath="..\keyboard.h"
 				>
 			</File>
 		</Filter>
