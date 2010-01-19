@@ -5,7 +5,7 @@
 #include "z80.h"
 #include "memory.h"
 #include "ula.h"
-#include "input.h"
+#include "keyboard.h"
 
 //=============================================================================
 //	eSpeccy::Init

@@ -5,6 +5,7 @@
 #ifdef USE_GLUT
 
 #include <GL/glut.h>
+#include <ctype.h>
 
 namespace xPlatform
 {
@@ -33,13 +34,21 @@ static void OnIdle()
 	glutPostRedisplay();
 }
 
-static void OnKeyPress(unsigned char key, int x, int y)
+static void OnKeyDown(unsigned char key, int x, int y)
 {
-    if(key == 27)	// ESC
-    {
-//    	glutDestroyWindow(window);
-//    	exit(0);
-    }
+	dword flags = KF_DOWN;
+	int m = glutGetModifiers();
+	if(m&GLUT_ACTIVE_SHIFT)
+		flags |= KF_SHIFT;
+	if(m&GLUT_ACTIVE_CTRL)
+		flags |= KF_CTRL;
+	if(m&GLUT_ACTIVE_ALT)
+		flags |= KF_ALT;
+	handler->OnKey(toupper(key), flags);
+}
+static void OnKeyUp(unsigned char key, int x, int y)
+{
+	handler->OnKey(toupper(key), 0);
 }
 
 bool Init(int argc, char* argv[], eHandler* h)
@@ -54,7 +63,9 @@ bool Init(int argc, char* argv[], eHandler* h)
 //	glutFullScreen();
 	glutIdleFunc(&OnIdle);
 	glutReshapeFunc(&OnResizeWindow);
-	glutKeyboardFunc(&OnKeyPress);
+	glutIgnoreKeyRepeat(true);
+	glutKeyboardFunc(&OnKeyDown);
+	glutKeyboardUpFunc(&OnKeyUp);
 	glutMainLoop(); // app really never exit from this function
 	return true;
 }

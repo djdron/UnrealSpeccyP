@@ -2,6 +2,7 @@
 #include "platform/platform.h"
 #include "speccy.h"
 #include "ula.h"
+#include "keyboard.h"
 
 struct eSpeccyHandler : public xPlatform::eHandler
 {
@@ -9,6 +10,16 @@ struct eSpeccyHandler : public xPlatform::eHandler
 	virtual void OnLoop() { speccy->Update(); }
 	virtual byte* DrawData() { return ((eUla*)devices.Item(eSpeccy::D_ULA))->Screen(); }
 	virtual const char* WindowCaption() { return "UnrealSpeccy portable"; }
+	virtual void OnKey(char key, dword flags)
+	{
+		using namespace xPlatform;
+		eKeyboard* k = (eKeyboard*)devices.Item(eSpeccy::D_KEYBOARD);
+		bool down = flags&KF_DOWN;
+		bool shift = flags&KF_SHIFT;
+		bool ctrl = flags&KF_CTRL;
+		bool alt = flags&KF_ALT;
+		k->OnKey(key, down, shift, ctrl, alt);
+	}
 	eSpeccy* speccy;
 };
 
