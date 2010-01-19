@@ -3,12 +3,12 @@
 
 #pragma once
 
-class eSnapshot
+class eSpeccy;
+
+namespace xSnapshot
 {
-public:
-	eSnapshot(const char* path) { Load(path); }
-protected:
-	void Load(const char* path);
-};
+void Load(eSpeccy* speccy, const char* path);
+}
+//namespace xSnapshot
 
 #endif//__SNAPSHOT_H__

@@ -40,7 +40,6 @@ extern bool unstable_databus;
 //-----------------------------------------------------------------------------
 class eZ80
 {
-	friend eSnapshot;
 public:
 	eZ80(dword frame_tacts = 0);
 	void Reset();
@@ -122,7 +121,7 @@ protected:
 	DECLARE_REG16(de, e, d)
 	DECLARE_REG16(hl, l, h)
 	DECLARE_REG16(af, f, a)
-	struct
+	struct eAlt
 	{
 		DECLARE_REG16(bc, c, b)
 		DECLARE_REG16(de, e, d)
