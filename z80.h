@@ -2,6 +2,7 @@
 #define	__Z80_H__
 
 #include "z80_op_tables.h"
+#include "snapshot.h"
 
 #pragma once
 
@@ -39,6 +40,7 @@ extern bool unstable_databus;
 //-----------------------------------------------------------------------------
 class eZ80
 {
+	friend eSnapshot;
 public:
 	eZ80(dword frame_tacts = 0);
 	void Reset();

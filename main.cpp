@@ -3,6 +3,7 @@
 #include "speccy.h"
 #include "ula.h"
 #include "keyboard.h"
+#include "snapshot.h"
 
 struct eSpeccyHandler : public xPlatform::eHandler
 {
@@ -28,6 +29,9 @@ int main(int argc, char* argv[])
 	eSpeccy* speccy = new eSpeccy;
 	speccy->Init();
 	speccy->Reset();
+	{
+		eSnapshot("images/sr2.sna");
+	}
 	eSpeccyHandler sh(speccy);
 	if(!xPlatform::Init(argc, argv, &sh))
 		return -1;

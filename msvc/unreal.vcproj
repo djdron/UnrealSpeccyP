@@ -229,6 +229,18 @@
 				RelativePath="..\keyboard.h"
 				>
 			</File>
+			<Filter
+				Name="storage"
+				>
+				<File
+					RelativePath="..\snapshot.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\snapshot.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="platform"
