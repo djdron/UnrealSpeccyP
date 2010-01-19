@@ -137,6 +137,7 @@ protected:
 
 	typedef byte (eZ80::*REGP);
 	REGP reg_offset[8];
+	byte reg_unused;
 };
 
 }//namespace xZ80

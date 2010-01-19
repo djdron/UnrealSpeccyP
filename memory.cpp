@@ -7,10 +7,10 @@
 //-----------------------------------------------------------------------------
 void eRom::Init()
 {
-	FILE* f = fopen("rom/test.rom", "rb");
+	FILE* f = fopen("rom/sos.rom", "rb");
 	assert(f);
 	size_t s = fread(memory.Get(eMemory::P_ROM), 1, eMemory::PAGE_SIZE, f);
-//	assert(s == eMemory::PAGE_SIZE);
+	assert(s == eMemory::PAGE_SIZE);
 	fclose(f);
 }
 //=============================================================================
@@ -73,5 +73,5 @@ void eMemory::SetBank(int idx, ePage p)
 {
 	byte* addr = memory + PAGE_SIZE * p;
 	bank_read[idx] = addr;
-	bank_write[idx] = idx ? addr : 0;
+	bank_write[idx] = idx ? addr : NULL;
 }

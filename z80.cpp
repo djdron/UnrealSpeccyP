@@ -30,7 +30,7 @@ eZ80::eZ80(dword _frame_tacts) : t(0), im(0), eipos(0), haltpos(0), frame_tacts(
 	const REGP r_offset[] =
 	{
 		&eZ80::b, &eZ80::c, &eZ80::d, &eZ80::e,
-		&eZ80::h, &eZ80::l, &eZ80::a, &eZ80::a
+		&eZ80::h, &eZ80::l, &eZ80::reg_unused, &eZ80::a
 	};
 	memcpy(reg_offset, r_offset, sizeof(r_offset));
 }
