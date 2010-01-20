@@ -42,6 +42,4 @@ protected:
 	int amount;
 };
 
-extern eDevices devices;
-
 #endif//__DEVICE_H__

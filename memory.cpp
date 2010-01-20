@@ -9,7 +9,7 @@ void eRom::Init()
 {
 	FILE* f = fopen("rom/sos.rom", "rb");
 	assert(f);
-	size_t s = fread(memory.Get(eMemory::P_ROM), 1, eMemory::PAGE_SIZE, f);
+	size_t s = fread(memory->Get(eMemory::P_ROM), 1, eMemory::PAGE_SIZE, f);
 	assert(s == eMemory::PAGE_SIZE);
 	fclose(f);
 }
@@ -18,7 +18,7 @@ void eRom::Init()
 //-----------------------------------------------------------------------------
 void eRom::Reset()
 {
-	memory.SetBank(0, eMemory::P_ROM);
+	memory->SetBank(0, eMemory::P_ROM);
 }
 
 //=============================================================================
@@ -26,12 +26,10 @@ void eRom::Reset()
 //-----------------------------------------------------------------------------
 void eRam::Reset()
 {
-	memory.SetBank(1, eMemory::P_RAM0);
-	memory.SetBank(2, eMemory::P_RAM1);
-	memory.SetBank(3, eMemory::P_RAM2);
+	memory->SetBank(1, eMemory::P_RAM0);
+	memory->SetBank(2, eMemory::P_RAM1);
+	memory->SetBank(3, eMemory::P_RAM2);
 }
-
-eMemory memory;
 
 //=============================================================================
 //	eMemory::eMemory

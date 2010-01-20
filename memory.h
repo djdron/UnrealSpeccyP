@@ -5,14 +5,19 @@
 
 #pragma once
 
+class eMemory;
+
 //*****************************************************************************
 //	eRom
 //-----------------------------------------------------------------------------
 class eRom : public eDevice
 {
 public:
+	eRom(eMemory* m) : memory(m) {}
 	virtual void Init();
 	virtual void Reset();
+protected:
+	eMemory* memory;
 };
 
 //*****************************************************************************
@@ -21,7 +26,10 @@ public:
 class eRam : public eDevice
 {
 public:
+	eRam(eMemory* m) : memory(m) {}
 	virtual void Reset();
+protected:
+	eMemory* memory;
 };
 
 //*****************************************************************************
@@ -45,7 +53,5 @@ protected:
 	byte* bank_write[BANKS_AMOUNT];
 	byte* memory;
 };
-
-extern eMemory memory;
 
 #endif//__MEMORY_H__

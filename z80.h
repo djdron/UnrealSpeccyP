@@ -6,6 +6,9 @@
 
 #pragma once
 
+class eMemory;
+class eDevices;
+
 namespace xZ80
 {
 
@@ -41,7 +44,7 @@ extern bool unstable_databus;
 class eZ80
 {
 public:
-	eZ80(dword frame_tacts = 0);
+	eZ80(eMemory* m, eDevices* d, dword frame_tacts = 0);
 	void Reset();
 	void Update(dword int_len, int* nmi_pending);
 
@@ -98,6 +101,9 @@ protected:
 	dword	haltpos;
 	dword	frame_tacts;  // t-states per frame
 	unsigned short last_branch;	//? dbg
+
+	eMemory* memory;
+	eDevices* devices;
 
 	DECLARE_REG16(pc, pc_l, pc_h)
 	DECLARE_REG16(sp, sp_l, sp_h)

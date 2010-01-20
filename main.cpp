@@ -9,17 +9,16 @@ struct eSpeccyHandler : public xPlatform::eHandler
 {
 	eSpeccyHandler(eSpeccy* s) : speccy(s) {}
 	virtual void OnLoop() { speccy->Update(); }
-	virtual byte* DrawData() { return ((eUla*)devices.Item(eSpeccy::D_ULA))->Screen(); }
+	virtual byte* DrawData() { return speccy->Ula()->Screen(); }
 	virtual const char* WindowCaption() { return "UnrealSpeccy portable"; }
 	virtual void OnKey(char key, dword flags)
 	{
 		using namespace xPlatform;
-		eKeyboard* k = (eKeyboard*)devices.Item(eSpeccy::D_KEYBOARD);
 		bool down = flags&KF_DOWN;
 		bool shift = flags&KF_SHIFT;
 		bool ctrl = flags&KF_CTRL;
 		bool alt = flags&KF_ALT;
-		k->OnKey(key, down, shift, ctrl, alt);
+		speccy->Keyboard()->OnKey(key, down, shift, ctrl, alt);
 	}
 	eSpeccy* speccy;
 };

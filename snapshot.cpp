@@ -41,8 +41,13 @@ struct eZ80Snap : public xZ80::eZ80
 		r_hi = s->r & 0x80;
 		im = s->im;
 		iff1 = s->iff1 ? 1 : 0;
-		pc = memory.Read(sp) + 0x100 * memory.Read(sp+1);
+		pc = memory->Read(sp) + 0x100 * memory->Read(sp+1);
 		sp += 2;
+
+		devices->IoWrite(0xfe, s->pFE);
+		memcpy(memory->Get(eMemory::PAGE_SIZE * eMemory::P_RAM0), s->page5, eMemory::PAGE_SIZE);
+		memcpy(memory->Get(eMemory::PAGE_SIZE * eMemory::P_RAM1), s->page2, eMemory::PAGE_SIZE);
+		memcpy(memory->Get(eMemory::PAGE_SIZE * eMemory::P_RAM2), s->page0, eMemory::PAGE_SIZE);
 	}
 };
 
@@ -56,12 +61,5 @@ void xSnapshot::Load(eSpeccy* speccy, const char* path)
 	size_t r = fread(&snapshot48, 1, sizeof(snapshot48), f);
 	assert(r == sizeof(snapshot48));
 	fclose(f);
-
-	eSnapshot48* s = &snapshot48;
-	devices.IoWrite(0xfe, s->pFE);
-	memcpy(memory.Get(eMemory::PAGE_SIZE * eMemory::P_RAM0), s->page5, eMemory::PAGE_SIZE);
-	memcpy(memory.Get(eMemory::PAGE_SIZE * eMemory::P_RAM1), s->page2, eMemory::PAGE_SIZE);
-	memcpy(memory.Get(eMemory::PAGE_SIZE * eMemory::P_RAM2), s->page0, eMemory::PAGE_SIZE);
-
-	((eZ80Snap*)speccy->CPU())->SetState(s);
+	((eZ80Snap*)speccy->CPU())->SetState(&snapshot48);
 }

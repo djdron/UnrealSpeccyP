@@ -13,7 +13,10 @@ bool unstable_databus = false;
 //=============================================================================
 //	eZ80::eZ80
 //-----------------------------------------------------------------------------
-eZ80::eZ80(dword _frame_tacts) : t(0), im(0), eipos(0), haltpos(0), frame_tacts(_frame_tacts), last_branch(0)
+eZ80::eZ80(eMemory* _m, eDevices* _d, dword _frame_tacts)
+	: memory(_m), devices(_d)
+	, t(0), im(0), eipos(0), haltpos(0), last_branch(0)
+	, frame_tacts(_frame_tacts)
 {
 	pc = sp = ir = memptr = ix = iy = 0;
 	bc = de = hl = af = alt.bc = alt.de = alt.hl = alt.af = 0;
@@ -92,28 +95,28 @@ byte eZ80::Fetch()
 //-----------------------------------------------------------------------------
 void eZ80::Out(word port, byte v)
 {
-	devices.IoWrite(port, v);
+	devices->IoWrite(port, v);
 }
 //=============================================================================
 //	eZ80::In
 //-----------------------------------------------------------------------------
 byte eZ80::In(word port) const
 {
-	return devices.IoRead(port);
+	return devices->IoRead(port);
 }
 //=============================================================================
 //	eZ80::Write
 //-----------------------------------------------------------------------------
 void eZ80::Write(word addr, byte v)
 {
-	memory.Write(addr, v);
+	memory->Write(addr, v);
 }
 //=============================================================================
 //	eZ80::Read
 //-----------------------------------------------------------------------------
 byte eZ80::Read(word addr) const
 {
-	return memory.Read(addr);
+	return memory->Read(addr);
 }
 //=============================================================================
 //	eZ80::Int

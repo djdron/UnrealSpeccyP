@@ -6,7 +6,7 @@
 //=============================================================================
 //	eUla::eUla
 //-----------------------------------------------------------------------------
-eUla::eUla() : border_color(0), screen(NULL)
+eUla::eUla(eMemory* m) : memory(m), border_color(0), screen(NULL)
 {
 	screen = new byte[S_WIDTH * S_HEIGHT];
 }
@@ -87,8 +87,8 @@ void eUla::Update()
 		}
 		for(int x = 0; x < SZX_WIDTH / 8; x++)
 		{
-			byte pix = memory.Read(VRAM_START + scrtab[y] + x);
-			byte ink = colortab[memory.Read(VRAM_START + atrtab[y] + x)];
+			byte pix = memory->Read(VRAM_START + scrtab[y] + x);
+			byte ink = colortab[memory->Read(VRAM_START + atrtab[y] + x)];
 			byte paper = ink >> 4;
 			ink &= 0x0f;
 			for(int b = 0; b < 8; ++b)
