@@ -45,9 +45,9 @@ struct eZ80Snap : public xZ80::eZ80
 		sp += 2;
 
 		devices->IoWrite(0xfe, s->pFE);
-		memcpy(memory->Get(eMemory::PAGE_SIZE * eMemory::P_RAM0), s->page5, eMemory::PAGE_SIZE);
-		memcpy(memory->Get(eMemory::PAGE_SIZE * eMemory::P_RAM1), s->page2, eMemory::PAGE_SIZE);
-		memcpy(memory->Get(eMemory::PAGE_SIZE * eMemory::P_RAM2), s->page0, eMemory::PAGE_SIZE);
+		memcpy(memory->Get(eMemory::P_RAM5 * eMemory::PAGE_SIZE), s->page5, eMemory::PAGE_SIZE);
+		memcpy(memory->Get(eMemory::P_RAM2 * eMemory::PAGE_SIZE), s->page2, eMemory::PAGE_SIZE);
+		memcpy(memory->Get(eMemory::P_RAM0 * eMemory::PAGE_SIZE), s->page0, eMemory::PAGE_SIZE);
 	}
 };
 

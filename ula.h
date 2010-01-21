@@ -16,15 +16,17 @@ public:
 	eUla(eMemory* m);
 	virtual ~eUla();
 	virtual void Init();
+	virtual void Reset();
 	virtual void IoWrite(word port, byte v);
 	byte*	Screen() const { return screen; }
 	void	Update();
 
-	enum eVram { VRAM_START = 0x4000, VRAM_SIZE = 0x1b00 };
+	enum eVram { VRAM_FIRST_PAGE = 5, VRAM_SECOND_PAGE = 7, VRAM_SIZE = 0x1b00 };
 	enum eScreen { S_WIDTH = 320, S_HEIGHT = 240, SZX_WIDTH = 256, SZX_HEIGHT = 192 };
 protected:
 	eMemory* memory;
 	byte	border_color;
+	bool	first_screen;
 	byte*	screen;
 	int		scrtab[256]; // offset to start of line
 	int		atrtab[256]; // offset to start of attribute line

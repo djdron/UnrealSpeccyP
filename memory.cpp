@@ -26,9 +26,19 @@ void eRom::Reset()
 //-----------------------------------------------------------------------------
 void eRam::Reset()
 {
-	memory->SetBank(1, eMemory::P_RAM0);
-	memory->SetBank(2, eMemory::P_RAM1);
-	memory->SetBank(3, eMemory::P_RAM2);
+	memory->SetBank(1, eMemory::P_RAM5);
+	memory->SetBank(2, eMemory::P_RAM2);
+	memory->SetBank(3, eMemory::P_RAM0);
+}
+//=============================================================================
+//	eRam::IoWrite
+//-----------------------------------------------------------------------------
+void eRam::IoWrite(word port, byte v)
+{
+	if(port & 2)
+		return;
+	int page = eMemory::P_RAM0 + port & 7;
+	memory->SetBank(3, page);
 }
 
 //=============================================================================
@@ -67,9 +77,9 @@ void eMemory::Write(word addr, byte v)
 //=============================================================================
 //	eMemory::SetBank
 //-----------------------------------------------------------------------------
-void eMemory::SetBank(int idx, ePage p)
+void eMemory::SetBank(int idx, int page)
 {
-	byte* addr = memory + PAGE_SIZE * p;
+	byte* addr = memory + page * PAGE_SIZE;
 	bank_read[idx] = addr;
 	bank_write[idx] = idx ? addr : NULL;
 }

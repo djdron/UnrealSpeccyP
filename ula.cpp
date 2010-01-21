@@ -6,7 +6,7 @@
 //=============================================================================
 //	eUla::eUla
 //-----------------------------------------------------------------------------
-eUla::eUla(eMemory* m) : memory(m), border_color(0), screen(NULL)
+eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true), screen(NULL)
 {
 	screen = new byte[S_WIDTH * S_HEIGHT];
 }
@@ -57,6 +57,13 @@ void eUla::Init()
 	}
 }
 //=============================================================================
+//	eUla::Reset
+//-----------------------------------------------------------------------------
+void eUla::Reset()
+{
+	first_screen = true;
+}
+//=============================================================================
 //	eUla::IoWrite
 //-----------------------------------------------------------------------------
 void eUla::IoWrite(word port, byte v)
@@ -65,13 +72,19 @@ void eUla::IoWrite(word port, byte v)
 	{
 		border_color = v & 7;
 	}
+	if(port & 2)
+		return;
+	first_screen = !(v & 0x08);
 }
 //=============================================================================
 //	eUla::Update
 //-----------------------------------------------------------------------------
 void eUla::Update()
 {
+	int page = eMemory::P_RAM0 + (first_screen ? VRAM_FIRST_PAGE : VRAM_SECOND_PAGE);
+	byte* src = memory->Get(page * eMemory::PAGE_SIZE);
 	byte* dst = screen;
+
 	int border_half_width = (S_WIDTH - SZX_WIDTH) / 2;
 	int border_half_height = (S_HEIGHT - SZX_HEIGHT) / 2;
 
@@ -87,8 +100,8 @@ void eUla::Update()
 		}
 		for(int x = 0; x < SZX_WIDTH / 8; x++)
 		{
-			byte pix = memory->Read(VRAM_START + scrtab[y] + x);
-			byte ink = colortab[memory->Read(VRAM_START + atrtab[y] + x)];
+			byte pix = *(src + scrtab[y] + x);
+			byte ink = colortab[*(src + atrtab[y] + x)];
 			byte paper = ink >> 4;
 			ink &= 0x0f;
 			for(int b = 0; b < 8; ++b)
