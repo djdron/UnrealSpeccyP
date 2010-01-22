@@ -37,7 +37,7 @@ void eRam::IoWrite(word port, byte v)
 {
 	if(port & 2)
 		return;
-	int page = eMemory::P_RAM0 + port & 7;
+	int page = eMemory::P_RAM0 + (port & 7);
 	memory->SetBank(3, page);
 }
 

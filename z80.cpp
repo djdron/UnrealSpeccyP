@@ -15,8 +15,9 @@ bool unstable_databus = false;
 //-----------------------------------------------------------------------------
 eZ80::eZ80(eMemory* _m, eDevices* _d, dword _frame_tacts)
 	: memory(_m), devices(_d)
-	, t(0), im(0), eipos(0), haltpos(0), last_branch(0)
+	, t(0), im(0), eipos(0), haltpos(0)
 	, frame_tacts(_frame_tacts)
+	, last_branch(0)
 {
 	pc = sp = ir = memptr = ix = iy = 0;
 	bc = de = hl = af = alt.bc = alt.de = alt.hl = alt.af = 0;

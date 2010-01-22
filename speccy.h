@@ -28,12 +28,13 @@ public:
 
 	enum eDevice { D_ROM, D_RAM, D_ULA, D_KEYBOARD };
 protected:
+	xZ80::eZ80* cpu;
+	eMemory* memory;
+	eDevices* devices;
+
 	dword	frame_tacts;	// t-states per frame
 	dword	int_len;		// length of INT signal (for Z80)
 	int		nmi_pending;
-	xZ80::eZ80* cpu;
-	eDevices* devices;
-	eMemory* memory;
 };
 
 #endif//__SPECCY_H__

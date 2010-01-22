@@ -95,15 +95,15 @@ protected:
 	void InitOpDDCB();
 
 protected:
+	eMemory* memory;
+	eDevices* devices;
+
 	dword	t;
 	byte	im;
 	dword	eipos;
 	dword	haltpos;
 	dword	frame_tacts;  // t-states per frame
 	unsigned short last_branch;	//? dbg
-
-	eMemory* memory;
-	eDevices* devices;
 
 	DECLARE_REG16(pc, pc_l, pc_h)
 	DECLARE_REG16(sp, sp_l, sp_h)

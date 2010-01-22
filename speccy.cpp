@@ -7,7 +7,7 @@
 #include "ula.h"
 #include "keyboard.h"
 
-eSpeccy::eSpeccy() : memory(NULL), devices(NULL), frame_tacts(0), int_len(0), nmi_pending(0), cpu(NULL)
+eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), devices(NULL), frame_tacts(0), int_len(0), nmi_pending(0)
 {
 }
 //=============================================================================
