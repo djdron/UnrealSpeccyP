@@ -72,17 +72,18 @@ void eUla::IoWrite(word port, byte v)
 	{
 		border_color = v & 7;
 	}
-	if(port & 2)
-		return;
-	first_screen = !(v & 0x08);
+	if(!(port & 2) && !(port & 0x8000)) // zx128 port
+	{
+		first_screen = !(v & 0x08);
+	}
 }
 //=============================================================================
 //	eUla::Update
 //-----------------------------------------------------------------------------
 void eUla::Update()
 {
-	int page = eMemory::P_RAM0 + (first_screen ? VRAM_FIRST_PAGE : VRAM_SECOND_PAGE);
-	byte* src = memory->Get(page * eMemory::PAGE_SIZE);
+	int page = first_screen ? eMemory::P_RAM5: eMemory::P_RAM7;
+	byte* src = memory->Get(page);
 	byte* dst = screen;
 
 	int border_half_width = (S_WIDTH - SZX_WIDTH) / 2;

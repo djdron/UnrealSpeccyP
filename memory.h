@@ -43,7 +43,7 @@ public:
 	virtual ~eMemory();
 	byte Read(word addr) const;
 	void Write(word addr, byte v);
-	byte* Get(dword offset = 0) { return memory + offset; }
+	byte* Get(int page) { return memory + page * PAGE_SIZE; }
 
 	enum ePage
 	{

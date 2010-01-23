@@ -50,10 +50,10 @@ struct eZ80Snap : public xZ80::eZ80
 
 		devices->IoWrite(0xfe, s->pFE);
 		int p_size = eMemory::PAGE_SIZE;
-		memcpy(memory->Get(eMemory::P_RAM5 * p_size), s->page5, p_size);
-		memcpy(memory->Get(eMemory::P_RAM2 * p_size), s->page2, p_size);
+		memcpy(memory->Get(eMemory::P_RAM5), s->page5, p_size);
+		memcpy(memory->Get(eMemory::P_RAM2), s->page2, p_size);
 		int p = !sna48 ? (s->p7FFD & 7) : 0;
-		memcpy(memory->Get((eMemory::P_RAM0 + p) * p_size), s->page, p_size);
+		memcpy(memory->Get(eMemory::P_RAM0 + p), s->page, p_size);
 
 		if(sna48)
 		{
@@ -68,7 +68,7 @@ struct eZ80Snap : public xZ80::eZ80
 		{
 			if(!(mapped & (1 << i)))
 			{
-				memcpy(memory->Get((eMemory::P_RAM0 + i) * p_size), page, p_size);
+				memcpy(memory->Get(eMemory::P_RAM0 + i), page, p_size);
 				page += p_size;
 			}
 		}

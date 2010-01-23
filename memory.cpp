@@ -35,10 +35,11 @@ void eRam::Reset()
 //-----------------------------------------------------------------------------
 void eRam::IoWrite(word port, byte v)
 {
-	if(port & 2)
-		return;
-	int page = eMemory::P_RAM0 + (v & 7);
-	memory->SetBank(3, page);
+	if(!(port & 2) && !(port & 0x8000)) // zx128 port
+	{
+		int page = eMemory::P_RAM0 + (v & 7);
+		memory->SetBank(3, page);
+	}
 }
 
 //=============================================================================

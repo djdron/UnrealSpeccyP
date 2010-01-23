@@ -21,7 +21,6 @@ public:
 	byte*	Screen() const { return screen; }
 	void	Update();
 
-	enum eVram { VRAM_FIRST_PAGE = 5, VRAM_SECOND_PAGE = 7, VRAM_SIZE = 0x1b00 };
 	enum eScreen { S_WIDTH = 320, S_HEIGHT = 240, SZX_WIDTH = 256, SZX_HEIGHT = 192 };
 protected:
 	eMemory* memory;
