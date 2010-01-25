@@ -83,16 +83,16 @@ void Opx2E() { // ld xl,nn
 }
 void Opx34() { // inc (ix+nn)
 	signed char ofs = Read(pc++);
-	byte t = Read(ix + ofs);
-	inc8(t);
-	Write(ix + ofs, t);
+	byte v = Read(ix + ofs);
+	inc8(v);
+	Write(ix + ofs, v);
 	t += 15;
 }
 void Opx35() { // dec (ix+nn)
 	signed char ofs = Read(pc++);
-	byte t = Read(ix + ofs);
-	dec8(t);
-	Write(ix + ofs, t);
+	byte v = Read(ix + ofs);
+	dec8(v);
+	Write(ix + ofs, v);
 	t += 15;
 }
 void Opx36() { // ld (ix+nn),nn

@@ -8,13 +8,13 @@
 void Ope40() { // in b,(c)
 	t += 4;
 	memptr = bc+1;
-	b = In(bc);
+	b = IoRead(bc);
 	f = log_f[b] | (f & CF);
 }
 void Ope41() { // out (c),b
 	t += 4;
 	memptr = bc+1;
-	Out(bc, b);
+	IoWrite(bc, b);
 }
 void Ope42() { // sbc hl,bc
 	memptr = hl+1;
@@ -60,13 +60,13 @@ void Ope47() { // ld i,a
 void Ope48() { // in c,(c)
 	t += 4;
 	memptr = bc+1;
-	c = In(bc);
+	c = IoRead(bc);
 	f = log_f[c] | (f & CF);
 }
 void Ope49() { // out (c),c
 	t += 4;
 	memptr = bc+1;
-	Out(bc, c);
+	IoWrite(bc, c);
 }
 void Ope4A() { // adc hl,bc
 	memptr = hl+1;
@@ -109,13 +109,13 @@ void Ope4F() { // ld r,a
 void Ope50() { // in d,(c)
 	t += 4;
 	memptr = bc+1;
-	d = In(bc);
+	d = IoRead(bc);
 	f = log_f[d] | (f & CF);
 }
 void Ope51() { // out (c),d
 	t += 4;
 	memptr = bc+1;
-	Out(bc, d);
+	IoWrite(bc, d);
 }
 void Ope52() { // sbc hl,de
 	memptr = hl+1;
@@ -150,13 +150,13 @@ void Ope57() { // ld a,i
 void Ope58() { // in e,(c)
 	t += 4;
 	memptr = bc+1;
-	e = In(bc);
+	e = IoRead(bc);
 	f = log_f[e] | (f & CF);
 }
 void Ope59() { // out (c),e
 	t += 4;
 	memptr = bc+1;
-	Out(bc, e);
+	IoWrite(bc, e);
 }
 void Ope5A() { // adc hl,de
 	memptr = hl+1;
@@ -192,13 +192,13 @@ void Ope5F() { // ld a,r
 void Ope60() { // in h,(c)
 	t += 4;
 	memptr = bc+1;
-	h = In(bc);
+	h = IoRead(bc);
 	f = log_f[h] | (f & CF);
 }
 void Ope61() { // out (c),h
 	t += 4;
 	memptr = bc+1;
-	Out(bc, h);
+	IoWrite(bc, h);
 }
 void Ope62() { // sbc hl,hl
 	memptr = hl+1;
@@ -227,13 +227,13 @@ void Ope67() { // rrd
 void Ope68() { // in l,(c)
 	t += 4;
 	memptr = bc+1;
-	l = In(bc);
+	l = IoRead(bc);
 	f = log_f[l] | (f & CF);
 }
 void Ope69() { // out (c),l
 	t += 4;
 	memptr = bc+1;
-	Out(bc, l);
+	IoWrite(bc, l);
 }
 void Ope6A() { // adc hl,hl
 	memptr = hl+1;
@@ -262,12 +262,12 @@ void Ope6F() { // rld
 void Ope70() { // in (c)
 	t += 4;
 	memptr = bc+1;
-	f = log_f[In(bc)] | (f & CF);
+	f = log_f[IoRead(bc)] | (f & CF);
 }
 void Ope71() { // out (c),0
 	t += 4;
 	memptr = bc+1;
-	Out(bc, 0);
+	IoWrite(bc, 0);
 }
 void Ope72() { // sbc hl,sp
 	memptr = hl+1;
@@ -299,13 +299,13 @@ void Ope77() { Op00(); } // nop
 void Ope78() { // in a,(c)
 	t += 4;
 	memptr = bc+1;
-	a = In(bc);
+	a = IoRead(bc);
 	f = log_f[a] | (f & CF);
 }
 void Ope79() { // out (c),a
 	t += 4;
 	memptr = bc+1;
-	Out(bc, a);
+	IoWrite(bc, a);
 }
 void Ope7A() { // adc hl,sp
 	memptr = hl+1;
@@ -350,13 +350,13 @@ void OpeA1() { // cpi
 void OpeA2() { // ini
 	memptr = bc+1;
 	t += 8;
-	Write(hl++, In(bc));
+	Write(hl++, IoRead(bc));
 	dec8(b);
 }
 void OpeA3() { // outi
 	t += 8;
 	dec8(b);
-	Out(bc, Read(hl++));
+	IoWrite(bc, Read(hl++));
 	f &= ~CF; if (!l) f |= CF;
 	memptr = bc+1;
 }
@@ -379,13 +379,13 @@ void OpeA9() { // cpd
 void OpeAA() { // ind
 	memptr = bc-1;
 	t += 8;
-	Write(hl--, In(bc));
+	Write(hl--, IoRead(bc));
 	dec8(b);
 }
 void OpeAB() { // outd
 	t += 8;
 	dec8(b);
-	Out(bc, Read(hl--));
+	IoWrite(bc, Read(hl--));
 	f &= ~CF; if (l == 0xFF) f |= CF;
 	memptr = bc-1;
 }
@@ -411,7 +411,7 @@ void OpeB1() { // cpir
 void OpeB2() { // inir
 	t += 8;
 	memptr = bc+1;
-	Write(hl++, In(bc));
+	Write(hl++, IoRead(bc));
 	dec8(b);
 	if (b) f |= PV, pc -= 2, t += 5;
 	else f &= ~PV;
@@ -419,7 +419,7 @@ void OpeB2() { // inir
 void OpeB3() { // otir
 	t += 8;
 	dec8(b);
-	Out(bc, Read(hl++));
+	IoWrite(bc, Read(hl++));
 	if (b) f |= PV, pc -= 2, t += 5;
 	else f &= ~PV;
 	f &= ~CF; if (!l) f |= CF;
@@ -447,7 +447,7 @@ void OpeB9() { // cpdr
 void OpeBA() { // indr
 	t += 8;
 	memptr = bc-1;
-	Write(hl--, In(bc));
+	Write(hl--, IoRead(bc));
 	dec8(b);
 	if (b) f |= PV, pc -= 2, t += 5;
 	else f &= ~PV;
@@ -455,7 +455,7 @@ void OpeBA() { // indr
 void OpeBB() { // otdr
 	t += 8;
 	dec8(b);
-	Out(bc, Read(hl--));
+	IoWrite(bc, Read(hl--));
 	if (b) f |= PV, pc -= 2, t += 5;
 	else f &= ~PV;
 	f &= ~CF; if (l == 0xFF) f |= CF;

@@ -2,7 +2,9 @@
 
 #include "z80.h"
 #include "memory.h"
+#include "ula.h"
 #include "device.h"
+#include "speccy.h"
 
 namespace xZ80
 {
@@ -13,8 +15,8 @@ bool unstable_databus = false;
 //=============================================================================
 //	eZ80::eZ80
 //-----------------------------------------------------------------------------
-eZ80::eZ80(eMemory* _m, eDevices* _d, dword _frame_tacts)
-	: memory(_m), devices(_d)
+eZ80::eZ80(eMemory* _m, eUla* _u, eDevices* _d, dword _frame_tacts)
+	: memory(_m), ula(_u), devices(_d)
 	, t(0), im(0), eipos(0), haltpos(0)
 	, frame_tacts(_frame_tacts)
 	, last_branch(0)
@@ -85,37 +87,38 @@ void eZ80::Update(dword int_len, int* nmi_pending)
 //=============================================================================
 //	eZ80::Fetch
 //-----------------------------------------------------------------------------
-byte eZ80::Fetch()
+inline byte eZ80::Fetch()
 {
 	r_low++;// = (cpu->r & 0x80) + ((cpu->r+1) & 0x7F);
 	t += 4;
 	return Read(pc++);
 }
 //=============================================================================
-//	eZ80::Out
+//	eZ80::IoWrite
 //-----------------------------------------------------------------------------
-void eZ80::Out(word port, byte v)
+void eZ80::IoWrite(dword port, byte v)
 {
 	devices->IoWrite(port, v);
 }
 //=============================================================================
-//	eZ80::In
+//	eZ80::IoRead
 //-----------------------------------------------------------------------------
-byte eZ80::In(word port) const
+byte eZ80::IoRead(dword port) const
 {
 	return devices->IoRead(port);
 }
 //=============================================================================
 //	eZ80::Write
 //-----------------------------------------------------------------------------
-void eZ80::Write(word addr, byte v)
+inline void eZ80::Write(word addr, byte v)
 {
+	ula->UpdateRay(t);
 	memory->Write(addr, v);
 }
 //=============================================================================
 //	eZ80::Read
 //-----------------------------------------------------------------------------
-byte eZ80::Read(word addr) const
+inline byte eZ80::Read(word addr) const
 {
 	return memory->Read(addr);
 }

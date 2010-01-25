@@ -9,7 +9,11 @@
 #include "sound/beeper.h"
 #include "sound/ay.h"
 
-eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), devices(NULL), frame_tacts(0), int_len(0), nmi_pending(0)
+//=============================================================================
+//	eSpeccy::eSpeccy
+//-----------------------------------------------------------------------------
+eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), devices(NULL), frame_tacts(0)
+	, int_len(0), nmi_pending(0)
 {
 }
 //=============================================================================
@@ -26,17 +30,20 @@ eSpeccy::~eSpeccy()
 //-----------------------------------------------------------------------------
 void eSpeccy::Init()
 {
-	frame_tacts = 71680; //pentagon timing
-	int_len = 32;		 //pentagon timing
+	// pentagon timings
+	frame_tacts = 71680;
+	int_len = 32;
+
 	memory = new eMemory;
+	eUla* ula = new eUla(memory);
 	devices = new eDevices;
-	cpu = new xZ80::eZ80(memory, devices, frame_tacts);
 	devices->Add(new eRom(memory), D_ROM);
 	devices->Add(new eRam(memory), D_RAM);
-	devices->Add(new eUla(memory), D_ULA);
+	devices->Add(ula, D_ULA);
 	devices->Add(new eKeyboard, D_KEYBOARD);
 	devices->Add(new eBeeper(cpu), D_BEEPER);
 	devices->Add(new eAY(cpu), D_AY);
+	cpu = new xZ80::eZ80(memory, ula, devices, frame_tacts);
 }
 //=============================================================================
 //	eSpeccy::Reset

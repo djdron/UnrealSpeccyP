@@ -7,6 +7,7 @@
 #pragma once
 
 class eMemory;
+class eUla;
 class eDevices;
 
 namespace xZ80
@@ -44,7 +45,7 @@ extern bool unstable_databus;
 class eZ80
 {
 public:
-	eZ80(eMemory* m, eDevices* d, dword frame_tacts = 0);
+	eZ80(eMemory* m, eUla* u, eDevices* d, dword frame_tacts = 0);
 	void Reset();
 	void Update(dword int_len, int* nmi_pending);
 
@@ -57,8 +58,8 @@ protected:
 	void Step();
 
 	byte Fetch(); //m1_cycle data fetch
-	byte In(word port) const;
-	void Out(word port, byte v);
+	byte IoRead(dword port) const;
+	void IoWrite(dword port, byte v);
 	byte Read(word addr) const;
 	void Write(word addr, byte v);
 
@@ -98,8 +99,9 @@ protected:
 	void InitOpDDCB();
 
 protected:
-	eMemory* memory;
-	eDevices* devices;
+	eMemory*	memory;
+	eUla*		ula;
+	eDevices*	devices;
 
 	dword	t;
 	byte	im;

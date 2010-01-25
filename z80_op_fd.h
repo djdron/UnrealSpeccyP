@@ -83,16 +83,16 @@ void Opy2E() { // ld yl,nn
 }
 void Opy34() { // inc (iy+nn)
 	signed char ofs = Read(pc++);
-	byte t = Read(iy + ofs);
-	inc8(t);
-	Write(iy + ofs, t);
+	byte v = Read(iy + ofs);
+	inc8(v);
+	Write(iy + ofs, v);
 	t += 15;
 }
 void Opy35() { // dec (iy+nn)
 	signed char ofs = Read(pc++);
-	byte t = Read(iy + ofs);
-	dec8(t);
-	Write(iy + ofs, t);
+	byte v = Read(iy + ofs);
+	dec8(v);
+	Write(iy + ofs, v);
 	t += 15;
 }
 void Opy36() { // ld (iy+nn),nn

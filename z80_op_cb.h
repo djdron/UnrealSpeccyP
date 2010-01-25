@@ -30,9 +30,9 @@ void Opl05() { // rlc l
 	l = rol[l];
 }
 void Opl06() { // rlc (hl)
-	byte t = Read(hl);
-	f = rlcf[t];
-	Write(hl, rol[t]);
+	byte v = Read(hl);
+	f = rlcf[v];
+	Write(hl, rol[v]);
 	t += 7;
 }
 void Opl07() { // rlc a
@@ -64,9 +64,9 @@ void Opl0D() { // rrc l
 	l = ror[l];
 }
 void Opl0E() { // rrc (hl)
-	byte t = Read(hl);
-	f = rrcf[t];
-	Write(hl, ror[t]);
+	byte v = Read(hl);
+	f = rrcf[v];
+	Write(hl, ror[v]);
 	t += 7;
 }
 void Opl0F() { // rrc a
@@ -110,12 +110,12 @@ void Opl15() { // rl l
 		f = rl0[l], l = (l << 1);
 }
 void Opl16() { // rl (hl)
-	byte t = Read(hl);
+	byte v = Read(hl);
 	if (f & CF)
-		f = rl1[t], t = (t << 1) + 1;
+		f = rl1[v], v = (v << 1) + 1;
 	else
-		f = rl0[t], t = (t << 1);
-	Write(hl, t);
+		f = rl0[v], v = (v << 1);
+	Write(hl, v);
 	t += 7;
 }
 void Opl17() { // rl a
@@ -161,11 +161,11 @@ void Opl1D() { // rr l
 		f = rr0[l], l = (l >> 1);
 }
 void Opl1E() { // rr (hl)
-	byte t = Read(hl);
+	byte v = Read(hl);
 	if (f & CF)
-		f = rr1[t], t = (t >> 1) | 0x80;
+		f = rr1[v], v = (v >> 1) | 0x80;
 	else
-		f = rr0[t], t = (t >> 1);
+		f = rr0[v], v = (v >> 1);
 	Write(hl, t);
 	t += 7;
 }
@@ -194,9 +194,9 @@ void Opl25() { // sla l
 	f = rl0[l], l = (l << 1);
 }
 void Opl26() { // sla (hl)
-	byte t = Read(hl);
-	f = rl0[t], t = (t << 1);
-	Write(hl, t);
+	byte v = Read(hl);
+	f = rl0[v], v = (v << 1);
+	Write(hl, v);
 	t += 7;
 }
 void Opl27() { // sla a
@@ -221,9 +221,9 @@ void Opl2D() { // sra l
 	f = sraf[l], l = (l >> 1) + (l & 0x80);
 }
 void Opl2E() { // sra (hl)
-	byte t = Read(hl);
-	f = sraf[t], t = (t >> 1) + (t & 0x80);
-	Write(hl, t);
+	byte v = Read(hl);
+	f = sraf[v], v = (v >> 1) + (v & 0x80);
+	Write(hl, v);
 	t += 7;
 }
 void Opl2F() { // sra a
@@ -248,9 +248,9 @@ void Opl35() { // sli l
 	f = rl1[l], l = (l << 1) + 1;
 }
 void Opl36() { // sli (hl)
-	byte t = Read(hl);
-	f = rl1[t], t = (t << 1) + 1;
-	Write(hl, t);
+	byte v = Read(hl);
+	f = rl1[v], v = (v << 1) + 1;
+	Write(hl, v);
 	t += 7;
 }
 void Opl37() { // sli a
@@ -275,9 +275,9 @@ void Opl3D() { // srl l
 	f = rr0[l], l = (l >> 1);
 }
 void Opl3E() { // srl (hl)
-	byte t = Read(hl);
-	f = rr0[t], t = (t >> 1);
-	Write(hl, t);
+	byte v = Read(hl);
+	f = rr0[v], v = (v >> 1);
+	Write(hl, v);
 	t += 7;
 }
 void Opl3F() { // srl a
@@ -502,7 +502,7 @@ void Opl85() { // res 0,l
 	res(l, 0);
 }
 void Opl86() { // res 0,(hl)
-	byte t = Read(hl); res(t, 0); Write(hl, t);
+	byte v = Read(hl); res(v, 0); Write(hl, v);
 	t += 7;
 }
 void Opl87() { // res 0,a
@@ -527,7 +527,7 @@ void Opl8D() { // res 1,l
 	res(l, 1);
 }
 void Opl8E() { // res 1,(hl)
-	byte t = Read(hl); res(t, 1); Write(hl, t);
+	byte v = Read(hl); res(v, 1); Write(hl, v);
 	t += 7;
 }
 void Opl8F() { // res 1,a
@@ -552,7 +552,7 @@ void Opl95() { // res 2,l
 	res(l, 2);
 }
 void Opl96() { // res 2,(hl)
-	byte t = Read(hl); res(t, 2); Write(hl, t);
+	byte v = Read(hl); res(v, 2); Write(hl, v);
 	t += 7;
 }
 void Opl97() { // res 2,a
@@ -577,7 +577,7 @@ void Opl9D() { // res 3,l
 	res(l, 3);
 }
 void Opl9E() { // res 3,(hl)
-	byte t = Read(hl); res(t, 3); Write(hl, t);
+	byte v = Read(hl); res(v, 3); Write(hl, v);
 	t += 7;
 }
 void Opl9F() { // res 3,a
@@ -602,7 +602,7 @@ void OplA5() { // res 4,l
 	res(l, 4);
 }
 void OplA6() { // res 4,(hl)
-	byte t = Read(hl); res(t, 4); Write(hl, t);
+	byte v = Read(hl); res(v, 4); Write(hl, v);
 	t += 7;
 }
 void OplA7() { // res 4,a
@@ -627,7 +627,7 @@ void OplAD() { // res 5,l
 	res(l, 5);
 }
 void OplAE() { // res 5,(hl)
-	byte t = Read(hl); res(t, 5); Write(hl, t);
+	byte v = Read(hl); res(v, 5); Write(hl, v);
 	t += 7;
 }
 void OplAF() { // res 5,a
@@ -652,7 +652,7 @@ void OplB5() { // res 6,l
 	res(l, 6);
 }
 void OplB6() { // res 6,(hl)
-	byte t = Read(hl); res(t, 6); Write(hl, t);
+	byte v = Read(hl); res(v, 6); Write(hl, v);
 	t += 7;
 }
 void OplB7() { // res 6,a
@@ -677,7 +677,7 @@ void OplBD() { // res 7,l
 	res(l, 7);
 }
 void OplBE() { // res 7,(hl)
-	byte t = Read(hl); res(t, 7); Write(hl, t);
+	byte v = Read(hl); res(v, 7); Write(hl, v);
 	t += 7;
 }
 void OplBF() { // res 7,a
@@ -702,7 +702,7 @@ void OplC5() { // set 0,l
 	set(l, 0);
 }
 void OplC6() { // set 0,(hl)
-	byte t = Read(hl); set(t, 0); Write(hl, t);
+	byte v = Read(hl); set(v, 0); Write(hl, v);
 	t += 7;
 }
 void OplC7() { // set 0,a
@@ -727,7 +727,7 @@ void OplCD() { // set 1,l
 	set(l, 1);
 }
 void OplCE() { // set 1,(hl)
-	byte t = Read(hl); set(t, 1); Write(hl, t);
+	byte v = Read(hl); set(v, 1); Write(hl, v);
 	t += 7;
 }
 void OplCF() { // set 1,a
@@ -752,7 +752,7 @@ void OplD5() { // set 2,l
 	set(l, 2);
 }
 void OplD6() { // set 2,(hl)
-	byte t = Read(hl); set(t, 2); Write(hl, t);
+	byte v = Read(hl); set(v, 2); Write(hl, v);
 	t += 7;
 }
 void OplD7() { // set 2,a
@@ -777,7 +777,7 @@ void OplDD() { // set 3,l
 	set(l, 3);
 }
 void OplDE() { // set 3,(hl)
-	byte t = Read(hl); set(t, 3); Write(hl, t);
+	byte v = Read(hl); set(v, 3); Write(hl, v);
 	t += 7;
 }
 void OplDF() { // set 3,a
@@ -802,7 +802,7 @@ void OplE5() { // set 4,l
 	set(l, 4);
 }
 void OplE6() { // set 4,(hl)
-	byte t = Read(hl); set(t, 4); Write(hl, t);
+	byte v = Read(hl); set(v, 4); Write(hl, v);
 	t += 7;
 }
 void OplE7() { // set 4,a
@@ -827,7 +827,7 @@ void OplED() { // set 5,l
 	set(l, 5);
 }
 void OplEE() { // set 5,(hl)
-	byte t = Read(hl); set(t, 5); Write(hl, t);
+	byte v = Read(hl); set(v, 5); Write(hl, v);
 	t += 7;
 }
 void OplEF() { // set 5,a
@@ -852,7 +852,7 @@ void OplF5() { // set 6,l
 	set(l, 6);
 }
 void OplF6() { // set 6,(hl)
-	byte t = Read(hl); set(t, 6); Write(hl, t);
+	byte v = Read(hl); set(v, 6); Write(hl, v);
 	t += 7;
 }
 void OplF7() { // set 6,a
@@ -877,7 +877,7 @@ void OplFD() { // set 7,l
 	set(l, 7);
 }
 void OplFE() { // set 7,(hl)
-	byte t = Read(hl); set(t, 7); Write(hl, t);
+	byte v = Read(hl); set(v, 7); Write(hl, v);
 	t += 7;
 }
 void OplFF() { // set 7,a

@@ -35,8 +35,8 @@ protected:
 	eMemory* memory;
 	eDevices* devices;
 
-	dword	frame_tacts;	// t-states per frame
-	dword	int_len;		// length of INT signal (for Z80)
+	int		frame_tacts;	// t-states per frame
+	int		int_len;		// length of INT signal (for Z80)
 	int		nmi_pending;
 };
 

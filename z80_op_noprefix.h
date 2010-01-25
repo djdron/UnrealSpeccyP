@@ -864,7 +864,7 @@ void OpD3() { // out (nn),a
 	unsigned port = Read(pc++);
 	t += 7;
 	memptr = ((port+1) & 0xFF) + (a << 8);
-	Out(port + (a << 8), a);
+	IoWrite(port + (a << 8), a);
 }
 void OpD4() { // call nc,nnnn
 	pc += 2;
@@ -925,7 +925,7 @@ void OpDB() { // in a,(nn)
 	unsigned port = Read(pc++) + (a << 8);
 	memptr = (a << 8) + port+1;
 	t += 7;
-	a = In(port);
+	a = IoRead(port);
 }
 void OpDC() { // call c,nnnn
 	pc += 2;
