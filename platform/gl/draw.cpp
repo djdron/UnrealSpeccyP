@@ -17,8 +17,9 @@ static const byte bright_intensity = 55;
 //=============================================================================
 //	DrawGL
 //-----------------------------------------------------------------------------
-void DrawGL(byte* data)
+void DrawGL(void* _data)
 {
+	byte* data = (byte*)_data;
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 

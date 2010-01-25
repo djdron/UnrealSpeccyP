@@ -9,6 +9,7 @@
 class eDevice
 {
 public:
+	virtual ~eDevice() {}
 	virtual void Init() {}
 	virtual void Reset() {}
 	virtual void Update() {}

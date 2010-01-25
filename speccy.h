@@ -8,6 +8,7 @@ class eMemory;
 class eDevices;
 class eKeyboard;
 class eUla;
+class eDeviceSound;
 
 //*****************************************************************************
 //	eSpeccy
@@ -25,8 +26,10 @@ public:
 	xZ80::eZ80* CPU() const { return cpu; }
 	eKeyboard* Keyboard() const;
 	eUla* Ula() const;
+	eDeviceSound* Beeper() const;
+	eDeviceSound* AY() const;
 
-	enum eDevice { D_ROM, D_RAM, D_ULA, D_KEYBOARD };
+	enum eDevice { D_ROM, D_RAM, D_ULA, D_KEYBOARD, D_BEEPER, D_AY };
 protected:
 	xZ80::eZ80* cpu;
 	eMemory* memory;

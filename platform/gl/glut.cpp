@@ -10,9 +10,12 @@
 namespace xPlatform
 {
 
-void DrawGL(byte* data);
+void InitSound();
+void DoneSound();
+void OnLoopSound();
 
-eHandler* handler = NULL;
+void DrawGL(void* data);
+
 static int window = -1;
 
 static void OnResizeWindow(int Width, int Height)
@@ -24,14 +27,15 @@ static void OnResizeWindow(int Width, int Height)
 
 static void Draw()
 {
-	DrawGL(handler->DrawData());
+	DrawGL(Handler()->VideoData());
 	glutSwapBuffers();
 }
 static void OnDraw() { Draw(); }
 static void OnIdle()
 {
-	handler->OnLoop();
+	Handler()->OnLoop();
 	glutPostRedisplay();
+	OnLoopSound();
 }
 
 static void OnKeyDown(unsigned char key, int x, int y)
@@ -44,21 +48,20 @@ static void OnKeyDown(unsigned char key, int x, int y)
 		flags |= KF_CTRL;
 	if(m&GLUT_ACTIVE_ALT)
 		flags |= KF_ALT;
-	handler->OnKey(toupper(key), flags);
+	Handler()->OnKey(toupper(key), flags);
 }
 static void OnKeyUp(unsigned char key, int x, int y)
 {
-	handler->OnKey(toupper(key), 0);
+	Handler()->OnKey(toupper(key), 0);
 }
 
-bool Init(int argc, char* argv[], eHandler* h)
+bool Init(int argc, char* argv[])
 {
-	handler = h;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
 	glutInitWindowSize(320, 240);
 	glutInitWindowPosition(100, 100);
-	window = glutCreateWindow(handler->WindowCaption());
+	window = glutCreateWindow(Handler()->WindowCaption());
 	glutDisplayFunc(&OnDraw);
 //	glutFullScreen();
 	glutIdleFunc(&OnIdle);
@@ -66,15 +69,17 @@ bool Init(int argc, char* argv[], eHandler* h)
 	glutIgnoreKeyRepeat(true);
 	glutKeyboardFunc(&OnKeyDown);
 	glutKeyboardUpFunc(&OnKeyUp);
-	glutMainLoop(); // app really never exit from this function
+	InitSound();
+	atexit(Done);
 	return true;
 }
-// glut not able to exit from glutMainLoop, so Loop(), Done() never called
 void Loop()
 {
+	glutMainLoop(); // app really never exit from this function
 }
 void Done()
 {
+	DoneSound();
 }
 
 }

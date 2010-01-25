@@ -6,6 +6,8 @@
 #include "memory.h"
 #include "ula.h"
 #include "keyboard.h"
+#include "sound/beeper.h"
+#include "sound/ay.h"
 
 eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), devices(NULL), frame_tacts(0), int_len(0), nmi_pending(0)
 {
@@ -33,6 +35,8 @@ void eSpeccy::Init()
 	devices->Add(new eRam(memory), D_RAM);
 	devices->Add(new eUla(memory), D_ULA);
 	devices->Add(new eKeyboard, D_KEYBOARD);
+	devices->Add(new eBeeper(cpu), D_BEEPER);
+	devices->Add(new eAY(cpu), D_AY);
 }
 //=============================================================================
 //	eSpeccy::Reset
@@ -47,8 +51,12 @@ void eSpeccy::Reset()
 //-----------------------------------------------------------------------------
 void eSpeccy::Update()
 {
+	Beeper()->StartFrame();
+	AY()->StartFrame();
 	cpu->Update(int_len, &nmi_pending);
-	devices->Item(D_ULA)->Update();
+	Ula()->Update();
+	Beeper()->EndFrame(cpu->FrameTacts());
+	AY()->EndFrame(cpu->FrameTacts());
 }
 //=============================================================================
 //	eSpeccy::Keyboard
@@ -63,4 +71,18 @@ eKeyboard* eSpeccy::Keyboard() const
 eUla* eSpeccy::Ula() const
 {
 	return (eUla*)devices->Item(D_ULA);
+}
+//=============================================================================
+//	eSpeccy::Beeper
+//-----------------------------------------------------------------------------
+eDeviceSound* eSpeccy::Beeper() const
+{
+	return (eDeviceSound*)devices->Item(D_BEEPER);
+}
+//=============================================================================
+//	eSpeccy::AY
+//-----------------------------------------------------------------------------
+eDeviceSound* eSpeccy::AY() const
+{
+	return (eDeviceSound*)devices->Item(D_AY);
 }

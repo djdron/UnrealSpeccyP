@@ -18,7 +18,7 @@ public:
 	virtual void Init();
 	virtual void Reset();
 	virtual void IoWrite(word port, byte v);
-	byte*	Screen() const { return screen; }
+	void*	Screen() const { return screen; }
 	void	Update();
 
 	enum eScreen { S_WIDTH = 320, S_HEIGHT = 240, SZX_WIDTH = 256, SZX_HEIGHT = 192 };

@@ -35,6 +35,7 @@
 <tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.550108972" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 <option id="gnu.cpp.link.option.libs.1392433830" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="GL"/>
+<listOptionValue builtIn="false" value="openal"/>
 <listOptionValue builtIn="false" value="glut"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1503405093" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -47,6 +48,9 @@
 </tool>
 </toolChain>
 </folderInfo>
+<sourceEntries>
+<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+</sourceEntries>
 </configuration>
 </storageModule>
 <storageModule moduleId="scannerConfiguration">
@@ -500,9 +504,10 @@
 <tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1567764900" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
 <option id="gnu.cpp.link.option.libs.1157389693" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="GL"/>
+<listOptionValue builtIn="false" value="openal"/>
 <listOptionValue builtIn="false" value="glut"/>
 </option>
-<option id="gnu.cpp.link.option.strip.1667308109" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
+<option id="gnu.cpp.link.option.strip.1667308109" name="Omit all symbol information (-s)" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1265928557" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 <additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -513,6 +518,9 @@
 </tool>
 </toolChain>
 </folderInfo>
+<sourceEntries>
+<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+</sourceEntries>
 </configuration>
 </storageModule>
 <storageModule moduleId="scannerConfiguration">

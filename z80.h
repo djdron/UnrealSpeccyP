@@ -48,6 +48,9 @@ public:
 	void Reset();
 	void Update(dword int_len, int* nmi_pending);
 
+	dword T() const { return t; }
+	dword FrameTacts() const { return frame_tacts; }
+
 protected:
 	void Int();
 	void Nmi();
