@@ -9,8 +9,8 @@ eAY::eAY(xZ80::eZ80* _cpu) : cpu(_cpu)
    nextfmtick = 0; //Alone Coder
    SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
    chip2203 = YM2203Init(NULL, 0, SNDR_DEFAULT_AY_RATE, 44100);
-   SetChip(CHIP_YM);
-   SetVolumes(0x7FFF, SNDR_VOL_YM, SNDR_PAN_ABC);
+   SetChip(CHIP_AY);
+   SetVolumes(0x7FFF, SNDR_VOL_AY, SNDR_PAN_ABC);
    Reset();
 }
 
@@ -69,7 +69,7 @@ dword eAY::EndFrame(dword clk_ticks)
 {
    // adjusting 't' with whole history will fix accumulation of rounding errors
 
-   uint64_t end_chip_tick = ((passed_clk_ticks + clk_ticks) * chip_clock_rate) / system_clock_rate;
+   qword end_chip_tick = ((passed_clk_ticks + clk_ticks) * chip_clock_rate) / system_clock_rate;
 
    Flush( (dword) (end_chip_tick - passed_chip_ticks) );
    dword res = eInherited::EndFrame(t);
@@ -262,7 +262,7 @@ void eAY::SetTimings(dword system_clock_rate, dword chip_clock_rate, dword sampl
    eAY::system_clock_rate = system_clock_rate;
    eAY::chip_clock_rate = chip_clock_rate;
 
-   mult_const = (dword) (((uint64_t)chip_clock_rate << MULT_C_1) / system_clock_rate);
+   mult_const = (dword) (((qword)chip_clock_rate << MULT_C_1) / system_clock_rate);
    eInherited::SetTimings(chip_clock_rate, sample_rate);
    passed_chip_ticks = passed_clk_ticks = 0;
    t = 0; ns = 0xFFFF;
@@ -279,7 +279,7 @@ void eAY::SetVolumes(dword global_vol, const SNDCHIP_VOLTAB *voltab, const SNDCH
 {
    for (int j = 0; j < 6; j++)
       for (int i = 0; i < 32; i++)
-         vols[j][i] = (dword) (((uint64_t)global_vol * voltab->v[i] * stereo->raw[j])/(65535*100*3));
+         vols[j][i] = (dword) (((qword)global_vol * voltab->v[i] * stereo->raw[j])/(65535*100*3));
 }
 
 void eAY::Reset(dword timestamp)

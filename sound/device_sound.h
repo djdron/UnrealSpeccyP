@@ -18,7 +18,6 @@ struct SNDOUT
 };
 
 typedef SNDSAMPLE* bufptr_t;
-typedef unsigned long int uint64_t;
 
 const dword SNDR_DEFAULT_SYSTICK_RATE = 3500000; // ZX-Spectrum Z80 clock
 const dword SNDR_DEFAULT_SAMPLE_RATE = 44100;
@@ -63,7 +62,7 @@ private:
 	int oldright,useright,olduseright,oldfrmright; //Alone Coder
 
 	//   dword clock_rate, sample_rate;
-	uint64_t passed_clk_ticks, passed_snd_ticks;
+	qword passed_clk_ticks, passed_snd_ticks;
 	dword mult_const;
 
 	void Flush(dword endtick);

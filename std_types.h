@@ -3,6 +3,7 @@
 
 #pragma once
 
+typedef	unsigned long long int qword;
 typedef	unsigned int		dword;
 typedef unsigned short		word;
 typedef unsigned char		byte;

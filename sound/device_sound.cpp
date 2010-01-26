@@ -33,7 +33,7 @@ void eDeviceSound::Update(dword timestamp, dword l, dword r)
        return;
 
 //[vv]   dword endtick = (timestamp * mult_const) >> MULT_C;
-   uint64_t endtick = (timestamp * (uint64_t)sample_rate * TICK_F) / clock_rate;
+   qword endtick = (timestamp * (qword)sample_rate * TICK_F) / clock_rate;
    Flush( (dword) (base_tick + endtick) );
    mix_l = l; mix_r = r;
 }
@@ -41,8 +41,8 @@ void eDeviceSound::Update(dword timestamp, dword l, dword r)
 dword eDeviceSound::EndFrame(dword clk_ticks)
 {
    // adjusting 'clk_ticks' with whole history will fix accumulation of rounding errors
-   //uint64_t endtick = ((passed_clk_ticks + clk_ticks) * mult_const) >> MULT_C;
-   uint64_t endtick = ((passed_clk_ticks + clk_ticks) * (uint64_t)sample_rate * TICK_F) / clock_rate;
+   //qword endtick = ((passed_clk_ticks + clk_ticks) * mult_const) >> MULT_C;
+   qword endtick = ((passed_clk_ticks + clk_ticks) * (qword)sample_rate * TICK_F) / clock_rate;
    Flush( (dword) (endtick - passed_snd_ticks) );
 
    dword ready_samples = dstpos - dst_start;
@@ -78,7 +78,7 @@ void eDeviceSound::SetTimings(dword clock_rate, dword sample_rate)
    tick = 0; dstpos = dst_start = buffer;
    passed_snd_ticks = passed_clk_ticks = 0;
 
-   mult_const = (dword) (((uint64_t)sample_rate << (MULT_C+TICK_FF)) / clock_rate);
+   mult_const = (dword) (((qword)sample_rate << (MULT_C+TICK_FF)) / clock_rate);
 }
 
 

@@ -114,7 +114,7 @@ public:
 	};
 
 	dword chip_clock_rate, system_clock_rate;
-	uint64_t passed_chip_ticks, passed_clk_ticks;
+	qword passed_chip_ticks, passed_clk_ticks;
 
 	void Flush(dword chiptick);
 	void ApplyRegs(dword timestamp = 0);
