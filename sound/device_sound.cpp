@@ -75,7 +75,7 @@ void eDeviceSound::SetTimings(dword clock_rate, dword sample_rate)
    eDeviceSound::clock_rate = clock_rate;
    eDeviceSound::sample_rate = sample_rate;
 
-   tick = 0; dstpos = dst_start = buffer;
+   tick = base_tick = 0; dstpos = dst_start = buffer;
    passed_snd_ticks = passed_clk_ticks = 0;
 
    mult_const = (dword) (((qword)sample_rate << (MULT_C+TICK_FF)) / clock_rate);
