@@ -166,7 +166,7 @@ void Opl1E() { // rr (hl)
 		f = rr1[v], v = (v >> 1) | 0x80;
 	else
 		f = rr0[v], v = (v >> 1);
-	Write(hl, t);
+	Write(hl, v);
 	t += 7;
 }
 void Opl1F() { // rr a
