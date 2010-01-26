@@ -107,10 +107,8 @@
 /* globals */
 //#include <windows.h>
 //#include <stdio.h>
-#include <math.h>
-#include <malloc.h>
-#include <memory.h>
 
+#include "../std.h"
 #include "ym2203emu.h"
 
 #define TYPE_SSG    0x01    /* SSG support          */

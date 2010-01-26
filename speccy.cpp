@@ -35,15 +35,16 @@ void eSpeccy::Init()
 	int_len = 32;
 
 	memory = new eMemory;
-	eUla* ula = new eUla(memory);
 	devices = new eDevices;
+	eUla* ula = new eUla(memory);
+	cpu = new xZ80::eZ80(memory, ula, devices, frame_tacts);
+
 	devices->Add(new eRom(memory), D_ROM);
 	devices->Add(new eRam(memory), D_RAM);
 	devices->Add(ula, D_ULA);
 	devices->Add(new eKeyboard, D_KEYBOARD);
 	devices->Add(new eBeeper(cpu), D_BEEPER);
 	devices->Add(new eAY(cpu), D_AY);
-	cpu = new xZ80::eZ80(memory, ula, devices, frame_tacts);
 }
 //=============================================================================
 //	eSpeccy::Reset

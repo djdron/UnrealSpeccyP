@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	eSpeccy* speccy = new eSpeccy;
 	speccy->Init();
 	speccy->Reset();
-	xSnapshot::Load(speccy, "images/rage.sna");
+	xSnapshot::Load(speccy, "images/vibrate.sna");
 	eSpeccyHandler sh(speccy);
 	if(!xPlatform::Init(argc, argv))
 		return -1;

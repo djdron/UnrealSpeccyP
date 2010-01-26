@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="unreal"
+	Name="unreal_speccy_portable"
 	ProjectGUID="{9A83C884-0BB2-45F1-9379-AF7D77BCC7C8}"
-	RootNamespace="unreal"
+	RootNamespace="unreal_speccy_portable"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -38,7 +38,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=""
+				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include"
 				DebugInformationFormat="1"
 			/>
 			<Tool
@@ -52,8 +52,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="openal32.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\lib32&quot;"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib"
 				GenerateDebugInformation="true"
 				AssemblyDebug="0"
 				GenerateMapFile="false"
@@ -106,7 +107,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=""
+				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -119,8 +120,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="openal32.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\lib32&quot;"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 			/>
@@ -154,47 +156,47 @@
 			Name="z80"
 			>
 			<File
-				RelativePath="..\z80.cpp"
+				RelativePath=".\z80.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\z80.h"
+				RelativePath=".\z80.h"
 				>
 			</File>
 			<File
-				RelativePath="..\z80_op_cb.h"
+				RelativePath=".\z80_op_cb.h"
 				>
 			</File>
 			<File
-				RelativePath="..\z80_op_dd.h"
+				RelativePath=".\z80_op_dd.h"
 				>
 			</File>
 			<File
-				RelativePath="..\z80_op_ddcb.h"
+				RelativePath=".\z80_op_ddcb.h"
 				>
 			</File>
 			<File
-				RelativePath="..\z80_op_ed.h"
+				RelativePath=".\z80_op_ed.h"
 				>
 			</File>
 			<File
-				RelativePath="..\z80_op_fd.h"
+				RelativePath=".\z80_op_fd.h"
 				>
 			</File>
 			<File
-				RelativePath="..\z80_op_noprefix.h"
+				RelativePath=".\z80_op_noprefix.h"
 				>
 			</File>
 			<File
-				RelativePath="..\z80_op_tables.cpp"
+				RelativePath=".\z80_op_tables.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\z80_op_tables.h"
+				RelativePath=".\z80_op_tables.h"
 				>
 			</File>
 			<File
-				RelativePath="..\z80_opcodes.cpp"
+				RelativePath=".\z80_opcodes.cpp"
 				>
 			</File>
 		</Filter>
@@ -202,11 +204,11 @@
 			Name="video"
 			>
 			<File
-				RelativePath="..\ula.cpp"
+				RelativePath=".\ula.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\ula.h"
+				RelativePath=".\ula.h"
 				>
 			</File>
 		</Filter>
@@ -214,30 +216,66 @@
 			Name="device"
 			>
 			<File
-				RelativePath="..\device.cpp"
+				RelativePath=".\device.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\device.h"
+				RelativePath=".\device.h"
 				>
 			</File>
 			<File
-				RelativePath="..\keyboard.cpp"
+				RelativePath=".\keyboard.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\keyboard.h"
+				RelativePath=".\keyboard.h"
 				>
 			</File>
 			<Filter
 				Name="storage"
 				>
 				<File
-					RelativePath="..\snapshot.cpp"
+					RelativePath=".\snapshot.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\snapshot.h"
+					RelativePath=".\snapshot.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="sound"
+				>
+				<File
+					RelativePath=".\sound\ay.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\sound\ay.h"
+					>
+				</File>
+				<File
+					RelativePath=".\sound\beeper.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\sound\beeper.h"
+					>
+				</File>
+				<File
+					RelativePath=".\sound\device_sound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\sound\device_sound.h"
+					>
+				</File>
+				<File
+					RelativePath=".\sound\ym2203emu.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\sound\ym2203emu.h"
 					>
 				</File>
 			</Filter>
@@ -246,47 +284,44 @@
 			Name="platform"
 			>
 			<File
-				RelativePath="..\platform\platform.h"
+				RelativePath=".\platform\platform.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\platform\platform.h"
 				>
 			</File>
 			<Filter
 				Name="gl"
 				>
 				<File
-					RelativePath="..\platform\gl\draw.cpp"
+					RelativePath=".\platform\gl\draw.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\platform\gl\glut.cpp"
+					RelativePath=".\platform\gl\glut.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="oal"
+				>
+				<File
+					RelativePath=".\platform\oal\oal.cpp"
 					>
 				</File>
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="..\main.cpp"
+			RelativePath=".\main.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\memory.cpp"
+			RelativePath=".\memory.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\memory.h"
-			>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCustomBuildTool"
-				/>
-			</FileConfiguration>
-		</File>
-		<File
-			RelativePath="..\speccy.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\speccy.h"
+			RelativePath=".\memory.h"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -297,7 +332,11 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="..\std.h"
+			RelativePath=".\speccy.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\speccy.h"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -308,7 +347,18 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="..\std_types.h"
+			RelativePath=".\std.h"
+			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\std_types.h"
 			>
 		</File>
 	</Files>
