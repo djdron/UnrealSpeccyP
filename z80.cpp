@@ -87,7 +87,7 @@ void eZ80::Update(dword int_len, int* nmi_pending)
 //=============================================================================
 //	eZ80::Fetch
 //-----------------------------------------------------------------------------
-inline byte eZ80::Fetch()
+byte eZ80::Fetch()
 {
 	r_low++;// = (cpu->r & 0x80) + ((cpu->r+1) & 0x7F);
 	t += 4;
@@ -110,7 +110,7 @@ byte eZ80::IoRead(dword port) const
 //=============================================================================
 //	eZ80::Write
 //-----------------------------------------------------------------------------
-inline void eZ80::Write(word addr, byte v)
+void eZ80::Write(word addr, byte v)
 {
 	ula->UpdateRay(t);
 	memory->Write(addr, v);
@@ -118,7 +118,7 @@ inline void eZ80::Write(word addr, byte v)
 //=============================================================================
 //	eZ80::Read
 //-----------------------------------------------------------------------------
-inline byte eZ80::Read(word addr) const
+byte eZ80::Read(word addr) const
 {
 	return memory->Read(addr);
 }

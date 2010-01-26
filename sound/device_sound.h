@@ -7,7 +7,7 @@
 
 union SNDSAMPLE
 {
-   unsigned sample; // left/right channels in low/high WORDs
+   dword sample; // left/right channels in low/high WORDs
    struct { word left, right; } ch; // or left/right separately
 };
 
