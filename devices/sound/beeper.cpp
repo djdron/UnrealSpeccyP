@@ -1,6 +1,6 @@
-#include "../std.h"
+#include "../../std.h"
+#include "../../z80/z80.h"
 #include "beeper.h"
-#include "../z80.h"
 
 eBeeper::eBeeper(xZ80::eZ80* _cpu) : cpu(_cpu)
 {

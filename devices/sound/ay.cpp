@@ -1,7 +1,7 @@
-#include "../std.h"
-#include "ay.h"
+#include "../../std.h"
+#include "../../z80/z80.h"
 #include "ym2203emu.h"
-#include "../z80.h"
+#include "ay.h"
 
 eAY::eAY(xZ80::eZ80* _cpu) : cpu(_cpu)
 {

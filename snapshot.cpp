@@ -1,8 +1,8 @@
 #include "std.h"
+#include "z80/z80.h"
+#include "devices/memory.h"
 
 #include "snapshot.h"
-#include "z80.h"
-#include "memory.h"
 #include "speccy.h"
 
 #pragma pack(push, 1)

@@ -1,13 +1,13 @@
 #include "std.h"
 
 #include "speccy.h"
-#include "device.h"
-#include "z80.h"
-#include "memory.h"
-#include "ula.h"
-#include "keyboard.h"
-#include "sound/beeper.h"
-#include "sound/ay.h"
+#include "devices/device.h"
+#include "z80/z80.h"
+#include "devices/memory.h"
+#include "devices/ula.h"
+#include "devices/keyboard.h"
+#include "devices/sound/beeper.h"
+#include "devices/sound/ay.h"
 
 //=============================================================================
 //	eSpeccy::eSpeccy

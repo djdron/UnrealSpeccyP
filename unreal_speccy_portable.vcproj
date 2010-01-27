@@ -156,126 +156,129 @@
 			Name="z80"
 			>
 			<File
-				RelativePath=".\z80.cpp"
+				RelativePath=".\z80\z80.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\z80.h"
+				RelativePath=".\z80\z80.h"
 				>
 			</File>
 			<File
-				RelativePath=".\z80_op_cb.h"
+				RelativePath=".\z80\z80_op_cb.h"
 				>
 			</File>
 			<File
-				RelativePath=".\z80_op_dd.h"
+				RelativePath=".\z80\z80_op_dd.h"
 				>
 			</File>
 			<File
-				RelativePath=".\z80_op_ddcb.h"
+				RelativePath=".\z80\z80_op_ddcb.h"
 				>
 			</File>
 			<File
-				RelativePath=".\z80_op_ed.h"
+				RelativePath=".\z80\z80_op_ed.h"
 				>
 			</File>
 			<File
-				RelativePath=".\z80_op_fd.h"
+				RelativePath=".\z80\z80_op_fd.h"
 				>
 			</File>
 			<File
-				RelativePath=".\z80_op_noprefix.h"
+				RelativePath=".\z80\z80_op_noprefix.h"
 				>
 			</File>
 			<File
-				RelativePath=".\z80_op_tables.cpp"
+				RelativePath=".\z80\z80_op_tables.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\z80_op_tables.h"
+				RelativePath=".\z80\z80_op_tables.h"
 				>
 			</File>
 			<File
-				RelativePath=".\z80_opcodes.cpp"
+				RelativePath=".\z80\z80_opcodes.cpp"
 				>
 			</File>
 		</Filter>
 		<Filter
-			Name="video"
+			Name="devices"
 			>
 			<File
-				RelativePath=".\ula.cpp"
+				RelativePath=".\devices\device.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ula.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="device"
-			>
-			<File
-				RelativePath=".\device.cpp"
+				RelativePath=".\devices\device.h"
 				>
 			</File>
 			<File
-				RelativePath=".\device.h"
+				RelativePath=".\devices\keyboard.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\keyboard.cpp"
+				RelativePath=".\devices\keyboard.h"
 				>
 			</File>
 			<File
-				RelativePath=".\keyboard.h"
+				RelativePath=".\devices\memory.cpp"
 				>
 			</File>
-			<Filter
-				Name="storage"
+			<File
+				RelativePath=".\devices\memory.h"
 				>
-				<File
-					RelativePath=".\snapshot.cpp"
+				<FileConfiguration
+					Name="Debug|Win32"
 					>
-				</File>
-				<File
-					RelativePath=".\snapshot.h"
-					>
-				</File>
-			</Filter>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
 			<Filter
 				Name="sound"
 				>
 				<File
-					RelativePath=".\sound\ay.cpp"
+					RelativePath=".\devices\sound\ay.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\sound\ay.h"
+					RelativePath=".\devices\sound\ay.h"
 					>
 				</File>
 				<File
-					RelativePath=".\sound\beeper.cpp"
+					RelativePath=".\devices\sound\beeper.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\sound\beeper.h"
+					RelativePath=".\devices\sound\beeper.h"
 					>
 				</File>
 				<File
-					RelativePath=".\sound\device_sound.cpp"
+					RelativePath=".\devices\sound\device_sound.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\sound\device_sound.h"
+					RelativePath=".\devices\sound\device_sound.h"
 					>
 				</File>
 				<File
-					RelativePath=".\sound\ym2203emu.cpp"
+					RelativePath=".\devices\sound\ym2203emu.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\sound\ym2203emu.h"
+					RelativePath=".\devices\sound\ym2203emu.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="video"
+				>
+				<File
+					RelativePath=".\devices\ula.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\ula.h"
 					>
 				</File>
 			</Filter>
@@ -312,24 +315,21 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="storage"
+			>
+			<File
+				RelativePath=".\snapshot.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\snapshot.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\main.cpp"
 			>
-		</File>
-		<File
-			RelativePath=".\memory.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\memory.h"
-			>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCustomBuildTool"
-				/>
-			</FileConfiguration>
 		</File>
 		<File
 			RelativePath=".\speccy.cpp"

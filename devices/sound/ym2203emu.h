@@ -1,7 +1,7 @@
 #ifndef __EMUL2203_H__
 #define __EMUL2203_H__
 
-#include "../std_types.h"
+#include "../../std_types.h"
 
 typedef short stream_sample_t;
 typedef stream_sample_t FMSAMPLE;

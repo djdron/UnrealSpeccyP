@@ -1,10 +1,9 @@
-#include "std.h"
+#include "../std.h"
+#include "../devices/memory.h"
+#include "../devices/ula.h"
+#include "../devices/device.h"
 
 #include "z80.h"
-#include "memory.h"
-#include "ula.h"
-#include "device.h"
-#include "speccy.h"
 
 namespace xZ80
 {

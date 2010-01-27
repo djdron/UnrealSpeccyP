@@ -108,7 +108,7 @@
 //#include <windows.h>
 //#include <stdio.h>
 
-#include "../std.h"
+#include "../../std.h"
 #include "ym2203emu.h"
 
 #define TYPE_SSG    0x01    /* SSG support          */

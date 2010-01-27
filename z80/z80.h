@@ -2,7 +2,6 @@
 #define	__Z80_H__
 
 #include "z80_op_tables.h"
-#include "snapshot.h"
 
 #pragma once
 

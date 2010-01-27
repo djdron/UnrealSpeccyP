@@ -1,10 +1,10 @@
 #include "std.h"
 #include "platform/platform.h"
 #include "speccy.h"
-#include "ula.h"
-#include "keyboard.h"
+#include "devices/ula.h"
+#include "devices/keyboard.h"
+#include "devices/sound/device_sound.h"
 #include "snapshot.h"
-#include "sound/device_sound.h"
 
 struct eSpeccyHandler : public xPlatform::eHandler
 {

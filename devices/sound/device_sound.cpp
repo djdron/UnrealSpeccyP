@@ -1,4 +1,4 @@
-#include "../std.h"
+#include "../../std.h"
 #include "device_sound.h"
 
 unsigned eDeviceSound::Render(SNDOUT *src, dword srclen, dword clk_ticks, bufptr_t dst_start)
