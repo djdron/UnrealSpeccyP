@@ -227,7 +227,6 @@ inline void eUla::UpdateRayPaper(int& t, int last_t)
 		}
 		t += 4;
 	}
-	t = end;
 }
 //=============================================================================
 //	eUla::FlushScreen
