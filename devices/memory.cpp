@@ -3,22 +3,60 @@
 #include "memory.h"
 
 //=============================================================================
+//	eRom::LoadRom
+//-----------------------------------------------------------------------------
+void eRom::LoadRom(int page, const char* rom)
+{
+	FILE* f = fopen(rom, "rb");
+	assert(f);
+	size_t s = fread(memory->Get(page), 1, eMemory::PAGE_SIZE, f);
+	assert(s == eMemory::PAGE_SIZE);
+	fclose(f);
+}
+//=============================================================================
 //	eRom::Init
 //-----------------------------------------------------------------------------
 void eRom::Init()
 {
-	FILE* f = fopen("rom/sos.rom", "rb");
-	assert(f);
-	size_t s = fread(memory->Get(eMemory::P_ROM), 1, eMemory::PAGE_SIZE, f);
-	assert(s == eMemory::PAGE_SIZE);
-	fclose(f);
+	LoadRom(eMemory::P_ROM0, "rom/sos.rom");
+	LoadRom(eMemory::P_ROM1, "rom/128_low.rom");
+	LoadRom(eMemory::P_ROM2, "rom/dos513f.rom");
+	LoadRom(eMemory::P_ROM3, "rom/service.rom");
 }
 //=============================================================================
 //	eRom::Reset
 //-----------------------------------------------------------------------------
 void eRom::Reset()
 {
-	memory->SetBank(0, eMemory::P_ROM);
+	memory->SetBank(0, eMemory::P_ROM3);
+}
+//=============================================================================
+//	eRom::IoWrite
+//-----------------------------------------------------------------------------
+void eRom::IoWrite(word port, byte v)
+{
+	if(!(port & 2) && !(port & 0x8000)) // zx128 port
+	{
+		int page = (!trdos ? eMemory::P_ROM0 : eMemory::P_ROM2) + (v & 0x10);
+		memory->SetBank(0, page);
+	}
+}
+//=============================================================================
+//	eRom::Read
+//-----------------------------------------------------------------------------
+void eRom::Read(word addr)
+{
+	byte pc_h = addr >> 8;
+	if(pc_h == 0x3d)
+	{
+		trdos = true;
+		memory->SetBank(0, eMemory::P_ROM2);
+	}
+	else if(pc_h & 0xc0) // pc > 0x3fff closes tr-dos
+	{
+		trdos = false;
+		memory->SetBank(0, eMemory::P_ROM0);
+	}
 }
 
 //=============================================================================

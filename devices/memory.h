@@ -13,11 +13,16 @@ class eMemory;
 class eRom : public eDevice
 {
 public:
-	eRom(eMemory* m) : memory(m) {}
+	eRom(eMemory* m) : memory(m), trdos(false) {}
 	virtual void Init();
 	virtual void Reset();
+	virtual void IoWrite(word port, byte v);
+	void Read(word addr);
+protected:
+	void LoadRom(int page, const char* rom);
 protected:
 	eMemory* memory;
+	bool trdos;
 };
 
 //*****************************************************************************
@@ -47,7 +52,7 @@ public:
 
 	enum ePage
 	{
-		P_ROM = 0,
+		P_ROM0 = 0, P_ROM1, P_ROM2, P_ROM3,
 		P_RAM0, P_RAM1, P_RAM2, P_RAM3,
 		P_RAM4, P_RAM5, P_RAM6, P_RAM7,
 		P_AMOUNT

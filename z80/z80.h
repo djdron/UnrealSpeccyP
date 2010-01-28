@@ -6,6 +6,7 @@
 #pragma once
 
 class eMemory;
+class eRom;
 class eUla;
 class eDevices;
 
@@ -35,7 +36,7 @@ enum eFlags
 	SF = 0x80
 };
 
-extern byte even_m1; // m1_wait = 0xC0 - on wait machines, 0 - no_wait on pentagon
+extern byte even_m1; // m1_wait = 0xc0 - on wait machines, 0 - no_wait on pentagon
 extern bool unstable_databus;
 
 //*****************************************************************************
@@ -44,7 +45,7 @@ extern bool unstable_databus;
 class eZ80
 {
 public:
-	eZ80(eMemory* m, eUla* u, eDevices* d, dword frame_tacts = 0);
+	eZ80(eMemory* m, eRom* r, eUla* u, eDevices* d, dword frame_tacts = 0);
 	void Reset();
 	void Update(dword int_len, int* nmi_pending);
 
@@ -99,6 +100,7 @@ protected:
 
 protected:
 	eMemory*	memory;
+	eRom*		rom;
 	eUla*		ula;
 	eDevices*	devices;
 
