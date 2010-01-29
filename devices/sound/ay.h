@@ -11,34 +11,34 @@ const dword SNDR_DEFAULT_AY_RATE = 1774400; // original ZX-Spectrum soundchip cl
 
 struct AYREGS
 {
-   word fA, fB, fC;
-   byte noise, mix;
-   byte vA, vB, vC;
-   word envT;
-   byte env;
-   byte portA, portB;
+	word fA, fB, fC;
+	byte noise, mix;
+	byte vA, vB, vC;
+	word envT;
+	byte env;
+	byte portA, portB;
 };
 
 struct AYOUT
 {
-   dword timestamp; // in system ticks
-   byte reg_num;
-   byte reg_value;
-   byte res1, res2; // padding
+	dword timestamp; // in system ticks
+	byte reg_num;
+	byte reg_value;
+	byte res1, res2; // padding
 };
 
 // output volumes (#0000-#FFFF) for given envelope state or R8-R10 value
 // AY chip has only 16 different volume values, so v[0]=v[1], v[2]=v[3], ...
 struct SNDCHIP_VOLTAB
 {
-   dword v[32];
+	dword v[32];
 };
 
 // generator's channel panning, % (0-100)
 struct SNDCHIP_PANTAB
 {
-   dword raw[6];
-   // structured as 'struct { dword left, right; } chan[3]';
+	dword raw[6];
+	// structured as 'struct { dword left, right; } chan[3]';
 };
 
 // used as parameters to SNDCHIP::set_volumes(),
@@ -54,6 +54,9 @@ extern const SNDCHIP_PANTAB* SNDR_PAN_BCA;
 extern const SNDCHIP_PANTAB* SNDR_PAN_CAB;
 extern const SNDCHIP_PANTAB* SNDR_PAN_CBA;
 
+//=============================================================================
+//	eAY
+//-----------------------------------------------------------------------------
 class eAY : public eDeviceSound
 {
 	typedef eDeviceSound eInherited;
@@ -83,7 +86,7 @@ public:
 	byte Read();
 	virtual dword EndFrame(dword clk_ticks);
 
- private:
+private:
 	typedef void YM2203;
 	YM2203* chip2203; //registers //Dexus
 	//FMSAMPLE FMbuf; //1 sample //Dexus
