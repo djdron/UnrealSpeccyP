@@ -102,50 +102,9 @@ static const eKey keys[KEYS_COUNT] =
 //-----------------------------------------------------------------------------
 void eKeyboard::OnKey(char _key, bool _down, bool _shift, bool _ctrl, bool _alt)
 {
-	// translate ASCII to speccy keys
-	switch(_key)
-	{
-	case '\r':	_key = 'e';		break; // enter
-	case '\b': // backspace
-		_key = '0';
-		_shift = true;
-		break;
-	case '\"': // double quote
-		_key = 'P';
-		_alt = true;
-		_shift = false;
-		break;
-	case '\t': // convert tab to ss + cs
-		_key = '\0';
-		_shift = true;
-		_alt = true;
-		break;
-
-	case '!':	_key = '1';		break;
-	case '@':	_key = '2';		break;
-	case '#':	_key = '3';		break;
-	case '$':	_key = '4';		break;
-	case '%':	_key = '5';		break;
-	case '^':	_key = '6';		break;
-	case '&':	_key = '7';		break;
-	case '*':	_key = '8';		break;
-	case '(':	_key = '9';		break;
-	case ')':	_key = '0';		break;
-	}
 	KeyState(_key, _down);
-	if(_down)
-	{
-		// simulate ext keys
-		if(_shift) // caps shift
-			KeyState('c', true);
-		if(_alt) // symbol shift
-			KeyState('s', true);
-	}
-	else
-	{
-		KeyState('c', false);
-		KeyState('s', false);
-	}
+	KeyState('c', _shift);	// caps shift
+	KeyState('s', _alt);	// symbol shift
 }
 //=============================================================================
 //	eKeyboard::KeyState

@@ -6,12 +6,18 @@
 #include "devices/sound/device_sound.h"
 #include "snapshot.h"
 
-struct eSpeccyHandler : public xPlatform::eHandler
+static struct eSpeccyHandler : public xPlatform::eHandler
 {
-	eSpeccyHandler(eSpeccy* s) : speccy(s)
+	eSpeccyHandler()
 	{
+		speccy = new eSpeccy;
 		sound_dev[0] = speccy->Beeper();
 		sound_dev[1] = speccy->AY();
+//		xSnapshot::Load(speccy, "images/vibrate.sna");
+	}
+	~eSpeccyHandler()
+	{
+		delete speccy;
 	}
 	virtual void OnLoop() { speccy->Update(); }
 	virtual void* VideoData() { return speccy->Ula()->Screen(); }
@@ -35,19 +41,6 @@ struct eSpeccyHandler : public xPlatform::eHandler
 
 	enum { SOUND_DEV_COUNT = 2 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];
-};
+} sh;
 
-int main(int argc, char* argv[])
-{
-	eSpeccy* speccy = new eSpeccy;
-	speccy->Init();
-	speccy->Reset();
-	xSnapshot::Load(speccy, "images/vibrate.sna");
-	eSpeccyHandler sh(speccy);
-	if(!xPlatform::Init(argc, argv))
-		return -1;
-	xPlatform::Loop();
-	xPlatform::Done();
-	delete speccy;
-	return 0;
-}
+// see platform-specific files for main() function

@@ -18,9 +18,8 @@ class eSpeccy
 public:
 	eSpeccy();
 	virtual ~eSpeccy();
-	void Init();
+
 	void Reset();
-	void Load() {}
 	void Update();
 
 	xZ80::eZ80* CPU() const { return cpu; }

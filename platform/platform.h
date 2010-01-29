@@ -29,10 +29,6 @@ struct eHandler
 	virtual void AudioDataUse(int source, dword size) = 0;
 };
 
-bool Init(int argc, char* argv[]);
-void Loop();
-void Done();
-
 eHandler* Handler();
 
 }

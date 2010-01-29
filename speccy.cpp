@@ -15,21 +15,6 @@
 eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), devices(NULL), frame_tacts(0)
 	, int_len(0), nmi_pending(0)
 {
-}
-//=============================================================================
-//	eSpeccy::~eSpeccy
-//-----------------------------------------------------------------------------
-eSpeccy::~eSpeccy()
-{
-	delete cpu;
-	delete memory;
-	delete devices;
-}
-//=============================================================================
-//	eSpeccy::Init
-//-----------------------------------------------------------------------------
-void eSpeccy::Init()
-{
 	// pentagon timings
 	frame_tacts = 71680;
 	int_len = 32;
@@ -46,6 +31,17 @@ void eSpeccy::Init()
 	devices->Add(new eKeyboard, D_KEYBOARD);
 	devices->Add(new eBeeper(cpu), D_BEEPER);
 	devices->Add(new eAY(cpu), D_AY);
+
+	Reset();
+}
+//=============================================================================
+//	eSpeccy::~eSpeccy
+//-----------------------------------------------------------------------------
+eSpeccy::~eSpeccy()
+{
+	delete cpu;
+	delete memory;
+	delete devices;
 }
 //=============================================================================
 //	eSpeccy::Reset
