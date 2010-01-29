@@ -59,11 +59,14 @@ protected:
 	byte*	screen;
 	int		scrtab[256];	// offset to start of line
 	int		atrtab[256];	// offset to start of attribute line
-	byte	colortab[256];	// map zx attributes to pc attributes
+	byte	colortab1[256];	// map zx attributes to pc attributes
+	byte	colortab2[256];
+	byte*	colortab;
 
 	eTiming	timings[4 * S_HEIGHT];
 	eTiming* timing;
 	int		prev_t;			// last drawn pixel's tact
+	int		frame;
 };
 
 #endif//__ULA_H__

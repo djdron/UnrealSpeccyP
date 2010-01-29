@@ -10,7 +10,7 @@
 //	eUla::eUla
 //-----------------------------------------------------------------------------
 eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true)
-	, timing(NULL), prev_t(0)
+	, timing(NULL), prev_t(0), colortab(NULL), frame(0)
 {
 	screen = new byte[S_WIDTH * S_HEIGHT];
 }
@@ -33,6 +33,7 @@ void eUla::Init()
 	border_and	= 0xffffffff;
 	prev_t = 0;
 	timing = timings;
+	colortab = colortab1;
 	CreateTables();
 	CreateTimings();
 }
@@ -57,22 +58,24 @@ void eUla::CreateTables()
 	// make colortab: zx-attr -> pc-attr
 	for(int a = 0; a < 0x100; a++)
 	{
-		byte ink = a & 7;
-		byte paper = (a >> 3) & 7;
-		byte bright = (a >> 6) & 1;
-		byte flash = (a >> 7) & 1;
+		byte ink	= a & 7;
+		byte paper	= (a >> 3) & 7;
+		byte bright	= (a >> 6) & 1;
+		byte flash	= (a >> 7) & 1;
 		if(ink)
 			ink |= bright << 3;		// no bright for 0th color
 		if(paper)
 			paper |= bright << 3;	// no bright for 0th color
+		byte c1 = (paper << 4) | ink;
 		if(flash)
 		{
 			byte t = ink;
 			ink = paper;
 			paper = t;
 		}
-		byte c = (paper << 4) | ink;
-		colortab[a] = c;
+		byte c2 = (paper << 4) | ink;
+		colortab1[a] = c1;
+		colortab2[a] = c2;
 	}
 }
 //=============================================================================
@@ -154,16 +157,21 @@ void eUla::IoWrite(word port, byte v)
 //=============================================================================
 //	eUla::Update
 //-----------------------------------------------------------------------------
-inline void eUla::Update()
+void eUla::Update()
 {
 	UpdateRay(0x7fff0000);
 	prev_t = 0;
 	timing = timings;
+	if(++frame >= 15)
+	{
+		frame = 0;
+		colortab = colortab == colortab1 ? colortab2 : colortab1;
+	}
 }
 //=============================================================================
 //	UpdateRay
 //-----------------------------------------------------------------------------
-void eUla::UpdateRay(int tact)
+inline void eUla::UpdateRay(int tact)
 {
 	int last_t = (tact + border_add) & border_and;
 	int t = prev_t;
