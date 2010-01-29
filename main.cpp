@@ -13,7 +13,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		speccy = new eSpeccy;
 		sound_dev[0] = speccy->Beeper();
 		sound_dev[1] = speccy->AY();
-//		xSnapshot::Load(speccy, "images/vibrate.sna");
+//		xSnapshot::Load(speccy, "images/rage_greetz.sna");
 	}
 	~eSpeccyHandler()
 	{

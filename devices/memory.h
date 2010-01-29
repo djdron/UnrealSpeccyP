@@ -5,39 +5,6 @@
 
 #pragma once
 
-class eMemory;
-
-//*****************************************************************************
-//	eRom
-//-----------------------------------------------------------------------------
-class eRom : public eDevice
-{
-public:
-	eRom(eMemory* m) : memory(m), trdos(false) {}
-	virtual void Init();
-	virtual void Reset();
-	virtual void IoWrite(word port, byte v);
-	void Read(word addr);
-protected:
-	void LoadRom(int page, const char* rom);
-protected:
-	eMemory* memory;
-	bool trdos;
-};
-
-//*****************************************************************************
-//	eRam
-//-----------------------------------------------------------------------------
-class eRam : public eDevice
-{
-public:
-	eRam(eMemory* m) : memory(m) {}
-	virtual void Reset();
-	virtual void IoWrite(word port, byte v);
-protected:
-	eMemory* memory;
-};
-
 //*****************************************************************************
 //	eMemory
 //-----------------------------------------------------------------------------
@@ -64,6 +31,43 @@ protected:
 	byte* bank_read[BANKS_AMOUNT];
 	byte* bank_write[BANKS_AMOUNT];
 	byte* memory;
+};
+
+//*****************************************************************************
+//	eRom
+//-----------------------------------------------------------------------------
+class eRom : public eDevice
+{
+public:
+	eRom(eMemory* m) : memory(m), dos_selected(false) {}
+	virtual void Init();
+	virtual void Reset();
+	virtual void IoWrite(word port, byte v);
+	void Read(word addr);
+
+protected:
+	void LoadRom(int page, const char* rom);
+	enum
+	{
+		ROM_128 = eMemory::P_ROM0, ROM_SOS = eMemory::P_ROM1,
+		ROM_SYS = eMemory::P_ROM2, ROM_DOS = eMemory::P_ROM3
+	};
+protected:
+	eMemory* memory;
+	bool dos_selected;
+};
+
+//*****************************************************************************
+//	eRam
+//-----------------------------------------------------------------------------
+class eRam : public eDevice
+{
+public:
+	eRam(eMemory* m) : memory(m) {}
+	virtual void Reset();
+	virtual void IoWrite(word port, byte v);
+protected:
+	eMemory* memory;
 };
 
 #endif//__MEMORY_H__

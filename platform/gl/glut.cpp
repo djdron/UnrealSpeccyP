@@ -99,7 +99,7 @@ bool Init(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
-	glutInitWindowSize(320, 240);
+	glutInitWindowSize(320 * 2, 240 * 2);
 	glutInitWindowPosition(100, 100);
 	window = glutCreateWindow(Handler()->WindowCaption());
 	glutDisplayFunc(&OnDraw);
