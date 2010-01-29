@@ -1,6 +1,9 @@
 #include "../../std.h"
 #include "device_sound.h"
 
+//=============================================================================
+//	eDeviceSound::eDeviceSound
+//-----------------------------------------------------------------------------
 eDeviceSound::eDeviceSound()
 {
 	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_SAMPLE_RATE);
