@@ -48,7 +48,7 @@ struct eZ80Snap : public xZ80::eZ80
 		im = s->im;
 		iff1 = s->iff1 ? 1 : 0;
 
-		devices->IoWrite(0xfe, s->pFE);
+		devices->IoWrite(0xfe, s->pFE, t);
 		int p_size = eMemory::PAGE_SIZE;
 		memcpy(memory->Get(eMemory::P_RAM5), s->page5, p_size);
 		memcpy(memory->Get(eMemory::P_RAM2), s->page2, p_size);
@@ -61,7 +61,7 @@ struct eZ80Snap : public xZ80::eZ80
 			sp += 2;
 			return;
 		}
-		devices->IoWrite(0x7ffd, s->p7FFD);
+		devices->IoWrite(0x7ffd, s->p7FFD, t);
 		const byte* page = s->pages;
 		byte mapped = 0x24 | (1 << (s->p7FFD & 7));
 		for(int i = 0; i < 8; ++i)

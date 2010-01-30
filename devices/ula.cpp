@@ -9,7 +9,7 @@
 //=============================================================================
 //	eUla::eUla
 //-----------------------------------------------------------------------------
-eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true)
+eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true), base(NULL), zx_base(0)
 	, timing(NULL), prev_t(0), colortab(NULL), frame(0)
 {
 	screen = new byte[S_WIDTH * S_HEIGHT];
@@ -138,20 +138,41 @@ void eUla::CreateTimings()
 //-----------------------------------------------------------------------------
 void eUla::Reset()
 {
-	first_screen = true;
+	SwitchScreen(true);
+}
+//=============================================================================
+//	eUla::SwitchScreen
+//-----------------------------------------------------------------------------
+inline void eUla::SwitchScreen(bool first)
+{
+	first_screen = first;
+	int page = first ? eMemory::P_RAM5: eMemory::P_RAM7;
+	base = memory->Get(page);
+	zx_base = page == eMemory::P_RAM5 ? 0x4000 : 0xc000;
+}
+//=============================================================================
+//	eUla::Write
+//-----------------------------------------------------------------------------
+void eUla::Write(word addr, byte v, int tact)
+{
+	UpdateRay(tact);
 }
 //=============================================================================
 //	eUla::IoWrite
 //-----------------------------------------------------------------------------
-void eUla::IoWrite(word port, byte v)
+void eUla::IoWrite(word port, byte v, int tact)
 {
 	if(!(port & 1)) // port 0xfe
 	{
-		border_color = v & 7;
+		if((v & 7) != border_color)
+		{
+			UpdateRay(tact);
+			border_color = v & 7;
+		}
 	}
 	if(!(port & 2) && !(port & 0x8000)) // zx128 port
 	{
-		first_screen = !(v & 0x08);
+		SwitchScreen(!(v & 0x08));
 	}
 }
 //=============================================================================
@@ -217,8 +238,6 @@ inline void eUla::UpdateRayBorder(int& t, int last_t)
 inline void eUla::UpdateRayPaper(int& t, int last_t)
 {
 	int offs = (t - timing->t) / 4;
-	int page = first_screen ? eMemory::P_RAM5: eMemory::P_RAM7;
-	byte* base = memory->Get(page);
 	byte* scr = base + timing->scr_offs + offs;
 	byte* atr = base + timing->attr_offs + offs;
 	byte* dst = timing->dst + offs * 8;

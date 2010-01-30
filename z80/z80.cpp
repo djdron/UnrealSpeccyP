@@ -95,24 +95,23 @@ byte eZ80::Fetch()
 //=============================================================================
 //	eZ80::IoWrite
 //-----------------------------------------------------------------------------
-void eZ80::IoWrite(dword port, byte v)
+void eZ80::IoWrite(word port, byte v)
 {
-	ula->UpdateRay(t);
-	devices->IoWrite(port, v);
+	devices->IoWrite(port, v, t);
 }
 //=============================================================================
 //	eZ80::IoRead
 //-----------------------------------------------------------------------------
-byte eZ80::IoRead(dword port) const
+byte eZ80::IoRead(word port) const
 {
-	return devices->IoRead(port);
+	return devices->IoRead(port, t);
 }
 //=============================================================================
 //	eZ80::Write
 //-----------------------------------------------------------------------------
 void eZ80::Write(word addr, byte v)
 {
-	ula->UpdateRay(t);
+	ula->Write(addr, v, t);
 	memory->Write(addr, v);
 }
 //=============================================================================

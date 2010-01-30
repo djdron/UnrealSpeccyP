@@ -18,13 +18,15 @@ public:
 	virtual void Init();
 	virtual void Reset();
 	virtual void Update();
-	virtual void IoWrite(word port, byte v);
+	virtual void Write(word addr, byte v, int tact);
+	virtual void IoWrite(word port, byte v, int tact);
 	void*	Screen() const { return screen; }
-	void	UpdateRay(int tact);
 
 protected:
 	void	CreateTables();
 	void	CreateTimings();
+	void	SwitchScreen(bool first);
+	void	UpdateRay(int tact);
 	void	UpdateRayBorder(int& t, int last_t);
 	void	UpdateRayPaper(int& t, int last_t);
 	void	FlushScreen();
@@ -56,6 +58,8 @@ protected:
 	int		border_and;
 	byte	border_color;
 	bool	first_screen;
+	word	zx_base;
+	byte*	base;
 	byte*	screen;
 	int		scrtab[256];	// offset to start of line
 	int		atrtab[256];	// offset to start of attribute line

@@ -18,7 +18,7 @@ void eKeyboard::Reset()
 //=============================================================================
 //	eKeyboard::IoRead
 //-----------------------------------------------------------------------------
-void eKeyboard::IoRead(word port, byte* v)
+void eKeyboard::IoRead(word port, byte* v, int tact)
 {
 	if(port & 1)
 		return;

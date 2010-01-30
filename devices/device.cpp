@@ -54,22 +54,22 @@ eDevice* eDevices::Item(int id)
 //=============================================================================
 //	eDevices::IoRead
 //-----------------------------------------------------------------------------
-byte eDevices::IoRead(word port) const
+byte eDevices::IoRead(word port, int tact) const
 {
 	byte v = 0xff;
 	for(int i = 0; i < amount; ++i)
 	{
-		items[i].dev->IoRead(port, &v);
+		items[i].dev->IoRead(port, &v, tact);
 	}
 	return v;
 }
 //=============================================================================
 //	eDevices::IoWrite
 //-----------------------------------------------------------------------------
-void eDevices::IoWrite(word port, byte v)
+void eDevices::IoWrite(word port, byte v, int tact)
 {
 	for(int i = 0; i < amount; ++i)
 	{
-		items[i].dev->IoWrite(port, v);
+		items[i].dev->IoWrite(port, v, tact);
 	}
 }

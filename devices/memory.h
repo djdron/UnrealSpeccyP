@@ -42,7 +42,7 @@ public:
 	eRom(eMemory* m) : memory(m), dos_selected(false) {}
 	virtual void Init();
 	virtual void Reset();
-	virtual void IoWrite(word port, byte v);
+	virtual void IoWrite(word port, byte v, int tact);
 	void Read(word addr);
 
 protected:
@@ -65,7 +65,7 @@ class eRam : public eDevice
 public:
 	eRam(eMemory* m) : memory(m) {}
 	virtual void Reset();
-	virtual void IoWrite(word port, byte v);
+	virtual void IoWrite(word port, byte v, int tact);
 protected:
 	eMemory* memory;
 };

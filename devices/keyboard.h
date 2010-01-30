@@ -10,7 +10,7 @@ class eKeyboard : public eDevice
 public:
 	virtual void Init();
 	virtual void Reset();
-	virtual void IoRead(word port, byte* v);
+	virtual void IoRead(word port, byte* v, int tact);
 	void OnKey(char key, bool down, bool shift, bool ctrl, bool alt);
 
 protected:

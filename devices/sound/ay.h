@@ -61,11 +61,11 @@ class eAY : public eDeviceSound
 {
 	typedef eDeviceSound eInherited;
 public:
-	eAY(xZ80::eZ80* cpu);
+	eAY();
 	virtual ~eAY();
 
-	virtual void IoRead(word port, byte* v);
-	virtual void IoWrite(word port, byte v);
+	virtual void IoRead(word port, byte* v, int tact);
+	virtual void IoWrite(word port, byte v, int tact);
 
 	enum CHIP_TYPE { CHIP_AY, CHIP_YM, CHIP_YM2203, CHIP_MAX }; //Dexus
 	static const char* GetChipName(CHIP_TYPE i);
@@ -121,8 +121,6 @@ private:
 
 	void Flush(dword chiptick);
 	void ApplyRegs(dword timestamp = 0);
-
-	xZ80::eZ80* cpu;
 };
 
 #endif//__AY_H__

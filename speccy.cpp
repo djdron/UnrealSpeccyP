@@ -20,17 +20,17 @@ eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), devices(NULL), frame_tacts(0)
 	int_len = 32;
 
 	memory = new eMemory;
-	eRom* rom = new eRom(memory);
-	eUla* ula = new eUla(memory);
 	devices = new eDevices;
-	cpu = new xZ80::eZ80(memory, rom, ula, devices, frame_tacts);
 
+	eRom* rom = new eRom(memory);
 	devices->Add(rom, D_ROM);
 	devices->Add(new eRam(memory), D_RAM);
+	eUla* ula = new eUla(memory);
 	devices->Add(ula, D_ULA);
 	devices->Add(new eKeyboard, D_KEYBOARD);
-	devices->Add(new eBeeper(cpu), D_BEEPER);
-	devices->Add(new eAY(cpu), D_AY);
+	devices->Add(new eBeeper, D_BEEPER);
+	devices->Add(new eAY, D_AY);
+	cpu = new xZ80::eZ80(memory, rom, ula, devices, frame_tacts);
 
 	Reset();
 }

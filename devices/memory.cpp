@@ -76,7 +76,7 @@ void eRom::Reset()
 //=============================================================================
 //	eRom::IoWrite
 //-----------------------------------------------------------------------------
-void eRom::IoWrite(word port, byte v)
+void eRom::IoWrite(word port, byte v, int tact)
 {
 	if(!(port & 2) && !(port & 0x8000)) // zx128 port
 	{
@@ -90,12 +90,12 @@ void eRom::IoWrite(word port, byte v)
 void eRom::Read(word addr)
 {
 	byte pc_h = addr >> 8;
-	if(!dos_selected && pc_h == 0x3d)
+	if(!dos_selected && (pc_h == 0x3d))
 	{
 		dos_selected = true;
 		memory->SetBank(0, ROM_DOS);
 	}
-	else if(dos_selected && pc_h & 0xc0) // pc > 0x3fff closes tr-dos
+	else if(dos_selected && (pc_h & 0xc0)) // pc > 0x3fff closes tr-dos
 	{
 		dos_selected = false;
 		memory->SetBank(0, ROM_SOS);
@@ -114,7 +114,7 @@ void eRam::Reset()
 //=============================================================================
 //	eRam::IoWrite
 //-----------------------------------------------------------------------------
-void eRam::IoWrite(word port, byte v)
+void eRam::IoWrite(word port, byte v, int tact)
 {
 	if(!(port & 2) && !(port & 0x8000)) // zx128 port
 	{

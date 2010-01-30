@@ -49,7 +49,6 @@ public:
 	void Reset();
 	void Update(dword int_len, int* nmi_pending);
 
-	dword T() const { return t; }
 	dword FrameTacts() const { return frame_tacts; }
 
 protected:
@@ -58,8 +57,8 @@ protected:
 	void Step();
 
 	byte Fetch(); //m1_cycle data fetch
-	byte IoRead(dword port) const;
-	void IoWrite(dword port, byte v);
+	byte IoRead(word port) const;
+	void IoWrite(word port, byte v);
 	byte Read(word addr) const;
 	void Write(word addr, byte v);
 
