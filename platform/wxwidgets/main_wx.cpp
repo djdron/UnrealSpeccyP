@@ -43,6 +43,7 @@ public:
 	virtual void OnKeydown(wxKeyEvent& event)
 	{
 		int key = event.GetKeyCode();
+//		printf("kd:%c\n", key);
 		dword flags = KF_DOWN;
 		if(event.AltDown())			flags |= KF_ALT;
 		if(event.ShiftDown())		flags |= KF_SHIFT;
@@ -52,7 +53,10 @@ public:
 	virtual void OnKeyup(wxKeyEvent& event)
 	{
 		int key = event.GetKeyCode();
+//		printf("ku:%c\n", key);
 		dword flags = 0;
+		if(event.AltDown())			flags |= KF_ALT;
+		if(event.ShiftDown())		flags |= KF_SHIFT;
 		TranslateKey(key, flags);
 		Handler()->OnKey(key, 0);
 	}
@@ -89,10 +93,13 @@ void GLCanvas::TranslateKey(int& key, dword& flags)
 		key = '0';
 		flags |= KF_SHIFT;
 		break;
-	case '\"':
-		key = 'P';
-		flags |= KF_ALT;
-		flags &= ~KF_SHIFT;
+	case '\'':
+		if(flags&KF_SHIFT)
+		{
+			key = 'P';
+			flags |= KF_ALT;
+			flags &= ~KF_SHIFT;
+		}
 		break;
 	case '!':	key = '1';		break;
 	case '@':	key = '2';		break;
@@ -120,15 +127,15 @@ public:
 		menuFile->Append(ID_Open, _("&Open...\tCtrl+O"));
 		menuFile->Append(ID_Reset, _("&Reset...\tCtrl+R"));
 		menuFile->AppendSeparator();
-		menuFile->Append(ID_Quit, _("E&xit\tAlt+X"));
+		menuFile->Append(ID_Quit, _("E&xit"));
 
 		wxMenu* menuWindow = new wxMenu;
-		menuWindow->Append(ID_Size100, _("Size &100\tCtrl+1"));
-		menuWindow->Append(ID_Size200, _("Size &200\tCtrl+2"));
+		menuWindow->Append(ID_Size100, _("Size &100%\tCtrl+1"));
+		menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
 
 		wxMenuBar* menuBar = new wxMenuBar;
-		menuBar->Append(menuFile, _("&File"));
-		menuBar->Append(menuWindow, _("&Window"));
+		menuBar->Append(menuFile, _("File"));
+		menuBar->Append(menuWindow, _("Window"));
 
 		SetMenuBar(menuBar);
 
