@@ -40,6 +40,24 @@ public:
 	}
 	virtual void OnEraseBackground(wxEraseEvent& event) {}
 
+	virtual void OnKeydown(wxKeyEvent& event)
+	{
+		int key = event.GetKeyCode();
+		dword flags = KF_DOWN;
+		if(event.AltDown())			flags |= KF_ALT;
+		if(event.ShiftDown())		flags |= KF_SHIFT;
+		TranslateKey(key, flags);
+		Handler()->OnKey(key, flags);
+	}
+	virtual void OnKeyup(wxKeyEvent& event)
+	{
+		int key = event.GetKeyCode();
+		dword flags = 0;
+		TranslateKey(key, flags);
+		Handler()->OnKey(key, 0);
+	}
+	void TranslateKey(int& key, dword& flags);
+
 	static int canvas_attr[];
 	DECLARE_EVENT_TABLE()
 protected:
@@ -51,7 +69,46 @@ BEGIN_EVENT_TABLE(GLCanvas, wxGLCanvas)
 	EVT_PAINT(GLCanvas::OnPaint)
 	EVT_ERASE_BACKGROUND(GLCanvas::OnEraseBackground)
 	EVT_IDLE(GLCanvas::OnIdle)
+	EVT_KEY_DOWN(GLCanvas::OnKeydown)
+	EVT_KEY_UP(GLCanvas::OnKeyup)
 END_EVENT_TABLE()
+
+void GLCanvas::TranslateKey(int& key, dword& flags)
+{
+	switch(key)
+	{
+	case WXK_SHIFT:		key = 'c';	break;
+	case WXK_ALT:		key = 's';	break;
+	case WXK_RETURN:	key = 'e';	break;
+	case WXK_TAB:
+		key = '\0';
+		flags |= KF_ALT;
+		flags |= KF_SHIFT;
+		break;
+	case WXK_BACK:
+		key = '0';
+		flags |= KF_SHIFT;
+		break;
+	case '\"':
+		key = 'P';
+		flags |= KF_ALT;
+		flags &= ~KF_SHIFT;
+		break;
+	case '!':	key = '1';		break;
+	case '@':	key = '2';		break;
+	case '#':	key = '3';		break;
+	case '$':	key = '4';		break;
+	case '%':	key = '5';		break;
+	case '^':	key = '6';		break;
+	case '&':	key = '7';		break;
+	case '*':	key = '8';		break;
+	case '(':	key = '9';		break;
+	case ')':	key = '0';		break;
+	}
+	if(key > 255 || key < 32)
+		key = 0;
+}
+
 
 class Frame: public wxFrame
 {
