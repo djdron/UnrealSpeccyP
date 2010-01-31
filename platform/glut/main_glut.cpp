@@ -1,5 +1,4 @@
 #include "../../std.h"
-
 #include "../platform.h"
 
 #ifdef USE_GLUT
@@ -14,22 +13,25 @@ void InitSound();
 void DoneSound();
 void OnLoopSound();
 
-void DrawGL(void* data);
+void DrawGL(int w, int h, void* data);
 
 static int window = -1;
+static int w = 1, h = 1;
 
 static void OnResizeWindow(int Width, int Height)
 {
 	if(Height == 0)
 		Height = 1;
-	glViewport(0, 0, Width, Height);
+	w = Width;
+	h = Height;
 }
 
 static void Draw()
 {
-	DrawGL(Handler()->VideoData());
+	DrawGL(w, h, Handler()->VideoData());
 	glutSwapBuffers();
 }
+
 static void OnDraw() { Draw(); }
 static void OnIdle()
 {
@@ -86,6 +88,7 @@ static void OnKeyDown(unsigned char _key, int x, int y)
 	TranslateKey(key, flags);
 	Handler()->OnKey(key, flags);
 }
+
 static void OnKeyUp(unsigned char _key, int x, int y)
 {
 	dword flags = 0;

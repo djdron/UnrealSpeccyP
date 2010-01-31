@@ -86,5 +86,6 @@ void xSnapshot::Load(eSpeccy* speccy, const char* path)
 	fclose(f);
 	bool sna48 = r == 49179;
 	assert(sna48 || r == sizeof(snapshot));
+	speccy->Reset();
 	((eZ80Snap*)speccy->CPU())->SetState(&snapshot, sna48);
 }

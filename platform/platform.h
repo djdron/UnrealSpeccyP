@@ -5,9 +5,11 @@
 
 #pragma once
 
+#define USE_OAL
+
 #define USE_GL
 #define USE_GLUT
-#define USE_OAL
+//#define USE_WXWIDGETS
 
 namespace xPlatform
 {
@@ -21,6 +23,9 @@ struct eHandler
 	virtual void OnLoop() = 0;
 	virtual const char* WindowCaption() = 0;
 	virtual void OnKey(char key, dword flags) = 0;
+
+	virtual void OnOpenFile(const char* name) = 0;
+	virtual void OnReset() = 0;
 
 	virtual void* VideoData() = 0;
 	virtual int	AudioSources() = 0;

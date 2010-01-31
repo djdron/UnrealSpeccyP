@@ -13,7 +13,6 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		speccy = new eSpeccy;
 		sound_dev[0] = speccy->Beeper();
 		sound_dev[1] = speccy->AY();
-//		xSnapshot::Load(speccy, "images/rage_greetz.sna");
 	}
 	~eSpeccyHandler()
 	{
@@ -30,6 +29,14 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		bool ctrl = flags&KF_CTRL;
 		bool alt = flags&KF_ALT;
 		speccy->Keyboard()->OnKey(key, down, shift, ctrl, alt);
+	}
+	virtual void OnOpenFile(const char* name)
+	{
+		xSnapshot::Load(speccy, name);
+	}
+	virtual void OnReset()
+	{
+		speccy->Reset();
 	}
 
 	virtual int	AudioSources() { return SOUND_DEV_COUNT; }

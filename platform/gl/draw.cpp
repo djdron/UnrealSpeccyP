@@ -2,7 +2,7 @@
 
 #ifdef USE_GL
 
-#include <GL/glut.h>
+#include <GL/gl.h>
 
 namespace xPlatform
 {
@@ -17,9 +17,10 @@ static const byte bright_intensity = 55;
 //=============================================================================
 //	DrawGL
 //-----------------------------------------------------------------------------
-void DrawGL(void* _data)
+void DrawGL(int _w, int _h, void* _data)
 {
 	byte* data = (byte*)_data;
+	glViewport(0, 0, _w, _h);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -57,6 +58,7 @@ void DrawGL(void* _data)
 		glTexCoord2f(u, 0.0f);		glVertex2f(1.0f, 0.0f);
 	}
 	glEnd();
+	glFlush();
 }
 
 }

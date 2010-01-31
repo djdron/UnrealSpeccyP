@@ -55,7 +55,7 @@ bool eSource::Update(dword data_ready, void* data)
 	}
 	if(next_buf)
 	{
-		alBufferData(buffers[free_buf], AL_FORMAT_STEREO16, data, data_ready, 44100);
+		alBufferData(buffers[free_buf], AL_FORMAT_STEREO16, data, data_ready, 44100*60/50);
 		alSourceQueueBuffers(source, 1, &buffers[free_buf]);
 		if(++free_buf == BUFFER_COUNT)
 		{

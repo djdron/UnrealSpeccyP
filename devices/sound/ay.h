@@ -74,8 +74,7 @@ public:
 	void SetTimings(dword system_clock_rate, dword chip_clock_rate, dword sample_rate);
 	void SetVolumes(dword global_vol, const SNDCHIP_VOLTAB *voltab, const SNDCHIP_PANTAB *stereo);
 
-	void Reset(dword timestamp = 0); // call with default parameter, when context outside start_frame/end_frame block
-
+	virtual void Reset() { _Reset(); }
 	// 'render' is a function that converts array of register writes into PCM-buffer
 	dword Render(AYOUT *src, dword srclen, dword clk_ticks, bufptr_t dst);
 
@@ -119,6 +118,7 @@ private:
 	dword chip_clock_rate, system_clock_rate;
 	qword passed_chip_ticks, passed_clk_ticks;
 
+	void _Reset(dword timestamp = 0); // call with default parameter, when context outside start_frame/end_frame block
 	void Flush(dword chiptick);
 	void ApplyRegs(dword timestamp = 0);
 };

@@ -24,8 +24,12 @@
 <tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1709162093" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 <option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1211882149" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1214475052" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-<option id="gnu.cpp.compiler.option.preprocessor.def.395629857" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<option id="gnu.cpp.compiler.option.preprocessor.def.395629857" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="_LINUX"/>
+</option>
+<option id="gnu.cpp.compiler.option.other.other.845322220" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 `wx-config --cxxflags`" valueType="string"/>
+<option id="gnu.cpp.compiler.option.include.paths.368557643" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1210557951" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
@@ -41,6 +45,7 @@
 <listOptionValue builtIn="false" value="openal"/>
 <listOptionValue builtIn="false" value="glut"/>
 </option>
+<option id="gnu.cpp.link.option.flags.219021290" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="`wx-config --libs core,base,gl`" valueType="string"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1503405093" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 <additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -496,8 +501,12 @@
 <tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.6445500" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release">
 <option id="gnu.cpp.compiler.exe.release.option.optimization.level.1603917198" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.exe.release.option.debugging.level.53742263" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
-<option id="gnu.cpp.compiler.option.preprocessor.def.1066976443" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<option id="gnu.cpp.compiler.option.preprocessor.def.1066976443" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="_LINUX"/>
+</option>
+<option id="gnu.cpp.compiler.option.other.other.244579332" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 `wx-config --cxxflags`" valueType="string"/>
+<option id="gnu.cpp.compiler.option.include.paths.1515247875" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.167314520" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
@@ -514,6 +523,7 @@
 <listOptionValue builtIn="false" value="glut"/>
 </option>
 <option id="gnu.cpp.link.option.strip.1667308109" name="Omit all symbol information (-s)" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
+<option id="gnu.cpp.link.option.flags.1921547157" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="`wx-config --libs core,base,gl`" valueType="string"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1265928557" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 <additionalInput kind="additionalinput" paths="$(LIBS)"/>

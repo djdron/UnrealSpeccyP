@@ -14,7 +14,7 @@ eAY::eAY()
 	chip2203 = YM2203Init(NULL, 0, SNDR_DEFAULT_AY_RATE, 44100);
 	SetChip(CHIP_AY);
 	SetVolumes(0x7FFF, SNDR_VOL_AY, SNDR_PAN_ABC);
-	Reset();
+	_Reset();
 }
 //=============================================================================
 //	eAY::~eAY
@@ -315,7 +315,7 @@ void eAY::SetVolumes(dword global_vol, const SNDCHIP_VOLTAB *voltab, const SNDCH
 //=============================================================================
 //	eAY::Reset
 //-----------------------------------------------------------------------------
-void eAY::Reset(dword timestamp)
+void eAY::_Reset(dword timestamp)
 {
 	for (int i = 0; i < 14; i++)
 		reg[i] = 0;
