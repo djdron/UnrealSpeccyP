@@ -284,6 +284,34 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="fdd"
+				>
+				<File
+					RelativePath=".\devices\fdd\fdd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\fdd\fdd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\fdd\track_cache.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\fdd\track_cache.h"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\fdd\wd93.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\fdd\wd93.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="platform"

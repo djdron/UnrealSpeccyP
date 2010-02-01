@@ -28,7 +28,9 @@ public:
 	eDeviceSound* Beeper() const;
 	eDeviceSound* AY() const;
 
-	enum eDevice { D_ROM, D_RAM, D_ULA, D_KEYBOARD, D_BEEPER, D_AY };
+	const dword T() const { return t_states; }
+
+	enum eDevice { D_ROM, D_RAM, D_ULA, D_KEYBOARD, D_BEEPER, D_AY, D_WD1793 };
 protected:
 	xZ80::eZ80* cpu;
 	eMemory* memory;
@@ -37,6 +39,8 @@ protected:
 	int		frame_tacts;	// t-states per frame
 	int		int_len;		// length of INT signal (for Z80)
 	int		nmi_pending;
+	int		t_states;
 };
+
 
 #endif//__SPECCY_H__

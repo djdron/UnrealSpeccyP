@@ -50,6 +50,7 @@ public:
 	void Update(dword int_len, int* nmi_pending);
 
 	dword FrameTacts() const { return frame_tacts; }
+	dword T() const { return t; }
 
 protected:
 	void Int();

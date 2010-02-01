@@ -2,6 +2,7 @@
 #include "../devices/memory.h"
 #include "../devices/ula.h"
 #include "../devices/device.h"
+#include "../speccy.h"
 
 #include "z80.h"
 

@@ -8,12 +8,13 @@
 #include "devices/keyboard.h"
 #include "devices/sound/beeper.h"
 #include "devices/sound/ay.h"
+#include "devices/fdd/wd93.h"
 
 //=============================================================================
 //	eSpeccy::eSpeccy
 //-----------------------------------------------------------------------------
 eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), devices(NULL), frame_tacts(0)
-	, int_len(0), nmi_pending(0)
+	, int_len(0), nmi_pending(0), t_states(0)
 {
 	// pentagon timings
 	frame_tacts = 71680;
@@ -30,6 +31,7 @@ eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), devices(NULL), frame_tacts(0)
 	devices->Add(new eKeyboard, D_KEYBOARD);
 	devices->Add(new eBeeper, D_BEEPER);
 	devices->Add(new eAY, D_AY);
+	devices->Add(new eWD1793(this), D_WD1793);
 	cpu = new xZ80::eZ80(memory, rom, ula, devices, frame_tacts);
 
 	Reset();
@@ -60,8 +62,10 @@ void eSpeccy::Update()
 	AY()->StartFrame();
 	cpu->Update(int_len, &nmi_pending);
 	Ula()->Update();
-	Beeper()->EndFrame(cpu->FrameTacts());
-	AY()->EndFrame(cpu->FrameTacts());
+	dword t = cpu->FrameTacts() + cpu->T();
+	Beeper()->EndFrame(t);
+	AY()->EndFrame(t);
+	t_states += t;
 }
 //=============================================================================
 //	eSpeccy::Keyboard
