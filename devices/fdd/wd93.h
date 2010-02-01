@@ -1,7 +1,7 @@
 #ifndef	__WD93_H__
 #define	__WD93_H__
 
-#include "../../devices/device.h"
+#include "../device.h"
 #include "fdd.h"
 #include "track_cache.h"
 
@@ -98,7 +98,7 @@ protected:
 
 	int		drive, side;		// update this with changing 'system'
 
-	signed char stepdirection;
+	char	stepdirection;
 	byte	system;				// beta128 system register
 
 	// read/write sector(s) data

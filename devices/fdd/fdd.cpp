@@ -6,21 +6,21 @@
 const int MAX_TRACK_LEN = 6250;
 const int trdos_interleave = 1;
 
-byte snbuf[655360]; // large temporary buffer (for reading snapshots)
-
 //=============================================================================
 //	eFdd::Init
 //-----------------------------------------------------------------------------
 void eFdd::Init()
 {
+	byte* snbuf = new byte[TRD_SIZE]; // large temporary buffer (for reading snapshots)
 	FILE* f = fopen("images/disk2.trd", "rb");
 	assert(f);
-	size_t r = fread(&snbuf, 1, sizeof(snbuf), f);
+	size_t r = fread(snbuf, 1, TRD_SIZE, f);
 	fclose(f);
-	if(r == 655360)
-		ReadTrd();
+	if(r == TRD_SIZE)
+		ReadTrd(snbuf);
 	if(!memcmp(snbuf, "SINCLAIR", 8) && (int)r >= 9+(0x100+14)*snbuf[8])
-		ReadScl();
+		ReadScl(snbuf);
+	delete[] snbuf;
 }
 //=============================================================================
 //	eFdd::Free
@@ -50,9 +50,9 @@ void eFdd::NewDisk(int _cyls, int _sides)
 	rawdata = new byte[rawsize];
 	memset(rawdata, 0, rawsize);
 
-	for(unsigned i = 0; i < cyls; ++i)
+	for(int i = 0; i < cyls; ++i)
 	{
-		for(unsigned j = 0; j < sides; ++j)
+		for(int j = 0; j < sides; ++j)
 		{
 			trklen[i][j] = len;
 			trkd[i][j] = rawdata + len2 * (i * sides + j);
@@ -118,7 +118,7 @@ bool eFdd::AddFile(byte* hdr, byte* data)
 	unsigned pos = s8->data[0xE4]*0x10;
 	eSector* dir = t.GetSector(1+pos/0x100);
 	if (!dir) return false;
-	if (*(unsigned short*)(s8->data+0xE5) < len) return false; // disk full
+	if (*(word*)(s8->data+0xE5) < len) return false; // disk full
 	memcpy(dir->data + (pos & 0xFF), hdr, 14);
 	*(short*)(dir->data + (pos & 0xFF) + 14) = *(short*)(s8->data+0xE1);
 	t.WriteSector(1+pos/0x100,dir->data);
@@ -126,11 +126,11 @@ bool eFdd::AddFile(byte* hdr, byte* data)
 	pos = s8->data[0xE1] + 16*s8->data[0xE2];
 	s8->data[0xE1] = (pos+len) & 0x0F, s8->data[0xE2] = (pos+len) >> 4;
 	s8->data[0xE4]++;
-	*(unsigned short*)(s8->data+0xE5) -= len;
+	*(word*)(s8->data+0xE5) -= len;
 	t.WriteSector(9,s8->data);
 
 	// goto next track. s8 become invalid
-	for (unsigned i = 0; i < len; i++, pos++) {
+	for (dword i = 0; i < len; i++, pos++) {
 		t.Seek(this, pos/32, (pos/16) & 1, LOAD_SECTORS);
 		if (!t.trkd) return false;
 		if (!t.WriteSector((pos&0x0F)+1,data+i*0x100)) return 0;
@@ -140,7 +140,7 @@ bool eFdd::AddFile(byte* hdr, byte* data)
 //=============================================================================
 //	eFdd::ReadScl
 //-----------------------------------------------------------------------------
-bool eFdd::ReadScl()
+bool eFdd::ReadScl(byte* snbuf)
 {
 	EmptyDisk();
 	int size, i;
@@ -165,10 +165,10 @@ bool eFdd::ReadScl()
 //=============================================================================
 //	eFdd::ReadTrd
 //-----------------------------------------------------------------------------
-bool eFdd::ReadTrd()
+bool eFdd::ReadTrd(byte* snbuf)
 {
 	FormatTrd();
-	for(int i = 0; i < sizeof(snbuf)/*snapsize*/; i += 0x100)
+	for(size_t i = 0; i < TRD_SIZE; i += 0x100)
 	{
 		t.Seek(this, i>>13, (i>>12) & 1, LOAD_SECTORS);
 		t.WriteSector(((i>>8) & 0x0F)+1, snbuf+i);

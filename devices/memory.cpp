@@ -80,7 +80,7 @@ void eRom::IoWrite(word port, byte v, int tact)
 {
 	if(!(port & 2) && !(port & 0x8000)) // zx128 port
 	{
-		int page = (!dos_selected ? ROM_128 : ROM_SYS) + (v >> 4) & 1;
+		int page = (!dos_selected ? ROM_128 : ROM_SYS) + ((v >> 4) & 1);
 		memory->SetBank(0, page);
 	}
 }

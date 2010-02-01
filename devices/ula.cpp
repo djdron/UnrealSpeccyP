@@ -9,8 +9,8 @@
 //=============================================================================
 //	eUla::eUla
 //-----------------------------------------------------------------------------
-eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true), base(NULL), zx_base(0)
-	, timing(NULL), prev_t(0), colortab(NULL), frame(0)
+eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true), zx_base(0), base(NULL)
+	, colortab(NULL), timing(NULL), prev_t(0), frame(0)
 {
 	screen = new byte[S_WIDTH * S_HEIGHT];
 }

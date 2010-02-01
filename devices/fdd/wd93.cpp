@@ -1,7 +1,6 @@
 #include "../../std.h"
-
-#include "wd93.h"
 #include "../../speccy.h"
+#include "wd93.h"
 
 const int Z80FQ = 3500000;		// todo: #define as (conf.frame*conf.intfq)
 const int FDD_RPS = 5;			// rotation speed
@@ -190,12 +189,12 @@ read_first_byte:
 				 state = S_WAIT; state2 = S_WRITE;
 				 rqs = DRQ; status |= WDS_DRQ;
 			 } else {
-				 unsigned len = (128 << (trkcache.hdr[foundid].l & 3)) + 1; //[vv]
+				 int len = (128 << (trkcache.hdr[foundid].l & 3)) + 1; //[vv]
 				 byte sc[2056];
 				 if(rwptr < len)
 					 memcpy(sc, trkcache.trkd + trkcache.trklen - rwptr, rwptr), memcpy(sc + rwptr, trkcache.trkd, len - rwptr);
 				 else memcpy(sc, trkcache.trkd + rwptr - len, len);
-				 unsigned crc = wd93_crc(sc, len);
+				 dword crc = wd93_crc(sc, len);
 				 trkcache.Write(rwptr++, crc, 0);
 				 trkcache.Write(rwptr++, crc >> 8, 0);
 				 trkcache.Write(rwptr, 0xFF, 0);
@@ -229,7 +228,7 @@ read_first_byte:
 				 }
 
 				 byte marker = 0, byte = data;
-				 unsigned crc;
+				 dword crc;
 				 if(data == 0xF5)
 				 {
 					 byte = 0xA1;
@@ -293,7 +292,7 @@ read_first_byte:
 				 if(seldrive->track >= MAX_PHYS_CYL) seldrive->track = MAX_PHYS_CYL;
 				 trkcache.Clear();
 
-				 static const unsigned steps[] = { 6, 12, 20, 30 };
+				 static const dword steps[] = { 6, 12, 20, 30 };
 				 if(!wd93_nodelay) next += steps[cmd & CMD_SEEK_RATE]*Z80FQ/1000;
 /*
 				 #ifndef MOD_9X
@@ -338,15 +337,15 @@ void eWD1793::FindMarker()
 	if(wd93_nodelay && seldrive->track != track) seldrive->track = track;
 	Load();
 
-	foundid = -1; unsigned wait = 10*Z80FQ/FDD_RPS;
+	foundid = -1; dword wait = 10*Z80FQ/FDD_RPS;
 
 	if(seldrive->motor && seldrive->rawdata) {
-		unsigned div = trkcache.trklen*trkcache.ts_byte;
-		unsigned i = (unsigned)((next+tshift) % div) / trkcache.ts_byte;
+		dword div = trkcache.trklen*trkcache.ts_byte;
+		dword i = (dword)((next+tshift) % div) / trkcache.ts_byte;
 		wait = -1;
-		for (unsigned is = 0; is < trkcache.s; is++) {
-			unsigned pos = trkcache.hdr[is].id - trkcache.trkd;
-			unsigned dist = (pos > i)? pos-i : trkcache.trklen+pos-i;
+		for(int is = 0; is < trkcache.s; is++) {
+			dword pos = trkcache.hdr[is].id - trkcache.trkd;
+			dword dist = (pos > i)? pos-i : trkcache.trklen+pos-i;
 			if(dist < wait) wait = dist, foundid = is;
 		}
 
@@ -355,8 +354,8 @@ void eWD1793::FindMarker()
 
 		if(wd93_nodelay && foundid != -1) {
 			// adjust tshift, that id appares right under head
-			unsigned pos = trkcache.hdr[foundid].id - trkcache.trkd + 2;
-			tshift = (unsigned)(((pos * trkcache.ts_byte) - (next % div) + div) % div);
+			dword pos = trkcache.hdr[foundid].id - trkcache.trkd + 2;
+			tshift = (dword)(((pos * trkcache.ts_byte) - (next % div) + div) % div);
 			wait = 100; // delay=0 causes fdc to search infinitely, when no matched id on track
 		}
 
@@ -383,8 +382,8 @@ bool eWD1793::Ready()
 //-----------------------------------------------------------------------------
 void eWD1793::GetIndex()
 {
-	unsigned trlen = trkcache.trklen*trkcache.ts_byte;
-	unsigned ticks = (unsigned)((next+tshift) % trlen);
+	dword trlen = trkcache.trklen*trkcache.ts_byte;
+	dword ticks = (dword)((next+tshift) % trlen);
 	if(!wd93_nodelay) next += (trlen - ticks);
 	rwptr = 0; rwlen = trkcache.trklen; state = S_WAIT;
 }

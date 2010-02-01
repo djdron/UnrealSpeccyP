@@ -24,8 +24,8 @@ protected:
 	void	NewDisk(int cyls, int sides);
 	bool	AddFile(byte* hdr, byte* data);
 
-	bool	ReadScl();
-	bool	ReadTrd();
+	bool	ReadScl(byte* snbuf);
+	bool	ReadTrd(byte* snbuf);
 
 public:
 	// drive data
@@ -49,6 +49,8 @@ protected:
 	eTrackCache t;	// used in read/write image
 	char	name[0x200];
 	char	dsc[0x200];
+
+	enum { TRD_SIZE = 655360 };
 };
 
 #endif//__FDD_H__

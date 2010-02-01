@@ -71,6 +71,6 @@ protected:
 	byte*	trki;       // pointer to data inside UDI
 };
 
-dword wd93_crc(byte* ptr, unsigned size);
+dword wd93_crc(byte* ptr, dword size);
 
 #endif//__TRACK_CACHE_H__
