@@ -20,6 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -38,7 +39,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include"
 				PreprocessorDefinitions="_WINDOWS"
 				DebugInformationFormat="1"
 			/>
@@ -53,15 +55,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="openal32.lib"
+				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_dll"
 				GenerateDebugInformation="true"
-				AssemblyDebug="0"
-				GenerateMapFile="false"
-				MapExports="false"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
+				SubSystem="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -90,6 +88,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -108,8 +107,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include"
+				Optimization="3"
+				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include"
 				PreprocessorDefinitions="_WINDOWS"
+				ExceptionHandling="0"
+				BufferSecurityCheck="false"
+				FloatingPointModel="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -122,11 +125,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="openal32.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
+				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_dll"
+				SubSystem="1"
 			/>
 			<Tool
 				Name="VCALinkTool"

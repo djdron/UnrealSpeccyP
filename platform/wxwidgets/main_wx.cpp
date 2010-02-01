@@ -210,6 +210,6 @@ class App: public wxApp
 }
 //namespace xPlatform
 
-IMPLEMENT_APP(xPlatform::App)
+IMPLEMENT_APP_CONSOLE(xPlatform::App)
 
 #endif//USE_WXWIDGETS
