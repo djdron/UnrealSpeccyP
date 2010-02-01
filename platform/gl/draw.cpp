@@ -2,6 +2,10 @@
 
 #ifdef USE_GL
 
+#ifdef _WINDOWS
+#include <windows.h>
+#endif//_WINDOWS
+
 #include <GL/gl.h>
 
 namespace xPlatform

@@ -39,6 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include"
+				PreprocessorDefinitions="_WINDOWS"
 				DebugInformationFormat="1"
 			/>
 			<Tool
@@ -108,6 +109,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include"
+				PreprocessorDefinitions="_WINDOWS"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -301,16 +303,28 @@
 					RelativePath=".\platform\gl\draw.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\platform\gl\glut.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="oal"
 				>
 				<File
 					RelativePath=".\platform\oal\oal.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="glut"
+				>
+				<File
+					RelativePath=".\platform\glut\main_glut.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="wxwidgets"
+				>
+				<File
+					RelativePath=".\platform\wxwidgets\main_wx.cpp"
 					>
 				</File>
 			</Filter>
