@@ -32,7 +32,8 @@ void eAY::IoRead(word port, byte* v, int tact)
 	{
 		if((port & 0xC0FF) != 0xC0FD)
 			*v = 0xFF;
-		*v = Read();
+		else
+			*v = Read();
 	}
 }
 //=============================================================================

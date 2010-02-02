@@ -9,6 +9,7 @@ namespace xZ80 { class eZ80; }
 
 const dword SNDR_DEFAULT_AY_RATE = 1774400; // original ZX-Spectrum soundchip clock fq
 
+#pragma pack(push, 1)
 struct AYREGS
 {
 	word fA, fB, fC;
@@ -18,6 +19,7 @@ struct AYREGS
 	byte env;
 	byte portA, portB;
 };
+#pragma pack(pop)
 
 struct AYOUT
 {
