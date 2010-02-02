@@ -20,8 +20,10 @@ public:
 	virtual void Update();
 	virtual void Write(word addr, byte v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
+	virtual void IoRead(word port, byte* v, int tact);
 	void*	Screen() const { return screen; }
 
+	static eDeviceId Id() { return D_ULA; }
 protected:
 	void	CreateTables();
 	void	CreateTimings();

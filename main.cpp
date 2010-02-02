@@ -3,7 +3,9 @@
 #include "speccy.h"
 #include "devices/ula.h"
 #include "devices/keyboard.h"
-#include "devices/sound/device_sound.h"
+#include "devices/sound/ay.h"
+#include "devices/sound/beeper.h"
+#include "devices/fdd/wd93.h"
 #include "snapshot.h"
 
 static struct eSpeccyHandler : public xPlatform::eHandler
@@ -11,15 +13,15 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	eSpeccyHandler()
 	{
 		speccy = new eSpeccy;
-		sound_dev[0] = speccy->Beeper();
-		sound_dev[1] = speccy->AY();
+		sound_dev[0] = speccy->Device<eBeeper>();
+		sound_dev[1] = speccy->Device<eAY>();
 	}
 	~eSpeccyHandler()
 	{
 		delete speccy;
 	}
 	virtual void OnLoop() { speccy->Update(); }
-	virtual void* VideoData() { return speccy->Ula()->Screen(); }
+	virtual void* VideoData() { return speccy->Device<eUla>()->Screen(); }
 	virtual const char* WindowCaption() { return "UnrealSpeccy portable"; }
 	virtual void OnKey(char key, dword flags)
 	{
@@ -28,11 +30,19 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		bool shift = flags&KF_SHIFT;
 		bool ctrl = flags&KF_CTRL;
 		bool alt = flags&KF_ALT;
-		speccy->Keyboard()->OnKey(key, down, shift, ctrl, alt);
+		speccy->Device<eKeyboard>()->OnKey(key, down, shift, ctrl, alt);
 	}
 	virtual void OnOpenFile(const char* name)
 	{
-		xSnapshot::Load(speccy, name);
+		int l = strlen(name);
+		if(l > 3)
+		{
+			const char* n = name + l - 4;
+			if(!strcmp(n, ".trd"))
+				speccy->Device<eWD1793>()->OpenImage(0, name);
+			else if(!strcmp(n, ".sna"))
+				xSnapshot::Load(speccy, name);
+		}
 	}
 	virtual void OnReset()
 	{

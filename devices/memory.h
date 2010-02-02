@@ -45,6 +45,7 @@ public:
 	virtual void IoWrite(word port, byte v, int tact);
 	void Read(word addr);
 
+	static eDeviceId Id() { return D_ROM; }
 protected:
 	void LoadRom(int page, const char* rom);
 	enum
@@ -66,6 +67,7 @@ public:
 	eRam(eMemory* m) : memory(m) {}
 	virtual void Reset();
 	virtual void IoWrite(word port, byte v, int tact);
+	static eDeviceId Id() { return D_RAM; }
 protected:
 	eMemory* memory;
 };

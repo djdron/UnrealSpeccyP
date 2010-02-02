@@ -16,10 +16,11 @@ class eWD1793 : public eDevice
 {
 public:
 	eWD1793(eSpeccy* _speccy) : speccy(_speccy) { seldrive = &fdd[0]; }
-	virtual void Init();
 	virtual void IoRead(word port, byte* v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
 
+	bool OpenImage(int fdd_index, const char* name);
+	static eDeviceId Id() { return D_WD1793; }
 protected:
 	void	Process(int tact);
 	void	FindMarker();

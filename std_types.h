@@ -10,4 +10,11 @@ typedef unsigned char		byte;
 
 enum eZeroValue { ZERO };
 
+#ifndef NULL
+#define NULL 0
+#endif
+
+template<class T> void SAFE_DELETE(T*& p) { if(p) delete p; p = NULL;}
+#define SAFE_CALL(p) if(p) p
+
 #endif//__TYPES_H__

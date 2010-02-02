@@ -10,11 +10,12 @@ const bool wd93_nodelay = false;
 bool trdos_wp[4] = { false, false, false, false };
 
 //=============================================================================
-//	eWD1793::Init
+//	eWD1793::OpenImage
 //-----------------------------------------------------------------------------
-void eWD1793::Init()
+bool eWD1793::OpenImage(int fdd_index, const char* name)
 {
-	fdd[0].Init();
+	assert(fdd_index >= 0 && fdd_index < 4);
+	return fdd[fdd_index].OpenImage(name);
 }
 //=============================================================================
 //	eWD1793::Process

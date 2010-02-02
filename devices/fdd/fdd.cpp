@@ -7,13 +7,14 @@ const int MAX_TRACK_LEN = 6250;
 const int trdos_interleave = 1;
 
 //=============================================================================
-//	eFdd::Init
+//	eFdd::OpenImage
 //-----------------------------------------------------------------------------
-void eFdd::Init()
+bool eFdd::OpenImage(const char* file_name)
 {
+	FILE* f = fopen(file_name, "rb");
+	if(!f)
+		return false;
 	byte* snbuf = new byte[TRD_SIZE]; // large temporary buffer (for reading snapshots)
-	FILE* f = fopen("images/disk2.trd", "rb");
-	assert(f);
 	size_t r = fread(snbuf, 1, TRD_SIZE, f);
 	fclose(f);
 	if(r == TRD_SIZE)
@@ -21,6 +22,7 @@ void eFdd::Init()
 	if(!memcmp(snbuf, "SINCLAIR", 8) && (int)r >= 9+(0x100+14)*snbuf[8])
 		ReadScl(snbuf);
 	delete[] snbuf;
+	return true;
 }
 //=============================================================================
 //	eFdd::Free

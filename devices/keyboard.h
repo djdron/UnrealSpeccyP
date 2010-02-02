@@ -13,6 +13,7 @@ public:
 	virtual void IoRead(word port, byte* v, int tact);
 	void OnKey(char key, bool down, bool shift, bool ctrl, bool alt);
 
+	static eDeviceId Id() { return D_KEYBOARD; }
 protected:
 	void KeyState(char key, bool down);
 	byte Read(byte scan) const;

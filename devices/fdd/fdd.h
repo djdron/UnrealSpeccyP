@@ -14,7 +14,7 @@ class eFdd
 {
 public:
 	~eFdd() { Free(); }
-	void Init();
+	bool OpenImage(const char* file_name);
 
 protected:
 	void	Free();

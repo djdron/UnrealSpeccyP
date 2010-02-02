@@ -15,8 +15,8 @@ bool unstable_databus = false;
 //=============================================================================
 //	eZ80::eZ80
 //-----------------------------------------------------------------------------
-eZ80::eZ80(eMemory* _m, eRom* _r, eUla* _u, eDevices* _d, dword _frame_tacts)
-	: memory(_m), rom(_r), ula(_u), devices(_d)
+eZ80::eZ80(eMemory* _m, eDevices* _d, dword _frame_tacts)
+	: memory(_m), rom(_d->Get<eRom>()), ula(_d->Get<eUla>()), devices(_d)
 	, t(0), im(0), eipos(0), haltpos(0)
 	, frame_tacts(_frame_tacts)
 	, last_branch(0)

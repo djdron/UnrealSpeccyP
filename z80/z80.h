@@ -45,7 +45,7 @@ extern bool unstable_databus;
 class eZ80
 {
 public:
-	eZ80(eMemory* m, eRom* r, eUla* u, eDevices* d, dword frame_tacts = 0);
+	eZ80(eMemory* m, eDevices* d, dword frame_tacts = 0);
 	void Reset();
 	void Update(dword int_len, int* nmi_pending);
 

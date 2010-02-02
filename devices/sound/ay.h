@@ -86,7 +86,9 @@ public:
 	void Write(dword timestamp, byte val);
 	byte Read();
 	virtual dword EndFrame(dword clk_ticks);
+	void StartFrame() { StartFrame(dstpos); }
 
+	static eDeviceId Id() { return D_AY; }
 private:
 	typedef void YM2203;
 	YM2203* chip2203; //registers //Dexus

@@ -4,18 +4,18 @@
 //=============================================================================
 //	eDevices::eDevices
 //-----------------------------------------------------------------------------
-eDevices::eDevices() : amount(0)
+eDevices::eDevices()
 {
-	memset(items, NULL, MAX_AMOUNT);
+	memset(items, 0, sizeof(items));
 }
 //=============================================================================
 //	eDevices::~eDevices
 //-----------------------------------------------------------------------------
 eDevices::~eDevices()
 {
-	for(int i = 0; i < amount; ++i)
+	for(int i = 0; i < D_COUNT; ++i)
 	{
-		delete items[i].dev;
+		SAFE_DELETE(items[i]);
 	}
 }
 //=============================================================================
@@ -23,33 +23,19 @@ eDevices::~eDevices()
 //-----------------------------------------------------------------------------
 void eDevices::Reset()
 {
-	for(int i = 0; i < amount; ++i)
+	for(int i = 0; i < D_COUNT; ++i)
 	{
-		items[i].dev->Reset();
+		SAFE_CALL(items[i])->Reset();
 	}
 }
 //=============================================================================
-//	eDevices::Register
+//	eDevices::_Add
 //-----------------------------------------------------------------------------
-void eDevices::Add(eDevice* d, int id)
+void eDevices::_Add(eDeviceId id, eDevice* d)
 {
-	assert(amount <= MAX_AMOUNT);
-	items[amount].id	= id;
-	items[amount].dev	= d;
-	items[amount].dev->Init();
-	++amount;
-}
-//=============================================================================
-//	eDevices::Item
-//-----------------------------------------------------------------------------
-eDevice* eDevices::Item(int id)
-{
-	for(int i = 0; i < amount; ++i)
-	{
-		if(items[i].id == id)
-			return items[i].dev;
-	}
-	return NULL;
+	assert(d && !items[id]);
+	d->Init();
+	items[id] = d;
 }
 //=============================================================================
 //	eDevices::IoRead
@@ -57,9 +43,9 @@ eDevice* eDevices::Item(int id)
 byte eDevices::IoRead(word port, int tact) const
 {
 	byte v = 0xff;
-	for(int i = 0; i < amount; ++i)
+	for(int i = 0; i < D_COUNT; ++i)
 	{
-		items[i].dev->IoRead(port, &v, tact);
+		SAFE_CALL(items[i])->IoRead(port, &v, tact);
 	}
 	return v;
 }
@@ -68,8 +54,8 @@ byte eDevices::IoRead(word port, int tact) const
 //-----------------------------------------------------------------------------
 void eDevices::IoWrite(word port, byte v, int tact)
 {
-	for(int i = 0; i < amount; ++i)
+	for(int i = 0; i < D_COUNT; ++i)
 	{
-		items[i].dev->IoWrite(port, v, tact);
+		SAFE_CALL(items[i])->IoWrite(port, v, tact);
 	}
 }

@@ -143,7 +143,7 @@ void eUla::Reset()
 //=============================================================================
 //	eUla::SwitchScreen
 //-----------------------------------------------------------------------------
-inline void eUla::SwitchScreen(bool first)
+void eUla::SwitchScreen(bool first)
 {
 	first_screen = first;
 	int page = first ? eMemory::P_RAM5: eMemory::P_RAM7;
@@ -175,6 +175,16 @@ void eUla::IoWrite(word port, byte v, int tact)
 		SwitchScreen(!(v & 0x08));
 	}
 }
+void eUla::IoRead(word port, byte* v, int tact)
+{
+	if((port & 0xFF) == 0xFF)
+	{
+//		UpdateRay(tact);
+//		if(vmode != 2) return 0xFF; // ray is not in paper
+//		unsigned ula_t = (cpu.t+temp.border_add) & temp.border_and;
+//		return temp.base[vcurr->atr_offs + (ula_t - vcurr[-1].next_t)/4];
+	}
+}
 //=============================================================================
 //	eUla::Update
 //-----------------------------------------------------------------------------
@@ -192,7 +202,7 @@ void eUla::Update()
 //=============================================================================
 //	UpdateRay
 //-----------------------------------------------------------------------------
-inline void eUla::UpdateRay(int tact)
+void eUla::UpdateRay(int tact)
 {
 	int last_t = (tact + border_add) & border_and;
 	int t = prev_t;
@@ -221,7 +231,7 @@ inline void eUla::UpdateRay(int tact)
 //=============================================================================
 //	eUla::UpdateRayBorder
 //-----------------------------------------------------------------------------
-inline void eUla::UpdateRayBorder(int& t, int last_t)
+void eUla::UpdateRayBorder(int& t, int last_t)
 {
 	int offs = (t - timing->t) * 2;
 	byte* dst = timing->dst + offs;
@@ -235,7 +245,7 @@ inline void eUla::UpdateRayBorder(int& t, int last_t)
 //=============================================================================
 //	eUla::UpdateRayPaper
 //-----------------------------------------------------------------------------
-inline void eUla::UpdateRayPaper(int& t, int last_t)
+void eUla::UpdateRayPaper(int& t, int last_t)
 {
 	int offs = (t - timing->t) / 4;
 	byte* scr = base + timing->scr_offs + offs;

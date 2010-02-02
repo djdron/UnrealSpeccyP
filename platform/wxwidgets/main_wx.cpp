@@ -124,8 +124,8 @@ public:
 		: wxFrame((wxFrame *)NULL, -1, title, pos), org_size(320, 240)
 	{
 		wxMenu* menuFile = new wxMenu;
-		menuFile->Append(ID_Open, _("&Open...\tCtrl+O"));
-		menuFile->Append(ID_Reset, _("&Reset...\tCtrl+R"));
+		menuFile->Append(ID_Open, _("&Open...\tF3"));
+		menuFile->Append(ID_Reset, _("&Reset...\tF12"));
 		menuFile->AppendSeparator();
 		menuFile->Append(ID_Quit, _("E&xit"));
 
