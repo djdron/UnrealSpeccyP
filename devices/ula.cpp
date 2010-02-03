@@ -9,7 +9,7 @@
 //=============================================================================
 //	eUla::eUla
 //-----------------------------------------------------------------------------
-eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true), zx_base(0), base(NULL)
+eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true), base(NULL)
 	, colortab(NULL), timing(NULL), prev_t(0), frame(0)
 {
 	screen = new byte[S_WIDTH * S_HEIGHT];
@@ -36,6 +36,7 @@ void eUla::Init()
 	colortab = colortab1;
 	CreateTables();
 	CreateTimings();
+	base = memory->Get(eMemory::P_RAM5);
 }
 //=============================================================================
 //	eUla::CreateTables
@@ -138,17 +139,19 @@ void eUla::CreateTimings()
 //-----------------------------------------------------------------------------
 void eUla::Reset()
 {
-	SwitchScreen(true);
+	SwitchScreen(true, 0);
 }
 //=============================================================================
 //	eUla::SwitchScreen
 //-----------------------------------------------------------------------------
-void eUla::SwitchScreen(bool first)
+void eUla::SwitchScreen(bool first, int tact)
 {
+	if(first == first_screen)
+		return;
+	UpdateRay(tact);
 	first_screen = first;
-	int page = first ? eMemory::P_RAM5: eMemory::P_RAM7;
+	int page = first_screen ? eMemory::P_RAM5: eMemory::P_RAM7;
 	base = memory->Get(page);
-	zx_base = page == eMemory::P_RAM5 ? 0x4000 : 0xc000;
 }
 //=============================================================================
 //	eUla::Write
@@ -172,18 +175,26 @@ void eUla::IoWrite(word port, byte v, int tact)
 	}
 	if(!(port & 2) && !(port & 0x8000)) // zx128 port
 	{
-		SwitchScreen(!(v & 0x08));
+		SwitchScreen(!(v & 0x08), tact);
 	}
 }
+//=============================================================================
+//	eUla::IoRead
+//-----------------------------------------------------------------------------
 void eUla::IoRead(word port, byte* v, int tact)
 {
-	if((port & 0xFF) == 0xFF)
+	if((port & 0xff) != 0xff)
+		return;
+	UpdateRay(tact);
+	if(timing->zone != eTiming::Z_PAPER) // ray is not in paper
 	{
-//		UpdateRay(tact);
-//		if(vmode != 2) return 0xFF; // ray is not in paper
-//		unsigned ula_t = (cpu.t+temp.border_add) & temp.border_and;
-//		return temp.base[vcurr->atr_offs + (ula_t - vcurr[-1].next_t)/4];
+		*v = 0xff;
+		return;
 	}
+	int t = (tact + border_add) & border_and;
+	int offs = (t - timing->t) / 4;
+	byte* atr = base + timing->attr_offs + offs;
+	*v = *atr;
 }
 //=============================================================================
 //	eUla::Update

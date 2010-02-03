@@ -8,6 +8,7 @@
 #pragma once
 
 class eSpeccy;
+class eRom;
 
 //*****************************************************************************
 //	WD1793
@@ -15,7 +16,7 @@ class eSpeccy;
 class eWD1793 : public eDevice
 {
 public:
-	eWD1793(eSpeccy* _speccy) : speccy(_speccy) { seldrive = &fdd[0]; }
+	eWD1793(eSpeccy* _speccy, eRom* _rom) : speccy(_speccy), rom(_rom) { seldrive = &fdd[0]; }
 	virtual void IoRead(word port, byte* v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
 
@@ -115,6 +116,7 @@ protected:
 	eFdd	fdd[4];
 
 	eSpeccy* speccy;
+	eRom*	rom;
 };
 
 #endif//__WD93_H__

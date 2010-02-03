@@ -27,7 +27,7 @@ public:
 protected:
 	void	CreateTables();
 	void	CreateTimings();
-	void	SwitchScreen(bool first);
+	void	SwitchScreen(bool first, int tact);
 	void	UpdateRay(int tact);
 	void	UpdateRayBorder(int& t, int last_t);
 	void	UpdateRayPaper(int& t, int last_t);
@@ -60,7 +60,6 @@ protected:
 	int		border_and;
 	byte	border_color;
 	bool	first_screen;
-	word	zx_base;
 	byte*	base;
 	byte*	screen;
 	int		scrtab[256];	// offset to start of line

@@ -44,6 +44,7 @@ public:
 	virtual void Reset();
 	virtual void IoWrite(word port, byte v, int tact);
 	void Read(word addr);
+	bool DosSelected() const { return dos_selected; }
 
 	static eDeviceId Id() { return D_ROM; }
 protected:

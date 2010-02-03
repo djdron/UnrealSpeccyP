@@ -1,6 +1,7 @@
 #include "../../std.h"
 #include "../../speccy.h"
 #include "wd93.h"
+#include "../memory.h"
 
 const int Z80FQ = 3500000;		// todo: #define as (conf.frame*conf.intfq)
 const int FDD_RPS = 5;			// rotation speed
@@ -400,7 +401,7 @@ void eWD1793::Load()
 //-----------------------------------------------------------------------------
 void eWD1793::IoRead(word port, byte* v, int tact)
 {
-	if((port & 0x1F) != 0x1F)
+	if(!rom->DosSelected() || (port & 0x1F) != 0x1F)
 		return;
 
 	byte p = port;
@@ -421,7 +422,7 @@ void eWD1793::IoRead(word port, byte* v, int tact)
 //-----------------------------------------------------------------------------
 void eWD1793::IoWrite(word port, byte v, int tact)
 {
-	if((port & 0x1F) != 0x1F)
+	if(!rom->DosSelected() || (port & 0x1F) != 0x1F)
 		return;
 
 	byte p = port;
