@@ -71,7 +71,8 @@ void eRom::Init()
 //-----------------------------------------------------------------------------
 void eRom::Reset()
 {
-	memory->SetBank(0, ROM_SYS);
+	page_selected = ROM_SYS;
+	memory->SetBank(0, page_selected);
 }
 //=============================================================================
 //	eRom::IoWrite
@@ -80,8 +81,8 @@ void eRom::IoWrite(word port, byte v, int tact)
 {
 	if(!(port & 2) && !(port & 0x8000)) // zx128 port
 	{
-		int page = (!dos_selected ? ROM_128 : ROM_SYS) + ((v >> 4) & 1);
-		memory->SetBank(0, page);
+		page_selected = (page_selected & ~1) + ((v >> 4) & 1);
+		memory->SetBank(0, page_selected);
 	}
 }
 //=============================================================================
@@ -90,15 +91,15 @@ void eRom::IoWrite(word port, byte v, int tact)
 void eRom::Read(word addr)
 {
 	byte pc_h = addr >> 8;
-	if(!dos_selected && (pc_h == 0x3d))
+	if(page_selected == ROM_SOS && (pc_h == 0x3d))
 	{
-		dos_selected = true;
-		memory->SetBank(0, ROM_DOS);
+		page_selected = ROM_DOS;
+		memory->SetBank(0, page_selected);
 	}
-	else if(dos_selected && (pc_h & 0xc0)) // pc > 0x3fff closes tr-dos
+	else if(DosSelected() && (pc_h & 0xc0)) // pc > 0x3fff closes tr-dos
 	{
-		dos_selected = false;
-		memory->SetBank(0, ROM_SOS);
+		page_selected = ROM_SOS;
+		memory->SetBank(0, page_selected);
 	}
 }
 

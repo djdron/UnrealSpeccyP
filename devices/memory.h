@@ -39,12 +39,12 @@ protected:
 class eRom : public eDevice
 {
 public:
-	eRom(eMemory* m) : memory(m), dos_selected(false) {}
+	eRom(eMemory* m) : memory(m), page_selected(0) {}
 	virtual void Init();
 	virtual void Reset();
 	virtual void IoWrite(word port, byte v, int tact);
 	void Read(word addr);
-	bool DosSelected() const { return dos_selected; }
+	bool DosSelected() const { return page_selected == ROM_DOS; }
 
 	static eDeviceId Id() { return D_ROM; }
 protected:
@@ -56,7 +56,7 @@ protected:
 	};
 protected:
 	eMemory* memory;
-	bool dos_selected;
+	int page_selected;
 };
 
 //*****************************************************************************
