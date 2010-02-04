@@ -47,9 +47,9 @@ class eZ80
 public:
 	eZ80(eMemory* m, eDevices* d, dword frame_tacts = 0);
 	void Reset();
-	void Update(dword int_len, int* nmi_pending);
+	void Update(int int_len, int* nmi_pending);
 
-	dword FrameTacts() const { return frame_tacts; }
+	int FrameTacts() const { return frame_tacts; }
 	dword T() const { return t; }
 
 protected:

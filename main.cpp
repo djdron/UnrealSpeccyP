@@ -10,7 +10,7 @@
 
 static struct eSpeccyHandler : public xPlatform::eHandler
 {
-	eSpeccyHandler()
+	eSpeccyHandler() : video_paused(false)
 	{
 		speccy = new eSpeccy;
 		sound_dev[0] = speccy->Device<eBeeper>();
@@ -20,7 +20,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	{
 		delete speccy;
 	}
-	virtual void OnLoop() { speccy->Update(); }
+	virtual void OnLoop() { if(!video_paused) speccy->Update(); }
 	virtual void* VideoData() { return speccy->Device<eUla>()->Screen(); }
 	virtual const char* WindowCaption() { return "UnrealSpeccy portable"; }
 	virtual void OnKey(char key, dword flags)
@@ -44,17 +44,15 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 				xSnapshot::Load(speccy, name);
 		}
 	}
-	virtual void OnReset()
-	{
-		speccy->Reset();
-	}
-
+	virtual void OnReset() { speccy->Reset(); }
 	virtual int	AudioSources() { return SOUND_DEV_COUNT; }
 	virtual void* AudioData(int source) { return sound_dev[source]->AudioData(); }
 	virtual dword AudioDataReady(int source) { return sound_dev[source]->AudioDataReady(); }
 	virtual void AudioDataUse(int source, dword size) { sound_dev[source]->AudioDataUse(size); }
+	virtual void VideoPaused(bool paused) {	video_paused = paused; }
 
 	eSpeccy* speccy;
+	bool video_paused;
 
 	enum { SOUND_DEV_COUNT = 2 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];

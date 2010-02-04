@@ -37,6 +37,7 @@ public:
 		Handler()->OnLoop();
 		OnLoopSound();
 		Refresh(false);
+		wxMilliSleep(3);
 	}
 	virtual void OnEraseBackground(wxEraseEvent& event) {}
 
@@ -153,11 +154,13 @@ public:
 	void OnOpen(wxCommandEvent& event)
 	{
 		wxFileDialog fd(this);
-		fd.ShowModal();
-		const wxString& file = fd.GetPath();
-		if(!file.empty())
+		if(fd.ShowModal() == wxID_OK)
 		{
-			Handler()->OnOpenFile(wxConvertWX2MB(file.c_str()));
+			const wxString& file = fd.GetPath();
+			if(!file.empty())
+			{
+				Handler()->OnOpenFile(wxConvertWX2MB(file.c_str()));
+			}
 		}
 	}
 	void OnResize(wxCommandEvent& event)

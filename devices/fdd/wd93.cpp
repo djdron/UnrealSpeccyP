@@ -230,7 +230,7 @@ read_first_byte:
 				 }
 
 				 byte marker = 0, byte = data;
-				 dword crc;
+				 dword crc = 0;
 				 if(data == 0xF5)
 				 {
 					 byte = 0xA1;

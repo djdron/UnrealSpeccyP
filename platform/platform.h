@@ -31,7 +31,11 @@ struct eHandler
 	virtual void OnOpenFile(const char* name) = 0;
 	virtual void OnReset() = 0;
 
+	// data to draw
 	virtual void* VideoData() = 0;
+	// pause/resume function for sync video by audio
+	virtual void VideoPaused(bool paused) = 0;
+	// audio
 	virtual int	AudioSources() = 0;
 	virtual void* AudioData(int source) = 0;
 	virtual dword AudioDataReady(int source) = 0;

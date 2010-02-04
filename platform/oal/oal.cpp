@@ -28,17 +28,20 @@ struct eSource
 		alDeleteSources(1, &source);
 		alDeleteBuffers(BUFFER_COUNT, buffers);
 	}
-	bool Update(dword data_ready, void* data);
+	enum eUpdateResult { U_OK, U_SKIP, U_MUCH, U_LESS  };
+	eUpdateResult Update(dword data_ready, void* data);
 	enum { BUFFER_COUNT = 4 };
 	ALuint buffers[BUFFER_COUNT];
 	ALuint source;
 	ALuint free_buf;
 	bool first_fill;
 };
-bool eSource::Update(dword data_ready, void* data)
+eSource::eUpdateResult eSource::Update(dword data_ready, void* data)
 {
-	if(data_ready < 4096)
-		return false;
+	const int fps = 60, fps_org = 50;
+	dword frame_data = 44100*2*2/fps_org;
+	if(data_ready < frame_data*2)
+		return U_LESS;
 
 	bool next_buf = first_fill;
 	if(!next_buf)
@@ -55,7 +58,7 @@ bool eSource::Update(dword data_ready, void* data)
 	}
 	if(next_buf)
 	{
-		alBufferData(buffers[free_buf], AL_FORMAT_STEREO16, data, data_ready, 44100*60/50);
+		alBufferData(buffers[free_buf], AL_FORMAT_STEREO16, data, data_ready, 44100*fps/fps_org);
 		alSourceQueueBuffers(source, 1, &buffers[free_buf]);
 		if(++free_buf == BUFFER_COUNT)
 		{
@@ -74,7 +77,7 @@ bool eSource::Update(dword data_ready, void* data)
 			alSourcePlay(source);
 		}
 	}
-	return next_buf;
+	return next_buf ? U_OK : (data_ready > frame_data*3 ? U_MUCH : U_SKIP);
 }
 
 enum { MAX_SOURCES = 5 };
@@ -120,8 +123,21 @@ void OnLoopSound()
 	{
 		dword data_ready = Handler()->AudioDataReady(i);
 		void* data = Handler()->AudioData(i);
-		if(sources[i].Update(data_ready, data))
+		eSource::eUpdateResult r = sources[i].Update(data_ready, data);
+		switch(r)
+		{
+		case eSource::U_OK:
 			Handler()->AudioDataUse(i, data_ready);
+			//no break;
+		case eSource::U_LESS:
+			Handler()->VideoPaused(false);
+			break;
+		case eSource::U_MUCH:
+			Handler()->VideoPaused(true);
+			break;
+		default:
+			break;
+		}
 	}
 }
 

@@ -54,7 +54,7 @@ void eZ80::Reset()
 //=============================================================================
 //	eZ80::Reset
 //-----------------------------------------------------------------------------
-void eZ80::Update(dword int_len, int* nmi_pending)
+void eZ80::Update(int int_len, int* nmi_pending)
 {
 	haltpos = 0;
 	// INT check separated from main Z80 loop to improve emulation speed
