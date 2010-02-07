@@ -38,7 +38,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		if(l > 3)
 		{
 			const char* n = name + l - 4;
-			if(!strcmp(n, ".trd"))
+			if(!strcmp(n, ".trd") || !strcmp(n, ".scl"))
 				speccy->Device<eWD1793>()->OpenImage(0, name);
 			else if(!strcmp(n, ".sna"))
 				xSnapshot::Load(speccy, name);
