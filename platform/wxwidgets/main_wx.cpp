@@ -94,6 +94,11 @@ void GLCanvas::TranslateKey(int& key, dword& flags)
 		key = '0';
 		flags |= KF_SHIFT;
 		break;
+	case WXK_LEFT:		key = 'l';	break;
+	case WXK_RIGHT:		key = 'r';	break;
+	case WXK_UP:		key = 'u';	break;
+	case WXK_DOWN:		key = 'd';	break;
+	case WXK_CONTROL:	key = 'f';	flags &= ~KF_CTRL; break;
 	case '\'':
 		if(flags&KF_SHIFT)
 		{

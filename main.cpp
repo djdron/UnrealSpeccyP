@@ -3,6 +3,7 @@
 #include "speccy.h"
 #include "devices/ula.h"
 #include "devices/keyboard.h"
+#include "devices/kempston_joy.h"
 #include "devices/sound/ay.h"
 #include "devices/sound/beeper.h"
 #include "devices/fdd/wd93.h"
@@ -31,6 +32,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		bool ctrl = flags&KF_CTRL;
 		bool alt = flags&KF_ALT;
 		speccy->Device<eKeyboard>()->OnKey(key, down, shift, ctrl, alt);
+		speccy->Device<eKempstonJoy>()->OnKey(key, down, shift, ctrl, alt);
 	}
 	virtual void OnOpenFile(const char* name)
 	{

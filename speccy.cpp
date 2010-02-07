@@ -6,6 +6,7 @@
 #include "devices/memory.h"
 #include "devices/ula.h"
 #include "devices/keyboard.h"
+#include "devices/kempston_joy.h"
 #include "devices/sound/beeper.h"
 #include "devices/sound/ay.h"
 #include "devices/fdd/wd93.h"
@@ -25,6 +26,7 @@ eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), frame_tacts(0)
 	devices.Add(new eRam(memory));
 	devices.Add(new eUla(memory));
 	devices.Add(new eKeyboard);
+	devices.Add(new eKempstonJoy);
 	devices.Add(new eBeeper);
 	devices.Add(new eAY);
 	devices.Add(new eWD1793(this, Device<eRom>()));

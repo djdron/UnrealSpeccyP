@@ -17,7 +17,7 @@ public:
 	virtual void IoWrite(word port, byte v, int tact) {}
 };
 
-enum eDeviceId { D_ROM, D_RAM, D_ULA, D_KEYBOARD, D_BEEPER, D_AY, D_WD1793, D_COUNT };
+enum eDeviceId { D_ROM, D_RAM, D_ULA, D_KEYBOARD, D_KEMPSTON_JOY, D_BEEPER, D_AY, D_WD1793, D_COUNT };
 
 //*****************************************************************************
 //	eDevices
