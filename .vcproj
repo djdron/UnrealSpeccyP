@@ -215,14 +215,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\devices\keyboard.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\devices\keyboard.h"
-				>
-			</File>
-			<File
 				RelativePath=".\devices\memory.cpp"
 				>
 			</File>
@@ -310,6 +302,34 @@
 				</File>
 				<File
 					RelativePath=".\devices\fdd\wd93.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="input"
+				>
+				<File
+					RelativePath=".\devices\input\kempston_joy.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\input\kempston_joy.h"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\input\kempston_mouse.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\input\kempston_mouse.h"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\input\keyboard.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\input\keyboard.h"
 					>
 				</File>
 			</Filter>
