@@ -19,6 +19,7 @@ namespace xPlatform
 {
 
 enum eKeyFlags { KF_DOWN = 0x01, KF_SHIFT = 0x08, KF_CTRL = 0x02, KF_ALT = 0x04 };
+enum eMouseAction { MA_MOVE, MA_BUTTON, MA_WHEEL };
 
 struct eHandler
 {
@@ -27,6 +28,7 @@ struct eHandler
 	virtual void OnLoop() = 0;
 	virtual const char* WindowCaption() = 0;
 	virtual void OnKey(char key, dword flags) = 0;
+	virtual void OnMouse(eMouseAction action, byte a, byte b) = 0;
 
 	virtual void OnOpenFile(const char* name) = 0;
 	virtual void OnReset() = 0;

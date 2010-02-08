@@ -4,6 +4,7 @@
 #include "devices/ula.h"
 #include "devices/keyboard.h"
 #include "devices/kempston_joy.h"
+#include "devices/kempston_mouse.h"
 #include "devices/sound/ay.h"
 #include "devices/sound/beeper.h"
 #include "devices/fdd/wd93.h"
@@ -34,6 +35,17 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		speccy->Device<eKeyboard>()->OnKey(key, down, shift, ctrl, alt);
 		speccy->Device<eKempstonJoy>()->OnKey(key, down, shift, ctrl, alt);
 	}
+	virtual void OnMouse(xPlatform::eMouseAction action, byte a, byte b)
+	{
+		using namespace xPlatform;
+		switch(action)
+		{
+		case MA_MOVE: 	speccy->Device<eKempstonMouse>()->OnMouseMove(a, b); 	break;
+		case MA_BUTTON:	speccy->Device<eKempstonMouse>()->OnMouseButton(a, b);	break;
+		default: break;
+		}
+	}
+
 	virtual void OnOpenFile(const char* name)
 	{
 		int l = strlen(name);

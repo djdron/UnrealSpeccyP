@@ -8,6 +8,12 @@ void eKempstonJoy::IoRead(word port, byte* v, int tact)
 {
 	if(port & 0x20)
 		return;
+
+	// skip kempston mouse ports
+    port |= 0xFA00; // A13,A15 not used in decoding
+    if((port == 0xFADF || port == 0xFBDF || port == 0xFFDF))
+    	return;
+
 	*v = state;
 }
 

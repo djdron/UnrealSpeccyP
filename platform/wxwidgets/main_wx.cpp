@@ -61,6 +61,24 @@ public:
 		TranslateKey(key, flags);
 		Handler()->OnKey(key, 0);
 	}
+	virtual void OnMouseMove(wxMouseEvent& event)
+	{
+		event.Skip();
+		int w, h;
+		GetClientSize(&w, &h);
+		float x = float(event.GetX())/w * 320 - 32; // convert local coords to speccy screen coords
+		float y = float(h - event.GetY())/h * 240 - 24;
+		if(x < 0) x = 0;
+		if(x > 255) x = 255;
+		if(y < 0) y = 0;
+		if(y > 191) y = 191;
+		Handler()->OnMouse(MA_MOVE, x, y);
+	}
+	virtual void OnMouseKey(wxMouseEvent& event)
+	{
+		event.Skip();
+		Handler()->OnMouse(MA_BUTTON, event.Button(wxMOUSE_BTN_LEFT) ? 0 : 1, event.ButtonDown());
+	}
 	void TranslateKey(int& key, dword& flags);
 
 	static int canvas_attr[];
@@ -76,6 +94,11 @@ BEGIN_EVENT_TABLE(GLCanvas, wxGLCanvas)
 	EVT_IDLE(GLCanvas::OnIdle)
 	EVT_KEY_DOWN(GLCanvas::OnKeydown)
 	EVT_KEY_UP(GLCanvas::OnKeyup)
+	EVT_MOTION(GLCanvas::OnMouseMove)
+	EVT_LEFT_DOWN(GLCanvas::OnMouseKey)
+	EVT_LEFT_UP(GLCanvas::OnMouseKey)
+	EVT_RIGHT_DOWN(GLCanvas::OnMouseKey)
+	EVT_RIGHT_UP(GLCanvas::OnMouseKey)
 END_EVENT_TABLE()
 
 void GLCanvas::TranslateKey(int& key, dword& flags)
