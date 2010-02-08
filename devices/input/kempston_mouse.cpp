@@ -1,4 +1,4 @@
-#include "../std.h"
+#include "../../std.h"
 #include "kempston_mouse.h"
 
 void eKempstonMouse::Init() { Reset(); }

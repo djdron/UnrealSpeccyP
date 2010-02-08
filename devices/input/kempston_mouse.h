@@ -1,7 +1,7 @@
 #ifndef __KEMPSTON_MOUSE_H__
 #define __KEMPSTON_MOUSE_H__
 
-#include "device.h"
+#include "../device.h"
 
 #pragma once
 

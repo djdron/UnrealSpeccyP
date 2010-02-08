@@ -1,11 +1,11 @@
-#ifndef __KEMPSTON_JOY_H__
-#define __KEMPSTON_JOY_H__
+#ifndef __KEYBOARD_H__
+#define __KEYBOARD_H__
 
-#include "device.h"
+#include "../device.h"
 
 #pragma once
 
-class eKempstonJoy : public eDevice
+class eKeyboard : public eDevice
 {
 public:
 	virtual void Init();
@@ -13,10 +13,11 @@ public:
 	virtual void IoRead(word port, byte* v, int tact);
 	void OnKey(char key, bool down, bool shift, bool ctrl, bool alt);
 
-	static eDeviceId Id() { return D_KEMPSTON_JOY; }
+	static eDeviceId Id() { return D_KEYBOARD; }
 protected:
 	void KeyState(char key, bool down);
-	byte state;
+	byte Read(byte scan) const;
+	byte kbd[8];
 };
 
-#endif//__KEMPSTON_JOY_H__
+#endif//__KEYBOARD_H__
