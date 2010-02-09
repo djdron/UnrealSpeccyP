@@ -44,6 +44,12 @@ public:
 	virtual void OnKeydown(wxKeyEvent& event)
 	{
 		int key = event.GetKeyCode();
+		if(HasCapture() && key == WXK_ESCAPE)
+		{
+			ReleaseMouse();
+			SetCursor(wxNullCursor);
+			return;
+		}
 //		printf("kd:%c\n", key);
 		dword flags = KF_DOWN;
 		if(event.AltDown())			flags |= KF_ALT;
@@ -64,20 +70,25 @@ public:
 	virtual void OnMouseMove(wxMouseEvent& event)
 	{
 		event.Skip();
-		int w, h;
-		GetClientSize(&w, &h);
-		float x = float(event.GetX())/w * 320 - 32; // convert local coords to speccy screen coords
-		float y = float(h - event.GetY())/h * 240 - 24;
-		if(x < 0) x = 0;
-		if(x > 255) x = 255;
-		if(y < 0) y = 0;
-		if(y > 191) y = 191;
+		if(!HasCapture())
+			return;
+		byte x = event.GetX();
+		byte y = -event.GetY();
 		Handler()->OnMouse(MA_MOVE, x, y);
 	}
 	virtual void OnMouseKey(wxMouseEvent& event)
 	{
 		event.Skip();
-		Handler()->OnMouse(MA_BUTTON, event.Button(wxMOUSE_BTN_LEFT) ? 0 : 1, event.ButtonDown());
+		if(!HasCapture())
+		{
+			if(event.Button(wxMOUSE_BTN_LEFT) && event.ButtonDown())
+			{
+				SetCursor(wxCURSOR_BLANK);
+				CaptureMouse();
+			}
+		}
+		else
+			Handler()->OnMouse(MA_BUTTON, event.Button(wxMOUSE_BTN_LEFT) ? 0 : 1, event.ButtonDown());
 	}
 	void TranslateKey(int& key, dword& flags);
 
@@ -175,6 +186,7 @@ public:
 		SetMinSize(ClientToWindowSize(org_size));
 
 		gl_canvas = new GLCanvas(this);
+		gl_canvas->SetFocus();
 	}
 
 	void OnReset(wxCommandEvent& event)	{ Handler()->OnReset(); }
