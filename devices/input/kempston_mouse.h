@@ -11,7 +11,7 @@ public:
 	virtual void Init();
 	virtual void Reset();
 	virtual void IoRead(word port, byte* v, int tact);
-	void OnMouseMove(byte x, byte y);
+	void OnMouseMove(byte dx, byte dy);
 	void OnMouseButton(byte index, bool state);
 
 	static eDeviceId Id() { return D_KEMPSTON_MOUSE; }

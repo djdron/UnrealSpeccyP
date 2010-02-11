@@ -19,7 +19,7 @@ class GLCanvas : public wxGLCanvas
 {
 	typedef wxGLCanvas eInherited;
 public:
-	GLCanvas(wxWindow* parent) : eInherited(parent, wxID_ANY, canvas_attr)
+	GLCanvas(wxWindow* parent) : eInherited(parent, wxID_ANY, canvas_attr), mouse_x(0), mouse_y(0)
 	{
 		context = new wxGLContext(this);
 	}
@@ -46,8 +46,7 @@ public:
 		int key = event.GetKeyCode();
 		if(HasCapture() && key == WXK_ESCAPE)
 		{
-			ReleaseMouse();
-			SetCursor(wxNullCursor);
+			KillMouseFocus();
 			return;
 		}
 //		printf("kd:%c\n", key);
@@ -72,8 +71,10 @@ public:
 		event.Skip();
 		if(!HasCapture())
 			return;
-		byte x = event.GetX();
-		byte y = -event.GetY();
+		byte x = event.GetX() - mouse_x;
+		byte y = -event.GetY() - mouse_y;
+		mouse_x = event.GetX();
+		mouse_y = -event.GetY();
 		Handler()->OnMouse(MA_MOVE, x, y);
 	}
 	virtual void OnMouseKey(wxMouseEvent& event)
@@ -84,18 +85,31 @@ public:
 			if(event.Button(wxMOUSE_BTN_LEFT) && event.ButtonDown())
 			{
 				SetCursor(wxCURSOR_BLANK);
+				mouse_x = event.GetX();
+				mouse_y = -event.GetY();
 				CaptureMouse();
 			}
 		}
 		else
 			Handler()->OnMouse(MA_BUTTON, event.Button(wxMOUSE_BTN_LEFT) ? 0 : 1, event.ButtonDown());
 	}
+	virtual void OnKillFocus(wxFocusEvent& event)
+	{
+		KillMouseFocus();
+	}
+	void KillMouseFocus()
+	{
+		ReleaseMouse();
+		SetCursor(wxNullCursor);
+	}
 	void TranslateKey(int& key, dword& flags);
 
 	static int canvas_attr[];
 	DECLARE_EVENT_TABLE()
 protected:
+
 	wxGLContext* context;
+	byte mouse_x, mouse_y;
 };
 int GLCanvas::canvas_attr[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, 0 };
 
@@ -110,6 +124,7 @@ BEGIN_EVENT_TABLE(GLCanvas, wxGLCanvas)
 	EVT_LEFT_UP(GLCanvas::OnMouseKey)
 	EVT_RIGHT_DOWN(GLCanvas::OnMouseKey)
 	EVT_RIGHT_UP(GLCanvas::OnMouseKey)
+	EVT_KILL_FOCUS(GLCanvas::OnKillFocus)
 END_EVENT_TABLE()
 
 void GLCanvas::TranslateKey(int& key, dword& flags)

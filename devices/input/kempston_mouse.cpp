@@ -21,10 +21,10 @@ void eKempstonMouse::IoRead(word port, byte* v, int tact)
     case 0xFADF: *v = buttons; break;
     }
 }
-void eKempstonMouse::OnMouseMove(byte _x, byte _y)
+void eKempstonMouse::OnMouseMove(byte _dx, byte _dy)
 {
-	x = _x;
-	y = _y;
+	x += _dx;
+	y += _dy;
 }
 void eKempstonMouse::OnMouseButton(byte index, bool state)
 {
