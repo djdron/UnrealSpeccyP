@@ -43,7 +43,7 @@ public:
 	eTrack& Track(int cyl, int side) { return tracks[cyl][side]; }
 
 protected:
-	void eUdi::UpdateTrack(int cyl, int side);
+	void 	UpdateTrack(int cyl, int side);
 
 protected:
 	int		cyls;

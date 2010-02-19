@@ -81,7 +81,7 @@ void eUdi::UpdateTrack(int cyl, int side)
 		{
 			if(src[i] == 0xa1 && t.Marker(i) && !t.Marker(i + 1)) //find data marker
 			{
-				if(i < data_len && src[i+1] == 0xf8 || src[i+1] == 0xfb)
+				if((i < data_len && src[i+1] == 0xf8) || src[i+1] == 0xfb)
 				{
 					t.data = src + i + 2;
 				}
@@ -111,7 +111,7 @@ void eUdi::Update()
 //=============================================================================
 //	eFdd::eFdd
 //-----------------------------------------------------------------------------
-eFdd::eFdd() : motor(0), optype(0), cyl(0), side(0), ts_byte(0)
+eFdd::eFdd() : motor(0), cyl(0), optype(0), side(0), ts_byte(0)
 	, write_protect(true), disk(NULL)
 {
 }
