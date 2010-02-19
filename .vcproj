@@ -289,19 +289,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\devices\fdd\track_cache.cpp"
+					RelativePath=".\devices\fdd\wd1793.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\devices\fdd\track_cache.h"
-					>
-				</File>
-				<File
-					RelativePath=".\devices\fdd\wd93.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\devices\fdd\wd93.h"
+					RelativePath=".\devices\fdd\wd1793.h"
 					>
 				</File>
 			</Filter>

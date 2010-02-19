@@ -10,7 +10,7 @@
 #include "devices/input/kempston_mouse.h"
 #include "devices/sound/beeper.h"
 #include "devices/sound/ay.h"
-#include "devices/fdd/wd93.h"
+#include "devices/fdd/wd1793.h"
 
 //=============================================================================
 //	eSpeccy::eSpeccy

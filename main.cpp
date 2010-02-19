@@ -7,7 +7,7 @@
 #include "devices/input/kempston_mouse.h"
 #include "devices/sound/ay.h"
 #include "devices/sound/beeper.h"
-#include "devices/fdd/wd93.h"
+#include "devices/fdd/wd1793.h"
 #include "snapshot.h"
 
 static struct eSpeccyHandler : public xPlatform::eHandler
@@ -22,7 +22,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	{
 		delete speccy;
 	}
-	virtual void OnLoop() { if(!video_paused) speccy->Update(); }
+	virtual void OnLoop() { speccy->Update(); }
 	virtual void* VideoData() { return speccy->Device<eUla>()->Screen(); }
 	virtual const char* WindowCaption() { return "UnrealSpeccy portable"; }
 	virtual void OnKey(char key, dword flags)
@@ -52,10 +52,14 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		if(l > 3)
 		{
 			const char* n = name + l - 4;
-			if(!strcmp(n, ".trd") || !strcmp(n, ".scl"))
-				speccy->Device<eWD1793>()->OpenImage(0, name);
+			if(!strcmp(n, ".trd") || !strcmp(n, ".TRD") || !strcmp(n, ".scl") || !strcmp(n, ".SCL"))
+			{
+				speccy->Device<eWD1793>()->Open(name, 0);
+			}
 			else if(!strcmp(n, ".sna"))
+			{
 				xSnapshot::Load(speccy, name);
+			}
 		}
 	}
 	virtual void OnReset() { speccy->Reset(); }

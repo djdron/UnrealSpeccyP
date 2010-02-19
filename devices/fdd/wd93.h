@@ -1,9 +1,8 @@
-#ifndef	__WD93_H__
-#define	__WD93_H__
+#ifndef	__WD1793_H__
+#define	__WD1793_H__
 
 #include "../device.h"
 #include "fdd.h"
-#include "track_cache.h"
 
 #pragma once
 
@@ -16,11 +15,12 @@ class eRom;
 class eWD1793 : public eDevice
 {
 public:
-	eWD1793(eSpeccy* _speccy, eRom* _rom) : speccy(_speccy), rom(_rom) { seldrive = &fdd[0]; }
+	eWD1793(eSpeccy* _speccy, eRom* _rom);
+	virtual void Init();
 	virtual void IoRead(word port, byte* v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
+	bool Open(const char* image, int fdd);
 
-	bool OpenImage(int fdd_index, const char* name);
 	static eDeviceId Id() { return D_WD1793; }
 protected:
 	void	Process(int tact);
@@ -29,94 +29,72 @@ protected:
 	void	Load();
 	void	GetIndex();
 
-	enum CMDBITS
+	enum eCmdBit
 	{
-		CMD_SEEK_RATE     = 0x03,
-		CMD_SEEK_VERIFY   = 0x04,
-		CMD_SEEK_HEADLOAD = 0x08,
-		CMD_SEEK_TRKUPD   = 0x10,
-		CMD_SEEK_DIR      = 0x20,
+		CB_SEEK_RATE	= 0x03,
+		CB_SEEK_VERIFY	= 0x04,
+		CB_SEEK_HEADLOAD= 0x08,
+		CB_SEEK_TRKUPD	= 0x10,
+		CB_SEEK_DIR		= 0x20,
 
-		CMD_WRITE_DEL     = 0x01,
-		CMD_SIDE_CMP_FLAG = 0x02,
-		CMD_DELAY         = 0x04,
-		CMD_SIDE          = 0x08,
-		CMD_SIDE_SHIFT    = 3,
-		CMD_MULTIPLE      = 0x10
+		CB_WRITE_DEL	= 0x01,
+		CB_SIDE_CMP_FLAG= 0x02,
+		CB_DELAY		= 0x04,
+		CB_SIDE			= 0x08,
+		CB_SIDE_SHIFT	= 3,
+		CB_MULTIPLE		= 0x10
 	};
-
-	enum WDSTATE
+	enum eState
 	{
-		S_IDLE = 0,
-		S_WAIT,
-
-		S_DELAY_BEFORE_CMD,
-		S_CMD_RW,
-		S_FOUND_NEXT_ID,
-		S_READ,
-		S_WRSEC,
-		S_WRITE,
-		S_WRTRACK,
-		S_WR_TRACK_DATA,
-
-		S_TYPE1_CMD,
-		S_STEP,
-		S_SEEKSTART,
-		S_SEEK,
-		S_VERIFY,
-
-		S_RESET
+		S_IDLE, S_WAIT, S_DELAY_BEFORE_CMD, S_CMD_RW, S_FOUND_NEXT_ID,
+		S_READ, S_WRSEC, S_WRITE, S_WRTRACK, S_WR_TRACK_DATA, S_TYPE1_CMD,
+		S_STEP, S_SEEKSTART, S_SEEK, S_VERIFY, S_RESET
 	};
-
-	enum BETA_STATUS
+	enum eRequest { R_DRQ = 0x40, R_INTRQ = 0x80 };
+	enum eStatus
 	{
-		DRQ   = 0x40,
-		INTRQ = 0x80
-	};
-
-	enum WD_STATUS
-	{
-		WDS_BUSY      = 0x01,
-		WDS_INDEX     = 0x02,
-		WDS_DRQ       = 0x02,
-		WDS_TRK00     = 0x04,
-		WDS_LOST      = 0x04,
-		WDS_CRCERR    = 0x08,
-		WDS_NOTFOUND  = 0x10,
-		WDS_SEEKERR   = 0x10,
-		WDS_RECORDT   = 0x20,
-		WDS_HEADL     = 0x20,
-		WDS_WRFAULT   = 0x20,
-		WDS_WRITEP    = 0x40,
-		WDS_NOTRDY    = 0x80
+		ST_BUSY		= 0x01,
+		ST_INDEX	= 0x02,
+		ST_DRQ		= 0x02,
+		ST_TRK00	= 0x04,
+		ST_LOST		= 0x04,
+		ST_CRCERR	= 0x08,
+		ST_NOTFOUND	= 0x10,
+		ST_SEEKERR	= 0x10,
+		ST_RECORDT	= 0x20,
+		ST_HEADL	= 0x20,
+		ST_WRFAULT	= 0x20,
+		ST_WRITEP	= 0x40,
+		ST_NOTRDY	= 0x80
 	};
 protected:
-	qword	next, time;
+	qword	next;
 	int		tshift;
 
-	byte	state, state2, cmd;
-	byte	data, track, sector;
-	byte	rqs, status;
+	eState	state;
+	eState	state2;
+	byte	cmd;
+	byte	data;
+	int		track;
+	int		side;				// update this with changing 'system'
+	int		sector;
+	byte	rqs;
+	byte	status;
 
-	int		drive, side;		// update this with changing 'system'
-
-	char	stepdirection;
+	int		stepdirection;
 	byte	system;				// beta128 system register
 
 	// read/write sector(s) data
 	qword	end_waiting_am;
 	int		foundid;			// index in trkcache.hdr for next encountered ID and bytes before this ID
-	int		rwptr, rwlen;
+	int		rwptr;
+	int		rwlen;
+	dword	start_crc;			// format track data
 
-	// format track data
-	dword	start_crc;
-
-	eTrackCache trkcache;
-	eFdd*	seldrive;
-	eFdd	fdd[4];
-
+	eFdd*	fdd;
+	eFdd	fdds[4];
 	eSpeccy* speccy;
 	eRom*	rom;
 };
 
-#endif//__WD93_H__
+#endif//__WD1793_H__
