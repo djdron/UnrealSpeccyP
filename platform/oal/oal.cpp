@@ -38,7 +38,7 @@ struct eSource
 };
 eSource::eUpdateResult eSource::Update(dword data_ready, void* data)
 {
-	const int fps = 60, fps_org = 50;
+	const float fps = 60, fps_org = 50;
 	dword frame_data = 44100*2*2/fps_org;
 	if(data_ready < frame_data*2)
 		return U_LESS;

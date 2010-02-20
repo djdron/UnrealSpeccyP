@@ -22,7 +22,11 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	{
 		delete speccy;
 	}
-	virtual void OnLoop() { speccy->Update(); }
+	virtual void OnLoop()
+	{
+		if(!video_paused)
+			speccy->Update();
+	}
 	virtual void* VideoData() { return speccy->Device<eUla>()->Screen(); }
 	virtual const char* WindowCaption() { return "UnrealSpeccy portable"; }
 	virtual void OnKey(char key, dword flags)
