@@ -68,6 +68,9 @@ protected:
 		ST_NOTRDY	= 0x80
 	};
 protected:
+	eSpeccy* speccy;
+	eRom*	rom;
+
 	qword	next;
 	int		tshift;
 
@@ -93,8 +96,6 @@ protected:
 
 	eFdd*	fdd;
 	eFdd	fdds[4];
-	eSpeccy* speccy;
-	eRom*	rom;
 };
 
 #endif//__WD1793_H__
