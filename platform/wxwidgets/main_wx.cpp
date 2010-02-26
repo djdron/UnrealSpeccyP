@@ -176,7 +176,7 @@ class Frame: public wxFrame
 {
 public:
 	Frame(const wxString& title, const wxPoint& pos)
-		: wxFrame((wxFrame *)NULL, -1, title, pos), org_size(320, 240)
+		: wxFrame((wxFrame*)NULL, -1, title, pos), org_size(320, 240)
 	{
 		wxMenu* menuFile = new wxMenu;
 		menuFile->Append(ID_Open, _("&Open...\tF3"));
@@ -268,6 +268,6 @@ class App: public wxApp
 }
 //namespace xPlatform
 
-IMPLEMENT_APP_CONSOLE(xPlatform::App)
+IMPLEMENT_APP(xPlatform::App)
 
 #endif//USE_WXWIDGETS

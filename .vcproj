@@ -55,11 +55,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_dll"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_lib"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -110,7 +110,7 @@
 				Optimization="3"
 				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include"
 				PreprocessorDefinitions="_WINDOWS"
-				ExceptionHandling="0"
+				ExceptionHandling="1"
 				BufferSecurityCheck="false"
 				FloatingPointModel="2"
 			/>
@@ -125,9 +125,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib"
-				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_dll"
-				SubSystem="1"
+				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_lib"
+				SubSystem="2"
 			/>
 			<Tool
 				Name="VCALinkTool"

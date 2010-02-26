@@ -11,10 +11,6 @@
 //#define USE_GLUT
 #define USE_WXWIDGETS
 
-#if defined(USE_WXWIDGETS) && defined(_WINDOWS)
-#define WXUSINGDLL
-#endif
-
 namespace xPlatform
 {
 
