@@ -443,7 +443,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
    CloseTape();
    dword size, pause, i, j, n, t, t0;
    byte pl, last, *end; char *p;
-   dword loop_n = 0, loop_p;
+   dword loop_n = 0, loop_p = 0;
    char nm[512];
    while(ptr < buf + buf_size)
    {
@@ -648,7 +648,10 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 			  }
 			  NamedCell(nm);
 		   }
-		   *(dword*)nm = '-';
+		   nm[0] = '-';
+		   nm[1] = 0;
+		   nm[2] = 0;
+		   nm[3] = 0;
 		} else sprintf(nm, "* custom info: %s", ptr), nm[15+16] = 0;
 		NamedCell(nm);
 		ptr += 0x14 + *(dword*)(ptr+0x10);
@@ -663,9 +666,9 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
       }
    }
    for (i = 0; i < tape_infosize; i++) {
-      if (*(short*)tapeinfo[i].desc == WORD2('*', ' '))
+      if(tapeinfo[i].desc[0] == '*' && tapeinfo[i].desc[1] == ' ')
          strcat(tapeinfo[i].desc, " [UNSUPPORTED]");
-      if (*tapeinfo[i].desc == '-')
+      if(*tapeinfo[i].desc == '-')
          while (strlen(tapeinfo[i].desc) < sizeof(tapeinfo[i].desc)-1)
             strcat(tapeinfo[i].desc, "-");
    }
