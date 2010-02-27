@@ -75,13 +75,15 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 			}
 		}
 	}
-	virtual void OnReset() { speccy->Reset(); }
-	virtual void OnTape(bool start)
+	virtual void OnAction(xPlatform::eAction action)
 	{
-		if(start)
-			speccy->Device<eTape>()->Start();
-		else
-			speccy->Device<eTape>()->Stop();
+		using namespace xPlatform;
+		switch(action)
+		{
+		case A_RESET:		speccy->Reset(); break;
+		case A_TAPE_START:	speccy->Device<eTape>()->Start(); break;
+		case A_TAPE_STOP:	speccy->Device<eTape>()->Stop(); break;
+		}
 	}
 
 	virtual int	AudioSources() { return SOUND_DEV_COUNT; }

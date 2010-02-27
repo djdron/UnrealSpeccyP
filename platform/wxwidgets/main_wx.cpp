@@ -209,7 +209,7 @@ public:
 		gl_canvas->SetFocus();
 	}
 
-	void OnReset(wxCommandEvent& event)	{ Handler()->OnReset(); }
+	void OnReset(wxCommandEvent& event)	{ Handler()->OnAction(A_RESET); }
 	void OnQuit(wxCommandEvent& event)	{ Close(true); }
 	void OnOpen(wxCommandEvent& event)
 	{
@@ -235,8 +235,8 @@ public:
 	{
 		switch(event.GetId())
 		{
-		case ID_TapeStart:	Handler()->OnTape(true); break;
-		case ID_TapeStop:	Handler()->OnTape(false); break;
+		case ID_TapeStart:	Handler()->OnAction(A_TAPE_START); break;
+		case ID_TapeStop:	Handler()->OnAction(A_TAPE_STOP); break;
 		}
 	}
 	enum

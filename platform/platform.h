@@ -16,6 +16,7 @@ namespace xPlatform
 
 enum eKeyFlags { KF_DOWN = 0x01, KF_SHIFT = 0x08, KF_CTRL = 0x02, KF_ALT = 0x04 };
 enum eMouseAction { MA_MOVE, MA_BUTTON, MA_WHEEL };
+enum eAction { A_RESET, A_TAPE_START, A_TAPE_STOP };
 
 struct eHandler
 {
@@ -27,8 +28,7 @@ struct eHandler
 	virtual void OnMouse(eMouseAction action, byte a, byte b) = 0;
 
 	virtual void OnOpenFile(const char* name) = 0;
-	virtual void OnReset() = 0;
-	virtual void OnTape(bool start) = 0;
+	virtual void OnAction(eAction action) = 0;
 
 	// data to draw
 	virtual void* VideoData() = 0;
