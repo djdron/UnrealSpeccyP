@@ -28,6 +28,7 @@ struct eHandler
 
 	virtual void OnOpenFile(const char* name) = 0;
 	virtual void OnReset() = 0;
+	virtual void OnTape(bool start) = 0;
 
 	// data to draw
 	virtual void* VideoData() = 0;

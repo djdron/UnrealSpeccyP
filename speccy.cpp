@@ -8,6 +8,7 @@
 #include "devices/input/keyboard.h"
 #include "devices/input/kempston_joy.h"
 #include "devices/input/kempston_mouse.h"
+#include "devices/input/tape.h"
 #include "devices/sound/beeper.h"
 #include "devices/sound/ay.h"
 #include "devices/fdd/wd1793.h"
@@ -32,6 +33,7 @@ eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), frame_tacts(0)
 	devices.Add(new eBeeper);
 	devices.Add(new eAY);
 	devices.Add(new eWD1793(this, Device<eRom>()));
+	devices.Add(new eTape(this));
 	cpu = new xZ80::eZ80(memory, &devices, frame_tacts);
 
 	Reset();
@@ -59,10 +61,12 @@ void eSpeccy::Update()
 {
 	Device<eBeeper>()->StartFrame();
 	Device<eAY>()->StartFrame();
+	Device<eTape>()->StartFrame();
 	cpu->Update(int_len, &nmi_pending);
 	Device<eUla>()->Update();
 	dword t = cpu->FrameTacts() + cpu->T();
 	Device<eBeeper>()->EndFrame(t);
 	Device<eAY>()->EndFrame(t);
+	Device<eTape>()->EndFrame(t);
 	t_states += t;
 }

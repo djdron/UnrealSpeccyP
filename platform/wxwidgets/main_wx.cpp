@@ -188,9 +188,14 @@ public:
 		menuWindow->Append(ID_Size100, _("Size &100%\tCtrl+1"));
 		menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
 
+		wxMenu* menuDevice = new wxMenu;
+		menuDevice->Append(ID_TapeStart, _("Start tape\tF5"));
+		menuDevice->Append(ID_TapeStop, _("Stop tape\tF6"));
+
 		wxMenuBar* menuBar = new wxMenuBar;
 		menuBar->Append(menuFile, _("File"));
 		menuBar->Append(menuWindow, _("Window"));
+		menuBar->Append(menuDevice, _("Device"));
 
 		SetMenuBar(menuBar);
 
@@ -226,9 +231,18 @@ public:
 		case ID_Size200: SetClientSize(org_size*2); break;
 		}
 	}
+	void OnTape(wxCommandEvent& event)
+	{
+		switch(event.GetId())
+		{
+		case ID_TapeStart:	Handler()->OnTape(true); break;
+		case ID_TapeStop:	Handler()->OnTape(false); break;
+		}
+	}
 	enum
 	{
 		ID_Quit = 1, ID_Open, ID_Reset, ID_Size100, ID_Size200,
+		ID_TapeStart, ID_TapeStop,
 	};
 
 private:
@@ -244,6 +258,8 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_Quit,	Frame::OnQuit)
 	EVT_MENU(Frame::ID_Size100,	Frame::OnResize)
 	EVT_MENU(Frame::ID_Size200,	Frame::OnResize)
+	EVT_MENU(Frame::ID_TapeStart,Frame::OnTape)
+	EVT_MENU(Frame::ID_TapeStop, Frame::OnTape)
 END_EVENT_TABLE()
 
 class App: public wxApp

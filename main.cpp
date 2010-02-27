@@ -5,6 +5,7 @@
 #include "devices/input/keyboard.h"
 #include "devices/input/kempston_joy.h"
 #include "devices/input/kempston_mouse.h"
+#include "devices/input/tape.h"
 #include "devices/sound/ay.h"
 #include "devices/sound/beeper.h"
 #include "devices/fdd/wd1793.h"
@@ -17,6 +18,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		speccy = new eSpeccy;
 		sound_dev[0] = speccy->Device<eBeeper>();
 		sound_dev[1] = speccy->Device<eAY>();
+		sound_dev[2] = speccy->Device<eTape>();
 	}
 	~eSpeccyHandler()
 	{
@@ -60,13 +62,28 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 			{
 				speccy->Device<eWD1793>()->Open(name, 0);
 			}
-			else if(!strcmp(n, ".sna"))
+			else if(!strcmp(n, ".sna") || !strcmp(n, ".SNA"))
 			{
 				xSnapshot::Load(speccy, name);
+			}
+			else if(!strcmp(n, ".tap") || !strcmp(n, ".TAP") ||
+					!strcmp(n, ".csw") || !strcmp(n, ".CSW") ||
+					!strcmp(n, ".tzx") || !strcmp(n, ".TZX")
+				)
+			{
+				speccy->Device<eTape>()->Open(name);
 			}
 		}
 	}
 	virtual void OnReset() { speccy->Reset(); }
+	virtual void OnTape(bool start)
+	{
+		if(start)
+			speccy->Device<eTape>()->Start();
+		else
+			speccy->Device<eTape>()->Stop();
+	}
+
 	virtual int	AudioSources() { return SOUND_DEV_COUNT; }
 	virtual void* AudioData(int source) { return sound_dev[source]->AudioData(); }
 	virtual dword AudioDataReady(int source) { return sound_dev[source]->AudioDataReady(); }
@@ -76,7 +93,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	eSpeccy* speccy;
 	bool video_paused;
 
-	enum { SOUND_DEV_COUNT = 2 };
+	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];
 } sh;
 
