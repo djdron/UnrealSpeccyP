@@ -324,6 +324,14 @@
 					RelativePath=".\devices\input\keyboard.h"
 					>
 				</File>
+				<File
+					RelativePath=".\devices\input\tape.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\devices\input\tape.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
