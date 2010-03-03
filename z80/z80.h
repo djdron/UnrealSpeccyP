@@ -39,6 +39,9 @@ enum eFlags
 extern byte even_m1; // m1_wait = 0xc0 - on wait machines, 0 - no_wait on pentagon
 extern bool unstable_databus;
 
+class eZ80;
+typedef void (*eFastEmul)(eZ80* z80);
+
 //*****************************************************************************
 //	eZ80
 //-----------------------------------------------------------------------------
@@ -51,6 +54,8 @@ public:
 
 	int FrameTacts() const { return frame_tacts; }
 	dword T() const { return t; }
+
+	void FastEmul(eFastEmul f_emul) { fast_emul = f_emul; }
 
 protected:
 	void Int();
@@ -103,6 +108,8 @@ protected:
 	eRom*		rom;
 	eUla*		ula;
 	eDevices*	devices;
+
+	eFastEmul	fast_emul;
 
 	int		t;
 	int		im;

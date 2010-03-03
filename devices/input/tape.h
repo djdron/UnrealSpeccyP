@@ -6,6 +6,7 @@
 #pragma once
 
 class eSpeccy;
+namespace xZ80 { class eZ80; }
 
 class eTape : public eDeviceSound
 {
@@ -15,12 +16,14 @@ public:
 	virtual void Init();
 	virtual void Reset();
 	virtual void IoRead(word port, byte* v, int tact);
+
 	bool Open(const char* file);
 	void Start();
 	void Stop();
 
 	static eDeviceId Id() { return D_TAPE; }
 
+	byte TapeBit(int tact);
 protected:
 	bool ParseTAP(byte* buf, size_t buf_size);
 	bool ParseCSW(byte* buf, size_t buf_size);
@@ -42,7 +45,6 @@ protected:
 	void NamedCell(const void *nm, dword sz = 0);
 	void CreateAppendableBlock();
 	void ParseHardware(byte*ptr);
-	byte TapeBit(int tact);
 
 protected:
 	eSpeccy* speccy;
@@ -76,5 +78,7 @@ protected:
 
 	dword appendable;
 };
+
+void FastTapeEmul(xZ80::eZ80* z80);
 
 #endif//__TAPE_H__

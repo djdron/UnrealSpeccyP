@@ -17,6 +17,7 @@ bool unstable_databus = false;
 //-----------------------------------------------------------------------------
 eZ80::eZ80(eMemory* _m, eDevices* _d, dword _frame_tacts)
 	: memory(_m), rom(_d->Get<eRom>()), ula(_d->Get<eUla>()), devices(_d)
+	, fast_emul(NULL)
 	, t(0), im(0), eipos(0), haltpos(0)
 	, frame_tacts(_frame_tacts)
 	, last_branch(0)
@@ -158,6 +159,8 @@ void eZ80::Nmi()
 void eZ80::Step()
 {
 	rom->Read(pc);
+	if(fast_emul)
+		fast_emul(this);
 	if(pc_h & even_m1) //wait
 	{
 		t += t & 1;
