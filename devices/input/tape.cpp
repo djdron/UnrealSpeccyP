@@ -3,6 +3,9 @@
 #include "../../z80/z80.h"
 #include "tape.h"
 
+//=============================================================================
+//	eTape::Init
+//-----------------------------------------------------------------------------
 void eTape::Init()
 {
 	eInherited::Init();
@@ -17,30 +20,40 @@ void eTape::Init()
 
 	appendable = 0;
 }
-
+//=============================================================================
+//	eTape::Reset
+//-----------------------------------------------------------------------------
 void eTape::Reset()
 {
 	eInherited::Reset();
 	ResetTape();
 }
+//=============================================================================
+//	eTape::Start
+//-----------------------------------------------------------------------------
 void eTape::Start()
 {
 	StartTape();
 }
+//=============================================================================
+//	eTape::Stop
+//-----------------------------------------------------------------------------
 void eTape::Stop()
 {
 	StopTape();
 }
-
+//=============================================================================
+//	eTape::IoRead
+//-----------------------------------------------------------------------------
 void eTape::IoRead(word port, byte* v, int tact)
 {
 	if(port & 1)
 		return;
 	*v |= TapeBit(tact) & 0x40;
 }
-
-// tape image contains indexes in tape_pulse[]
-
+//=============================================================================
+//	eTape::FindPulse
+//-----------------------------------------------------------------------------
 dword eTape::FindPulse(dword t)
 {
 	if(max_pulses < 0x100)
@@ -59,14 +72,18 @@ dword eTape::FindPulse(dword t)
 			nearest = i, delta = abs((int)t - (int)tape_pulse[i]);
 	return nearest;
 }
-
+//=============================================================================
+//	eTape::FindTapeIndex
+//-----------------------------------------------------------------------------
 void eTape::FindTapeIndex()
 {
 	for(dword i = 0; i < tape_infosize; i++)
 		if(tape.play_pointer >= tape_image + tapeinfo[i].pos)
 			tape.index = i;
 }
-
+//=============================================================================
+//	eTape::FindTapeSizes
+//-----------------------------------------------------------------------------
 void eTape::FindTapeSizes()
 {
 	for(dword i = 0; i < tape_infosize; i++)
@@ -79,7 +96,9 @@ void eTape::FindTapeSizes()
 		tapeinfo[i].t_size = sz;
 	}
 }
-
+//=============================================================================
+//	eTape::StopTape
+//-----------------------------------------------------------------------------
 void eTape::StopTape()
 {
 	FindTapeIndex();
@@ -90,7 +109,9 @@ void eTape::StopTape()
 	tape.tape_bit = -1;
 	speccy->CPU()->FastEmul(NULL);
 }
-
+//=============================================================================
+//	eTape::ResetTape
+//-----------------------------------------------------------------------------
 void eTape::ResetTape()
 {
 	tape.index = 0;
@@ -99,7 +120,9 @@ void eTape::ResetTape()
 	tape.tape_bit = -1;
 	speccy->CPU()->FastEmul(NULL);
 }
-
+//=============================================================================
+//	eTape::StartTape
+//-----------------------------------------------------------------------------
 void eTape::StartTape()
 {
 	if(!tape_image)
@@ -110,7 +133,9 @@ void eTape::StartTape()
 	tape.tape_bit = -1;
 //	speccy->CPU()->FastEmul(FastTapeEmul);
 }
-
+//=============================================================================
+//	eTape::CloseTape
+//-----------------------------------------------------------------------------
 void eTape::CloseTape()
 {
 	speccy->CPU()->FastEmul(NULL);
@@ -133,6 +158,9 @@ void eTape::CloseTape()
 
 #define align_by(a,b) (((dword)(a) + ((b)-1)) & ~((b)-1))
 
+//=============================================================================
+//	eTape::Reserve
+//-----------------------------------------------------------------------------
 void eTape::Reserve(dword datasize)
 {
 	const int blocksize = 16384;
@@ -142,7 +170,9 @@ void eTape::Reserve(dword datasize)
 	if(align_by(tape_imagesize, blocksize) < newsize)
 		tape_image = (byte*)realloc(tape_image, newsize);
 }
-
+//=============================================================================
+//	eTape::MakeBlock
+//-----------------------------------------------------------------------------
 void eTape::MakeBlock(byte*data, dword size, dword pilot_t, dword s1_t,
 		dword s2_t, dword zero_t, dword one_t, dword pilot_len, dword pause,
 		byte last)
@@ -167,7 +197,9 @@ void eTape::MakeBlock(byte*data, dword size, dword pilot_t, dword s1_t,
 	if(pause)
 		tape_image[tape_imagesize++] = FindPulse(pause * 3500);
 }
-
+//=============================================================================
+//	eTape::Desc
+//-----------------------------------------------------------------------------
 void eTape::Desc(byte*data, dword size, char *dst)
 {
 	byte crc = 0;
@@ -191,7 +223,9 @@ void eTape::Desc(byte*data, dword size, char *dst)
 		sprintf(dst, "#%02X block, %d bytes", *data, size - 2);
 	sprintf(dst + strlen(dst), ", crc %s", crc ? "bad" : "ok");
 }
-
+//=============================================================================
+//	eTape::AllocInfocell
+//-----------------------------------------------------------------------------
 void eTape::AllocInfocell()
 {
 	tapeinfo = (TAPEINFO*)realloc(tapeinfo, (tape_infosize + 1)
@@ -199,7 +233,9 @@ void eTape::AllocInfocell()
 	tapeinfo[tape_infosize].pos = tape_imagesize;
 	appendable = 0;
 }
-
+//=============================================================================
+//	eTape::NamedCell
+//-----------------------------------------------------------------------------
 void eTape::NamedCell(const void *nm, dword sz)
 {
 	AllocInfocell();
@@ -210,7 +246,9 @@ void eTape::NamedCell(const void *nm, dword sz)
 		strcpy(tapeinfo[tape_infosize].desc, (const char*)nm);
 	tape_infosize++;
 }
-
+//=============================================================================
+//	eTape::Open
+//-----------------------------------------------------------------------------
 bool eTape::Open(const char* file)
 {
 	int l = strlen(file);
@@ -241,7 +279,9 @@ bool eTape::Open(const char* file)
 	delete buf;
 	return ok;
 }
-
+//=============================================================================
+//	eTape::ParseTAP
+//-----------------------------------------------------------------------------
 bool eTape::ParseTAP(byte* buf, size_t buf_size)
 {
 	byte* ptr = buf;
@@ -262,7 +302,9 @@ bool eTape::ParseTAP(byte* buf, size_t buf_size)
 	FindTapeSizes();
 	return (ptr == buf + buf_size);
 }
-
+//=============================================================================
+//	eTape::ParseCSW
+//-----------------------------------------------------------------------------
 bool eTape::ParseCSW(byte* buf, size_t buf_size)
 {
 	const dword Z80FQ = 3500000;
@@ -290,7 +332,9 @@ bool eTape::ParseCSW(byte* buf, size_t buf_size)
 	FindTapeSizes();
 	return true;
 }
-
+//=============================================================================
+//	eTape::CreateAppendableBlock
+//-----------------------------------------------------------------------------
 void eTape::CreateAppendableBlock()
 {
 	if(!tape_infosize || appendable)
@@ -298,7 +342,9 @@ void eTape::CreateAppendableBlock()
 	NamedCell("set of pulses");
 	appendable = 1;
 }
-
+//=============================================================================
+//	eTape::ParseHardware
+//-----------------------------------------------------------------------------
 void eTape::ParseHardware(byte* ptr)
 {
 	dword n = *ptr++;
@@ -487,7 +533,9 @@ void eTape::ParseHardware(byte* ptr)
 	}
 	NamedCell("-");
 }
-
+//=============================================================================
+//	eTape::ParseTZX
+//-----------------------------------------------------------------------------
 bool eTape::ParseTZX(byte* buf, size_t buf_size)
 {
 	byte* ptr = buf;
@@ -800,7 +848,9 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 	FindTapeSizes();
 	return (ptr == buf + buf_size);
 }
-
+//=============================================================================
+//	eTape::TapeBit
+//-----------------------------------------------------------------------------
 byte eTape::TapeBit(int tact)
 {
 	qword cur = speccy->T() + tact;
@@ -826,17 +876,25 @@ byte eTape::TapeBit(int tact)
 	return (byte)tape.tape_bit;
 }
 
+//*****************************************************************************
+//	eZ80_FastTape
+//-----------------------------------------------------------------------------
 class eZ80_FastTape: public xZ80::eZ80
 {
 public:
 	void Emul();
 };
 
+//=============================================================================
+//	FastTapeEmul
+//-----------------------------------------------------------------------------
 void FastTapeEmul(xZ80::eZ80* z80)
 {
 	((eZ80_FastTape*)z80)->Emul();
 }
-
+//=============================================================================
+//	eZ80_FastTape::Emul
+//-----------------------------------------------------------------------------
 void eZ80_FastTape::Emul()
 {
 	byte p0 = Read(pc + 0);
