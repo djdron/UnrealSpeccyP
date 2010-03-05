@@ -55,16 +55,16 @@ void eAY::IoWrite(word port, byte v, int tact)
 //=============================================================================
 //	eAY::Render
 //-----------------------------------------------------------------------------
-dword eAY::Render(AYOUT *src, dword srclen, dword clk_ticks, bufptr_t dst)
+void eAY::Render(AYOUT *src, dword srclen, dword tacts, bufptr_t dst)
 {
-	StartFrame(dst);
-	for (dword index = 0; index < srclen; index++)
+	FrameStart();
+	for(dword index = 0; index < srclen; index++)
 	{
 //		if(src[index].timestamp > clk_ticks) continue; // wrong input data leads to crash
 		Select(src[index].reg_num);
 		Write(src[index].timestamp, src[index].reg_value);
 	}
-	return EndFrame(clk_ticks);
+	FrameEnd(tacts);
 }
 
 const dword MULT_C_1 = 14; // fixed point precision for 'system tick -> ay tick'
@@ -72,27 +72,27 @@ const dword MULT_C_1 = 14; // fixed point precision for 'system tick -> ay tick'
 // assert(b+MULT_C_1 <= 32)
 
 //=============================================================================
-//	eAY::StartFrame
+//	eAY::FrameStart
 //-----------------------------------------------------------------------------
-void eAY::StartFrame(bufptr_t dst)
+void eAY::FrameStart()
 {
 	r13_reloaded = 0;
-	eInherited::StartFrame(dst);
+	eInherited::FrameStart();
 }
 //=============================================================================
-//	eAY::EndFrame
+//	eAY::FrameEnd
 //-----------------------------------------------------------------------------
-dword eAY::EndFrame(dword clk_ticks)
+void eAY::FrameEnd(dword tacts)
 {
 	//adjusting 't' with whole history will fix accumulation of rounding errors
-	qword end_chip_tick = ((passed_clk_ticks + clk_ticks) * chip_clock_rate) / system_clock_rate;
-	Flush( (dword) (end_chip_tick - passed_chip_ticks) );
-	dword res = eInherited::EndFrame(t);
-	passed_clk_ticks += clk_ticks;
-	passed_chip_ticks += t; t = 0;
+	qword end_chip_tick = ((passed_clk_ticks + tacts) * chip_clock_rate) / system_clock_rate;
+	Flush((dword)(end_chip_tick - passed_chip_ticks));
+	eInherited::FrameEnd(t);
+	passed_clk_ticks += tacts;
+	passed_chip_ticks += t;
+	t = 0;
 	nextfmtickfloat = 0.0f;
 	nextfmtick = 0;
-	return res;
 }
 //=============================================================================
 //	eAY::Flush

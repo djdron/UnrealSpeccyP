@@ -77,18 +77,17 @@ public:
 	void SetVolumes(dword global_vol, const SNDCHIP_VOLTAB *voltab, const SNDCHIP_PANTAB *stereo);
 
 	virtual void Reset() { _Reset(); }
-	// 'render' is a function that converts array of register writes into PCM-buffer
-	dword Render(AYOUT *src, dword srclen, dword clk_ticks, bufptr_t dst);
+	virtual void FrameStart();
+	virtual void FrameEnd(dword tacts);
 
-	// set of functions that fills buffer in emulation progress
-	virtual void StartFrame(bufptr_t dst);
+	static eDeviceId Id() { return D_AY; }
+protected:
+	// 'render' is a function that converts array of register writes into PCM-buffer
+	void Render(AYOUT *src, dword srclen, dword tacts, bufptr_t dst);
 	void Select(byte nreg);
 	void Write(dword timestamp, byte val);
 	byte Read();
-	virtual dword EndFrame(dword clk_ticks);
-	void StartFrame() { StartFrame(dstpos); }
 
-	static eDeviceId Id() { return D_AY; }
 private:
 	typedef void YM2203;
 	YM2203* chip2203; //registers //Dexus

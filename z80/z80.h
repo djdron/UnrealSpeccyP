@@ -52,10 +52,11 @@ public:
 	void Reset();
 	void Update(int int_len, int* nmi_pending);
 
-	int FrameTacts() const { return frame_tacts; }
+	dword FrameTacts() const { return frame_tacts; }
 	dword T() const { return t; }
 
 	void FastEmul(eFastEmul f_emul) { fast_emul = f_emul; }
+	bool FastEmul() const { return fast_emul != NULL; }
 
 protected:
 	void Int();

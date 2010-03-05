@@ -11,15 +11,15 @@ eDeviceSound::eDeviceSound()
 //=============================================================================
 //	eDeviceSound::Render
 //-----------------------------------------------------------------------------
-dword eDeviceSound::Render(SNDOUT *src, dword srclen, dword clk_ticks, bufptr_t dst_start)
+void eDeviceSound::Render(SNDOUT *src, dword srclen, dword tacts, bufptr_t dst_start)
 {
-	StartFrame(dst_start);
+	FrameStart();
 	for (dword index = 0; index < srclen; index++)
 	{
 		// if(src[index].timestamp > clk_ticks) continue; // wrong input data leads to crash
 		Update(src[index].timestamp, src[index].newvalue.ch.left, src[index].newvalue.ch.right);
 	}
-	return EndFrame(clk_ticks);
+	FrameEnd(tacts);
 }
 
 const dword TICK_FF = 6;            // oversampling ratio: 2^6 = 64
@@ -29,35 +29,36 @@ const dword MULT_C = 12;   // fixed point precision for 'system tick -> sound ti
 // assert(b+MULT_C <= 32)
 
 //=============================================================================
-//	eDeviceSound::StartFrame
+//	eDeviceSound::FrameStart
 //-----------------------------------------------------------------------------
-void eDeviceSound::StartFrame(bufptr_t dst_start)
+void eDeviceSound::FrameStart()
 {
-	eDeviceSound::dst_start = dstpos = dst_start;
 	base_tick = tick;
 	firstsmp = 4; //Alone Coder
 }
 //=============================================================================
 //	eDeviceSound::Update
 //-----------------------------------------------------------------------------
-void eDeviceSound::Update(dword timestamp, dword l, dword r)
+void eDeviceSound::Update(dword tact, dword l, dword r)
 {
+	if(!enabled)
+		return;
 	if(!((l ^ mix_l) | (r ^ mix_r)))
 		return;
 
 	//[vv]   dword endtick = (timestamp * mult_const) >> MULT_C;
-	qword endtick = (timestamp * (qword)sample_rate * TICK_F) / clock_rate;
+	qword endtick = (tact * (qword)sample_rate * TICK_F) / clock_rate;
 	Flush( (dword) (base_tick + endtick) );
 	mix_l = l; mix_r = r;
 }
 //=============================================================================
-//	eDeviceSound::EndFrame
+//	eDeviceSound::FrameEnd
 //-----------------------------------------------------------------------------
-dword eDeviceSound::EndFrame(dword clk_ticks)
+void eDeviceSound::FrameEnd(dword tacts)
 {
 	// adjusting 'clk_ticks' with whole history will fix accumulation of rounding errors
 	//qword endtick = ((passed_clk_ticks + clk_ticks) * mult_const) >> MULT_C;
-	qword endtick = ((passed_clk_ticks + clk_ticks) * (qword)sample_rate * TICK_F) / clock_rate;
+	qword endtick = ((passed_clk_ticks + tacts) * (qword)sample_rate * TICK_F) / clock_rate;
 	Flush( (dword) (endtick - passed_snd_ticks) );
 
 	dword ready_samples = dstpos - dst_start;
@@ -67,9 +68,7 @@ dword eDeviceSound::EndFrame(dword clk_ticks)
 
 	tick -= (ready_samples << TICK_FF);
 	passed_snd_ticks += (ready_samples << TICK_FF);
-	passed_clk_ticks += clk_ticks;
-
-	return ready_samples;
+	passed_clk_ticks += tacts;
 }
 //=============================================================================
 //	eDeviceSound::AudioData
@@ -101,7 +100,8 @@ void eDeviceSound::SetTimings(dword clock_rate, dword sample_rate)
 	eDeviceSound::clock_rate = clock_rate;
 	eDeviceSound::sample_rate = sample_rate;
 
-	tick = base_tick = 0; dstpos = dst_start = buffer;
+	tick = base_tick = 0;
+	dstpos = dst_start = buffer;
 	passed_snd_ticks = passed_clk_ticks = 0;
 
 	mult_const = (dword) (((qword)sample_rate << (MULT_C+TICK_FF)) / clock_rate);

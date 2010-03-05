@@ -197,9 +197,9 @@ void eUla::IoRead(word port, byte* v, int tact)
 	*v = *atr;
 }
 //=============================================================================
-//	eUla::Update
+//	eUla::FrameUpdate
 //-----------------------------------------------------------------------------
-void eUla::Update()
+void eUla::FrameUpdate()
 {
 	UpdateRay(0x7fff0000);
 	prev_t = 0;
@@ -215,6 +215,8 @@ void eUla::Update()
 //-----------------------------------------------------------------------------
 void eUla::UpdateRay(int tact)
 {
+	if(!enabled)
+		return;
 	int last_t = (tact + border_add) & border_and;
 	int t = prev_t;
 

@@ -17,7 +17,7 @@ public:
 	virtual ~eUla();
 	virtual void Init();
 	virtual void Reset();
-	virtual void Update();
+	virtual void FrameUpdate();
 	virtual void Write(word addr, byte v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
 	virtual void IoRead(word port, byte* v, int tact);

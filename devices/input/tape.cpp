@@ -867,8 +867,8 @@ byte eTape::TapeBit(int tact)
 		}
 		dword pulse;
 		tape.tape_bit ^= -1;
-		if(tape.play_pointer == tape.end_of_tape || (pulse
-				= tape_pulse[*tape.play_pointer++]) == (dword)-1)
+		if(tape.play_pointer == tape.end_of_tape ||
+				(pulse = tape_pulse[*tape.play_pointer++]) == (dword)-1)
 			StopTape();
 		else
 			tape.edge_change += pulse;
@@ -934,13 +934,13 @@ void eZ80_FastTape::Emul()
 				== 0xA9 && p09 == 0xE6 && p10 == 0x20 && p11 == 0x28 && p12
 				== 0xF3)
 		{ // find edge (rom routine)
-			eTape* tape = devices->Get<eTape> ();
+			eTape* tape = devices->Get<eTape>();
 			for(;;)
 			{
 				if(b == 0xFF)
 					return;
 				if((tape->TapeBit(T()) ^ c) & 0x20)
-					return;
+	            	return;
 				b++;
 				t += 59;
 			}
@@ -949,7 +949,7 @@ void eZ80_FastTape::Emul()
 				== 0xA9 && p09 == 0xE6 && p10 == 0x20 && p11 == 0x28 && p12
 				== 0xF3)
 		{ // rra,ret nc => rr a (popeye2)
-			eTape* tape = devices->Get<eTape> ();
+			eTape* tape = devices->Get<eTape>();
 			for(;;)
 			{
 				if(b == 0xFF)
@@ -964,7 +964,7 @@ void eZ80_FastTape::Emul()
 				== 0xA9 && p09 == 0xE6 && p10 == 0x20 && p11 == 0x28 && p12
 				== 0xF3)
 		{ // ret nc nopped (some bleep loaders)
-			eTape* tape = devices->Get<eTape> ();
+			eTape* tape = devices->Get<eTape>();
 			for(;;)
 			{
 				if(b == 0xFF)
@@ -979,7 +979,7 @@ void eZ80_FastTape::Emul()
 				== 0x40 && p09 == 0xD8 && p10 == 0x00 && p11 == 0x28 && p12
 				== 0xF3)
 		{ // no rra, no break check (rana rama)
-			eTape* tape = devices->Get<eTape> ();
+			eTape* tape = devices->Get<eTape>();
 			for(;;)
 			{
 				if(b == 0xFF)
@@ -993,7 +993,7 @@ void eZ80_FastTape::Emul()
 		if(p04 == 0xDB && p05 == 0xFE && p06 == 0x1F && p07 == 0xA9 && p08
 				== 0xE6 && p09 == 0x20 && p10 == 0x28 && p11 == 0xF4)
 		{ // ret nc skipped: routine without BREAK checking (ZeroMusic & JSW)
-			eTape* tape = devices->Get<eTape> ();
+			eTape* tape = devices->Get<eTape>();
 			for(;;)
 			{
 				if(b == 0xFF)
@@ -1018,7 +1018,7 @@ void eZ80_FastTape::Emul()
 		if(p06 == 0xDB && p08 == 0x1F && p09 == 0xC8 && p10 == 0xA9 && p11
 				== 0xE6 && p12 == 0x20 && p13 == 0x28 && p14 == 0xF1)
 		{ // find edge from Donkey Kong
-			eTape* tape = devices->Get<eTape> ();
+			eTape* tape = devices->Get<eTape>();
 			for(;;)
 			{
 				if(b == 0xFF)
@@ -1042,7 +1042,7 @@ void eZ80_FastTape::Emul()
 		if(p04 == 0xA9 && p05 == 0xE6 && p06 == 0x40 && p07 == 0x20 && p09
 				== 0x05 && p10 == 0x20 && p11 == 0xF4)
 		{ // lode runner
-			eTape* tape = devices->Get<eTape> ();
+			eTape* tape = devices->Get<eTape>();
 			for(;;)
 			{
 				if(b == 1)

@@ -31,17 +31,9 @@ public:
 	eDeviceSound();
 	void SetTimings(dword clock_rate, dword sample_rate);
 
-	// 'render' is a function that converts array of DAC inputs into PCM-buffer
-	dword Render(SNDOUT *src, dword srclen, dword clk_ticks, bufptr_t dst);
-
-	// set of functions that fills buffer in emulation progress
-	virtual void StartFrame(bufptr_t dst);
-	void Update(dword timestamp, dword l, dword r);
-	virtual dword EndFrame(dword clk_ticks);
-
-	// new start position as previous end position
-	// (continue to fill buffer)
-	void StartFrame() { StartFrame(dstpos); }
+	virtual void FrameStart();
+	virtual void FrameEnd(dword tacts);
+	virtual void Update(dword tact, dword l, dword r);
 
 	enum { BUFFER_LEN = 16384 };
 
@@ -50,6 +42,9 @@ public:
 	void AudioDataUse(dword size);
 
 protected:
+	// 'render' is a function that converts array of DAC inputs into PCM-buffer
+	void Render(SNDOUT *src, dword srclen, dword clk_ticks, bufptr_t dst);
+
 	dword mix_l, mix_r;
 	bufptr_t dstpos, dst_start;
 	dword clock_rate, sample_rate; //Alone Coder

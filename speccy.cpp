@@ -59,14 +59,10 @@ void eSpeccy::Reset()
 //-----------------------------------------------------------------------------
 void eSpeccy::Update()
 {
-	Device<eBeeper>()->StartFrame();
-	Device<eAY>()->StartFrame();
-	Device<eTape>()->StartFrame();
+	devices.FrameStart();
 	cpu->Update(int_len, &nmi_pending);
-	Device<eUla>()->Update();
 	dword t = cpu->FrameTacts() + cpu->T();
-	Device<eBeeper>()->EndFrame(t);
-	Device<eAY>()->EndFrame(t);
-	Device<eTape>()->EndFrame(t);
+	devices.FrameUpdate();
+	devices.FrameEnd(t);
 	t_states += t;
 }
