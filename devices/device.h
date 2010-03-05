@@ -17,7 +17,7 @@ public:
 	virtual void Reset() {}
 	virtual void FrameStart() {}
 	virtual void FrameUpdate() {}
-	virtual void FrameEnd(dword ticks) {}
+	virtual void FrameEnd(dword tacts) {}
 
 	virtual void IoRead(word port, byte* v, int tact) {}
 	virtual void IoWrite(word port, byte v, int tact) {}
