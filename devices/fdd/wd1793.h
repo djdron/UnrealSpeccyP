@@ -24,10 +24,13 @@ public:
 	static eDeviceId Id() { return D_WD1793; }
 protected:
 	void	Process(int tact);
+	void	ReadFirstByte();
 	void	FindMarker();
 	bool	Ready();
 	void	Load();
 	void	GetIndex();
+	word	Crc(byte* src, int size) const;
+	word	Crc(byte v, word prev) const;
 
 	enum eCmdBit
 	{
@@ -38,7 +41,7 @@ protected:
 		CB_SEEK_DIR		= 0x20,
 
 		CB_WRITE_DEL	= 0x01,
-		CB_SIDE_CMP_FLAG= 0x02,
+		CB_SIDE_CMP		= 0x02,
 		CB_DELAY		= 0x04,
 		CB_SIDE			= 0x08,
 		CB_SIDE_SHIFT	= 3,
@@ -50,7 +53,7 @@ protected:
 		S_READ, S_WRSEC, S_WRITE, S_WRTRACK, S_WR_TRACK_DATA, S_TYPE1_CMD,
 		S_STEP, S_SEEKSTART, S_SEEK, S_VERIFY, S_RESET
 	};
-	enum eRequest { R_DRQ = 0x40, R_INTRQ = 0x80 };
+	enum eRequest { R_NONE, R_DRQ = 0x40, R_INTRQ = 0x80 };
 	enum eStatus
 	{
 		ST_BUSY		= 0x01,
@@ -75,24 +78,25 @@ protected:
 	int		tshift;
 
 	eState	state;
-	eState	state2;
+	eState	state_next;
 	byte	cmd;
 	byte	data;
 	int		track;
 	int		side;				// update this with changing 'system'
 	int		sector;
+	int		direction;
+
 	byte	rqs;
 	byte	status;
-
-	int		stepdirection;
 	byte	system;				// beta128 system register
 
 	// read/write sector(s) data
 	qword	end_waiting_am;
-	int		foundid;			// index in trkcache.hdr for next encountered ID and bytes before this ID
+	eUdi::eTrack::eSector* found_sec;
 	int		rwptr;
 	int		rwlen;
-	dword	start_crc;			// format track data
+	word	crc;
+	int		start_crc;
 
 	eFdd*	fdd;
 	eFdd	fdds[4];

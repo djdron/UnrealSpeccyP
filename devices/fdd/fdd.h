@@ -3,6 +3,7 @@
 
 #pragma once
 
+#define SWAP_WORD(x) ((((x) & 0xff) << 8) | ((word)(x) >> 8))
 //*****************************************************************************
 //	eUdi
 //-----------------------------------------------------------------------------
@@ -11,7 +12,6 @@ class eUdi
 public:
 	eUdi(int cyls, int sides);
 	~eUdi() { SAFE_DELETE(raw); }
-	void Update(); //on raw changed
 	int Cyls() const	{ return cyls; }
 	int Sides() const	{ return sides; }
 
@@ -21,6 +21,7 @@ public:
 		eTrack() : data_len(0), data(NULL), id(NULL), sectors_amount(0) {}
 		bool Marker(int pos) const;
 		void Write(int pos, byte v, bool marker = false);
+		void Update(); //on raw changed
 
 		int		data_len;
 		byte*	data;
@@ -34,6 +35,8 @@ public:
 			int Side() const	{ return id[ID_SIDE]; }
 			int Sec() const		{ return id[ID_SEC]; }
 			int Len() const		{ return 128 << (id[ID_LEN] & 3); }
+			word IdCrc() const	{ return SWAP_WORD(*(word*)(id + ID_AMOUNT)); }
+			word DataCrc() const{ return SWAP_WORD(*(word*)(data + Len())); }
 			byte*	id;
 			byte*	data;
 		};
@@ -60,17 +63,22 @@ class eFdd
 public:
 	eFdd();
 	~eFdd() { SAFE_DELETE(disk); }
-	bool DiskPresent() const	{ return disk != NULL; }
-	bool WriteProtect() const	{ return write_protect; }
-	bool Open(const char* image);
+	qword Motor() const { return motor; }
+	void Motor(qword v) { motor = v; }
 	void Seek(int _cyl, int _side);
 	int TSByte() const { return ts_byte; }
+	int Cyl() const { return cyl; }
+	void Cyl(int v) { cyl = v; }
 	eUdi::eTrack& Track() { return disk->Track(cyl, side); }
 	eUdi::eTrack::eSector& Sector(int sec) { return Track().sectors[sec]; }
 	void Write(int pos, byte v, bool marker = false) { Track().Write(pos, v, marker); }
-	word Crc(byte* src, int size) const;
+
+	bool DiskPresent() const	{ return disk != NULL; }
+	bool WriteProtect() const	{ return write_protect; }
+	bool Open(const char* image);
 
 protected:
+	word Crc(byte* src, int size) const;
 	eUdi::eTrack::eSector* GetSector(int cyl, int side, int sec);
 	bool WriteSector(int cyl, int side, int sec, byte* data);
 	void WriteBlock(int& pos, byte v, int amount, bool marker = false)
@@ -88,12 +96,10 @@ protected:
 	bool ReadTrd(byte* snbuf);
 
 	enum { TRD_SIZE = 655360 };
-public:
-	qword	motor;	// 0 - not spinning, >0 - time when it'll stop
-	int		cyl;
-	int		optype;	// bits: 0-not modified, 1-write sector, 2-format track
 
 protected:
+	qword	motor;	// 0 - not spinning, >0 - time when it'll stop
+	int		cyl;
 	int		side;
 	int		ts_byte; // cpu.t per byte
 	bool	write_protect;

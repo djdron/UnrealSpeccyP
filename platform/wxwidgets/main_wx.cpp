@@ -179,7 +179,8 @@ public:
 		: wxFrame((wxFrame*)NULL, -1, title, pos), org_size(320, 240)
 	{
 		wxMenu* menuFile = new wxMenu;
-		menuFile->Append(ID_Open, _("&Open...\tF3"));
+		menuFile->Append(ID_OpenA, _("&OpenA...\tF3"));
+		menuFile->Append(ID_OpenB, _("&OpenB...\tF4"));
 		menuFile->Append(ID_Reset, _("&Reset...\tF12"));
 		menuFile->AppendSeparator();
 		menuFile->Append(ID_Quit, _("E&xit"));
@@ -211,7 +212,7 @@ public:
 
 	void OnReset(wxCommandEvent& event)	{ Handler()->OnAction(A_RESET); }
 	void OnQuit(wxCommandEvent& event)	{ Close(true); }
-	void OnOpen(wxCommandEvent& event)
+	void OnOpen(wxCommandEvent& event, int drive)
 	{
 		wxFileDialog fd(this);
 		if(fd.ShowModal() == wxID_OK)
@@ -219,10 +220,12 @@ public:
 			const wxString& file = fd.GetPath();
 			if(!file.empty())
 			{
-				Handler()->OnOpenFile(wxConvertWX2MB(file.c_str()));
+				Handler()->OnOpenFile(wxConvertWX2MB(file.c_str()), drive);
 			}
 		}
 	}
+	void OnOpenA(wxCommandEvent& event) { OnOpen(event, 0); }
+	void OnOpenB(wxCommandEvent& event) { OnOpen(event, 1); }
 	void OnResize(wxCommandEvent& event)
 	{
 		switch(event.GetId())
@@ -241,7 +244,7 @@ public:
 	}
 	enum
 	{
-		ID_Quit = 1, ID_Open, ID_Reset, ID_Size100, ID_Size200,
+		ID_Quit = 1, ID_OpenA, ID_OpenB, ID_Reset, ID_Size100, ID_Size200,
 		ID_TapeStart, ID_TapeStop,
 	};
 
@@ -253,7 +256,8 @@ private:
 };
 
 BEGIN_EVENT_TABLE(Frame, wxFrame)
-	EVT_MENU(Frame::ID_Open,	Frame::OnOpen)
+	EVT_MENU(Frame::ID_OpenA,	Frame::OnOpenA)
+	EVT_MENU(Frame::ID_OpenB,	Frame::OnOpenB)
 	EVT_MENU(Frame::ID_Reset,	Frame::OnReset)
 	EVT_MENU(Frame::ID_Quit,	Frame::OnQuit)
 	EVT_MENU(Frame::ID_Size100,	Frame::OnResize)

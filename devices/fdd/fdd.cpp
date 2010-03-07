@@ -31,6 +31,45 @@ void eUdi::eTrack::Write(int pos, byte v, bool marker)
 		}
 	}
 }
+//=============================================================================
+//	eUdi::eTrack::Update
+//-----------------------------------------------------------------------------
+void eUdi::eTrack::Update()
+{
+	byte* src = data;
+	int len = data_len - 8;
+	sectors_amount = 0;
+	int i = 0;
+	while(i < len)
+	{
+		for(; i < len; ++i)
+		{
+			if(src[i] == 0xa1 && src[i+1] == 0xfe && Marker(i)) //find index data marker
+			{
+				sectors[sectors_amount].id = src + i + 2;
+				sectors[sectors_amount].data = NULL;
+				i += 8;
+				break;
+			}
+		}
+		int end = Min(len, i + 43); // data marker margin 30-SD, 43-DD
+		for(; i < end; ++i)
+		{
+			if(src[i] == 0xa1 && Marker(i) && !Marker(i + 1)) //find data marker
+			{
+				if((i < len && src[i+1] == 0xf8) || src[i+1] == 0xfb)
+				{
+					sectors[sectors_amount].data = src + i + 2;
+				}
+				break;
+			}
+		}
+		if(sectors_amount++ >= MAX_SEC)
+		{
+			assert(0); //too many sectors
+		}
+	}
+}
 
 //=============================================================================
 //	eUdi::eUdi
@@ -55,64 +94,11 @@ eUdi::eUdi(int _cyls, int _sides) : raw(NULL)
 		}
 	}
 }
-//=============================================================================
-//	eUdi::UpdateTrack
-//-----------------------------------------------------------------------------
-void eUdi::UpdateTrack(int cyl, int side)
-{
-	eTrack& t = tracks[cyl][side];
-	byte* src = t.data;
-	int data_len = t.data_len - 8;
-	int i = 0;
-	while(i < data_len)
-	{
-		for(; i < data_len; ++i)
-		{
-			if(src[i] == 0xa1 && src[i+1] == 0xfe && t.Marker(i)) //find index data marker
-			{
-				t.id = src + i + 2;
-				t.data = NULL;
-				i += 8;
-				break;
-			}
-		}
-		int end = Min(data_len, i + 43); // data marker margin 30-SD, 43-DD
-		for(; i < end; ++i)
-		{
-			if(src[i] == 0xa1 && t.Marker(i) && !t.Marker(i + 1)) //find data marker
-			{
-				if((i < data_len && src[i+1] == 0xf8) || src[i+1] == 0xfb)
-				{
-					t.data = src + i + 2;
-				}
-				break;
-			}
-		}
-		if(t.sectors_amount++ >= MAX_SEC)
-		{
-			assert(0); //too many sectors
-		}
-	}
-}
-//=============================================================================
-//	eUdi::Update
-//-----------------------------------------------------------------------------
-void eUdi::Update()
-{
-	for(int i = 0; i < cyls; ++i)
-	{
-		for(int j = 0; j < sides; ++j)
-		{
-			UpdateTrack(i, j);
-		}
-	}
-}
 
 //=============================================================================
 //	eFdd::eFdd
 //-----------------------------------------------------------------------------
-eFdd::eFdd() : motor(0), cyl(0), optype(0), side(0), ts_byte(0)
-	, write_protect(true), disk(NULL)
+eFdd::eFdd() : motor(0), cyl(0), side(0), ts_byte(0), write_protect(false), disk(NULL)
 {
 }
 //=============================================================================
@@ -162,7 +148,7 @@ word eFdd::Crc(byte* src, int size) const
 			}
 		}
 	}
-	return SWAP_WORD(crc);
+	return crc;
 }
 //=============================================================================
 //	eFdd::Format
@@ -190,7 +176,7 @@ void eFdd::Format()
 	{
 		WriteBlock(pos, 0x4e, 40);		//gap1 50 fixme: recalculate gap1 only for non standard formats
 		WriteBlock(pos, 0, 12);			//sync
-		WriteBlock(pos, 0xa1, 3, true);	//idam
+		WriteBlock(pos, 0xa1, 3, true);	//id am
 		Write(pos++, 0xfe);
 		eUdi::eTrack::eSector& sec = Track().sectors[i];
 		sec.id = Track().data + pos;
@@ -199,9 +185,8 @@ void eFdd::Format()
 		Write(pos++, lv[trdos_interleave][i]);
 		Write(pos++, 1); //256byte
 		word crc = Crc(Track().data + pos - 5, 5);
-		crc = ~crc;
-		Write(pos++, crc & 0xff);
 		Write(pos++, crc >> 8);
+		Write(pos++, crc);
 
 		WriteBlock(pos, 0x4e, 22);		//gap2
 		WriteBlock(pos, 0, 12);			//sync
@@ -211,9 +196,8 @@ void eFdd::Format()
 		int len = sec.Len();
 		crc = Crc(Track().data + pos - 1, len + 1);
 		pos += len;
-		crc = ~crc;
-		Write(pos++, crc & 0xff);
 		Write(pos++, crc >> 8);
+		Write(pos++, crc);
 	}
 	if(pos > Track().data_len)
 	{
@@ -247,7 +231,7 @@ bool eFdd::WriteSector(int cyl, int side, int sec, byte* data)
 		return false;
 	int len = s->Len();
 	memcpy(s->data, data, len);
-	s->data[len] = Crc(s->data - 1, len + 1);
+	*(word*)(s->data + len) = SWAP_WORD(Crc(s->data - 1, len + 1));
 	return true;
 }
 //=============================================================================

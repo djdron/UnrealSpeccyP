@@ -13,9 +13,9 @@ const bool wd93_nodelay = false;
 //	eWD1793::eWD1793
 //-----------------------------------------------------------------------------
 eWD1793::eWD1793(eSpeccy* _speccy, eRom* _rom) : speccy(_speccy), rom(_rom)
-	, next(0), tshift(0), state(S_IDLE), state2(S_IDLE), cmd(0), data(0)
-	, track(0), side(0), sector(0), rqs(0), status(0), stepdirection(0)
-	, system(0), end_waiting_am(0), foundid(0), rwptr(0), rwlen(0), start_crc(0)
+	, next(0), tshift(0), state(S_IDLE), state_next(S_IDLE), cmd(0), data(0)
+	, track(0), side(0), sector(0), rqs(R_NONE), status(0), direction(0)
+	, system(0), end_waiting_am(0), found_sec(NULL), rwptr(0), rwlen(0), crc(0), start_crc(-1)
 {
 }
 //=============================================================================
@@ -34,30 +34,58 @@ bool eWD1793::Open(const char* image, int fdd)
 	return fdds[fdd].Open(image);
 }
 //=============================================================================
+//	eWD1793::Crc
+//-----------------------------------------------------------------------------
+const word crc_initial = 0xcdb4;
+word eWD1793::Crc(byte* src, int size) const
+{
+	word crc = crc_initial;
+	while(size--)
+	{
+		crc = Crc(*src++, crc);
+	}
+	return crc;
+}
+//=============================================================================
+//	eWD1793::Crc
+//-----------------------------------------------------------------------------
+word eWD1793::Crc(byte v, word prev_crc = crc_initial) const
+{
+	dword crc = prev_crc ^ (v << 8);
+	for(int i = 8; i; --i)
+	{
+		if((crc <<= 1) & 0x10000)
+		{
+			crc ^= 0x1021; // bit representation of x^12+x^5+1
+		}
+	}
+	return crc;
+}
+//=============================================================================
 //	eWD1793::Process
 //-----------------------------------------------------------------------------
 void eWD1793::Process(int tact)
 {
 	qword time = speccy->T() + tact;
 	// inactive drives disregard HLT bit
-	if(time > fdd->motor && (system & 0x08))
+	if(time > fdd->Motor() && (system & 0x08))
 	{
-		fdd->motor = 0;
+		fdd->Motor(0);
 	}
 	fdd->DiskPresent() ? status &= ~ST_NOTRDY : status |= ST_NOTRDY;
 	if(!(cmd & 0x80)) //seek/step commands
 	{
 		status &= ~(ST_TRK00|ST_INDEX);
-		if(fdd->motor && (system & 0x08))
+		if(fdd->Motor() && (system & 0x08))
 		{
 			status |= ST_HEADL;
 		}
-		if(!fdd->cyl)
+		if(!fdd->Cyl())
 		{
 			status |= ST_TRK00;
 		}
 		// todo: test spinning
-		if(fdd->DiskPresent() && fdd->motor && ((time+tshift) % (Z80FQ/FDD_RPS) < (Z80FQ*4/1000)))
+		if(fdd->DiskPresent() && fdd->Motor() && ((time+tshift) % (Z80FQ/FDD_RPS) < (Z80FQ*4/1000)))
 		{
 			status |= ST_INDEX; // index every turn, len=4ms (if disk present)
 		}
@@ -73,7 +101,7 @@ void eWD1793::Process(int tact)
 		case S_WAIT:
 			if(time < next)
 				return;
-			state = state2;
+			state = state_next;
 			break;
 		case S_DELAY_BEFORE_CMD:
 			if(!wd93_nodelay && (cmd & CB_DELAY))
@@ -82,7 +110,7 @@ void eWD1793::Process(int tact)
 			}
 			status = (status|ST_BUSY) & ~(ST_DRQ|ST_LOST|ST_NOTFOUND|ST_RECORDT|ST_WRITEP);
 			state = S_WAIT;
-			state2 = S_CMD_RW;
+			state_next = S_CMD_RW;
 			break;
 		case S_CMD_RW:
 			if(((cmd & 0xe0) == 0xa0 || (cmd & 0xf0) == 0xf0) && fdd->WriteProtect())
@@ -103,7 +131,7 @@ void eWD1793::Process(int tact)
 				status |= ST_DRQ;
 				next += 3 * fdd->TSByte();
 				state = S_WAIT;
-				state2 = S_WRTRACK;
+				state_next = S_WRTRACK;
 				break;
 			}
 			if((cmd & 0xf8) == 0xe0) //read track
@@ -111,21 +139,20 @@ void eWD1793::Process(int tact)
 				Load();
 				rwptr = 0;
 				rwlen = fdd->Track().data_len;
-				state2 = S_READ;
+				state_next = S_READ;
 				GetIndex();
 				break;
 			}
-			// else unknown command
 			state = S_IDLE;
 			break;
 		case S_FOUND_NEXT_ID:
 			if(!fdd->DiskPresent()) //no disk - wait again
 			{
 				end_waiting_am = next + 5*Z80FQ/FDD_RPS;
-nextmk:			FindMarker();
+				FindMarker();
 				break;
 			}
-			if(next >= end_waiting_am || foundid == -1)
+			if(next >= end_waiting_am || !found_sec)
 			{
 				status |= ST_NOTFOUND;
 				state = S_IDLE;
@@ -135,60 +162,60 @@ nextmk:			FindMarker();
 			Load();
 			if(!(cmd & 0x80)) //verify after seek
 			{
-				if(fdd->Sector(foundid).Cyl() != track)
-					goto nextmk;
-/*
-				if(!fdd->Sector(foundid).c1)
+				if(found_sec->Cyl() != track)
+				{
+					FindMarker();
+					break;
+				}
+				if(Crc(found_sec->id - 1, 5) != found_sec->IdCrc())
 				{
 					status |= ST_CRCERR;
-					goto nextmk;
+					FindMarker();
+					break;
 				}
-*/
 				state = S_IDLE;
 				break;
 			}
 			if((cmd & 0xf0) == 0xc0) //read AM
 			{
-				rwptr = fdd->Sector(foundid).id - fdd->Track().data;
+				rwptr = found_sec->id - fdd->Track().data;
 				rwlen = 6;
-read_first_byte:
-				data = fdd->Track().data[rwptr++];
-				rwlen--;
-				rqs = R_DRQ;
-				status |= ST_DRQ;
-				next += fdd->TSByte();
-				state = S_WAIT;
-				state2 = S_READ;
+				ReadFirstByte();
 				break;
 			}
 			// else R/W sector(s)
-			if(fdd->Sector(foundid).Cyl() != track || fdd->Sector(foundid).Sec() != sector)
-				goto nextmk;
-			if((cmd & CB_SIDE_CMP_FLAG) && (((cmd >> CB_SIDE_SHIFT) ^ fdd->Sector(foundid).Side()) & 1))
-				goto nextmk;
-/*
-			if(!fdd->Sector(foundid).c1)
+			if(found_sec->Cyl() != track || found_sec->Sec() != sector
+				|| ((cmd&CB_SIDE_CMP) && (((cmd >> CB_SIDE_SHIFT) ^ found_sec->Side()) & 1)))
+			{
+				FindMarker();
+				break;
+			}
+			if(Crc(found_sec->id - 1, 5) != found_sec->IdCrc())
 			{
 				status |= ST_CRCERR;
-				goto nextmk;
+				FindMarker();
+				break;
 			}
-*/
 			if(cmd & 0x20) //write sector(s)
 			{
 				rqs = R_DRQ;
 				status |= ST_DRQ;
 				next += fdd->TSByte() * 9;
 				state = S_WAIT;
-				state2 = S_WRSEC;
+				state_next = S_WRSEC;
 				break;
 			}
 			// read sector(s)
-			if(!fdd->Sector(foundid).data)
-				goto nextmk;
-			fdd->Sector(foundid).data[-1] == 0xf8 ? status |= ST_RECORDT : status &= ~ST_RECORDT;
-			rwptr = fdd->Sector(foundid).data - fdd->Track().data;
-			rwlen = fdd->Sector(foundid).Len();
-			goto read_first_byte;
+			if(!found_sec->data)
+			{
+				FindMarker();
+				break;
+			}
+			found_sec->data[-1] == 0xf8 ? status |= ST_RECORDT : status &= ~ST_RECORDT;
+			rwptr = found_sec->data - fdd->Track().data;
+			rwlen = found_sec->Len();
+			ReadFirstByte();
+			break;
 		case S_READ:
 			if(!Ready())
 				break;
@@ -200,6 +227,7 @@ read_first_byte:
 					status |= ST_LOST;
 				}
 				data = fdd->Track().data[rwptr++];
+				crc = Crc(data, crc);
 				rwlen--;
 				rqs = R_DRQ;
 				status |= ST_DRQ;
@@ -208,18 +236,16 @@ read_first_byte:
 					next += fdd->TSByte();
 				}
 				state = S_WAIT;
-				state2 = S_READ;
+				state_next = S_READ;
 			}
 			else
 			{
 				if((cmd & 0xe0) == 0x80) //read sector
 				{
-/*
-					if(!ffdd->Sector(foundid).c2)
+					if(crc != found_sec->DataCrc())
 					{
 						status |= ST_CRCERR;
 					}
-*/
 					if(cmd & CB_MULTIPLE)
 					{
 						sector++;
@@ -229,12 +255,10 @@ read_first_byte:
 				}
 				if((cmd & 0xf0) == 0xc0) //read address
 				{
-/*
-					if(!fdd->Sector(foundid).c1)
+					if(Crc(found_sec->id - 1, 5) != found_sec->IdCrc())
 					{
 						status |= ST_CRCERR;
 					}
-*/
 				}
 				state = S_IDLE;
 			}
@@ -247,8 +271,7 @@ read_first_byte:
 				state = S_IDLE;
 				break;
 			}
-			fdd->optype |= 1;
-			rwptr = fdd->Sector(foundid).id + 6 + 11 + 11 - fdd->Track().data;
+			rwptr = found_sec->id + 6 + 22 - fdd->Track().data;
 			for(rwlen = 0; rwlen < 12; rwlen++)
 			{
 				fdd->Write(rwptr++, 0);
@@ -258,7 +281,8 @@ read_first_byte:
 				fdd->Write(rwptr++, 0xa1, true);
 			}
 			fdd->Write(rwptr++, (cmd & CB_WRITE_DEL) ? 0xf8 : 0xfb);
-			rwlen = fdd->Sector(foundid).Len();
+			crc = Crc(fdd->Track().data[rwptr - 1]);
+			rwlen = found_sec->Len();
 			state = S_WRITE;
 			break;
 		case S_WRITE:
@@ -268,49 +292,37 @@ read_first_byte:
 			{
 				status |= ST_LOST;
 				data = 0;
-				fdd->Write(rwptr++, data);
-				rwlen--;
-				if(rwptr == fdd->Track().data_len)
+			}
+			fdd->Write(rwptr++, data);
+			crc = Crc(data, crc);
+			rwlen--;
+			if(rwptr == fdd->Track().data_len)
+			{
+				rwptr = 0;
+			}
+			if(rwlen)
+			{
+				if(!wd93_nodelay)
 				{
-					rwptr = 0;
+					next += fdd->TSByte();
 				}
-//				trkcache.sm = JUST_SEEK; // invalidate sectors
-				if(rwlen)
+				state = S_WAIT;
+				state_next = S_WRITE;
+				rqs = R_DRQ;
+				status |= ST_DRQ;
+			}
+			else
+			{
+				fdd->Write(rwptr++, crc >> 8);
+				fdd->Write(rwptr++, crc);
+				fdd->Write(rwptr, 0xff);
+				if(cmd & CB_MULTIPLE)
 				{
-					if(!wd93_nodelay)
-					{
-						next += fdd->TSByte();
-					}
-					state = S_WAIT;
-					state2 = S_WRITE;
-					rqs = R_DRQ;
-					status |= ST_DRQ;
+					sector++;
+					state = S_CMD_RW;
+					break;
 				}
-				else
-				{
-					int len = fdd->Sector(foundid).Len() + 1;
-					byte sc[2056];
-					if(rwptr < len)
-					{
-						memcpy(sc, fdd->Track().data + fdd->Track().data_len - rwptr, rwptr);
-						memcpy(sc + rwptr, fdd->Track().data, len - rwptr);
-					}
-					else
-					{
-						memcpy(sc, fdd->Track().data + rwptr - len, len);
-					}
-					word crc = fdd->Crc(sc, len);
-					fdd->Write(rwptr++, crc);
-					fdd->Write(rwptr++, crc >> 8);
-					fdd->Write(rwptr, 0xFF);
-					if(cmd & CB_MULTIPLE)
-					{
-						sector++;
-						state = S_CMD_RW;
-						break;
-					}
-					state = S_IDLE;
-				}
+				state = S_IDLE;
 			}
 			break;
 		case S_WRTRACK:
@@ -320,9 +332,8 @@ read_first_byte:
 				state = S_IDLE;
 				break;
 			}
-			fdd->optype |= 2;
-			state2 = S_WR_TRACK_DATA;
-			start_crc = 0;
+			state_next = S_WR_TRACK_DATA;
+			start_crc = -1;
 			GetIndex();
 			end_waiting_am = next + 5 * Z80FQ/FDD_RPS;
 			break;
@@ -335,8 +346,7 @@ read_first_byte:
 					status |= ST_LOST;
 					data = 0;
 				}
-				fdd->Seek(track, side);
-//				trkcache.sm = JUST_SEEK; // invalidate sectors
+				Load();
 				if(!fdd->Track().data)
 				{
 					state = S_IDLE;
@@ -344,7 +354,6 @@ read_first_byte:
 				}
 				bool marker = false;
 				byte v = data;
-				word crc = 0;
 				if(data == 0xf5)
 				{
 					v = 0xa1;
@@ -358,44 +367,46 @@ read_first_byte:
 				}
 				if(data == 0xf7)
 				{
-					crc = fdd->Crc(fdd->Track().data + start_crc, rwptr - start_crc);
-					v = crc & 0xff;
+					start_crc = -1;
+					fdd->Write(rwptr++, crc >> 8);
+					rwlen--;
+					v = crc;
+				}
+				if(start_crc >= 0 && rwptr >= start_crc)
+				{
+					crc = rwptr == start_crc ? Crc(v) : Crc(v, crc);
 				}
 				fdd->Write(rwptr++, v, marker);
 				rwlen--;
-				if(data == 0xf7)
-				{
-					fdd->Write(rwptr++, crc >> 8);
-					rwlen--; // second byte of CRC16
-				}
-				if((int)rwlen > 0)
+				if(rwlen > 0)
 				{
 					if(!wd93_nodelay)
 					{
 						next += fdd->TSByte();
 					}
 					state = S_WAIT;
-					state2 = S_WR_TRACK_DATA;
+					state_next = S_WR_TRACK_DATA;
 					rqs = R_DRQ;
 					status |= ST_DRQ;
 					break;
 				}
+				fdd->Track().Update();
 				state = S_IDLE;
 				break;
 			}
 		case S_TYPE1_CMD:
 			status = (status|ST_BUSY) & ~(ST_DRQ|ST_CRCERR|ST_SEEKERR|ST_WRITEP);
-			rqs = (eRequest)0;
+			rqs = R_NONE;
 			if(fdd->WriteProtect())
 			{
 				status |= ST_WRITEP;
 			}
-			fdd->motor = next + 2 * Z80FQ;
-			state2 = S_SEEKSTART; //default is seek/restore
+			fdd->Motor(next + 2 * Z80FQ);
+			state_next = S_SEEKSTART; //default is seek/restore
 			if(cmd & 0xE0) //single step
 			{
-				if(cmd & 0x40) stepdirection = (cmd & CB_SEEK_DIR) ? -1 : 1;
-				state2 = S_STEP;
+				if(cmd & 0x40) direction = (cmd & CB_SEEK_DIR) ? -1 : 1;
+				state_next = S_STEP;
 			}
 			if(!wd93_nodelay)
 			{
@@ -405,8 +416,7 @@ read_first_byte:
 			break;
 		case S_STEP:
 			{
-				// TRK00 sampled only in RESTORE command
-				if(!fdd->cyl && !(cmd & 0xf0))
+				if(!fdd->Cyl() && !(cmd & 0xf0)) //TRK00 sampled only in RESTORE command
 				{
 					track = 0;
 					state = S_VERIFY;
@@ -414,25 +424,25 @@ read_first_byte:
 				}
 				if(!(cmd & 0xe0) || (cmd & CB_SEEK_TRKUPD))
 				{
-					track += stepdirection;
+					track += direction;
 				}
-				fdd->cyl += stepdirection;
-				if(fdd->cyl == (byte)-1)
+				int cyl = fdd->Cyl() + direction;
+				if(cyl >= 255)
 				{
-					fdd->cyl = 0;
+					cyl = 0;
 				}
-				if(fdd->cyl >= MAX_PHYS_CYL)
+				if(cyl >= MAX_PHYS_CYL)
 				{
-					fdd->cyl = MAX_PHYS_CYL;
+					cyl = MAX_PHYS_CYL;
 				}
-//				trkcache.Clear();
+				fdd->Cyl(cyl);
 				static const dword steps[] = { 6, 12, 20, 30 };
 				if(!wd93_nodelay)
 				{
 					next += steps[cmd & CB_SEEK_RATE] * Z80FQ / 1000;
 				}
 				state = S_WAIT;
-				state2 = (cmd & 0xe0) ? S_VERIFY : S_SEEK;
+				state_next = (cmd & 0xe0) ? S_VERIFY : S_SEEK;
 				break;
 			}
 		case S_SEEKSTART:
@@ -447,7 +457,7 @@ read_first_byte:
 				state = S_VERIFY;
 				break;
 			}
-			stepdirection = (data < track) ? -1 : 1;
+			direction = (data < track) ? -1 : 1;
 			state = S_STEP;
 			break;
 		case S_VERIFY:
@@ -461,31 +471,47 @@ read_first_byte:
 			FindMarker();
 			break;
 		case S_RESET: //seek to trk0, but don't be busy
-			if(!fdd->cyl)
+			if(!fdd->Cyl())
 			{
 				state = S_IDLE;
 			}
 			else
 			{
-				fdd->cyl--;
-//				trkcache.Clear();
+				fdd->Cyl(fdd->Cyl() - 1);
 			}
-			// if(!fdd->track) track = 0;
 			next += 6 * Z80FQ / 1000;
 			break;
 		}
 	}
 }
 //=============================================================================
+//	eWD1793::ReadFirstByte
+//-----------------------------------------------------------------------------
+void eWD1793::ReadFirstByte()
+{
+	crc = Crc(fdd->Track().data[rwptr - 1]);
+	data = fdd->Track().data[rwptr++];
+	crc = Crc(data, crc);
+	rwlen--;
+	rqs = R_DRQ;
+	status |= ST_DRQ;
+	next += fdd->TSByte();
+	state = S_WAIT;
+	state_next = S_READ;
+}
+//=============================================================================
 //	eWD1793::FindMarker
 //-----------------------------------------------------------------------------
 void eWD1793::FindMarker()
 {
-	if(wd93_nodelay && fdd->cyl != track) fdd->cyl = track;
+	if(wd93_nodelay && fdd->Cyl() != track)
+	{
+		fdd->Cyl(track);
+	}
 	Load();
-	foundid = -1;
+	found_sec = NULL;
 	dword wait = 10 * Z80FQ / FDD_RPS;
-	if(fdd->motor && fdd->DiskPresent())
+	if(fdd->Motor() && fdd->DiskPresent())
 	{
 		dword div = fdd->Track().data_len * fdd->TSByte();
 		dword idx = (dword)((next + tshift) % div) / fdd->TSByte();
@@ -497,14 +523,14 @@ void eWD1793::FindMarker()
 			if(dist < wait)
 			{
 				wait = dist;
-				foundid = i;
+				found_sec = &fdd->Sector(i);
 			}
 		}
-		wait = foundid != -1 ? wait * fdd->TSByte() : 10 * Z80FQ/FDD_RPS;
-		if(wd93_nodelay && foundid != -1)
+		wait = found_sec ? wait * fdd->TSByte() : 10 * Z80FQ/FDD_RPS;
+		if(wd93_nodelay && found_sec)
 		{
 			// adjust tshift, that id appares right under head
-			dword pos = fdd->Sector(foundid).id - fdd->Track().data + 2;
+			dword pos = found_sec->id - fdd->Track().data + 2;
 			tshift = (dword)(((pos * fdd->TSByte()) - (next % div) + div) % div);
 			wait = 100; // delay=0 causes fdc to search infinitely, when no matched id on track
 		}
@@ -513,10 +539,10 @@ void eWD1793::FindMarker()
 	if(fdd->DiskPresent() && next > end_waiting_am)
 	{
 		next = end_waiting_am;
-		foundid = -1;
+		found_sec = NULL;
 	}
 	state = S_WAIT;
-	state2 = S_FOUND_NEXT_ID;
+	state_next = S_FOUND_NEXT_ID;
 }
 //=============================================================================
 //	eWD1793::Ready
@@ -529,7 +555,7 @@ bool eWD1793::Ready()
 	if(next > end_waiting_am)
 		return true;
 	state = S_WAIT;
-	state2 = state;
+	state_next = state;
 	next += fdd->TSByte();
 	return false;
 }
@@ -545,7 +571,7 @@ void eWD1793::GetIndex()
 		next += (trlen - ticks);
 	}
 	rwptr = 0;
-	rwlen = fdd->TSByte();
+	rwlen = fdd->Track().data_len;
 	state = S_WAIT;
 }
 //=============================================================================
@@ -553,7 +579,7 @@ void eWD1793::GetIndex()
 //-----------------------------------------------------------------------------
 void eWD1793::Load()
 {
-	fdd->Seek(fdd->cyl, side);
+	fdd->Seek(fdd->Cyl(), side);
 }
 //=============================================================================
 //	eWD1793::IoRead
@@ -603,7 +629,7 @@ void eWD1793::IoWrite(word port, byte v, int tact)
 		cmd = v;
 		next = speccy->T() + tact;
 		status |= ST_BUSY;
-		rqs = 0;
+		rqs = R_NONE;
 		if(cmd & 0x80) //read/write command
 		{
 			if(status & ST_NOTRDY) //abort if no disk
@@ -612,9 +638,9 @@ void eWD1793::IoWrite(word port, byte v, int tact)
 				rqs = R_INTRQ;
 				return;
 			}
-			if(fdd->motor || wd93_nodelay) //continue disk spinning
+			if(fdd->Motor() || wd93_nodelay) //continue disk spinning
 			{
-				fdd->motor = next + 2*Z80FQ;
+				fdd->Motor(next + 2*Z80FQ);
 			}
 			state = S_DELAY_BEFORE_CMD;
 			return;
@@ -634,12 +660,11 @@ void eWD1793::IoWrite(word port, byte v, int tact)
 		system = v;
 		fdd = &fdds[v & 3];
 		side = 1 & ~(v >> 4);
-//		trkcache.Clear();
 		if(!(v & 0x04)) //reset
 		{
 			status = ST_NOTRDY;
 			rqs = R_INTRQ;
-			fdd->motor = 0;
+			fdd->Motor(0);
 			state = S_IDLE;
 		}
 	}

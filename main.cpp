@@ -52,7 +52,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		}
 	}
 
-	virtual void OnOpenFile(const char* name)
+	virtual void OnOpenFile(const char* name, int drive)
 	{
 		int l = strlen(name);
 		if(l > 3)
@@ -60,7 +60,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 			const char* n = name + l - 4;
 			if(!strcmp(n, ".trd") || !strcmp(n, ".TRD") || !strcmp(n, ".scl") || !strcmp(n, ".SCL"))
 			{
-				speccy->Device<eWD1793>()->Open(name, 0);
+				speccy->Device<eWD1793>()->Open(name, drive);
 			}
 			else if(!strcmp(n, ".sna") || !strcmp(n, ".SNA"))
 			{
