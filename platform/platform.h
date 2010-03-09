@@ -27,7 +27,7 @@ struct eHandler
 	virtual void OnKey(char key, dword flags) = 0;
 	virtual void OnMouse(eMouseAction action, byte a, byte b) = 0;
 
-	virtual void OnOpenFile(const char* name) = 0;
+	virtual void OnOpenFile(const char* name, int drive) = 0;
 	virtual void OnAction(eAction action) = 0;
 
 	// data to draw

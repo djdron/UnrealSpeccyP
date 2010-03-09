@@ -14,7 +14,7 @@ const bool wd93_nodelay = false;
 //-----------------------------------------------------------------------------
 eWD1793::eWD1793(eSpeccy* _speccy, eRom* _rom) : speccy(_speccy), rom(_rom)
 	, next(0), tshift(0), state(S_IDLE), state_next(S_IDLE), cmd(0), data(0)
-	, track(0), side(0), sector(0), rqs(R_NONE), status(0), direction(0)
+	, track(0), side(0), sector(0), direction(0), rqs(R_NONE), status(0)
 	, system(0), end_waiting_am(0), found_sec(NULL), rwptr(0), rwlen(0), crc(0), start_crc(-1)
 {
 }
