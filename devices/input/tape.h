@@ -20,6 +20,8 @@ public:
 	bool Open(const char* file);
 	void Start();
 	void Stop();
+	bool Started() const;
+	bool Inserted() const;
 
 	static eDeviceId Id() { return D_TAPE; }
 

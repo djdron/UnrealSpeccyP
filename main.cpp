@@ -13,7 +13,7 @@
 
 static struct eSpeccyHandler : public xPlatform::eHandler
 {
-	eSpeccyHandler() : video_paused(false)
+	eSpeccyHandler() : video_paused(false), drive_for_open(0)
 	{
 		speccy = new eSpeccy;
 		sound_dev[0] = speccy->Device<eBeeper>();
@@ -52,7 +52,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		}
 	}
 
-	virtual void OnOpenFile(const char* name, int drive)
+	virtual bool OnOpenFile(const char* name)
 	{
 		int l = strlen(name);
 		if(l > 3)
@@ -60,30 +60,54 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 			const char* n = name + l - 4;
 			if(!strcmp(n, ".trd") || !strcmp(n, ".TRD") || !strcmp(n, ".scl") || !strcmp(n, ".SCL"))
 			{
-				speccy->Device<eWD1793>()->Open(name, drive);
+				return speccy->Device<eWD1793>()->Open(name, drive_for_open);
 			}
 			else if(!strcmp(n, ".sna") || !strcmp(n, ".SNA"))
 			{
-				xSnapshot::Load(speccy, name);
+				return xSnapshot::Load(speccy, name);
 			}
 			else if(!strcmp(n, ".tap") || !strcmp(n, ".TAP") ||
 					!strcmp(n, ".csw") || !strcmp(n, ".CSW") ||
 					!strcmp(n, ".tzx") || !strcmp(n, ".TZX")
 				)
 			{
-				speccy->Device<eTape>()->Open(name);
+				return speccy->Device<eTape>()->Open(name);
 			}
 		}
+		return false;
 	}
-	virtual void OnAction(xPlatform::eAction action)
+	virtual xPlatform::eActionResult OnAction(xPlatform::eAction action)
 	{
 		using namespace xPlatform;
 		switch(action)
 		{
-		case A_RESET:		speccy->Reset(); break;
-		case A_TAPE_START:	speccy->Device<eTape>()->Start(); break;
-		case A_TAPE_STOP:	speccy->Device<eTape>()->Stop(); break;
+		case A_RESET:
+			speccy->Reset();
+			return AR_RESET_OK;
+		case A_TAPE_TOGGLE:
+			{
+				eTape* tape = speccy->Device<eTape>();
+				if(!tape->Inserted())
+					return AR_TAPE_NOT_INSERTED;
+				if(!tape->Started())
+					tape->Start();
+				else
+					tape->Stop();
+				return tape->Started() ? AR_TAPE_STARTED : AR_TAPE_STOPPED;
+			}
+		case A_DRIVE_NEXT:
+			{
+				switch(++drive_for_open)
+				{
+				case 4:	drive_for_open = 0; return AR_DRIVE_A;
+				case 1:	return AR_DRIVE_B;
+				case 2:	return AR_DRIVE_C;
+				case 3:	return AR_DRIVE_D;
+				}
+				return AR_ERROR;
+			}
 		}
+		return AR_ERROR;
 	}
 
 	virtual int	AudioSources() { return SOUND_DEV_COUNT; }
@@ -94,6 +118,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 
 	eSpeccy* speccy;
 	bool video_paused;
+	int drive_for_open;
 
 	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];

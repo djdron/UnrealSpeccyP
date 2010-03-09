@@ -28,10 +28,10 @@ void eWD1793::Init()
 //=============================================================================
 //	eWD1793::Open
 //-----------------------------------------------------------------------------
-bool eWD1793::Open(const char* image, int fdd)
+bool eWD1793::Open(const char* image, int drive)
 {
-	assert(fdd >= 0 && fdd < 4);
-	return fdds[fdd].Open(image);
+	assert(drive >= 0 && drive < FDD_COUNT);
+	return fdds[drive].Open(image);
 }
 //=============================================================================
 //	eWD1793::Crc

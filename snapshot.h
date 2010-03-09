@@ -7,7 +7,7 @@ class eSpeccy;
 
 namespace xSnapshot
 {
-void Load(eSpeccy* speccy, const char* path);
+bool Load(eSpeccy* speccy, const char* path);
 }
 //namespace xSnapshot
 

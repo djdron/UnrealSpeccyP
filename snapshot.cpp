@@ -78,14 +78,18 @@ struct eZ80Snap : public xZ80::eZ80
 //=============================================================================
 //	xSnapshot::Load
 //-----------------------------------------------------------------------------
-void xSnapshot::Load(eSpeccy* speccy, const char* path)
+bool xSnapshot::Load(eSpeccy* speccy, const char* path)
 {
 	FILE* f = fopen(path, "rb");
 	assert(f);
 	size_t r = fread(&snapshot, 1, sizeof(snapshot), f);
 	fclose(f);
 	bool sna48 = r == 49179;
-	assert(sna48 || r == sizeof(snapshot));
-	speccy->Reset();
-	((eZ80Snap*)speccy->CPU())->SetState(&snapshot, sna48);
+	if(sna48 || r == sizeof(snapshot))
+	{
+		speccy->Reset();
+		((eZ80Snap*)speccy->CPU())->SetState(&snapshot, sna48);
+		return true;
+	}
+	return false;
 }

@@ -19,7 +19,7 @@ public:
 	virtual void Init();
 	virtual void IoRead(word port, byte* v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
-	bool Open(const char* image, int fdd);
+	bool Open(const char* image, int drive);
 
 	static eDeviceId Id() { return D_WD1793; }
 protected:
@@ -98,8 +98,9 @@ protected:
 	word	crc;
 	int		start_crc;
 
+	enum { FDD_COUNT = 4 };
 	eFdd*	fdd;
-	eFdd	fdds[4];
+	eFdd	fdds[FDD_COUNT];
 };
 
 #endif//__WD1793_H__

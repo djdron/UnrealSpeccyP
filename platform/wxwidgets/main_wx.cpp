@@ -179,8 +179,7 @@ public:
 		: wxFrame((wxFrame*)NULL, -1, title, pos), org_size(320, 240)
 	{
 		wxMenu* menuFile = new wxMenu;
-		menuFile->Append(ID_OpenA, _("&OpenA...\tF3"));
-		menuFile->Append(ID_OpenB, _("&OpenB...\tF4"));
+		menuFile->Append(ID_OpenFile, _("&Open...\tF3"));
 		menuFile->Append(ID_Reset, _("&Reset...\tF12"));
 		menuFile->AppendSeparator();
 		menuFile->Append(ID_Quit, _("E&xit"));
@@ -190,8 +189,8 @@ public:
 		menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
 
 		wxMenu* menuDevice = new wxMenu;
-		menuDevice->Append(ID_TapeStart, _("Start tape\tF5"));
-		menuDevice->Append(ID_TapeStop, _("Stop tape\tF6"));
+		menuDevice->Append(ID_TapeToggle, _("Start/Stop tape\tF5"));
+		menuDevice->Append(ID_DriveNext, _("Select next drive\tF6"));
 
 		wxMenuBar* menuBar = new wxMenuBar;
 		menuBar->Append(menuFile, _("File"));
@@ -210,22 +209,33 @@ public:
 		gl_canvas->SetFocus();
 	}
 
-	void OnReset(wxCommandEvent& event)	{ Handler()->OnAction(A_RESET); }
+	void OnReset(wxCommandEvent& event)
+	{
+		if(Handler()->OnAction(A_RESET) == AR_RESET_OK)
+			SetStatusText(_("Reset OK"));
+		else
+			SetStatusText(_("Reset FAILED"));
+	}
 	void OnQuit(wxCommandEvent& event)	{ Close(true); }
-	void OnOpen(wxCommandEvent& event, int drive)
+	void OnOpenFile(wxCommandEvent& event)
 	{
 		wxFileDialog fd(this);
+		fd.SetWildcard(_(
+				"Supported files|*.sna;*.trd;*.scl;*.tap;*.csw;*.tzx;"
+								"*.SNA;*.TRD;*.SCL;*.TAP;*.CSW;*.TZX|"
+				"All files|*.*|"
+				"Snapshot files (*.sna)|*.sna;*.SNA|"
+				"Disk images (*.trd;*.scl)|*.trd;*.scl;*.TRD;*.SCL|"
+				"Tape files (*.tap;*.csw;*.tzx)|*.tap;*.csw;*.tzx;*.TAP;*.CSW;*.TZX"
+				));
 		if(fd.ShowModal() == wxID_OK)
 		{
-			const wxString& file = fd.GetPath();
-			if(!file.empty())
-			{
-				Handler()->OnOpenFile(wxConvertWX2MB(file.c_str()), drive);
-			}
+			if(Handler()->OnOpenFile(wxConvertWX2MB(fd.GetPath().c_str())))
+				SetStatusText(_("File open OK"));
+			else
+				SetStatusText(_("File open FAILED"));
 		}
 	}
-	void OnOpenA(wxCommandEvent& event) { OnOpen(event, 0); }
-	void OnOpenB(wxCommandEvent& event) { OnOpen(event, 1); }
 	void OnResize(wxCommandEvent& event)
 	{
 		switch(event.GetId())
@@ -234,18 +244,31 @@ public:
 		case ID_Size200: SetClientSize(org_size*2); break;
 		}
 	}
-	void OnTape(wxCommandEvent& event)
+	void OnTapeToggle(wxCommandEvent& event)
 	{
-		switch(event.GetId())
+		switch(Handler()->OnAction(A_TAPE_TOGGLE))
 		{
-		case ID_TapeStart:	Handler()->OnAction(A_TAPE_START); break;
-		case ID_TapeStop:	Handler()->OnAction(A_TAPE_STOP); break;
+		case AR_TAPE_STARTED:	SetStatusText(_("Tape started"));	break;
+		case AR_TAPE_STOPPED:	SetStatusText(_("Tape stopped"));	break;
+		case AR_TAPE_NOT_INSERTED:	SetStatusText(_("Tape not inserted"));	break;
+		default: break;
+		}
+	}
+	void OnDriveNext(wxCommandEvent& event)
+	{
+		switch(Handler()->OnAction(A_DRIVE_NEXT))
+		{
+		case AR_DRIVE_A:	SetStatusText(_("Selected drive A"));	break;
+		case AR_DRIVE_B:	SetStatusText(_("Selected drive B"));	break;
+		case AR_DRIVE_C:	SetStatusText(_("Selected drive C"));	break;
+		case AR_DRIVE_D:	SetStatusText(_("Selected drive D"));	break;
+		default: break;
 		}
 	}
 	enum
 	{
-		ID_Quit = 1, ID_OpenA, ID_OpenB, ID_Reset, ID_Size100, ID_Size200,
-		ID_TapeStart, ID_TapeStop,
+		ID_Quit = 1, ID_OpenFile, ID_Reset, ID_Size100, ID_Size200,
+		ID_TapeToggle, ID_DriveNext,
 	};
 
 private:
@@ -256,14 +279,13 @@ private:
 };
 
 BEGIN_EVENT_TABLE(Frame, wxFrame)
-	EVT_MENU(Frame::ID_OpenA,	Frame::OnOpenA)
-	EVT_MENU(Frame::ID_OpenB,	Frame::OnOpenB)
+	EVT_MENU(Frame::ID_OpenFile, Frame::OnOpenFile)
 	EVT_MENU(Frame::ID_Reset,	Frame::OnReset)
 	EVT_MENU(Frame::ID_Quit,	Frame::OnQuit)
 	EVT_MENU(Frame::ID_Size100,	Frame::OnResize)
 	EVT_MENU(Frame::ID_Size200,	Frame::OnResize)
-	EVT_MENU(Frame::ID_TapeStart,Frame::OnTape)
-	EVT_MENU(Frame::ID_TapeStop, Frame::OnTape)
+	EVT_MENU(Frame::ID_TapeToggle,Frame::OnTapeToggle)
+	EVT_MENU(Frame::ID_DriveNext,Frame::OnDriveNext)
 END_EVENT_TABLE()
 
 class App: public wxApp
