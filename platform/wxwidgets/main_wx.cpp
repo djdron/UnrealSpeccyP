@@ -220,14 +220,14 @@ public:
 	void OnOpenFile(wxCommandEvent& event)
 	{
 		wxFileDialog fd(this);
-		fd.SetWildcard(_(
-				"Supported files|*.sna;*.trd;*.scl;*.tap;*.csw;*.tzx;"
-								"*.SNA;*.TRD;*.SCL;*.TAP;*.CSW;*.TZX|"
-				"All files|*.*|"
-				"Snapshot files (*.sna)|*.sna;*.SNA|"
-				"Disk images (*.trd;*.scl)|*.trd;*.scl;*.TRD;*.SCL|"
-				"Tape files (*.tap;*.csw;*.tzx)|*.tap;*.csw;*.tzx;*.TAP;*.CSW;*.TZX"
-				));
+		fd.SetWildcard(
+				L"Supported files|*.sna;*.trd;*.scl;*.tap;*.csw;*.tzx;"
+								L"*.SNA;*.TRD;*.SCL;*.TAP;*.CSW;*.TZX|"
+				L"All files|*.*|"
+				L"Snapshot files (*.sna)|*.sna;*.SNA|"
+				L"Disk images (*.trd;*.scl)|*.trd;*.scl;*.TRD;*.SCL|"
+				L"Tape files (*.tap;*.csw;*.tzx)|*.tap;*.csw;*.tzx;*.TAP;*.CSW;*.TZX"
+			);
 		if(fd.ShowModal() == wxID_OK)
 		{
 			if(Handler()->OnOpenFile(wxConvertWX2MB(fd.GetPath().c_str())))
