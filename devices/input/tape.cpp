@@ -3,8 +3,6 @@
 #include "../../z80/z80.h"
 #include "tape.h"
 
-#include <crtdbg.h>
-
 //=============================================================================
 //	eTape::Init
 //-----------------------------------------------------------------------------
@@ -147,7 +145,7 @@ void eTape::StartTape()
 	tape.end_of_tape = tape_image + tape_imagesize;
 	tape.edge_change = speccy->T();
 	tape.tape_bit = -1;
-	speccy->CPU()->FastEmul(FastTapeEmul);
+//	speccy->CPU()->FastEmul(FastTapeEmul);
 }
 //=============================================================================
 //	eTape::CloseTape
@@ -921,14 +919,14 @@ void eZ80_FastTape::Emul()
 	{ // dec a:jr nz,$-1
 		t += ((byte)(a - 1)) * 16;
 		a = 1;
-		printf("%u:t=%u\n\r", pc, t);
+//		printf("%u:t=%u\n\r", pc, t);
 		return;
 	}
 	if(p0 == 0x10 && p1 == 0xFE)
 	{ // djnz $
 		t += ((byte)(b - 1)) * 13;
 		b = 1;
-		printf("%u:t=%u\n\r", pc, t);
+//		printf("%u:t=%u\n\r", pc, t);
 		return;
 	}
 	if(p0 == 0x3D && p1 == 0xC2 && pc == dword(p3) * 0x100 + p2)
@@ -955,12 +953,11 @@ void eZ80_FastTape::Emul()
 			eTape* tape = devices->Get<eTape>();
 			for(;;)
 			{
-				printf("%u:b=%u, t=%u\n\r", pc, int(b), t);
+//				printf("%u:b=%u, t=%u\n\r", pc, int(b), t);
 				if(b == 0xFF)
 					return;
 				if((tape->TapeBit(T()) ^ c) & 0x20)
 	            	return;
-				_CrtDumpMemoryLeaks();
 				b++;
 				t += 59;
 			}
