@@ -24,7 +24,7 @@ public:
 
 	template<class D> D* Device() const { return devices.Get<D>(); }
 
-	const qword T() const { return t_states; }
+	qword T() const { return t_states; }
 
 protected:
 	xZ80::eZ80* cpu;

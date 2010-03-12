@@ -145,7 +145,7 @@ void eTape::StartTape()
 	tape.end_of_tape = tape_image + tape_imagesize;
 	tape.edge_change = speccy->T();
 	tape.tape_bit = -1;
-//	speccy->CPU()->FastEmul(FastTapeEmul);
+	speccy->CPU()->FastEmul(FastTapeEmul);
 }
 //=============================================================================
 //	eTape::CloseTape
