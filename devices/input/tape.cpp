@@ -868,9 +868,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 byte eTape::TapeBit(int tact)
 {
 	qword cur = speccy->T() + tact;
-	if(cur < tape.edge_change)
-		return (byte)tape.tape_bit;
-	while(tape.edge_change < cur)
+	while(cur > tape.edge_change)
 	{
 		dword t = (dword)(tape.edge_change - speccy->T());
 		if((int)t >= 0)
@@ -919,14 +917,12 @@ void eZ80_FastTape::Emul()
 	{ // dec a:jr nz,$-1
 		t += ((byte)(a - 1)) * 16;
 		a = 1;
-//		printf("%u:t=%u\n\r", pc, t);
 		return;
 	}
 	if(p0 == 0x10 && p1 == 0xFE)
 	{ // djnz $
 		t += ((byte)(b - 1)) * 13;
 		b = 1;
-//		printf("%u:t=%u\n\r", pc, t);
 		return;
 	}
 	if(p0 == 0x3D && p1 == 0xC2 && pc == dword(p3) * 0x100 + p2)
@@ -953,7 +949,6 @@ void eZ80_FastTape::Emul()
 			eTape* tape = devices->Get<eTape>();
 			for(;;)
 			{
-//				printf("%u:b=%u, t=%u\n\r", pc, int(b), t);
 				if(b == 0xFF)
 					return;
 				if((tape->TapeBit(T()) ^ c) & 0x20)
