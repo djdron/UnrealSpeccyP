@@ -60,9 +60,8 @@ void eSpeccy::Reset()
 void eSpeccy::Update()
 {
 	devices.FrameStart();
-	dword t_start = cpu->T();
 	cpu->Update(int_len, &nmi_pending);
-	dword t = cpu->FrameTacts() + cpu->T() - t_start;
+	dword t = cpu->FrameTacts() + cpu->T();
 	devices.FrameUpdate();
 	devices.FrameEnd(t);
 	t_states += cpu->FrameTacts();
