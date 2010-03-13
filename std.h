@@ -4,11 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stddef.h>
-#include <malloc.h>
-//#include <conio.h>
 #include <math.h>
-//#include <process.h>
 #include <assert.h>
 
 #include "std_types.h"
