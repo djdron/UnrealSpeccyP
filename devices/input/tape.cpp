@@ -119,7 +119,7 @@ void eTape::StopTape()
 	if(tape.play_pointer == tape.end_of_tape)
 		tape.index = 0;
 	tape.play_pointer = 0;
-	tape.edge_change = 0x7FFFFFFFFFFFFFFF;
+	tape.edge_change = 0x7FFFFFFFFFFFFFFFLLU;
 	tape.tape_bit = -1;
 	speccy->CPU()->FastEmul(NULL);
 }
@@ -130,7 +130,7 @@ void eTape::ResetTape()
 {
 	tape.index = 0;
 	tape.play_pointer = 0;
-	tape.edge_change = 0x7FFFFFFFFFFFFFFF;
+	tape.edge_change = 0x7FFFFFFFFFFFFFFFLLU;
 	tape.tape_bit = -1;
 	speccy->CPU()->FastEmul(NULL);
 }
@@ -166,7 +166,7 @@ void eTape::CloseTape()
 	tape.play_pointer = 0; // stop tape
 	tape.index = 0; // rewind tape
 	tape_err = max_pulses = tape_imagesize = tape_infosize = 0;
-	tape.edge_change = 0x7FFFFFFFFFFFFFFF;
+	tape.edge_change = 0x7FFFFFFFFFFFFFFFLLU;
 	tape.tape_bit = -1;
 }
 
@@ -556,7 +556,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 	CloseTape();
 	dword size, pause, i, j, n, t, t0;
 	byte pl, last, *end;
-	char *p;
+	byte* p;
 	dword loop_n = 0, loop_p = 0;
 	char nm[512];
 	while(ptr < buf + buf_size)
@@ -704,13 +704,13 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 		case 0x28: // select block
 			sprintf(nm, "* choice: ");
 			n = ptr[2];
-			p = (char*)ptr + 3;
+			p = ptr + 3;
 			for(i = 0; i < n; i++)
 			{
 				if(i)
 					strcat(nm, " / ");
 				char *q = nm + strlen(nm);
-				size = *(byte*)(p + 2);
+				size = *(p + 2);
 				memcpy(q, p + 3, size);
 				q[size] = 0;
 				p += size + 3;
@@ -733,10 +733,10 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 			end = ptr + 2 + ptr[1];
 			pl = *end;
 			*end = 0;
-			for(p = (char*)ptr + 2; p < (char*)end; p++)
+			for(p = ptr + 2; p < end; p++)
 				if(*p == 0x0D)
 					*p = 0;
-			for(p = (char*)ptr + 2; p < (char*)end; p += strlen(p) + 1)
+			for(p = ptr + 2; p < end; p += strlen((char*)p) + 1)
 				NamedCell(p);
 			*end = pl;
 			ptr = end;
@@ -744,7 +744,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 			break;
 		case 0x32: // archive info
 			NamedCell("- ARCHIVE INFO ");
-			p = (char*)ptr + 3;
+			p = ptr + 3;
 			for(i = 0; i < ptr[2]; i++)
 			{
 				const char *info;
@@ -777,14 +777,14 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 				case 8:
 					info = "Origin";
 					break;
-				case -1:
+				case 0xFF:
 					info = "Comment";
 					break;
 				default:
 					info = "info";
 					break;
 				}
-				dword size = *(byte*)p + 1;
+				dword size = *p + 1;
 				char tmp = p[size];
 				p[size] = 0;
 				sprintf(nm, "%s: %s", info, p + 1);
@@ -808,13 +808,13 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 			{
 				NamedCell("- POKEs block ");
 				NamedCell(ptr + 0x15, ptr[0x14]);
-				p = (char*)ptr + 0x15 + ptr[0x14];
-				n = *(byte*)p++;
+				p = ptr + 0x15 + ptr[0x14];
+				n = *p++;
 				for(i = 0; i < n; i++)
 				{
-					NamedCell(p + 1, *(byte*)p);
+					NamedCell(p + 1, *p);
 					p += *p + 1;
-					t = *(byte*)p++;
+					t = *p++;
 					strcpy(nm, "POKE ");
 					for(j = 0; j < t; j++)
 					{
