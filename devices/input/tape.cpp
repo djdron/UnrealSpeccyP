@@ -119,7 +119,7 @@ void eTape::StopTape()
 	if(tape.play_pointer == tape.end_of_tape)
 		tape.index = 0;
 	tape.play_pointer = 0;
-	tape.edge_change = 0x7FFFFFFFFFFFFFFFLLU;
+	tape.edge_change = 0x7FFFFFFFFFFFFFFFLL;
 	tape.tape_bit = -1;
 	speccy->CPU()->FastEmul(NULL);
 }
@@ -130,7 +130,7 @@ void eTape::ResetTape()
 {
 	tape.index = 0;
 	tape.play_pointer = 0;
-	tape.edge_change = 0x7FFFFFFFFFFFFFFFLLU;
+	tape.edge_change = 0x7FFFFFFFFFFFFFFFLL;
 	tape.tape_bit = -1;
 	speccy->CPU()->FastEmul(NULL);
 }
@@ -166,7 +166,7 @@ void eTape::CloseTape()
 	tape.play_pointer = 0; // stop tape
 	tape.index = 0; // rewind tape
 	tape_err = max_pulses = tape_imagesize = tape_infosize = 0;
-	tape.edge_change = 0x7FFFFFFFFFFFFFFFLLU;
+	tape.edge_change = 0x7FFFFFFFFFFFFFFFLL;
 	tape.tape_bit = -1;
 }
 
