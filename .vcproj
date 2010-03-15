@@ -377,6 +377,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="dingoo"
+				>
+				<File
+					RelativePath=".\platform\dingoo\dingoo.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="storage"
