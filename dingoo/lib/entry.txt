@@ -1,0 +1,87 @@
+         dl_main
+         run_console
+         GBA_card_write_rom
+         write_gba_card
+         vxMem_Info
+         GBA_Get_Rom
+         GBA_hardware_init
+         getext
+         AppMain
+void     abort()
+int      printf(const char*, ...)
+int      sprintf(char*, const char*, ...)
+int      fprintf(FILE*, const char*, ...)
+         strncasecmp
+void*    malloc(size_t)
+void*    realloc(void*, size_t)
+void     free(void*)
+size_t   fread(void*, size_t, size_t, FILE*)
+size_t   fwrite(const void*, size_t, size_t, FILE*)
+int      fseek(FILE*, long int, int)
+         LcdGetDisMode
+         vxGoHome
+         StartSwTimer
+void     free_irq(unsigned int irq)
+         fsys_RefreshCache
+         strlen
+void     _lcd_set_frame()
+void*    _lcd_get_frame()
+void*    lcd_get_cframe()
+         ap_lcd_set_frame
+         lcd_flip
+void     __icache_invalidate_all()
+void     __dcache_writeback_all()
+         TaskMediaFunStop
+OS_CPU_SR OSCPUSaveSR()
+void      OSCPURestoreSR(OS_CPU_SR cpu_sr)
+int      serial_getc()
+void     serial_putc(const char c)
+void     _kbd_get_status(KEY_STATUS*)
+         get_game_vol
+unsigned int _kbd_get_key()
+FILE*    fsys_fopen(const char*, const char*)
+int      fsys_fread(void*, size_t, size_t, FILE*)
+int      fsys_fclose(FILE*)
+int      fsys_fseek(FILE*, long int, int)
+long int fsys_ftell(FILE*)
+         fsys_remove
+         fsys_rename
+int      fsys_ferror(FILE*)
+int      fsys_feof(FILE*)
+int      fsys_fwrite(const void*, size_t, size_t, FILE*)
+         fsys_findfirst
+         fsys_findnext
+         fsys_findclose
+         fsys_flush_cache
+         USB_Connect
+         udc_attached
+         USB_No_Connect
+void*    _waveout_open(void *)
+int      _waveout_close(void *)
+void     _waveout_close_at_once(unsigned int)
+         waveout_set_volume
+         HP_Mute_sw
+         waveout_can_write
+         waveout_write
+int      pcm_can_write()
+int      pcm_ioctl(unsigned int cmd, unsigned long arg)
+uint32_t  OSTimeGet()
+void      OSTimeDly(uint16_t ticks)
+void      OSSemPend(OS_EVENT* event, uint16_t timeout, uint8_t* error)
+uint8_t   OSSemPost(OS_EVENT* event)
+OS_EVENT* OSSemCreate(uint16_t cnt)
+uint8_t   OSTaskCreate(void (*task)(), void* data, uint16_t stack_size, uint8_t priority)
+OS_EVENT* OSSemDel(OS_EVENT *event, uint8_t option, uint8_t* error)
+uint8_t   OSTaskDel(uint8_t priority)
+unsigned long int GetTickCount()
+int      _sys_judge_event()
+         fsys_fopenW
+         __to_unicode_le
+char*    __to_locale_ansi(wchar_t*)
+         get_current_language
+         get_dl_handle
+         dl_res_open
+         dl_res_get_size
+         dl_res_get_data
+         dl_res_close
+         pmp_au

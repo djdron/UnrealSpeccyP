@@ -1,0 +1,124 @@
+/**************************************************************************
+*                                                                         *
+*   PROJECT     : ccpmp                                                   *
+*                                                                         *
+*   MODULE      : link.xn                                                 *
+*                                                                         *
+*   PROCESSOR   : MIPS 4Kc (32 bit RISC) - 4730  board                    *
+*                                                                         *
+*   DESCRIPTION :                                                         *
+*   Linker script file                                                    *
+*                                                                         *
+**************************************************************************/
+
+OUTPUT_FORMAT("elf32-tradlittlemips", "elf32-tradlittlemips", "elf32-tradlittlemips")
+OUTPUT_ARCH(mips)
+
+/**** Start point ****/
+ENTRY(init) /* Entry point of application */
+
+MEMORY
+{
+	ram (wx) : ORIGIN = 0x80000000, LENGTH = 32M
+}
+
+SECTIONS
+{
+  /**** Code and read-only data ****/
+
+	_gp = 0;
+
+	.text :
+	{
+		_ftext = ABSOLUTE(.) ;	/* Start of code and read-only data */
+
+		__RAW_VMA__ = _ftext;
+
+		init.o (.text) 		/* Entry point */
+		*(.text*)
+		_ecode = ABSOLUTE(.) ;	/* End of code */
+		
+		*(.gnu.linkonce*)
+
+		*(.rodata*)
+
+		. = ALIGN(8);
+		_etext = ABSOLUTE(.);	/* End of code and read-only data */
+	} > ram
+
+	/**** Initialised data ****/
+
+	.data :
+	{
+		_fdata = ABSOLUTE(.);	/* Start of initialised data */
+		*(.data*)
+		*(.eh_frame*)
+		*(.gcc_except_table*)
+
+		. = ALIGN(8);
+		__CTOR_LIST__ = ABSOLUTE(.);
+		KEEP(*(SORT(.ctors*)))
+		__CTOR_END__ = ABSOLUTE(.);
+		__DTOR_LIST__ = ABSOLUTE(.);
+		KEEP(*(SORT(.dtors*)))
+		__DTOR_END__ = ABSOLUTE(.);
+
+		*(.lit8) 
+		*(.lit4) 
+		*(.sdata) 
+
+		. = ALIGN(8);
+
+		_edata  = ABSOLUTE(.);	/* End of initialised data */
+	} > ram
+
+	/**** Uninitialised data ****/
+
+	_fbss = .;			/* Start of uninitialised data */
+
+	__RAW_SIZE__ = _fbss - _ftext;
+
+	.sbss : 
+	{ 
+		*(.sbss) 
+		*(.scommon)
+		. = ALIGN(8);
+	}
+
+	.bss :
+	{
+		*(.bss)
+		*(COMMON)
+
+		/* Allocate room for stack */
+		. =  ALIGN(8);
+		_freemem = .;
+	}
+
+	_end = . ;			/* End of unitialised data */
+
+	__RAW_VSIZE__ = _end - _ftext;
+
+
+	.gptab.sdata : { *(.gptab.data) *(.gptab.sdata) }
+	.gptab.sbss : { *(.gptab.bss) *(.gptab.sbss) }
+
+	/DISCARD/ :
+	{
+		*(.reginfo)
+	}
+
+	.export_table  : { *(.export_table) }
+	.export_string : { *(.export_string) }
+	.import_table  : { *(.import_table) }
+	.import_string : { *(.import_string) }
+	.section_info  : { *(.section_info) }
+
+	PROVIDE(etext = _etext);
+	PROVIDE (edata = .);
+	PROVIDE (end = .);
+}
+
+/**************************************************************************
+							 END  OF  FILE
+**************************************************************************/
