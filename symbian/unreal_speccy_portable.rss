@@ -1,0 +1,168 @@
+/*
+* ==============================================================================
+*  Name        : SimpleCube.rss
+*  Part of     : OpenGLEx / SimpleCube
+*  Interface   : 
+*  Description : 
+*  Version     : 
+*
+*  Copyright (c) 2004-2006 Nokia Corporation.
+*  This material, including documentation and any related 
+*  computer programs, is protected by copyright controlled by 
+*  Nokia Corporation.
+* ==============================================================================
+*/
+
+//  RESOURCE IDENTIFIER
+NAME    CMYZ // 4 letter ID
+
+//  INCLUDES
+#include <eikon.rh>
+#include "unreal_speccy_portable.hrh"
+#include "unreal_speccy_portable.rls"
+#include <avkon.rsg>
+#include <avkon.rh>
+#include <avkon.mbg>
+#include <appinfo.rh>
+
+//  RESOURCE DEFINITIONS 
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE TBUF { buf="unreal_speccy_portable"; }
+
+RESOURCE EIK_APP_INFO
+    {
+    menubar = r_simplecube_menubar;
+    cba = R_AVKON_SOFTKEYS_OPTIONS_BACK;     
+    }
+
+//----------------------------------------------------
+//   
+//    r_simplecube_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_simplecube_menubar
+{
+    titles =
+        {
+            MENU_TITLE
+            {
+                menu_pane = r_simplecube_exit;
+            },
+            MENU_TITLE 
+            { 
+                menu_pane = r_simplecube_menu; 
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_simplecube_exit
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_simplecube_exit
+{
+    items =
+        {
+            MENU_ITEM 
+            { 
+                command = EAknCmdExit; 
+                txt = STRING_simplecube_exit; 
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_simplecube_menu
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_simplecube_menu
+{
+    items =
+        {
+            MENU_ITEM 
+            { 
+                command = ESimpleCubeShading;
+                cascade = r_simplecube_shading_menu;
+                txt = STRING_simplecube_shade; 
+            },
+            MENU_ITEM
+            {
+                command = ESimpleCubeDrawing;
+                cascade = r_simplecube_drawing_menu;
+                txt = STRING_simplecube_draw;
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_simplecube_shading_menu
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_simplecube_shading_menu
+{
+    items =
+        {
+            MENU_ITEM 
+            { 
+                command = ESimpleCubeFlat;
+                txt     = STRING_simplecube_flat; 
+            },
+            MENU_ITEM
+            {
+                command = ESimpleCubeSmooth;
+                txt     = STRING_simplecube_smooth;
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_simplecube_drawing_menu
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_simplecube_drawing_menu
+{
+    items =
+        {
+            MENU_ITEM 
+            { 
+                command = ESimpleCubeTriangles;
+                txt     = STRING_simplecube_triangles; 
+            },
+            MENU_ITEM
+            {
+                command = ESimpleCubeTriangleFans;
+                txt     = STRING_simplecube_trianglefans;
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_simplecube_localisable_app_info
+//
+//----------------------------------------------------
+//
+RESOURCE LOCALISABLE_APP_INFO r_simplecube_localisable_app_info
+    {
+    short_caption = STRING_app_short_caption_string;
+    caption_and_icon =
+    CAPTION_AND_ICON_INFO
+        {
+        caption         = STRING_app_caption_string;
+        number_of_icons = 1;
+        icon_file       = "\\resource\\apps\\unreal_speccy_portable.mif";
+        };
+    }
+    
+// End of File
+

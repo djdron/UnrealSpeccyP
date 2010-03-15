@@ -1,0 +1,27 @@
+;Languages
+&EN
+
+;Header
+#{"UnrealSpeccyPortable"}, (0xA000821A), 1, 0, 0,TYPE=SA
+
+;Localised Vendor name
+%{"Vendor-EN"}
+
+;Unique Vendor name
+:"Vendor"
+
+;Supports Series 60 v 3.0
+[0x101F7961], 0, 0, 0, {"Series60ProductID"}
+
+;Files to install
+"dist\gcce\unreal_speccy_portable.exe"	-"!:\sys\bin\unreal_speccy_portable.exe"
+"dist\gcce\unreal_speccy_portable.rsc"	-"!:\resource\apps\unreal_speccy_portable.rsc"
+"dist\gcce\unreal_speccy_portable_reg.rsc"	-"!:\private\10003a3f\import\apps\unreal_speccy_portable_reg.rsc"
+"dist\gcce\unreal_speccy_portable.mif"	-"!:\resource\apps\unreal_speccy_portable.mif"
+"..\rom\128_low.rom"	-"!:\resource\apps\rom\128_low.rom"
+"..\rom\dos513f.rom"	-"!:\resource\apps\rom\dos513f.rom"
+"..\rom\service.rom"	-"!:\resource\apps\rom\service.rom"
+"..\rom\sos.rom"		-"!:\resource\apps\rom\sos.rom"
+
+;required for application to be covered by backup/restore facility 
+"br.xml"	-"!:\private\A000821A\backup_registration.xml"

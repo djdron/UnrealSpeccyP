@@ -1,0 +1,31 @@
+/*
+* ==============================================================================
+*  Name        : SimpleCube.hrh
+*  Part of     : OpenGLEx / SimpleCube
+*  Interface   : 
+*  Description : 
+*  Version     : 
+*
+*  Copyright (c) 2004-2006 Nokia Corporation.
+*  This material, including documentation and any related 
+*  computer programs, is protected by copyright controlled by 
+*  Nokia Corporation.
+* ==============================================================================
+*/
+
+#ifndef SIMPLECUBE_HRH
+#define SIMPLECUBE_HRH
+
+// DATA TYPES
+enum TSimpleCubeMenuCommands
+{
+    ESimpleCubeShading = 1,
+    ESimpleCubeFlat,
+    ESimpleCubeSmooth,
+
+    ESimpleCubeDrawing,
+    ESimpleCubeTriangles,
+    ESimpleCubeTriangleFans
+};
+
+#endif      // SIMPLECUBE_HRH
