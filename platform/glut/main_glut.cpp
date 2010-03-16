@@ -104,6 +104,7 @@ bool Init(int argc, char* argv[])
 	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
 	glutInitWindowSize(320 * 2, 240 * 2);
 	glutInitWindowPosition(100, 100);
+	Handler()->OnInit();
 	window = glutCreateWindow(Handler()->WindowCaption());
 	glutDisplayFunc(&OnDraw);
 //	glutFullScreen();
@@ -123,6 +124,7 @@ void Loop()
 void Done()
 {
 	DoneSound();
+	Handler()->OnDone();
 }
 
 }

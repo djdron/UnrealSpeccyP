@@ -1,5 +1,5 @@
 #include "../std.h"
-
+#include "../platform/io.h"
 #include "memory.h"
 
 //=============================================================================
@@ -61,10 +61,10 @@ void eRom::LoadRom(int page, const char* rom)
 //-----------------------------------------------------------------------------
 void eRom::Init()
 {
-	LoadRom(ROM_128, "rom/128_low.rom");
-	LoadRom(ROM_SOS, "rom/sos.rom");
-	LoadRom(ROM_SYS, "rom/service.rom");
-	LoadRom(ROM_DOS, "rom/dos513f.rom");
+	LoadRom(ROM_128, xIo::ResourcePath("rom/128_low.rom"));
+	LoadRom(ROM_SOS, xIo::ResourcePath("rom/sos.rom"));
+	LoadRom(ROM_SYS, xIo::ResourcePath("rom/service.rom"));
+	LoadRom(ROM_DOS, xIo::ResourcePath("rom/dos513f.rom"));
 }
 //=============================================================================
 //	eRom::Reset

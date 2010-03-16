@@ -509,6 +509,14 @@
 			Name="platform"
 			>
 			<File
+				RelativePath=".\platform\io.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\platform\io.h"
+				>
+			</File>
+			<File
 				RelativePath=".\platform\platform.cpp"
 				>
 			</File>

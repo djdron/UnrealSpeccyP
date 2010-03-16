@@ -293,6 +293,7 @@ class App: public wxApp
 	virtual bool OnInit()
 	{
 		wxApp::OnInit();
+		Handler()->OnInit();
 		const char* c = Handler()->WindowCaption();
 		Frame *frame = new Frame(wxConvertMB2WX(c), wxPoint(100, 100));
 		frame->Show(true);
@@ -303,6 +304,7 @@ class App: public wxApp
 	virtual int OnExit()
 	{
 		DoneSound();
+		Handler()->OnDone();
 		return wxApp::OnExit();
 	}
 };

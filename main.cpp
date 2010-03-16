@@ -13,16 +13,19 @@
 
 static struct eSpeccyHandler : public xPlatform::eHandler
 {
-	eSpeccyHandler() : video_paused(false), drive_for_open(0)
+	eSpeccyHandler() : video_paused(false), drive_for_open(0), speccy(NULL)	{}
+	virtual ~eSpeccyHandler() { assert(!speccy); }
+	virtual void OnInit()
 	{
+		assert(!speccy);
 		speccy = new eSpeccy;
 		sound_dev[0] = speccy->Device<eBeeper>();
 		sound_dev[1] = speccy->Device<eAY>();
 		sound_dev[2] = speccy->Device<eTape>();
 	}
-	~eSpeccyHandler()
+	virtual void OnDone()
 	{
-		delete speccy;
+		SAFE_DELETE(speccy);
 	}
 	virtual void OnLoop()
 	{

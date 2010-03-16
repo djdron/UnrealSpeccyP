@@ -30,6 +30,8 @@ struct eHandler
 {
 	eHandler();
 	~eHandler();
+	virtual void OnInit() = 0;
+	virtual void OnDone() = 0;
 	virtual void OnLoop() = 0;
 	virtual const char* WindowCaption() = 0;
 	virtual void OnKey(char key, dword flags) = 0;
