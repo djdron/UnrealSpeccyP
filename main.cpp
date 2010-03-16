@@ -13,7 +13,7 @@
 
 static struct eSpeccyHandler : public xPlatform::eHandler
 {
-	eSpeccyHandler() : video_paused(false), drive_for_open(0), speccy(NULL)	{}
+	eSpeccyHandler() : speccy(NULL), video_paused(false), drive_for_open(0)	{}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit()
 	{

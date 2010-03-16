@@ -1,10 +1,10 @@
 #include "../../std.h"
-#include "../platform.h"
-#include "../io.h"
 
 #ifdef _WIN_MOBILE
 
 #include <windows.h>
+#include "../platform.h"
+#include "../io.h"
 
 namespace xPlatform
 {

@@ -72,11 +72,14 @@
 		<Unit filename="devices/ula.cpp" />
 		<Unit filename="devices/ula.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="platform/dingoo/dingoo.cpp" />
 		<Unit filename="platform/gl/draw.cpp" />
 		<Unit filename="platform/glut/main_glut.cpp" />
 		<Unit filename="platform/oal/oal.cpp" />
 		<Unit filename="platform/platform.cpp" />
 		<Unit filename="platform/platform.h" />
+		<Unit filename="platform/symbian/division.cpp" />
+		<Unit filename="platform/symbian/symbian.cpp" />
 		<Unit filename="platform/wxwidgets/main_wx.cpp" />
 		<Unit filename="snapshot.cpp" />
 		<Unit filename="snapshot.h" />
