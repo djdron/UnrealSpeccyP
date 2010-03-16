@@ -5,11 +5,12 @@
 
 #pragma once
 
+#if defined(_WINDOWS) || defined(_LINUX)
 #define USE_OAL
-
 #define USE_GL
 //#define USE_GLUT
 #define USE_WXWIDGETS
+#endif//_WINDOWS || _LINUX
 
 namespace xPlatform
 {
