@@ -31,7 +31,7 @@ bool Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nC
 	WideCharToMultiByte(CP_ACP, 0, buf_w, -1, buf, l, NULL, NULL);
 	xIo::SetResourcePath(buf);
 	Handler()->OnInit();
-	Handler()->OnOpenFile("\\program files\\unreal_speccy_portable\\resource\\illusion_test.sna");
+//	Handler()->OnOpenFile("\\program files\\unreal_speccy_portable\\resource\\illusion_test.sna");
 	return true;
 }
 void Done()
