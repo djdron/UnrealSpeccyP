@@ -31,7 +31,7 @@ preGCCE:
   DIST_PATH = $(DIST_BASE)/gcce
   OBJ_PATH = $(OBJ_BASE)/gcce
   TARGET_MACRO = $(GCCE_MACRO) $(GCCE_WARNING_FLAGS)
-  CFLAGS += -fexceptions -march=armv5t -mapcs -pipe -nostdinc -c -msoft-float \
+  CFLAGS += -fexceptions -march=armv5t -mapcs -pipe -nostdinc -c -msoft-float -O3 \
 	-MD $(REL_MACRO) -include $(EPOCROOT)/epoc32/include/gcce/gcce.h
   LD_EXE_FLAGS = -L$(CC_INSTALL_PATH)/arm-none-symbianelf/lib \
 	-L$(CC_INSTALL_PATH)/lib/gcc/arm-none-symbianelf/4.4.1 --target1-abs \

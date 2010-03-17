@@ -3,331 +3,155 @@
 #ifdef _SYMBIAN
 
 #include "../platform.h"
+#include "../io.h"
 
 #include <eikstart.h>
-#include <eikapp.h>
 #include <aknapp.h>
-#include <eikdoc.h>
-#include <e32std.h>
-#include <coeccntx.h>
 #include <aknappui.h>
+#include <GLES/egl.h>
+#include <akndoc.h>
 
 #include <unreal_speccy_portable.rsg>
 #include "../../symbian/unreal_speccy_portable.hrh"
 
-#include <avkon.hrh>
+namespace xPlatform
+{
 
-#include <coecntrl.h>
-#include <GLES/egl.h>
-#include <akndef.h>
-#include <akndoc.h>
+void Init()
+{
+    xIo::SetResourcePath("e:\\usp\\");
+    Handler()->OnInit();
+}
+void Done()
+{
+    Handler()->OnDone();
+}
 
-#include <e32base.h>
-#include <GLES/gl.h>
-
-typedef enum { ETriangles, ETriangleFans} TRenderingMode;
-
-#define FRUSTUM_LEFT   -1.f     //left vertical clipping plane
-#define FRUSTUM_RIGHT   1.f     //right vertical clipping plane
-#define FRUSTUM_BOTTOM -1.f     //bottom horizontal clipping plane
-#define FRUSTUM_TOP     1.f     //top horizontal clipping plane
-#define FRUSTUM_NEAR    3.f     //near depth clipping plane
-#define FRUSTUM_FAR  1000.f     //far depth clipping plane
-
-class CSimpleCube : public CBase
+class TGLScene : public CBase
 {
 public:
-	static CSimpleCube* NewL( TUint aWidth, TUint aHeight)
-	{
-		CSimpleCube* self = new (ELeave) CSimpleCube( aWidth, aHeight );
-		CleanupStack::PushL( self );
-		self->ConstructL();
-		CleanupStack::Pop();
-		return self;
-	}
-	virtual ~CSimpleCube()
-	{}
+	TGLScene(TUint _width, TUint _height) { SetScreenSize(_width, _height); }
+	virtual ~TGLScene() {}
 
 public:
-	void AppInit( void );
-	void AppExit( void );
-	void DrawBox( GLfloat aSizeX, GLfloat aSizeY, GLfloat aSizeZ );
-	void AppCycle( TInt aFrame );
-	void FlatShading( void );
-	void SmoothShading( void );
-	void TriangleMode( void );
-	void TriangleFanMode( void );
-	void SetScreenSize( TUint aWidth, TUint aHeight );
-protected:
-	CSimpleCube(TUint aWidth, TUint aHeight) : iScreenWidth(aWidth), iScreenHeight(aHeight)
-	{}
+	void AppInit();
+	void AppExit();
+	void AppCycle(TInt aFrame);
+	void SetScreenSize(TUint _width, TUint _height) { width = _width; height = _height; }
 private:
-	TUint iScreenWidth;
-	TUint iScreenHeight;
-	TRenderingMode iDrawingMode;
+	TUint width;
+	TUint height;
 };
-/** Vertice coordinates for the cube. */
-static const GLbyte vertices[8 * 3] =
-{
-	-1, 1, 1,
-	1, 1, 1,
-	1, -1, 1,
-	-1, -1, 1,
 
-	-1, 1, -1,
-	1, 1, -1,
-	1, -1, -1,
-	-1, -1, -1
+/** Vertex coordinates */
+static const GLbyte vertices[4 * 2] =
+{
+	0, 0,
+	0, 1,
+	1, 1,
+	1, 0,
+};
+
+static const GLubyte uvs[4 * 2] =
+{
+    0, 0,
+    0, 1,
+    1, 1,
+    1, 0,
 };
 
 /** Colors for vertices (Red, Green, Blue, Alpha). */
-static const GLubyte colors[8 * 4] =
-{
-	0 ,255, 0,255,
-	0 , 0,255,255,
-	0 ,255, 0,255,
-	255, 0, 0,255,
-
-	0 , 0,255,255,
-	255, 0, 0,255,
-	0 , 0,255,255,
-	0 ,255, 0,255
-};
+//static const GLubyte colors[4 * 4] =
+//{
+//	255 ,255, 255, 255,
+//	255 ,255, 255, 255,
+//	255 ,255, 255, 255,
+//	255 ,255, 255, 255,
+//};
 
 /**
  * Indices for drawing the triangles.
  * The color of the triangle is determined by
  * the color of the last vertex of the triangle.
  */
-static const GLubyte triangles[12 * 3] =
+static const GLubyte triangles[2 * 3] =
 {
-	/* front */
-	1,0,3,
-	1,3,2,
-
-	/* right */
-	2,6,5,
-	2,5,1,
-
-	/* back */
-	7,4,5,
-	7,5,6,
-
-	/* left */
-	0,4,7,
-	0,7,3,
-
-	/* top */
-	5,4,0,
-	5,0,1,
-
-	/* bottom */
-	3,7,6,
-	3,6,2
+	0,1,2,
+	0,2,3,
 };
 
-/** First set of indices for drawing the triangle fans. */
-static const GLubyte fanOne[6 * 3] =
+void TGLScene::AppInit( void )
 {
-	1,0,3,
-	1,3,2,
-	1,2,6,
-	1,6,5,
-	1,5,4,
-	1,4,0
-};
-
-/** Second set of indices for drawing the triangle fans. */
-static const GLubyte fanTwo[6 * 3] =
+    Init();
+	glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(2, GL_BYTE, 0, vertices);
+//	glEnableClientState(GL_COLOR_ARRAY);
+//	glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(2, GL_BYTE, 0, uvs);
+    glShadeModel(GL_FLAT);
+}
+void TGLScene::AppExit()
 {
-	7,4,5,
-	7,5,6,
-	7,6,2,
-	7,2,3,
-	7,3,0,
-	7,0,4
-};
-
-void CSimpleCube::AppInit( void )
-{
-	// Set the screen background color.
-	glClearColor( 0.f, 0.f, 0.f, 1.f );
-
-	// Enable back face culling.
-	glEnable( GL_CULL_FACE );
-
-	// Initialize viewport and projection.
-	glViewport( 0, 0, iScreenWidth, iScreenHeight );
-	glMatrixMode( GL_PROJECTION );
-
-	// Calculate the view frustrum
-	GLfloat aspectRatio = (GLfloat)(iScreenWidth) / (GLfloat)(iScreenHeight);
-	glFrustumf( FRUSTUM_LEFT * aspectRatio, FRUSTUM_RIGHT * aspectRatio,
-			FRUSTUM_BOTTOM, FRUSTUM_TOP,
-			FRUSTUM_NEAR, FRUSTUM_FAR );
-
-	glMatrixMode( GL_MODELVIEW );
-
-	// Enable vertex arrays.
-	glEnableClientState( GL_VERTEX_ARRAY );
-
-	// Set array pointers.
-	glVertexPointer( 3, GL_BYTE, 0, vertices );
-
-	// Enable color arrays.
-	glEnableClientState( GL_COLOR_ARRAY );
-
-	// Set color pointers.
-	glColorPointer( 4, GL_UNSIGNED_BYTE, 0, colors );
-
-	// Set the initial shading mode
-	glShadeModel( GL_FLAT );
-
-	// Do not use perspective correction
-	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST );
-
-	// Set the initial drawing mode
-	iDrawingMode = ETriangles;
+    Done();
 }
 
-// -----------------------------------------------------------------------------
-// CSimpleCube::AppExit
-//
-// Release any allocations made in AppInit.
-// -----------------------------------------------------------------------------
-//
+#define RGBX(r, g, b)	((b << 16)|(g << 8)|r)
 
-void CSimpleCube::AppExit( void )
+static dword tex[512*256];
+void TGLScene::AppCycle(TInt aFrame)
 {
-}
+    Handler()->OnLoop();
 
-// -----------------------------------------------------------------------------
-// CSimpleCube::DrawBox
-//
-// Draws a box with triangles or triangle fans depending on the current rendering mode.
-// Scales the box to the given size using glScalef.
-// -----------------------------------------------------------------------------
-//
+    const byte brightness = 200;
+    const byte bright_intensity = 55;
 
-void CSimpleCube::DrawBox( GLfloat aSizeX, GLfloat aSizeY, GLfloat aSizeZ )
-{
-	glScalef( aSizeX, aSizeY, aSizeZ );
+	byte* data = (byte*)Handler()->VideoData();
+	glViewport(0, 0, width, height);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
 
-	if ( iDrawingMode == ETriangles )
+	for(int y = 0; y < 240; ++y)
 	{
-		glDrawElements( GL_TRIANGLES, 12 * 3, GL_UNSIGNED_BYTE, triangles );
+		for(int x = 0; x < 320; ++x)
+		{
+			byte r, g, b;
+			byte c = data[y*320+x];
+			byte i = c&8 ? brightness + bright_intensity : brightness;
+			b = c&1 ? i : 0;
+			r = c&2 ? i : 0;
+			g = c&4 ? i : 0;
+			dword* p = &tex[y*512+x];
+			*p++ = RGBX(r, g ,b);
+		}
 	}
-	else if ( iDrawingMode == ETriangleFans )
-	{
-		glDrawElements( GL_TRIANGLE_FAN, 6 * 3, GL_UNSIGNED_BYTE, fanOne );
-		glDrawElements( GL_TRIANGLE_FAN, 6 * 3, GL_UNSIGNED_BYTE, fanTwo );
-	}
-}
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    glScalef(320.0f/512.0f, 240.0f/256.0f, 1.0f);
 
-// -----------------------------------------------------------------------------
-// CSimpleCube::AppCycle
-//
-// Draws and animates the objects.
-// The frame number determines the amount of rotation.
-// -----------------------------------------------------------------------------
-//
+	glEnable(GL_TEXTURE_2D);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 512, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
-void CSimpleCube::AppCycle( TInt aFrame )
-{
-	const GLint cameraDistance = 100;
-
-	glClear( GL_COLOR_BUFFER_BIT );
-
-	/* Animate and draw box */
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glTranslatex( 0 , 0 , -cameraDistance << 16 );
-	glRotatex( aFrame << 16, 1 << 16, 0 , 0 );
-	glRotatex( aFrame << 15, 0 , 1 << 16, 0 );
-	glRotatex( aFrame << 14, 0 , 0 , 1 << 16 );
-	DrawBox( 15.f, 15.f, 15.f );
+	glOrthof(0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+	glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_BYTE, triangles);
+//	glFlush();
 }
 
-//----------------------------------------------------------
-// The following methods are called by the CSimpleCubeAppUi
-// class when handling the incoming menu events.
-//----------------------------------------------------------
-
-// -----------------------------------------------------------------------------
-// CSimpleCube::FlatShading
-//
-// Sets the GL shading model to flat.
-// -----------------------------------------------------------------------------
-//
-
-void CSimpleCube::FlatShading( void )
-{
-	glShadeModel( GL_FLAT );
-}
-
-// -----------------------------------------------------------------------------
-// CSimpleCube::SmoothShading
-//
-// Sets the GL shading model to smooth.
-// -----------------------------------------------------------------------------
-//
-
-void CSimpleCube::SmoothShading( void )
-{
-	glShadeModel( GL_SMOOTH );
-}
-
-// -----------------------------------------------------------------------------
-// CSimpleCube::TriangleMode
-//
-// Sets the rendering mode to triangles.
-// -----------------------------------------------------------------------------
-//
-
-void CSimpleCube::TriangleMode( void )
-{
-	iDrawingMode = ETriangles;
-}
-
-// -----------------------------------------------------------------------------
-// CSimpleCube::TriangleFanMode
-//
-// Sets the rendering mode to triangle fans.
-// -----------------------------------------------------------------------------
-//
-
-void CSimpleCube::TriangleFanMode( void )
-{
-	iDrawingMode = ETriangleFans;
-}
-
-// -----------------------------------------------------------------------------
-// CSimpleCube::SetScreenSize
-// Reacts to the dynamic screen size change during execution of this program.
-// -----------------------------------------------------------------------------
-//
-void CSimpleCube::SetScreenSize( TUint aWidth, TUint aHeight )
-{
-	iScreenWidth = aWidth;
-	iScreenHeight = aHeight;
-
-	// Reinitialize viewport and projection.
-	glViewport( 0, 0, iScreenWidth, iScreenHeight );
-
-	// Recalculate the view frustrum
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	GLfloat aspectRatio = (GLfloat)(iScreenWidth) / (GLfloat)(iScreenHeight);
-	glFrustumf( FRUSTUM_LEFT * aspectRatio, FRUSTUM_RIGHT * aspectRatio,
-			FRUSTUM_BOTTOM, FRUSTUM_TOP,
-			FRUSTUM_NEAR, FRUSTUM_FAR );
-	glMatrixMode( GL_MODELVIEW );
-}
-
-class CSimpleCubeContainer : public CCoeControl, MCoeControlObserver
+class TGLControl : public CCoeControl, MCoeControlObserver
 {
 public:
 	void ConstructL(const TRect& aRect);
-	virtual ~CSimpleCubeContainer();
+	virtual ~TGLControl();
 
 public:
 	static TInt DrawCallBack(TAny* aInstance);
@@ -335,12 +159,10 @@ public:
 private:
 	void SizeChanged();
 	void HandleResourceChange(TInt aType);
-	TInt CountComponentControls() const
-	{	return 0;}
-	CCoeControl* ComponentControl(TInt aIndex) const
-	{	return NULL;}
+	TInt CountComponentControls() const { return 0; }
+	CCoeControl* ComponentControl(TInt aIndex) const { return NULL; }
 	void Draw(const TRect& aRect) const;
-	void HandleControlEventL(CCoeControl* aControl,TCoeEvent aEventType);
+	void HandleControlEventL(CCoeControl* aControl,TCoeEvent aEventType) {}
 
 private:
 	EGLDisplay iEglDisplay;
@@ -350,10 +172,10 @@ private:
 	TBool iOpenGlInitialized;
 	TInt iFrame;
 public:
-	CSimpleCube* iSimpleCube;
+	TGLScene* scene;
 };
 
-void CSimpleCubeContainer::ConstructL(const TRect& /*aRect*/)
+void TGLControl::ConstructL(const TRect& /*aRect*/)
 {
 	iOpenGlInitialized = EFalse;
 	CreateWindowL();
@@ -399,32 +221,29 @@ void CSimpleCubeContainer::ConstructL(const TRect& /*aRect*/)
 	TDisplayMode DMode = Window().DisplayMode();
 	TInt BufferSize = 0;
 
-	switch ( DMode )
+	switch(DMode)
 	{
-		case(EColor4K):
+	case EColor4K:
 		BufferSize = 12;
-		break;
-		case(EColor64K):
+        break;
+	case EColor64K:
 		BufferSize = 16;
 		break;
-		case(EColor16M):
+	case EColor16M:
 		BufferSize = 24;
 		break;
-		case(EColor16MU):
+	case EColor16MU:
 		BufferSize = 32;
 		break;
-		default:
+	default:
 		_LIT(KDModeError, "unsupported displaymode");
 		User::Panic( KDModeError, 0 );
 		break;
 	}
 
-	const EGLint attrib_list[] =
-	{	EGL_BUFFER_SIZE,BufferSize,
-		EGL_NONE};
+	const EGLint attrib_list[] = {	EGL_BUFFER_SIZE, BufferSize, EGL_NONE };
 
-	if ( eglChooseConfig( iEglDisplay, attrib_list, configList, configSize,
-					&numOfConfigs ) == EGL_FALSE )
+	if(eglChooseConfig( iEglDisplay, attrib_list, configList, configSize, &numOfConfigs ) == EGL_FALSE )
 	{
 		_LIT(KChooseConfigFailed, "eglChooseConfig failed");
 		User::Panic( KChooseConfigFailed, 0 );
@@ -434,21 +253,20 @@ void CSimpleCubeContainer::ConstructL(const TRect& /*aRect*/)
 	User::Free( configList );
 
 	iEglSurface = eglCreateWindowSurface( iEglDisplay, Config, &Window(), NULL );
-	if ( iEglSurface == NULL )
+	if(iEglSurface == NULL)
 	{
 		_LIT(KCreateWindowSurfaceFailed, "eglCreateWindowSurface failed");
 		User::Panic( KCreateWindowSurfaceFailed, 0 );
 	}
 
 	iEglContext = eglCreateContext( iEglDisplay, Config, EGL_NO_CONTEXT, NULL );
-	if ( iEglContext == NULL )
+	if(iEglContext == NULL)
 	{
 		_LIT(KCreateContextFailed, "eglCreateContext failed");
 		User::Panic( KCreateContextFailed, 0 );
 	}
 
-	if ( eglMakeCurrent( iEglDisplay, iEglSurface, iEglSurface, iEglContext )
-			== EGL_FALSE )
+	if(eglMakeCurrent( iEglDisplay, iEglSurface, iEglSurface, iEglContext ) == EGL_FALSE )
 	{
 		_LIT(KMakeCurrentFailed, "eglMakeCurrent failed");
 		User::Panic( KMakeCurrentFailed, 0 );
@@ -457,24 +275,23 @@ void CSimpleCubeContainer::ConstructL(const TRect& /*aRect*/)
 	TSize size;
 	size = this->Size();
 
-	iSimpleCube = CSimpleCube::NewL( size.iWidth, size.iHeight );
+	scene = new (ELeave) TGLScene(size.iWidth, size.iHeight);
+	scene->AppInit();
 
 	iOpenGlInitialized = ETrue;
 
 	iPeriodic = CPeriodic::NewL( CActive::EPriorityIdle );
-	iPeriodic->Start( 100, 100,
-			TCallBack( CSimpleCubeContainer::DrawCallBack, this ) );
-
+	iPeriodic->Start( 100, 100, TCallBack( TGLControl::DrawCallBack, this ) );
 }
 
-CSimpleCubeContainer::~CSimpleCubeContainer()
+TGLControl::~TGLControl()
 {
 	delete iPeriodic;
 
-	if ( iSimpleCube )
+	if ( scene )
 	{
-		iSimpleCube->AppExit();
-		delete iSimpleCube;
+		scene->AppExit();
+		delete scene;
 	}
 
 	eglMakeCurrent( iEglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
@@ -483,18 +300,18 @@ CSimpleCubeContainer::~CSimpleCubeContainer()
 	eglTerminate( iEglDisplay );
 }
 
-void CSimpleCubeContainer::SizeChanged()
+void TGLControl::SizeChanged()
 {
-	if( iOpenGlInitialized && iSimpleCube )
+	if( iOpenGlInitialized && scene )
 	{
 		TSize size;
 		size = this->Size();
 
-		iSimpleCube->SetScreenSize( size.iWidth, size.iHeight );
+		scene->SetScreenSize( size.iWidth, size.iHeight );
 	}
 }
 
-void CSimpleCubeContainer::HandleResourceChange(TInt aType)
+void TGLControl::HandleResourceChange(TInt aType)
 {
 	switch( aType )
 	{
@@ -504,27 +321,27 @@ void CSimpleCubeContainer::HandleResourceChange(TInt aType)
 	}
 }
 
-void CSimpleCubeContainer::Draw(const TRect& /*aRect*/) const
+void TGLControl::Draw(const TRect& /*aRect*/) const
 {
 	CWindowGc& gc = SystemGc();
 	gc.Clear( Rect() );
 }
 
-TInt CSimpleCubeContainer::DrawCallBack( TAny* aInstance )
+TInt TGLControl::DrawCallBack( TAny* aInstance )
 {
-	CSimpleCubeContainer* instance = (CSimpleCubeContainer*) aInstance;
+	TGLControl* instance = (TGLControl*) aInstance;
 	instance->iFrame++;
 
-	instance->iSimpleCube->AppCycle( instance->iFrame );
+	instance->scene->AppCycle(instance->iFrame);
 
-	eglSwapBuffers( instance->iEglDisplay, instance->iEglSurface );
+	eglSwapBuffers(instance->iEglDisplay, instance->iEglSurface);
 
-	if ( !(instance->iFrame%100) )
+	if(!(instance->iFrame%100))
 	{
 		User::ResetInactivityTime();
 	}
 
-	if ( !(instance->iFrame%50) )
+	if(!(instance->iFrame%50))
 	{
 		User::After(0);
 	}
@@ -532,51 +349,23 @@ TInt CSimpleCubeContainer::DrawCallBack( TAny* aInstance )
 	return 0;
 }
 
-class CEikAppUi;
-class CSimpleCubeDocument : public CAknDocument
-{
-public:
-	static CSimpleCubeDocument* NewL(CEikApplication& aApp)
-	{
-		CSimpleCubeDocument* self = new (ELeave) CSimpleCubeDocument( aApp );
-		CleanupStack::PushL( self );
-		self->ConstructL();
-		CleanupStack::Pop();
-		return self;
-	}
-	virtual ~CSimpleCubeDocument()
-	{}
-
-private:
-	CSimpleCubeDocument(CEikApplication& aApp) : CAknDocument(aApp)
-	{}
-	void ConstructL()
-	{}
-
-private:
-	CEikAppUi* CreateAppUiL()
-	{
-		return new (ELeave) CSimpleCubeAppUi;
-	}
-};
-
-class CSimpleCubeAppUi : public CAknAppUi
+class TAppUi : public CAknAppUi
 {
 public:
 	void ConstructL()
 	{
 		BaseConstructL();
-		iAppContainer = new (ELeave) CSimpleCubeContainer;
-		iAppContainer->SetMopParent(this);
-		iAppContainer->ConstructL( ClientRect() );
-		AddToStackL( iAppContainer );
+		gl_control = new (ELeave) TGLControl;
+		gl_control->SetMopParent(this);
+		gl_control->ConstructL(ClientRect());
+		AddToStackL( gl_control );
 	}
-	virtual ~CSimpleCubeAppUi()
+	virtual ~TAppUi()
 	{
-		if(iAppContainer)
+		if(gl_control)
 		{
-			RemoveFromStack(iAppContainer);
-			delete iAppContainer;
+			RemoveFromStack(gl_control);
+			delete gl_control;
 		}
 	}
 
@@ -588,53 +377,62 @@ private:
 	}
 
 private:
-	CSimpleCubeContainer* iAppContainer;
+	TGLControl* gl_control;
 };
 
-void CSimpleCubeAppUi::HandleCommandL(TInt aCommand)
+void TAppUi::HandleCommandL(TInt aCommand)
 {
 	switch(aCommand)
 	{
-		case EAknSoftkeyBack:
-		case EEikCmdExit:
+	case EAknSoftkeyBack:
+	case EEikCmdExit:
 		Exit();
 		break;
-		case ESimpleCubeFlat:
-		iAppContainer->iSimpleCube->FlatShading();
+	case ESimpleCubeFlat:
+//		gl_control->scene->FlatShading();
 		break;
-		case ESimpleCubeSmooth:
-		iAppContainer->iSimpleCube->SmoothShading();
+	case ESimpleCubeSmooth:
+//		gl_control->scene->SmoothShading();
 		break;
-		case ESimpleCubeTriangles:
-		iAppContainer->iSimpleCube->TriangleMode();
+	case ESimpleCubeTriangles:
+//		gl_control->scene->TriangleMode();
 		break;
-		case ESimpleCubeTriangleFans:
-		iAppContainer->iSimpleCube->TriangleFanMode();
-		break;
+	case ESimpleCubeTriangleFans:
+//		gl_control->scene->TriangleFanMode();
+	break;
 		default:
-		break;
+	break;
 	}
 }
 
-const TUid KUidSimpleCube =
-{	0xA000821A};
+class TDoc : public CAknDocument
+{
+public:
+	TDoc(CEikApplication& aApp) : CAknDocument(aApp)	{}
+	virtual ~TDoc() {}
 
-class CSimpleCubeApp : public CAknApplication
+private:
+	CEikAppUi* CreateAppUiL() { return new (ELeave) TAppUi; }
+};
+
+class TApp : public CAknApplication
 {
 private:
-	CApaDocument* CreateDocumentL()
-	{	return CSimpleCubeDocument::NewL(*this);}
-	TUid AppDllUid() const
-	{	return KUidSimpleCube;}
+	CApaDocument* CreateDocumentL()	{ return new (ELeave) TDoc(*this); }
+	TUid AppDllUid() const { const TUid KUidSimpleCube = { 0xA000821A }; return KUidSimpleCube; }
 };
 
 LOCAL_C CApaApplication* NewApplication()
 {
-	return new CSimpleCubeApp;
+	return new TApp;
 }
+
+}
+//namespace xPlatform
+
 GLDEF_C TInt E32Main()
 {
-	return EikStart::RunApplication(NewApplication);
+	return EikStart::RunApplication(xPlatform::NewApplication);
 }
 
 #endif//_SYMBIAN
