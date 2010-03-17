@@ -31,6 +31,7 @@ bool Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nC
 	WideCharToMultiByte(CP_ACP, 0, buf_w, -1, buf, l, NULL, NULL);
 	xIo::SetResourcePath(buf);
 	Handler()->OnInit();
+	Handler()->OnOpenFile("\\program files\\unreal_speccy_portable\\resource\\illusion_test.sna");
 	return true;
 }
 void Done()
@@ -136,7 +137,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
-#define RGBX(r, g, b)	((b << 8)|(g << 3)|(r >> 3))
+#define RGBX(r, g, b)	(((r << 8)&0xf800)|((g << 3)&0x07e0)|(b >> 3))
 static const byte brightness = 200;
 static const byte bright_intensity = 55;
 
