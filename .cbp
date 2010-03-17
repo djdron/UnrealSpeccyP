@@ -75,6 +75,8 @@
 		<Unit filename="platform/dingoo/dingoo.cpp" />
 		<Unit filename="platform/gl/draw.cpp" />
 		<Unit filename="platform/glut/main_glut.cpp" />
+		<Unit filename="platform/io.cpp" />
+		<Unit filename="platform/io.h" />
 		<Unit filename="platform/oal/oal.cpp" />
 		<Unit filename="platform/platform.cpp" />
 		<Unit filename="platform/platform.h" />
