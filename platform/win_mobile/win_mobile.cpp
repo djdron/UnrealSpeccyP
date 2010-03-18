@@ -14,6 +14,7 @@ namespace xPlatform
 
 BOOL InitInstance(HINSTANCE, int);
 
+static wchar_t resource_path[1024];
 
 bool Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 {
@@ -22,7 +23,6 @@ bool Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nC
 	{
 		return false;
 	}
-	static wchar_t resource_path[1024];
 	int l = GetModuleFileName(NULL, resource_path, 1024);
 	for(; --l >= 0 && resource_path[l] != '\\'; )
 	{
@@ -260,7 +260,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				file[0] = '\0';
 				ofn.lpstrFile = file;
 				ofn.nMaxFile = 1024;
-//				ofn.lpstrInitialDir = resource_path;
+				ofn.lpstrInitialDir = resource_path;
 				ofn.lpstrFilter = L"All supported formats\0*.sna;*.tap;*.tzx;*.trd;*.scl\0\0";
 				ofn.Flags = OFN_PATHMUSTEXIST;
 				if(GetOpenFileName(&ofn))
