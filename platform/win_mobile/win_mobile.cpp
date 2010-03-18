@@ -14,6 +14,7 @@ namespace xPlatform
 
 BOOL InitInstance(HINSTANCE, int);
 
+
 bool Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 {
 	// Perform application initialization:
@@ -21,17 +22,17 @@ bool Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nC
 	{
 		return false;
 	}
-	wchar_t buf_w[1024];
-	int l = GetModuleFileName(NULL, buf_w, 1024);
-	for(; --l >= 0 && buf_w[l] != '\\'; )
+	static wchar_t resource_path[1024];
+	int l = GetModuleFileName(NULL, resource_path, 1024);
+	for(; --l >= 0 && resource_path[l] != '\\'; )
 	{
 	}
-	buf_w[++l] = '\0';
+	resource_path[++l] = '\0';
 	char buf[1024];
-	WideCharToMultiByte(CP_ACP, 0, buf_w, -1, buf, l, NULL, NULL);
+	l = WideCharToMultiByte(CP_ACP, 0, resource_path, -1, buf, 1024, NULL, NULL);
+	buf[l] = '\0';
 	xIo::SetResourcePath(buf);
 	Handler()->OnInit();
-//	Handler()->OnOpenFile("\\program files\\unreal_speccy_portable\\resource\\illusion_test.sna");
 	return true;
 }
 void Done()
@@ -40,8 +41,8 @@ void Done()
 }
 
 // Global Variables:
-HINSTANCE			g_hInst;			// current instance
-HWND				g_hWndMenuBar;		// menu bar handle
+HINSTANCE			g_hInst = NULL;				// current instance
+HWND				g_hWndMenuBar = NULL;		// menu bar handle
 
 void Loop()
 {
@@ -62,7 +63,7 @@ void Loop()
 // Forward declarations of functions included in this code module:
 ATOM			MyRegisterClass(HINSTANCE, LPTSTR);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+//INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
@@ -141,6 +142,55 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 static const byte brightness = 200;
 static const byte bright_intensity = 55;
 
+static void TranslateKey(int vk_key, int& key, dword& flags)
+{
+	switch(vk_key)
+	{
+	case VK_SHIFT:		key = 'c';	break;
+	case VK_MENU:		key = 's';	break;
+	case VK_RETURN:		key = 'e';	break;
+	case VK_TAB:
+		key = '\0';
+		flags |= KF_ALT;
+		flags |= KF_SHIFT;
+		break;
+	case VK_BACK:
+		key = '0';
+		flags |= KF_SHIFT;
+		break;
+	case VK_LEFT:		key = 'l';	break;
+	case VK_RIGHT:		key = 'r';	break;
+	case VK_UP:			key = 'u';	break;
+	case VK_DOWN:		key = 'd';	break;
+	case VK_CONTROL:	key = 'f';	flags &= ~KF_CTRL; break;
+	}
+	switch(key)
+	{
+	case '\'':
+		if(flags&KF_SHIFT)
+		{
+			key = 'P';
+			flags |= KF_ALT;
+			flags &= ~KF_SHIFT;
+		}
+		break;
+	case ',':	{ key = 'N'; flags |= KF_ALT; } break;
+	case '.':	{ key = 'M'; flags |= KF_ALT; } break;
+	case '!':	key = '1';		break;
+	case '@':	key = '2';		break;
+	case '#':	key = '3';		break;
+	case '$':	key = '4';		break;
+	case '%':	key = '5';		break;
+	case '^':	key = '6';		break;
+	case '&':	key = '7';		break;
+	case '*':	key = '8';		break;
+	case '(':	key = '9';		break;
+	case ')':	key = '0';		break;
+	}
+	if(key > 255 || key < 32)
+		key = 0;
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int wmId, wmEvent;
@@ -148,6 +198,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static HDC hdc_mem = NULL;
 	static HBITMAP bmp_mem = NULL;
 	static word* tex = NULL;
+
+	enum eTimerId { TM_UPDATE = 1, TM_OPENFILE };
 
 	switch (message) 
 	{
@@ -169,31 +221,58 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hWnd, message, wParam, lParam);
 		break;
 	case WM_CREATE:
-		SHMENUBARINFO mbi;
-
-		memset(&mbi, 0, sizeof(SHMENUBARINFO));
-		mbi.cbSize     = sizeof(SHMENUBARINFO);
-		mbi.hwndParent = hWnd;
-		mbi.nToolBarId = 0;//IDR_MENU;
-		mbi.hInstRes   = g_hInst;
-
-		if (!SHCreateMenuBar(&mbi)) 
-		{
-			g_hWndMenuBar = NULL;
-		}
-		else
-		{
-			g_hWndMenuBar = mbi.hwndMB;
-		}
-
+// 		{
+// 			SHMENUBARINFO mbi;
+// 			memset(&mbi, 0, sizeof(SHMENUBARINFO));
+// 			mbi.cbSize     = sizeof(SHMENUBARINFO);
+// 			mbi.hwndParent = hWnd;
+// 			mbi.nToolBarId = 0;//IDR_MENU;
+// 			mbi.hInstRes   = g_hInst;
+// 
+// 			if (!SHCreateMenuBar(&mbi)) 
+// 			{
+// 				g_hWndMenuBar = NULL;
+// 			}
+// 			else
+// 			{
+// 				g_hWndMenuBar = mbi.hwndMB;
+// 			}
+// 		}
 		// Initialize the shell activate info structure
 		memset(&s_sai, 0, sizeof (s_sai));
 		s_sai.cbSize = sizeof (s_sai);
-		SetTimer(hWnd, 1, 20, NULL);
+		SetTimer(hWnd, TM_UPDATE, 20, NULL);
 		break;
 	case WM_TIMER:
-		InvalidateRect(hWnd, NULL, false);
-		return TRUE;
+		switch(wParam)
+		{
+		case TM_UPDATE:
+			InvalidateRect(hWnd, NULL, false);
+			return TRUE;
+		case TM_OPENFILE:
+			KillTimer(hWnd, TM_OPENFILE);
+			{
+				OPENFILENAME ofn;
+				memset(&ofn, 0, sizeof(ofn));
+				ofn.lStructSize	= sizeof(ofn);
+				ofn.hwndOwner = hWnd;
+				wchar_t file[1024];
+				file[0] = '\0';
+				ofn.lpstrFile = file;
+				ofn.nMaxFile = 1024;
+//				ofn.lpstrInitialDir = resource_path;
+				ofn.lpstrFilter = L"All supported formats\0*.sna;*.tap;*.tzx;*.trd;*.scl\0\0";
+				ofn.Flags = OFN_PATHMUSTEXIST;
+				if(GetOpenFileName(&ofn))
+				{
+					char buf[1024];
+					WideCharToMultiByte(CP_ACP, 0, file, -1, buf, 1023, NULL, NULL);
+					Handler()->OnOpenFile(buf);
+				}
+			}
+			return TRUE;
+		}
+		break;
 	case WM_ERASEBKGND:
 		return FALSE;
 	case WM_PAINT:
@@ -237,6 +316,40 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 
+	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
+		{
+			int vk_key = (int)wParam;
+			int key = toupper(MapVirtualKey(vk_key, 2));
+			dword flags = KF_DOWN;
+			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
+			if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
+			TranslateKey(vk_key, key, flags);
+			Handler()->OnKey(key, flags);
+			Handler()->OnLoop();
+		}
+		break;
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		{
+			int vk_key = (int)wParam;
+			int key = toupper(MapVirtualKey(vk_key, 2));
+			if(key == ']')
+			{
+				SetTimer(hWnd, TM_OPENFILE, 1, NULL);
+			}
+			else
+			{
+				dword flags = 0;
+				if(GetKeyState(VK_MENU))	flags |= KF_ALT;
+				if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
+				TranslateKey(vk_key, key, flags);
+				Handler()->OnKey(key, 0);
+				Handler()->OnLoop();
+			}
+		}
+		break;
+
 	case WM_DESTROY:
 		if(hdc_mem)
 		{
@@ -262,36 +375,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 // Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-	case WM_INITDIALOG:
-		{
-			// Create a Done button and size it.  
-			SHINITDLGINFO shidi;
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-		}
-		return (INT_PTR)TRUE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK)
-		{
-			EndDialog(hDlg, LOWORD(wParam));
-			return TRUE;
-		}
-		break;
-
-	case WM_CLOSE:
-		EndDialog(hDlg, message);
-		return TRUE;
-
-	}
-	return (INT_PTR)FALSE;
-}
+// INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+// {
+// 	switch (message)
+// 	{
+// 	case WM_INITDIALOG:
+// 		{
+// 			// Create a Done button and size it.  
+// 			SHINITDLGINFO shidi;
+// 			shidi.dwMask = SHIDIM_FLAGS;
+// 			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
+// 			shidi.hDlg = hDlg;
+// 			SHInitDialog(&shidi);
+// 		}
+// 		return (INT_PTR)TRUE;
+// 
+// 	case WM_COMMAND:
+// 		if (LOWORD(wParam) == IDOK)
+// 		{
+// 			EndDialog(hDlg, LOWORD(wParam));
+// 			return TRUE;
+// 		}
+// 		break;
+// 
+// 	case WM_CLOSE:
+// 		EndDialog(hDlg, message);
+// 		return TRUE;
+// 
+// 	}
+// 	return (INT_PTR)FALSE;
+// }
 
 }
 //namespace xPlatform
