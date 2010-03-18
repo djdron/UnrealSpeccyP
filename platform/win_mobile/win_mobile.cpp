@@ -142,8 +142,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 static const byte brightness = 200;
 static const byte bright_intensity = 55;
 
-static void TranslateKey(int vk_key, int& key, dword& flags)
+static void TranslateKey(int vk_key, char& key, dword& flags)
 {
+	if(isascii(key) && islower(key))
+		key = toupper(key);
 	switch(vk_key)
 	{
 	case VK_SHIFT:		key = 'c';	break;
@@ -320,7 +322,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYDOWN:
 		{
 			int vk_key = (int)wParam;
-			int key = toupper(MapVirtualKey(vk_key, 2));
+			char key = MapVirtualKey(vk_key, 2)&0xffff;
 			dword flags = KF_DOWN;
 			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
 			if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
@@ -333,7 +335,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYUP:
 		{
 			int vk_key = (int)wParam;
-			int key = toupper(MapVirtualKey(vk_key, 2));
+			char key = MapVirtualKey(vk_key, 2)&0xffff;
 			if(key == ']')
 			{
 				SetTimer(hWnd, TM_OPENFILE, 1, NULL);
