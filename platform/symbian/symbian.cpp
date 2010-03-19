@@ -18,7 +18,14 @@ namespace xPlatform
 
 void Init()
 {
-    xIo::SetResourcePath("e:\\usp\\");
+    TFileName appPath;
+    CEikonEnv::Static()->FsSession().PrivatePath(appPath);
+    appPath.Insert(0, CEikonEnv::Static()->EikAppUi()->Application()->AppFullName().Left(2));
+    char buf[256];
+    buf[appPath.Length()] = '\0';
+    TPtr8 ptr((TUint8*)buf, 256, 256);
+    appPath.Copy(ptr);
+    xIo::SetResourcePath(buf);
     Handler()->OnInit();
 }
 void Done()

@@ -14,6 +14,6 @@ IMG_TARGETS = $(DIST_PATH)/$(PROJECT_NAME).mif
 IMG_ARGS = /c32
 RSS_TARGETS = $(DIST_PATH)/$(PROJECT_NAME).rsc $(DIST_PATH)/$(PROJECT_NAME)_reg.rsc
 LANG_MACRO = LANGUAGE_SC
-SYSLIBRARY = euser.lib estlib.lib avkon.lib libGLES_CM.lib eikcore.lib cone.lib apparc.lib ws32.lib fbscli.lib
+SYSLIBRARY = euser.lib estlib.lib avkon.lib libGLES_CM.lib eikcore.lib cone.lib apparc.lib ws32.lib fbscli.lib efsrv.lib
 #CERT = /c/cert/selfsigned.cer
 #KEY = /c/cert/selfsigned.key
