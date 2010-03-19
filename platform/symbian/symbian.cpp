@@ -51,6 +51,7 @@ private:
 	CCoeControl* ComponentControl(TInt aIndex) const { return NULL; }
 	void Draw(const TRect& aRect) const;
 	void HandleControlEventL(CCoeControl* aControl,TCoeEvent aEventType) {}
+	TKeyResponse OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType);
 protected:
 	CPeriodic* iPeriodic;
 	CFbsBitmap* bitmap;
@@ -136,6 +137,59 @@ TInt TDCControl::TimerCallBack( TAny* aInstance )
 {
 	((TDCControl*)aInstance)->OnTimer();
 	return 0;
+}
+static char TranslateKey(const TKeyEvent& aKeyEvent)
+{
+    switch(aKeyEvent.iScanCode)
+    {
+    case EStdKeyDevice3:		return 'e';
+    case EStdKeyLeftArrow:		return 'l';
+    case EStdKeyRightArrow:		return 'r';
+    case EStdKeyUpArrow:		return 'u';
+    case EStdKeyDownArrow:      return 'd';
+    default : break;
+    }
+    return 0;
+}
+TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)
+{
+	switch(aKeyEvent.iScanCode)
+	{
+	case EStdKeyBackspace:
+		Handler()->OnAction(A_RESET);
+		break;
+	default: break;
+	}
+    char ch = TranslateKey(aKeyEvent);
+    if(!ch)
+        return EKeyWasNotConsumed;
+    switch(aType)
+    {
+    case EEventKeyDown:
+    case EEventKey:
+        Handler()->OnKey(ch, KF_DOWN);
+        switch(ch)
+        {
+        case 'u':   Handler()->OnMouse(MA_MOVE, 0, +5); break;
+        case 'd':   Handler()->OnMouse(MA_MOVE, 0, -5); break;
+        case 'l':   Handler()->OnMouse(MA_MOVE, -5, 0); break;
+        case 'r':   Handler()->OnMouse(MA_MOVE, +5, 0); break;
+        case 'e':   Handler()->OnMouse(MA_BUTTON, 0, 1); break;
+        default : break;
+        }
+        break;
+    case EEventKeyUp:
+        Handler()->OnKey(ch, 0);
+        switch(ch)
+        {
+        case 'e':   Handler()->OnMouse(MA_BUTTON, 0, 0); break;
+        default : break;
+        }
+        break;
+    default:
+        break;
+    }
+    return EKeyWasConsumed;
 }
 
 
