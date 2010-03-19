@@ -8,7 +8,7 @@
 #include <eikstart.h>
 #include <aknapp.h>
 #include <aknappui.h>
-#include <GLES/egl.h>
+//#include <GLES/egl.h>
 #include <akndoc.h>
 
 #include <unreal_speccy_portable.rsg>
@@ -27,6 +27,8 @@ void Done()
     Handler()->OnDone();
 }
 
+// OpenGL method with update textures is too slow
+/*
 class TGLScene : public CBase
 {
 public:
@@ -41,110 +43,112 @@ public:
 private:
 	TUint width;
 	TUint height;
+	GLuint textures[2];
 };
 
-/** Vertex coordinates */
-static const GLbyte vertices[4 * 2] =
+static const GLushort vertices[4 * 2] =
 {
 	0, 0,
-	0, 1,
-	1, 1,
 	1, 0,
+	1, 1,
+	0, 1,
 };
-
-static const GLubyte uvs[4 * 2] =
+static const GLushort uvs[4 * 2] =
 {
-    0, 0,
-    0, 1,
-    1, 1,
-    1, 0,
+	0, 0,
+	1, 0,
+	1, 1,
+	0, 1,
 };
-
-/** Colors for vertices (Red, Green, Blue, Alpha). */
-//static const GLubyte colors[4 * 4] =
-//{
-//	255 ,255, 255, 255,
-//	255 ,255, 255, 255,
-//	255 ,255, 255, 255,
-//	255 ,255, 255, 255,
-//};
-
-/**
- * Indices for drawing the triangles.
- * The color of the triangle is determined by
- * the color of the last vertex of the triangle.
- */
-static const GLubyte triangles[2 * 3] =
+static const GLubyte triangles[4 * 3] =
 {
-	0,1,2,
-	0,2,3,
+	0, 1, 2,
+	0, 2, 3,
 };
 
 void TGLScene::AppInit( void )
 {
     Init();
-	glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2, GL_BYTE, 0, vertices);
-//	glEnableClientState(GL_COLOR_ARRAY);
-//	glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+	glVertexPointer(2, GL_SHORT, 0, vertices);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_BYTE, 0, uvs);
-    glShadeModel(GL_FLAT);
+	glTexCoordPointer(2, GL_SHORT, 0, uvs);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+//	glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+	glOrthof(0.0f, 2.0f, 1.0f, 0.0f, -1.0f, 1.0f);
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glGenTextures(2, textures);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+
 }
 void TGLScene::AppExit()
 {
     Done();
 }
 
-#define RGBX(r, g, b)	((b << 16)|(g << 8)|r)
+#define RGBX(r, g, b) ((b << 16)|(g << 8)|r)
 
-static dword tex[512*256];
-void TGLScene::AppCycle(TInt aFrame)
+static dword tex[256*256];
+static dword* GetTexture(int i, byte* data)
 {
-    Handler()->OnLoop();
-
+	int x_offset = i*160;
     const byte brightness = 200;
     const byte bright_intensity = 55;
-
-	byte* data = (byte*)Handler()->VideoData();
-	glViewport(0, 0, width, height);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	for(int y = 0; y < 240; ++y)
 	{
-		for(int x = 0; x < 320; ++x)
+		for(int x = 0; x < 160; ++x)
 		{
 			byte r, g, b;
-			byte c = data[y*320+x];
+			byte c = data[y*320 + x + x_offset];
 			byte i = c&8 ? brightness + bright_intensity : brightness;
 			b = c&1 ? i : 0;
 			r = c&2 ? i : 0;
 			g = c&4 ? i : 0;
-			dword* p = &tex[y*512+x];
-			*p++ = RGBX(r, g ,b);
+			dword* p = &tex[y*256 + x];
+			*p = RGBX(r, g ,b);
 		}
 	}
+	return tex;
+}
+void TGLScene::AppCycle(TInt aFrame)
+{
+	Handler()->OnLoop();
+
+	byte* data = (byte*)Handler()->VideoData();
+
+    glViewport(0, 0, width, height);
+   	glClearColor(0.0, 0.0, 0.0, 0.0);
+   	glClear(GL_COLOR_BUFFER_BIT);
+
+	glViewport(0, 0, 320, 240);
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
-    glScalef(320.0f/512.0f, 240.0f/256.0f, 1.0f);
-
-	glEnable(GL_TEXTURE_2D);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 512, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrthof(0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f);
+    glScalef(160.0f/256.0f, 240.0f/256.0f, 1.0f);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, GetTexture(0, data));
 	glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_BYTE, triangles);
-//	glFlush();
+
+	glTranslatef(1.0f, 0.0f, 0.0f);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, GetTexture(1, data));
+	glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_BYTE, triangles);
 }
 
 class TGLControl : public CCoeControl, MCoeControlObserver
@@ -175,7 +179,7 @@ public:
 	TGLScene* scene;
 };
 
-void TGLControl::ConstructL(const TRect& /*aRect*/)
+void TGLControl::ConstructL(const TRect&)
 {
 	iOpenGlInitialized = EFalse;
 	CreateWindowL();
@@ -315,13 +319,13 @@ void TGLControl::HandleResourceChange(TInt aType)
 {
 	switch( aType )
 	{
-		case KEikDynamicLayoutVariantSwitch:
+	case KEikDynamicLayoutVariantSwitch:
 		SetExtentToWholeScreen();
 		break;
 	}
 }
 
-void TGLControl::Draw(const TRect& /*aRect*/) const
+void TGLControl::Draw(const TRect&) const
 {
 	CWindowGc& gc = SystemGc();
 	gc.Clear( Rect() );
@@ -348,6 +352,113 @@ TInt TGLControl::DrawCallBack( TAny* aInstance )
 
 	return 0;
 }
+*/
+
+class TDCControl : public CCoeControl, MCoeControlObserver
+{
+public:
+	void ConstructL(const TRect& aRect);
+	TDCControl() : frame(0) {}
+	virtual ~TDCControl();
+
+public:
+	static TInt TimerCallBack(TAny* aInstance);
+
+private:
+	void OnTimer();
+	void Update();
+	void HandleResourceChange(TInt aType);
+	TInt CountComponentControls() const { return 0; }
+	CCoeControl* ComponentControl(TInt aIndex) const { return NULL; }
+	void Draw(const TRect& aRect) const;
+	void HandleControlEventL(CCoeControl* aControl,TCoeEvent aEventType) {}
+protected:
+	CPeriodic* iPeriodic;
+	CFbsBitmap* bitmap;
+	int frame;
+};
+void TDCControl::ConstructL(const TRect& /*aRect*/)
+{
+	CreateWindowL();
+	SetExtentToWholeScreen();
+	ActivateL();
+    Init();
+	bitmap = new CFbsBitmap;//(iEikonEnv->WsSession());
+	bitmap->Create(TSize(320, 240), EColor16MU);
+	iPeriodic = CPeriodic::NewL( CActive::EPriorityIdle );
+	iPeriodic->Start(100, 100, TCallBack( TDCControl::TimerCallBack, this));
+}
+TDCControl::~TDCControl()
+{
+	delete iPeriodic;
+	delete bitmap;
+	Done();
+}
+void TDCControl::Draw(const TRect& /*aRect*/) const
+{
+	CWindowGc& gc = SystemGc();
+	gc.SetBrushColor(0);
+	gc.Clear(Rect());
+	if(bitmap)
+		gc.BitBlt(TPoint(0, 0), bitmap);
+}
+void TDCControl::HandleResourceChange(TInt aType)
+{
+	switch( aType )
+	{
+	case KEikDynamicLayoutVariantSwitch:
+		SetExtentToWholeScreen();
+		break;
+	}
+}
+#define BGRX(r, g, b) ((r << 16)|(g << 8)|b)
+
+void TDCControl::Update()
+{
+	if(!bitmap)
+		return;
+	Handler()->OnLoop();
+	byte* data = (byte*)Handler()->VideoData();
+
+//	bitmap->BeginDataAccess();
+	bitmap->LockHeap();
+	dword* tex = (dword*)bitmap->DataAddress();
+    const byte brightness = 200;
+    const byte bright_intensity = 55;
+	for(int y = 0; y < 240; ++y)
+	{
+		for(int x = 0; x < 320; ++x)
+		{
+			byte r, g, b;
+			byte c = data[y*320 + x];
+			byte i = c&8 ? brightness + bright_intensity : brightness;
+			b = c&1 ? i : 0;
+			r = c&2 ? i : 0;
+			g = c&4 ? i : 0;
+			dword* p = &tex[y*320 + x];
+			*p = BGRX(r, g ,b);
+		}
+	}
+	bitmap->UnlockHeap();
+//	bitmap->EndDataAccess();
+}
+void TDCControl::OnTimer()
+{
+	++frame;
+	Update();
+	DrawDeferred();
+
+	if(!(frame%100))
+		User::ResetInactivityTime();
+	if(!(frame%50))
+		User::After(0);
+}
+TInt TDCControl::TimerCallBack( TAny* aInstance )
+{
+	((TDCControl*)aInstance)->OnTimer();
+	return 0;
+}
+
 
 class TAppUi : public CAknAppUi
 {
@@ -355,7 +466,7 @@ public:
 	void ConstructL()
 	{
 		BaseConstructL();
-		gl_control = new (ELeave) TGLControl;
+		gl_control = new (ELeave) TDCControl;
 		gl_control->SetMopParent(this);
 		gl_control->ConstructL(ClientRect());
 		AddToStackL( gl_control );
@@ -377,7 +488,7 @@ private:
 	}
 
 private:
-	TGLControl* gl_control;
+	TDCControl* gl_control;
 };
 
 void TAppUi::HandleCommandL(TInt aCommand)
