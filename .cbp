@@ -83,6 +83,7 @@
 		<Unit filename="platform/symbian/division.cpp" />
 		<Unit filename="platform/symbian/symbian.cpp" />
 		<Unit filename="platform/symbian/symbian_gles.cpp" />
+		<Unit filename="platform/win_mobile/win_mobile.cpp" />
 		<Unit filename="platform/wxwidgets/main_wx.cpp" />
 		<Unit filename="snapshot.cpp" />
 		<Unit filename="snapshot.h" />
