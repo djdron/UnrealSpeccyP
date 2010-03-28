@@ -23,7 +23,7 @@ eWD1793::eWD1793(eSpeccy* _speccy, eRom* _rom) : speccy(_speccy), rom(_rom)
 //-----------------------------------------------------------------------------
 void eWD1793::Init()
 {
-	fdd = &fdds[0];
+	fdd = fdds;
 }
 //=============================================================================
 //	eWD1793::Open
@@ -427,7 +427,7 @@ void eWD1793::Process(int tact)
 					track += direction;
 				}
 				int cyl = fdd->Cyl() + direction;
-				if(cyl >= 255)
+				if(cyl < 0)
 				{
 					cyl = 0;
 				}
