@@ -9,6 +9,8 @@
 #include <aknapp.h>
 #include <aknappui.h>
 #include <akndoc.h>
+#include <akncommondialogs.h>
+#include <caknfileselectiondialog.h>
 
 #include <unreal_speccy_portable.rsg>
 #include "../../symbian/unreal_speccy_portable.hrh"
@@ -40,12 +42,15 @@ public:
 	TDCControl() : frame(0) {}
 	virtual ~TDCControl();
 
+	void Reset();
+	void OpenFile();
+
 public:
 	static TInt TimerCallBack(TAny* aInstance);
 
 private:
 	void OnTimer();
-	void Update();
+	void Update() const;
 	void HandleResourceChange(TInt aType);
 	TInt CountComponentControls() const { return 0; }
 	CCoeControl* ComponentControl(TInt aIndex) const { return NULL; }
@@ -80,7 +85,10 @@ void TDCControl::Draw(const TRect& /*aRect*/) const
 	gc.SetBrushColor(0);
 	gc.Clear(Rect());
 	if(bitmap)
+	{
+		Update();
 		gc.BitBlt(TPoint(0, 0), bitmap);
+	}
 }
 void TDCControl::HandleResourceChange(TInt aType)
 {
@@ -93,15 +101,12 @@ void TDCControl::HandleResourceChange(TInt aType)
 }
 #define BGRX(r, g, b) ((r << 16)|(g << 8)|b)
 
-void TDCControl::Update()
+void TDCControl::Update() const
 {
-	if(!bitmap)
-		return;
 	Handler()->OnLoop();
 	byte* data = (byte*)Handler()->VideoData();
 
-//	bitmap->BeginDataAccess();
-//	bitmap->LockHeap();
+	bitmap->LockHeap();
 	dword* tex = (dword*)bitmap->DataAddress();
     const byte brightness = 200;
     const byte bright_intensity = 55;
@@ -119,13 +124,11 @@ void TDCControl::Update()
 			*p = BGRX(r, g ,b);
 		}
 	}
-//	bitmap->UnlockHeap();
-//	bitmap->EndDataAccess();
+	bitmap->UnlockHeap();
 }
 void TDCControl::OnTimer()
 {
 	++frame;
-	Update();
 	DrawDeferred();
 
 	if(!(frame%100))
@@ -153,13 +156,6 @@ static char TranslateKey(const TKeyEvent& aKeyEvent)
 }
 TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)
 {
-	switch(aKeyEvent.iScanCode)
-	{
-	case EStdKeyBackspace:
-		Handler()->OnAction(A_RESET);
-		break;
-	default: break;
-	}
     char ch = TranslateKey(aKeyEvent);
     if(!ch)
         return EKeyWasNotConsumed;
@@ -190,6 +186,24 @@ TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
         break;
     }
     return EKeyWasConsumed;
+}
+void TDCControl::Reset()
+{
+	Handler()->OnAction(A_RESET);
+}
+void TDCControl::OpenFile()
+{
+	TFileName openFileName;
+	if(AknCommonDialogs::RunSelectDlgLD(openFileName, R_FILE_SELECTION_DIALOG))
+	{
+		char buf[256];
+		TPtr8 ptr((TUint8*)buf, 256);
+		openFileName.Copy(ptr);
+		ptr.ZeroTerminate();
+		Handler()->OnOpenFile(buf);
+//		Handler()->OnOpenFile("e:\\usp\\shock.sna");
+//		Handler()->OnOpenFile("e:\\usp\\zx-format4_5.trd");
+	}
 }
 
 
@@ -232,18 +246,12 @@ void TAppUi::HandleCommandL(TInt aCommand)
 	case EEikCmdExit:
 		Exit();
 		break;
-	case ESimpleCubeFlat:
-//		gl_control->scene->FlatShading();
+	case EReset:
+		gl_control->Reset();
 		break;
-	case ESimpleCubeSmooth:
-//		gl_control->scene->SmoothShading();
+	case EOpenFile:
+		gl_control->OpenFile();
 		break;
-	case ESimpleCubeTriangles:
-//		gl_control->scene->TriangleMode();
-		break;
-	case ESimpleCubeTriangleFans:
-//		gl_control->scene->TriangleFanMode();
-	break;
 		default:
 	break;
 	}

@@ -1,18 +1,3 @@
-/*
-* ==============================================================================
-*  Name        : SimpleCube_reg.rss
-*  Part of     : OpenGLEx / SimpleCube
-*  Interface   : 
-*  Description : 
-*  Version     : 
-*
-*  Copyright (c) 2004-2006 Nokia Corporation.
-*  This material, including documentation and any related 
-*  computer programs, is protected by copyright controlled by 
-*  Nokia Corporation.
-* ==============================================================================
-*/
-
 #include <appinfo.rh>
 #include <unreal_speccy_portable.rsg>
 
@@ -22,13 +7,11 @@ UID2 KUidAppRegistrationResourceFile
 UID3 0xA000821A 
 
 RESOURCE APP_REGISTRATION_INFO
-    {
+{
     app_file                  = "unreal_speccy_portable";
     localisable_resource_file = "\\resource\\apps\\unreal_speccy_portable";
-    localisable_resource_id   = R_SIMPLECUBE_LOCALISABLE_APP_INFO;
+    localisable_resource_id   = R_LOCALISABLE_APP_INFO;
 
     embeddability             = KAppNotEmbeddable;
     newfile                   = KAppDoesNotSupportNewFile;
-    }
-
-// End of File
+}

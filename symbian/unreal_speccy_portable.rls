@@ -1,31 +1,12 @@
-/*
-* ==============================================================================
-*  Name        : SimpleCube.rls
-*  Part of     : OpenGLEx / SimpleCube
-*  Interface   : 
-*  Description : 
-*  Version     : 
-*
-*  Copyright (c) 2004-2006 Nokia Corporation.
-*  This material, including documentation and any related 
-*  computer programs, is protected by copyright controlled by 
-*  Nokia Corporation.
-* ==============================================================================
-*/
-
 // LOCALISATION STRINGS
 
 rls_string STRING_app_caption_string       "UnrealSpeccyPortable"
 rls_string STRING_app_short_caption_string "USP"
 
-rls_string STRING_simplecube_exit          "Exit"
+rls_string STRING_exit          "Exit"
 
-rls_string STRING_simplecube_shade         "Shading mode"
-rls_string STRING_simplecube_flat          "Flat"
-rls_string STRING_simplecube_smooth        "Smooth"
-
-rls_string STRING_simplecube_draw          "Drawing mode"
-rls_string STRING_simplecube_triangles     "Triangles"
-rls_string STRING_simplecube_trianglefans  "Triangle fans"
+rls_string STRING_reset         "Reset"
+rls_string STRING_open_file     "Open File"
+rls_string STRING_select_file   "Select File"
 
 // End of File
