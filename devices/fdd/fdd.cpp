@@ -261,7 +261,8 @@ void eFdd::CreateTrd()
 		return;
 	s->data[0xe2] = 1;					// first free track
 	s->data[0xe3] = 0x16;				// 80T,DS
-	*(short*)(s->data + 0xe5) = 2544;	// free sec
+	s->data[0xe5] = 0xF0;				// free sec (2544)
+	s->data[0xe6] = 0x09;
 	s->data[0xe7] = 0x10;				// trdos flag
 	WriteSector(0, 0, 9, s->data);		// update sector CRC
 }

@@ -33,6 +33,8 @@ bool Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nC
 	buf[l] = '\0';
 	xIo::SetResourcePath(buf);
 	Handler()->OnInit();
+
+//	Handler()->OnOpenFile(xIo::ResourcePath("images/zx-format4_5.trd"));
 	return true;
 }
 void Done()
