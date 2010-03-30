@@ -11,7 +11,7 @@ const int trdos_interleave = 1;
 //-----------------------------------------------------------------------------
 bool eUdi::eTrack::Marker(int pos) const
 {
-	return id[pos / 8] & (1 << (pos & 7));
+	return (id[pos / 8] & (1 << (pos & 7))) != 0;
 }
 //=============================================================================
 //	eUdi::eTrack::Write
@@ -130,7 +130,16 @@ void eFdd::Seek(int _cyl, int _side)
 	const int FDD_RPS = 5; // rotation speed
 	ts_byte = Z80FQ / (Track().data_len * FDD_RPS);
 }
-#define SWAP_WORD(x) ((((x) & 0xff) << 8) | ((word)(x) >> 8))
+// data misalignment on ARM fighting functions
+static inline word SectorDataW(eUdi::eTrack::eSector* s, int offset)
+{
+	return s->data[offset] | word(s->data[offset + 1]) << 8;
+}
+static inline void SectorDataW(eUdi::eTrack::eSector* s, int offset, word d)
+{
+	s->data[offset] = d & 0xff;
+	s->data[offset + 1] = d >> 8;
+}
 //=============================================================================
 //	eFdd::Crc
 //-----------------------------------------------------------------------------
@@ -186,7 +195,7 @@ void eFdd::Format()
 		Write(pos++, 1); //256byte
 		word crc = Crc(Track().data + pos - 5, 5);
 		Write(pos++, crc >> 8);
-		Write(pos++, crc);
+		Write(pos++, (byte)crc);
 
 		WriteBlock(pos, 0x4e, 22);		//gap2
 		WriteBlock(pos, 0, 12);			//sync
@@ -197,7 +206,7 @@ void eFdd::Format()
 		crc = Crc(Track().data + pos - 1, len + 1);
 		pos += len;
 		Write(pos++, crc >> 8);
-		Write(pos++, crc);
+		Write(pos++, (byte)crc);
 	}
 	if(pos > Track().data_len)
 	{
@@ -231,7 +240,7 @@ bool eFdd::WriteSector(int cyl, int side, int sec, byte* data)
 		return false;
 	int len = s->Len();
 	memcpy(s->data, data, len);
-	*(word*)(s->data + len) = SWAP_WORD(Crc(s->data - 1, len + 1));
+	SectorDataW(s, len, SWAP_WORD(Crc(s->data - 1, len + 1)));
 	return true;
 }
 //=============================================================================
@@ -261,8 +270,7 @@ void eFdd::CreateTrd()
 		return;
 	s->data[0xe2] = 1;					// first free track
 	s->data[0xe3] = 0x16;				// 80T,DS
-	s->data[0xe5] = 0xF0;				// free sec (2544)
-	s->data[0xe6] = 0x09;
+	SectorDataW(s, 0xe5, 2544);			// free sec
 	s->data[0xe7] = 0x10;				// trdos flag
 	WriteSector(0, 0, 9, s->data);		// update sector CRC
 }
@@ -279,16 +287,16 @@ bool eFdd::AddFile(byte* hdr, byte* data)
 	eUdi::eTrack::eSector* dir = GetSector(0, 0, 1 + pos / 0x100);
 	if(!dir)
 		return false;
-	if(*(word*)(s->data + 0xe5) < len) //disk full
+	if(SectorDataW(s, 0xe5) < len) //disk full
 		return false;
 	memcpy(dir->data + (pos & 0xff), hdr, 14);
-	*(word*)(dir->data + (pos & 0xff) + 14) = *(word*)(s->data + 0xe1);
+	SectorDataW(dir, (pos & 0xff) + 14, SectorDataW(s, 0xe1));
 	WriteSector(0, 0, 1 + pos / 0x100, dir->data);
 
 	pos = s->data[0xe1] + 16 * s->data[0xe2];
 	s->data[0xe1] = (pos + len) & 0x0f, s->data[0xe2] = (pos + len) >> 4;
 	s->data[0xe4]++;
-	*(word*)(s->data + 0xe5) -= len;
+	SectorDataW(s, 0xe5, SectorDataW(s, 0xe5) - len);
 	WriteSector(0, 0, 9, s->data);
 
 	// goto next track. s8 become invalid
@@ -315,7 +323,7 @@ bool eFdd::ReadScl(byte* snbuf)
 	if(size > 2544)
 	{
 		eUdi::eTrack::eSector* s = GetSector(0, 0, 9);
-		*(word*)(s->data + 0xe5) = size;	// free sec
+		SectorDataW(s, 0xe5, size);			// free sec
 		WriteSector(0, 0, 9, s->data);		// update sector CRC
 	}
 	byte* data = snbuf + 9 + 14 * snbuf[8];

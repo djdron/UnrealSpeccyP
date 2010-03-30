@@ -15,6 +15,7 @@ namespace xPlatform
 BOOL InitInstance(HINSTANCE, int);
 
 static wchar_t resource_path[1024];
+static bool handler_inited = false;
 
 bool Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 {
@@ -33,13 +34,14 @@ bool Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nC
 	buf[l] = '\0';
 	xIo::SetResourcePath(buf);
 	Handler()->OnInit();
-
-//	Handler()->OnOpenFile(xIo::ResourcePath("images/zx-format4_5.trd"));
+	handler_inited = true;
+//	Handler()->OnOpenFile(xIo::ResourcePath("images/7reality.scl"));
 	return true;
 }
 void Done()
 {
 	Handler()->OnDone();
+	handler_inited = false;
 }
 
 // Global Variables:
@@ -280,6 +282,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_ERASEBKGND:
 		return FALSE;
 	case WM_PAINT:
+		if(handler_inited)
 		{
 			Handler()->OnLoop();
 			PAINTSTRUCT ps;
