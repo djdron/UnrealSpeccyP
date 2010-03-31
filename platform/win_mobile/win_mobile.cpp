@@ -147,8 +147,10 @@ static const byte bright_intensity = 55;
 
 static void TranslateKey(int vk_key, char& key, dword& flags)
 {
-	if(isascii(key) && islower(key))
-		key = toupper(key);
+	if(vk_key >= '0' && vk_key <= '9')
+		key = vk_key;
+	else if(vk_key >= 'A' && vk_key <= 'Z')
+		key = vk_key;
 	switch(vk_key)
 	{
 	case VK_SHIFT:		key = 'c';	break;
@@ -168,10 +170,7 @@ static void TranslateKey(int vk_key, char& key, dword& flags)
 	case VK_UP:			key = 'u';	break;
 	case VK_DOWN:		key = 'd';	break;
 	case VK_CONTROL:	key = 'f';	flags &= ~KF_CTRL; break;
-	}
-	switch(key)
-	{
-	case '\'':
+	case 0xDE://VK_OEM_7:
 		if(flags&KF_SHIFT)
 		{
 			key = 'P';
@@ -179,21 +178,15 @@ static void TranslateKey(int vk_key, char& key, dword& flags)
 			flags &= ~KF_SHIFT;
 		}
 		break;
-	case ',':	{ key = 'N'; flags |= KF_ALT; } break;
-	case '.':	{ key = 'M'; flags |= KF_ALT; } break;
-	case '!':	key = '1';		break;
-	case '@':	key = '2';		break;
-	case '#':	key = '3';		break;
-	case '$':	key = '4';		break;
-	case '%':	key = '5';		break;
-	case '^':	key = '6';		break;
-	case '&':	key = '7';		break;
-	case '*':	key = '8';		break;
-	case '(':	key = '9';		break;
-	case ')':	key = '0';		break;
+	case 0xBC://VK_OEM_COMMA:
+		key = 'N';
+		flags |= KF_ALT;
+		break;
+	case 0xBE://VK_OEM_PERIOD:
+		key = 'M';
+		flags |= KF_ALT;
+		break;
 	}
-	if(key > 255 || key < 32)
-		key = 0;
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -326,7 +319,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYDOWN:
 		{
 			int vk_key = (int)wParam;
-			char key = MapVirtualKey(vk_key, 2)&0xffff;
+			char key = 0;
 			dword flags = KF_DOWN;
 			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
 			if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
@@ -339,12 +332,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYUP:
 		{
 			int vk_key = (int)wParam;
-			char key = MapVirtualKey(vk_key, 2)&0xffff;
-			if(key == ']')
+			char key = 0;
+			if(vk_key == 0xDD) // VK_OEM_6 ']'
 			{
 				SetTimer(hWnd, TM_OPENFILE, 1, NULL);
 			}
-			else if(key == '[')
+			else if(vk_key == 0xDB) // VK_OEM_4 '['
 			{
 				Handler()->OnAction(A_RESET);
 			}
