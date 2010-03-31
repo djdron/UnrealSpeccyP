@@ -1,9 +1,9 @@
 #include "../std.h"
+#include "io.h"
 
 namespace xIo
 {
 
-enum { MAX_PATH_LEN = 1024};
 static char resource_path[MAX_PATH_LEN] = { 0 };
 //=============================================================================
 //	SetResourcePath

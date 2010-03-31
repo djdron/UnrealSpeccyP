@@ -12,6 +12,8 @@
 #define USE_WXWIDGETS
 #endif//_WINDOWS || _LINUX
 
+//#define USE_LOG
+
 namespace xPlatform
 {
 
