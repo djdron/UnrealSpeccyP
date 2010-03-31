@@ -71,7 +71,7 @@ $(CXX_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.cpp
 
 $(BIN_TARGET): $(CXX_OBJS)
 	$(LD) $(LD_EXE_FLAGS)
-	elf2e32 --sid=0x$(SECUREID) --stack=$(EPOCSTACKSIZE) \
+	elf2e32 --sid=0x$(SECUREID) --stack=$(EPOCSTACKSIZE) --heap=$(EPOCHEAPSIZE) \
 	--vid=0x$(VENDORID) --uid1=0x1000007a --uid2=0x$(UID2) --uid3=0x$(UID3)\
 	--capability=$(CAPABILITY) --fpu=softvfp --targettype=$(TARGET_TYPE) \
 	--output=$@ --elfinput=$(OBJ_PATH)/$(PROJECT_NAME).$(TARGET_TYPE) \
