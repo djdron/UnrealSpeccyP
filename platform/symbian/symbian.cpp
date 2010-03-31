@@ -4,6 +4,7 @@
 
 #include "../platform.h"
 #include "../io.h"
+#include "../log.h"
 
 #include <eikstart.h>
 #include <aknapp.h>
@@ -18,16 +19,22 @@
 namespace xPlatform
 {
 
+static const char* FileNameToCStr(const TFileName& n)
+{
+	static char buf[xIo::MAX_PATH_LEN];
+    TPtr8 ptr((TUint8*)buf, xIo::MAX_PATH_LEN);
+    ptr.Copy(n);
+    ptr.ZeroTerminate();
+    return buf;
+}
+
 void Init()
 {
     TFileName appPath;
     CEikonEnv::Static()->FsSession().PrivatePath(appPath);
     appPath.Insert(0, CEikonEnv::Static()->EikAppUi()->Application()->AppFullName().Left(2));
-    char buf[256];
-    buf[appPath.Length()] = '\0';
-    TPtr8 ptr((TUint8*)buf, 256, 256);
-    appPath.Copy(ptr);
-    xIo::SetResourcePath(buf);
+    xIo::SetResourcePath(FileNameToCStr(appPath));
+    xLog::SetLogPath("e:\\usp\\");
     Handler()->OnInit();
 }
 void Done()
@@ -196,13 +203,7 @@ void TDCControl::OpenFile()
 	TFileName openFileName;
 	if(AknCommonDialogs::RunSelectDlgLD(openFileName, R_FILE_SELECTION_DIALOG))
 	{
-		char buf[256];
-		TPtr8 ptr((TUint8*)buf, 256);
-		openFileName.Copy(ptr);
-		ptr.ZeroTerminate();
-		Handler()->OnOpenFile(buf);
-//		Handler()->OnOpenFile("e:\\usp\\shock.sna");
-//		Handler()->OnOpenFile("e:\\usp\\zx-format4_5.trd");
+		Handler()->OnOpenFile(FileNameToCStr(openFileName));
 	}
 }
 
