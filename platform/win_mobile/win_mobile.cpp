@@ -35,7 +35,6 @@ bool Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nC
 	xIo::SetResourcePath(buf);
 	Handler()->OnInit();
 	handler_inited = true;
-//	Handler()->OnOpenFile(xIo::ResourcePath("images/7reality.scl"));
 	return true;
 }
 void Done()
@@ -344,6 +343,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if(key == ']')
 			{
 				SetTimer(hWnd, TM_OPENFILE, 1, NULL);
+			}
+			else if(key == '[')
+			{
+				Handler()->OnAction(A_RESET);
 			}
 			else
 			{
