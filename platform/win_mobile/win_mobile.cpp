@@ -137,7 +137,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-
 	return TRUE;
 }
 
@@ -197,58 +196,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static HBITMAP bmp_mem = NULL;
 	static word* tex = NULL;
 
-	enum eTimerId { TM_UPDATE = 1, TM_OPENFILE };
+	enum eTimerId { TM_UPDATE = 1 };
+	enum eCommandId { IDM_EXIT = 40000, IDM_OPEN_FILE, IDM_RESET, IDM_TAPE_TOGGLE };
 
-	switch (message) 
+	switch(message) 
 	{
 	case WM_COMMAND:
-		wmId    = LOWORD(wParam); 
-		wmEvent = HIWORD(wParam); 
-		// Parse the menu selections:
-// 		switch (wmId)
-// 		{
-// 		case IDM_HELP_ABOUT:
-// 			DialogBox(g_hInst, (LPCTSTR)IDD_ABOUTBOX, hWnd, About);
-// 			break;
-// 		case IDM_OK:
-// 			SendMessage (hWnd, WM_CLOSE, 0, 0);				
-// 			break;
-// 		default:
-// 			return DefWindowProc(hWnd, message, wParam, lParam);
-//		}
-		return DefWindowProc(hWnd, message, wParam, lParam);
-		break;
-	case WM_CREATE:
-// 		{
-// 			SHMENUBARINFO mbi;
-// 			memset(&mbi, 0, sizeof(SHMENUBARINFO));
-// 			mbi.cbSize     = sizeof(SHMENUBARINFO);
-// 			mbi.hwndParent = hWnd;
-// 			mbi.nToolBarId = 0;//IDR_MENU;
-// 			mbi.hInstRes   = g_hInst;
-// 
-// 			if (!SHCreateMenuBar(&mbi)) 
-// 			{
-// 				g_hWndMenuBar = NULL;
-// 			}
-// 			else
-// 			{
-// 				g_hWndMenuBar = mbi.hwndMB;
-// 			}
-// 		}
-		// Initialize the shell activate info structure
-		memset(&s_sai, 0, sizeof (s_sai));
-		s_sai.cbSize = sizeof (s_sai);
-		SetTimer(hWnd, TM_UPDATE, 20, NULL);
-		break;
-	case WM_TIMER:
-		switch(wParam)
+		wmId    = LOWORD(wParam);
+		wmEvent = HIWORD(wParam);
+		switch(wmId)
 		{
-		case TM_UPDATE:
-			InvalidateRect(hWnd, NULL, false);
-			return TRUE;
-		case TM_OPENFILE:
-			KillTimer(hWnd, TM_OPENFILE);
+		case IDM_OPEN_FILE:
 			{
 				OPENFILENAME ofn;
 				memset(&ofn, 0, sizeof(ofn));
@@ -268,6 +226,52 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					Handler()->OnOpenFile(buf);
 				}
 			}
+			break;
+		case IDM_TAPE_TOGGLE:
+			Handler()->OnAction(A_TAPE_TOGGLE);
+			break;
+		case IDM_RESET:
+			Handler()->OnAction(A_RESET);
+			break;
+		case IDM_EXIT:
+			SendMessage(hWnd, WM_CLOSE, 0, 0);
+			break;
+		}
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	case WM_CREATE:
+		{
+			HMENU menu = CreateMenu();
+			HMENU p = CreatePopupMenu();
+			AppendMenu(menu, MF_STRING|MF_POPUP, (UINT)p, TEXT ("File"));
+			AppendMenu(p, MF_STRING, IDM_OPEN_FILE, TEXT ("Open"));
+			AppendMenu(p, MF_STRING, IDM_TAPE_TOGGLE, TEXT ("Start/stop tape"));
+			AppendMenu(p, MF_STRING, IDM_RESET, TEXT ("Reset"));
+			AppendMenu(p, MF_STRING, IDM_EXIT, TEXT ("Exit"));
+			SHMENUBARINFO mbi;
+			memset(&mbi, 0, sizeof(SHMENUBARINFO));
+			mbi.cbSize     = sizeof(SHMENUBARINFO);
+			mbi.hwndParent = hWnd;
+			mbi.nToolBarId = (UINT)menu;
+			mbi.hInstRes   = g_hInst;
+			mbi.dwFlags    = SHCMBF_HMENU;
+			if(SHCreateMenuBar(&mbi)) 
+				g_hWndMenuBar = mbi.hwndMB;
+			else
+			{
+				g_hWndMenuBar = NULL;
+				DestroyMenu(menu);
+			}
+		}
+		// Initialize the shell activate info structure
+		memset(&s_sai, 0, sizeof (s_sai));
+		s_sai.cbSize = sizeof (s_sai);
+		SetTimer(hWnd, TM_UPDATE, 20, NULL);
+		break;
+	case WM_TIMER:
+		switch(wParam)
+		{
+		case TM_UPDATE:
+			InvalidateRect(hWnd, NULL, false);
 			return TRUE;
 		}
 		break;
@@ -333,23 +337,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			int vk_key = (int)wParam;
 			char key = 0;
-			if(vk_key == 0xDD) // VK_OEM_6 ']'
-			{
-				SetTimer(hWnd, TM_OPENFILE, 1, NULL);
-			}
-			else if(vk_key == 0xDB) // VK_OEM_4 '['
-			{
-				Handler()->OnAction(A_RESET);
-			}
-			else
-			{
-				dword flags = 0;
-				if(GetKeyState(VK_MENU))	flags |= KF_ALT;
-				if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
-				TranslateKey(vk_key, key, flags);
-				Handler()->OnKey(key, 0);
-				Handler()->OnLoop();
-			}
+			dword flags = 0;
+			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
+			if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
+			TranslateKey(vk_key, key, flags);
+			Handler()->OnKey(key, 0);
+			Handler()->OnLoop();
 		}
 		break;
 
@@ -376,38 +369,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	return 0;
 }
-
-// Message handler for about box.
-// INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-// {
-// 	switch (message)
-// 	{
-// 	case WM_INITDIALOG:
-// 		{
-// 			// Create a Done button and size it.  
-// 			SHINITDLGINFO shidi;
-// 			shidi.dwMask = SHIDIM_FLAGS;
-// 			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
-// 			shidi.hDlg = hDlg;
-// 			SHInitDialog(&shidi);
-// 		}
-// 		return (INT_PTR)TRUE;
-// 
-// 	case WM_COMMAND:
-// 		if (LOWORD(wParam) == IDOK)
-// 		{
-// 			EndDialog(hDlg, LOWORD(wParam));
-// 			return TRUE;
-// 		}
-// 		break;
-// 
-// 	case WM_CLOSE:
-// 		EndDialog(hDlg, message);
-// 		return TRUE;
-// 
-// 	}
-// 	return (INT_PTR)FALSE;
-// }
 
 }
 //namespace xPlatform

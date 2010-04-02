@@ -3,6 +3,15 @@
 #include "../../z80/z80.h"
 #include "tape.h"
 
+static inline word Word(byte* ptr)
+{
+	return ptr[0] | word(ptr[1]) << 8;
+}
+static inline dword Dword(byte* ptr)
+{
+	return ptr[0] | dword(ptr[1]) << 8 | dword(ptr[2]) << 16 | dword(ptr[3]) << 24;
+}
+
 //=============================================================================
 //	eTape::Init
 //-----------------------------------------------------------------------------
@@ -229,7 +238,7 @@ void eTape::Desc(byte*data, dword size, char *dst)
 		for(i = 9; i && prg[i] == ' '; prg[i--] = 0)
 			;
 		sprintf(dst, "%s: \"%s\" %d,%d", data[1] ? "Bytes" : "Program", prg,
-				*(word*)(data + 14), *(word*)(data + 12));
+				Word(data + 14), Word(data + 12));
 	}
 	else if(*data == 0xFF)
 		sprintf(dst, "data block, %d bytes", size - 2);
@@ -302,7 +311,7 @@ bool eTape::ParseTAP(byte* buf, size_t buf_size)
 	CloseTape();
 	while(ptr < buf + buf_size)
 	{
-		dword size = *(word*)ptr;
+		dword size = Word(ptr);
 		ptr += 2;
 		if(!size)
 			break;
@@ -326,7 +335,7 @@ bool eTape::ParseCSW(byte* buf, size_t buf_size)
 	NamedCell("CSW tape image");
 	if(buf[0x1B] != 1)
 		return false; // unknown compression type
-	dword rate = Z80FQ / *(word*)(buf + 0x19); // usually 3.5mhz / 44khz
+	dword rate = Z80FQ / Word(buf + 0x19); // usually 3.5mhz / 44khz
 	if(!rate)
 		return false;
 	Reserve(buf_size - 0x18);
@@ -337,7 +346,7 @@ bool eTape::ParseCSW(byte* buf, size_t buf_size)
 		dword len = *ptr++ * rate;
 		if(!len)
 		{
-			len = *(dword*)ptr / rate;
+			len = Dword(ptr) / rate;
 			ptr += 4;
 		}
 		tape_image[tape_imagesize++] = FindPulse(len);
@@ -505,7 +514,7 @@ void eTape::ParseHardware(byte* ptr)
 		{
 			if(!*type)
 				break;
-			while(*(short*)type)
+			while(Word((byte*)type))
 				type++;
 			type += 2;
 		}
@@ -565,8 +574,8 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 		{
 		case 0x10: // normal block
 			AllocInfocell();
-			size = *(word*)(ptr + 2);
-			pause = *(word*)ptr;
+			size = Word(ptr + 2);
+			pause = Word(ptr);
 			ptr += 4;
 			Desc(ptr, size, tapeinfo[tape_infosize].desc);
 			tape_infosize++;
@@ -576,19 +585,19 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 			break;
 		case 0x11: // turbo block
 			AllocInfocell();
-			size = 0xFFFFFF & *(dword*)(ptr + 0x0F);
+			size = 0xFFFFFF & Dword(ptr + 0x0F);
 			Desc(ptr + 0x12, size, tapeinfo[tape_infosize].desc);
 			tape_infosize++;
-			MakeBlock(ptr + 0x12, size, *(word*)ptr, *(word*)(ptr + 2),
-					*(word*)(ptr + 4), *(word*)(ptr + 6), *(word*)(ptr + 8),
-					*(word*)(ptr + 10), *(word*)(ptr + 13), ptr[12]);
+			MakeBlock(ptr + 0x12, size, Word(ptr), Word(ptr + 2),
+					Word(ptr + 4), Word(ptr + 6), Word(ptr + 8),
+					Word(ptr + 10), Word(ptr + 13), ptr[12]);
 			// todo: test used bits - ptr+12
 			ptr += size + 0x12;
 			break;
 		case 0x12: // pure tone
 			CreateAppendableBlock();
-			pl = FindPulse(*(word*)ptr);
-			n = *(word*)(ptr + 2);
+			pl = FindPulse(Word(ptr));
+			n = Word(ptr + 2);
 			Reserve(n);
 			for(i = 0; i < n; i++)
 				tape_image[tape_imagesize++] = pl;
@@ -599,19 +608,19 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 			n = *ptr++;
 			Reserve(n);
 			for(i = 0; i < n; i++, ptr += 2)
-				tape_image[tape_imagesize++] = FindPulse(*(word*)ptr);
+				tape_image[tape_imagesize++] = FindPulse(Word(ptr));
 			break;
 		case 0x14: // pure data block
 			CreateAppendableBlock();
-			size = 0xFFFFFF & *(dword*)(ptr + 7);
-			MakeBlock(ptr + 0x0A, size, 0, 0, 0, *(word*)ptr,
-					*(word*)(ptr + 2), -1, *(word*)(ptr + 5), ptr[4]);
+			size = 0xFFFFFF & Dword(ptr + 7);
+			MakeBlock(ptr + 0x0A, size, 0, 0, 0, Word(ptr),
+					Word(ptr + 2), -1, Word(ptr + 5), ptr[4]);
 			ptr += size + 0x0A;
 			break;
 		case 0x15: // direct recording
-			size = 0xFFFFFF & *(dword*)(ptr + 5);
-			t0 = *(word*)ptr;
-			pause = *(word*)(ptr + 2);
+			size = 0xFFFFFF & Dword(ptr + 5);
+			t0 = Word(ptr);
+			pause = Word(ptr + 2);
 			last = ptr[4];
 			NamedCell("direct recording");
 			ptr += 8;
@@ -652,7 +661,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 				tape_image[tape_imagesize++] = FindPulse(pause * 3500);
 			break;
 		case 0x20: // pause (silence) or 'stop the tape' command
-			pause = *(word*)ptr;
+			pause = Word(ptr);
 			sprintf(nm, pause ? "pause %d ms" : "stop the tape", pause);
 			NamedCell(nm);
 			Reserve(2);
@@ -679,7 +688,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 			ptr += 2;
 			break;
 		case 0x24: // loop start
-			loop_n = *(word*)ptr;
+			loop_n = Word(ptr);
 			loop_p = tape_imagesize;
 			ptr += 2;
 			break;
@@ -696,7 +705,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 			break;
 		case 0x26: // call
 			NamedCell("* call");
-			ptr += 2 + 2 * *(word*)ptr;
+			ptr += 2 + 2 * Word(ptr);
 			break;
 		case 0x27: // ret
 			NamedCell("* return");
@@ -716,11 +725,11 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 				p += size + 3;
 			}
 			NamedCell(nm);
-			ptr += 2 + *(word*)ptr;
+			ptr += 2 + Word(ptr);
 			break;
 		case 0x2A: // stop if 48k
 			NamedCell("* stop if 48K");
-			ptr += 4 + *(dword*)ptr;
+			ptr += 4 + Dword(ptr);
 			break;
 		case 0x30: // text description
 			n = *ptr++;
@@ -793,7 +802,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 				NamedCell(nm);
 			}
 			NamedCell("-");
-			ptr += 2 + *(word*)ptr;
+			ptr += 2 + Word(ptr);
 			break;
 		case 0x33: // hardware type
 			ParseHardware(ptr);
@@ -818,7 +827,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 					strcpy(nm, "POKE ");
 					for(j = 0; j < t; j++)
 					{
-						sprintf(nm + strlen(nm), "%d,", *(word*)(p + 1));
+						sprintf(nm + strlen(nm), "%d,", Word(p + 1));
 						sprintf(nm + strlen(nm), *p & 0x10 ? "nn" : "%d",
 								*(byte*)(p + 3));
 						if(!(*p & 0x08))
@@ -836,11 +845,11 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 			else
 				sprintf(nm, "* custom info: %s", ptr), nm[15 + 16] = 0;
 			NamedCell(nm);
-			ptr += 0x14 + *(dword*)(ptr + 0x10);
+			ptr += 0x14 + Dword(ptr + 0x10);
 			break;
 		case 0x40: // snapshot
 			NamedCell("* snapshot");
-			ptr += 4 + (0xFFFFFF & *(dword*)(ptr + 1));
+			ptr += 4 + (0xFFFFFF & Dword(ptr + 1));
 			break;
 		case 0x5A: // 'Z'
 			ptr += 9;

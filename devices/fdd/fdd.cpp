@@ -131,11 +131,11 @@ void eFdd::Seek(int _cyl, int _side)
 	ts_byte = Z80FQ / (Track().data_len * FDD_RPS);
 }
 // data misalignment on ARM fighting functions
-static inline word SectorDataW(eUdi::eTrack::eSector* s, int offset)
+static inline word SectorDataW(eUdi::eTrack::eSector* s, size_t offset)
 {
 	return s->data[offset] | word(s->data[offset + 1]) << 8;
 }
-static inline void SectorDataW(eUdi::eTrack::eSector* s, int offset, word d)
+static inline void SectorDataW(eUdi::eTrack::eSector* s, size_t offset, word d)
 {
 	s->data[offset] = d & 0xff;
 	s->data[offset + 1] = d >> 8;
