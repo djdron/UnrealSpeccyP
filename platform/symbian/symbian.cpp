@@ -49,8 +49,9 @@ public:
 	TDCControl() : frame(0) {}
 	virtual ~TDCControl();
 
-	void Reset();
+	void Reset() { Handler()->OnAction(A_RESET); }
 	void OpenFile();
+	void ToggleTape() { Handler()->OnAction(A_TAPE_TOGGLE); }
 
 public:
 	static TInt TimerCallBack(TAny* aInstance);
@@ -68,7 +69,28 @@ protected:
 	CPeriodic* iPeriodic;
 	CFbsBitmap* bitmap;
 	int frame;
+
+	struct eMouse
+	{
+		enum eDir { D_NONE = 0x00, D_UP = 0x01, D_DOWN = 0x02, D_LEFT = 0x04, D_RIGHT = 0x08 };
+		eMouse() : dir(D_NONE), x(0), y(0) {}
+		byte dir;
+		byte x, y;
+		bool Update();
+	};
+	mutable eMouse mouse;
 };
+bool TDCControl::eMouse::Update()
+{
+	if(dir&D_UP)		y += 1;
+	else if(dir&D_DOWN)	y -= 1;
+	else y = 0;
+	if(dir&D_LEFT)		x -= 1;
+	else if(dir&D_RIGHT)x += 1;
+	else x = 0;
+
+	return dir != D_NONE;
+}
 void TDCControl::ConstructL(const TRect& /*aRect*/)
 {
 	CreateWindowL();
@@ -110,6 +132,10 @@ void TDCControl::HandleResourceChange(TInt aType)
 
 void TDCControl::Update() const
 {
+	if(mouse.Update())
+	{
+		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
+	}
 	Handler()->OnLoop();
 	byte* data = (byte*)Handler()->VideoData();
 
@@ -152,11 +178,13 @@ static char TranslateKey(const TKeyEvent& aKeyEvent)
 {
     switch(aKeyEvent.iScanCode)
     {
+    case EStdKeyEnter:
     case EStdKeyDevice3:		return 'e';
     case EStdKeyLeftArrow:		return 'l';
     case EStdKeyRightArrow:		return 'r';
     case EStdKeyUpArrow:		return 'u';
     case EStdKeyDownArrow:      return 'd';
+    case EStdKeyHash:			return ' ';
     default : break;
     }
     return 0;
@@ -173,10 +201,10 @@ TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
         Handler()->OnKey(ch, KF_DOWN);
         switch(ch)
         {
-        case 'u':   Handler()->OnMouse(MA_MOVE, 0, +5); break;
-        case 'd':   Handler()->OnMouse(MA_MOVE, 0, -5); break;
-        case 'l':   Handler()->OnMouse(MA_MOVE, -5, 0); break;
-        case 'r':   Handler()->OnMouse(MA_MOVE, +5, 0); break;
+        case 'u':   mouse.dir |= eMouse::D_UP; break;
+        case 'd':   mouse.dir |= eMouse::D_DOWN; break;
+        case 'l':   mouse.dir |= eMouse::D_LEFT; break;
+        case 'r':   mouse.dir |= eMouse::D_RIGHT; break;
         case 'e':   Handler()->OnMouse(MA_BUTTON, 0, 1); break;
         default : break;
         }
@@ -185,6 +213,10 @@ TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
         Handler()->OnKey(ch, 0);
         switch(ch)
         {
+        case 'u':   mouse.dir &= ~eMouse::D_UP; break;
+        case 'd':   mouse.dir &= ~eMouse::D_DOWN; break;
+        case 'l':   mouse.dir &= ~eMouse::D_LEFT; break;
+        case 'r':   mouse.dir &= ~eMouse::D_RIGHT; break;
         case 'e':   Handler()->OnMouse(MA_BUTTON, 0, 0); break;
         default : break;
         }
@@ -193,10 +225,6 @@ TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
         break;
     }
     return EKeyWasConsumed;
-}
-void TDCControl::Reset()
-{
-	Handler()->OnAction(A_RESET);
 }
 void TDCControl::OpenFile()
 {
@@ -253,8 +281,10 @@ void TAppUi::HandleCommandL(TInt aCommand)
 	case EOpenFile:
 		gl_control->OpenFile();
 		break;
-		default:
-	break;
+	case EToggleTape:
+		gl_control->ToggleTape();
+	default:
+		break;
 	}
 }
 

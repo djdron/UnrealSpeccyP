@@ -35,6 +35,10 @@ RESOURCE MENU_BAR r_menubar
         },
         MENU_TITLE
         { 
+            menu_pane = r_toggle_tape; 
+        },
+        MENU_TITLE
+        { 
             menu_pane = r_reset; 
         }
     };
@@ -60,6 +64,18 @@ RESOURCE MENU_PANE r_open_file
         { 
             command = EOpenFile; 
             txt = STRING_open_file; 
+        }
+    };
+}
+
+RESOURCE MENU_PANE r_toggle_tape
+{
+    items =
+    {
+        MENU_ITEM 
+        { 
+            command = EToggleTape; 
+            txt = STRING_toggle_tape; 
         }
     };
 }

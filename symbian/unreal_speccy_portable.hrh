@@ -4,7 +4,8 @@
 enum TMenuCommands
 {
     EReset = 1,
-    EOpenFile
+    EOpenFile,
+    EToggleTape
 };
 
 #endif//__USP_HRH__
