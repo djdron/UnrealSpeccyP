@@ -30,10 +30,8 @@
 #*************************************************************************/
 
 CPP       = mipsel-linux-g++
-CC        = mipsel-linux-gcc
 LD        = mipsel-linux-ld
 OBJCOPY   = mipsel-linux-objcopy
-OBJDUMP   = mipsel-linux-objdump
 
 # **********************************************
 # Endianness
@@ -49,12 +47,13 @@ OFORMAT = elf32-littlemips
 TARGET = downenv
 LD_SCRIPT = link.xn
 TEXT_BASE = 0x80a00000
+STACKSIZE = 0x28000
 
 # **********************************************
 # Directories
 # **********************************************
 
-SRCDIR    = ../ ../z80 ../devices ../devices/fdd ../devices/input ../devices/sound ../platform ../platform/dingoo
+SRCDIR    = ./lib ../ ../z80 ../devices ../devices/sound ../devices/fdd ../devices/input ../platform ../platform/dingoo
 VPATH     = $(SRCDIR)
 LIBROOT   = ./lib
 
@@ -70,37 +69,24 @@ MAP       = $(TARGET).map
 # Compiler and linker options
 # **********************************************
 
-INCLUDE   = -I./lib/stdlib -I./lib -I$(MIPSTOOLS) -I$
+INCLUDE   = -I../platform/dingoo -I$(MIPSTOOLS)/mipsel-linux/include -I$
 
-W_OPTS    = -Wall -finline-functions -fomit-frame-pointer -msoft-float \
--fno-builtin -fno-exceptions
+W_OPTS    = -Wall -finline-functions -fomit-frame-pointer -msoft-float -fno-builtin -fno-exceptions \
+-nostartfiles -nodefaultlibs -nostdlib -fno-rtti
 
-CC_OPTS   = -g -c -O3 $(INCLUDE) -mips32 $(W_OPTS) -mno-abicalls -fno-pic \
--pipe -G 0 -D_DEBUG -DMPU_JZ4740 -D_DINGOO
-
-CC_OPTS_A = $(CC_OPTS) -D_ASSEMBLER_
-
-CPP_OPTS  = -g -c -O3 $(INCLUDE) -mips32 $(W_OPTS) -mno-abicalls -fno-pic \
--pipe -G 0 -D_DEBUG -DMPU_JZ4740 -D_DINGOO
+CPP_OPTS  = -c -O3 $(INCLUDE) -mips32 $(W_OPTS) -mno-abicalls -fno-pic -pipe -G 0 -DMPU_JZ4740 -D_DINGOO
 
 LD_OPTS   = -Bstatic -g -T $(LD_SCRIPT) -o $(IMAGE_ELF) -Map $(MAP) \
--Ttext $(TEXT_BASE) -L$(LIBROOT) -L$(MIPSLIB) -zmuldefs -lm -lstdc++ -lc -lgcc
+-Ttext $(TEXT_BASE) -L$(LIBROOT) -L$(MIPSLIB) -lm -lc -lgcc -zmuldefs
 
 # **********************************************
 # Files to be compiled
 # **********************************************
 
-SRC_C   = $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
-SRC_CPP = $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.cpp))
-SRC_S   = $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.S))
-SRC     = $(SRC_C) $(SRC_CPP) $(SRC_S)
+SRC		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.cpp))
+OBJ		= $(notdir $(patsubst %.cpp, %.o, $(SRC)))
 
-OBJ_C   = $(notdir $(patsubst %.c, %.o, $(SRC_C)))
-OBJ_CPP = $(notdir $(patsubst %.cpp, %.o, $(SRC_CPP)))
-OBJ_S   = $(notdir $(patsubst %.S, %.o, $(SRC_S)))
-OBJ     = $(OBJ_C) $(OBJ_CPP) $(OBJ_S)
-
-LIBS    = $(LIBROOT)/entry.a -lm -lstdc++ -lc -lgcc
+LIBS    = $(LIBROOT)/entry.a
 
 # **********************************************
 # Rules
@@ -122,19 +108,13 @@ $(IMAGE_BIN) : $(IMAGE_ELF)
 $(IMAGE_ELF) : $(OBJ) $(LD_SCRIPT) 
 	$(LD) $(OBJ) $(LIBS) $(LD_OPTS)
 
-$(OBJ_C) : %.o : %.c
-	$(CC) $(CC_OPTS) -o $@ $<
-
 $(OBJ) : %.o : %.cpp
 	$(CPP) $(CPP_OPTS) -o $@ $<
-
-$(OBJ_S) : %.o : %.S
-	$(CC) $(CC_OPTS_A) -o $@ $<
 
 .PHONY : clean
 
 clean :
-	rm -rf $(IMAGE_BIN) $(IMAGE_ELF) $(OBJ) $(MAP) *.dl *.tab *.str *.dsc
+	rm -f $(IMAGE_BIN) $(IMAGE_ELF) $(OBJ) $(MAP) *.dl *.tab *.str *.dsc
 
 #**************************************************************************
 #                              END  OF  FILE

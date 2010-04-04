@@ -31,26 +31,26 @@ enum eActionResult
 struct eHandler
 {
 	eHandler();
-	~eHandler();
-	virtual void OnInit() = 0;
-	virtual void OnDone() = 0;
-	virtual void OnLoop() = 0;
-	virtual const char* WindowCaption() = 0;
-	virtual void OnKey(char key, dword flags) = 0;
-	virtual void OnMouse(eMouseAction action, byte a, byte b) = 0;
+	virtual ~eHandler();
+	virtual void OnInit() {}
+	virtual void OnDone() {}
+	virtual void OnLoop() {}
+	virtual const char* WindowCaption() { return NULL; }
+	virtual void OnKey(char key, dword flags) {}
+	virtual void OnMouse(eMouseAction action, byte a, byte b) {}
 
-	virtual bool OnOpenFile(const char* name) = 0;
-	virtual eActionResult OnAction(eAction action) = 0;
+	virtual bool OnOpenFile(const char* name) { return false; }
+	virtual eActionResult OnAction(eAction action) { return AR_ERROR; }
 
 	// data to draw
-	virtual void* VideoData() = 0;
+	virtual void* VideoData() { return NULL; }
 	// pause/resume function for sync video by audio
-	virtual void VideoPaused(bool paused) = 0;
+	virtual void VideoPaused(bool paused) {}
 	// audio
-	virtual int	AudioSources() = 0;
-	virtual void* AudioData(int source) = 0;
-	virtual dword AudioDataReady(int source) = 0;
-	virtual void AudioDataUse(int source, dword size) = 0;
+	virtual int	AudioSources() { return 0; }
+	virtual void* AudioData(int source) { return NULL; }
+	virtual dword AudioDataReady(int source) { return 0; }
+	virtual void AudioDataUse(int source, dword size) {}
 };
 
 eHandler* Handler();

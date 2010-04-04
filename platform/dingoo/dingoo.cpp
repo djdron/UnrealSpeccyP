@@ -18,20 +18,15 @@ void	_kbd_get_status(void*);
 int		_sys_judge_event(void*);
 dword	GetTickCount();
 
-FILE*	fsys_fopen(const char*, const char*);
-int		fsys_fread(void*, size_t, size_t, FILE*);
-int		fsys_fclose(FILE*);
-int		fsys_fseek(FILE*, dword, int);
-dword	fsys_ftell(FILE*);
+size_t strlen(const char* src)
+{
+	dword i;
+	for(i = 0; src[i] != '\0'; ++i);
+	return i;
+}
 
 }
 //extern "C"
-
-inline FILE*	fopen(const char* fname, const char* mode) { return fsys_fopen(fname, mode); }
-inline size_t	fread(void* dst, size_t size, size_t count, FILE* f) { return fsys_fread(dst, size, count, f); }
-inline int		fclose(FILE* f) { return fsys_fclose(f); }
-inline int		fseek(FILE* f, long offset, int origin) { return fsys_fseek(f, offset, origin); }
-inline long		ftell(FILE* f) { return fsys_ftell(f); }
 
 void* g_pGameDecodeBuf = NULL;
 
@@ -53,7 +48,7 @@ static void SlcdSet(dword cmd, int data = -1)
 
 static void SlcdInit()
 {
-	SlcdSet(0x03, 0x0020);	//entry mode default
+	SlcdSet(0x03, 0x0030);	//entry mode default
 	SlcdSet(0x2b, 0x0008);	//refresh 51hz
 	SlcdSet(0x20, 0x0000);
 	SlcdSet(0x21, 0x0000);
@@ -155,13 +150,15 @@ static void UpdateKeys()
 
 void Loop()
 {
-	static const byte brightness = 190;
-	static const byte bright_intensity = 65;
-	static const dword refresh_latency = 960000 / 51;
+	const byte brightness = 190;
+	const byte bright_intensity = 65;
+	dword refresh_latency = 1000000 / 51;
 
 	dword last_tick = GetTickCount();
 	while(!(KeyPressed(K_BUTTON_SELECT) && KeyPressed(K_BUTTON_START)))
 	{
+		if(KeyPressed(K_TRIGGER_LEFT))	--refresh_latency;
+		if(KeyPressed(K_TRIGGER_RIGHT))	++refresh_latency;
 		for(dword passed = 0; passed < refresh_latency; )
 		{
 			passed = GetTickCount() - last_tick;
@@ -175,7 +172,7 @@ void Loop()
 		word* dst = (word*)_lcd_get_frame();
 		for(int x = 320; --x >= 0; )
 		{
-			for(int y = 0; y < 240; ++y)
+			for(int y = 240; --y >= 0; )
 			{
 				byte r, g, b;
 				byte c = src[y*320+x];
@@ -226,10 +223,6 @@ extern "C" int GameMain(char* res_path)
 	CrtInit();
 	SlcdInit();
 	xPlatform::Init(res_path);
-
-	xPlatform::Handler()->OnOpenFile(xIo::ResourcePath("images/vibrate.sna"));
-//	xPlatform::Handler()->OnOpenFile(xIo::ResourcePath("images/disk2.trd"));
-
 	xPlatform::Loop();
 	xPlatform::Done();
 	SlcdDone();
