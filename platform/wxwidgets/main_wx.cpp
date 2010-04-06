@@ -19,7 +19,10 @@ class GLCanvas : public wxGLCanvas
 {
 	typedef wxGLCanvas eInherited;
 public:
-	GLCanvas(wxWindow* parent) : eInherited(parent, wxID_ANY, canvas_attr), mouse_x(0), mouse_y(0)
+	GLCanvas(wxWindow* parent)
+	: eInherited(parent, wxID_ANY, canvas_attr)
+	, key_flags(KF_CURSOR|KF_KEMPSTON)
+	, mouse_x(0), mouse_y(0)
 	{
 		context = new wxGLContext(this);
 	}
@@ -50,7 +53,7 @@ public:
 			return;
 		}
 //		printf("kd:%c\n", key);
-		dword flags = KF_DOWN;
+		dword flags = KF_DOWN|key_flags;
 		if(event.AltDown())			flags |= KF_ALT;
 		if(event.ShiftDown())		flags |= KF_SHIFT;
 		TranslateKey(key, flags);
@@ -64,7 +67,7 @@ public:
 		if(event.AltDown())			flags |= KF_ALT;
 		if(event.ShiftDown())		flags |= KF_SHIFT;
 		TranslateKey(key, flags);
-		Handler()->OnKey(key, 0);
+		Handler()->OnKey(key, key_flags);
 	}
 	virtual void OnMouseMove(wxMouseEvent& event)
 	{
@@ -104,8 +107,11 @@ public:
 	}
 	void TranslateKey(int& key, dword& flags);
 
+	dword key_flags;
+
 	static int canvas_attr[];
 	DECLARE_EVENT_TABLE()
+
 protected:
 
 	wxGLContext* context;
@@ -148,14 +154,6 @@ void GLCanvas::TranslateKey(int& key, dword& flags)
 	case WXK_UP:		key = 'u';	break;
 	case WXK_DOWN:		key = 'd';	break;
 	case WXK_CONTROL:	key = 'f';	flags &= ~KF_CTRL; break;
-	case '\'':
-		if(flags&KF_SHIFT)
-		{
-			key = 'P';
-			flags |= KF_ALT;
-			flags &= ~KF_SHIFT;
-		}
-		break;
 	case '!':	key = '1';		break;
 	case '@':	key = '2';		break;
 	case '#':	key = '3';		break;
@@ -166,6 +164,64 @@ void GLCanvas::TranslateKey(int& key, dword& flags)
 	case '*':	key = '8';		break;
 	case '(':	key = '9';		break;
 	case ')':	key = '0';		break;
+	case '\'':
+		if(flags&KF_SHIFT)
+		{
+			key = 'P';
+			flags &= ~KF_SHIFT;
+		}
+		else
+			key = '7';
+		flags |= KF_ALT;
+		break;
+	case ',':
+		key = 'N';
+		flags |= KF_ALT;
+		break;
+	case '.':
+		key = 'M';
+		flags |= KF_ALT;
+		break;
+	case ';':
+		if(flags&KF_SHIFT)
+		{
+			key = 'Z';
+			flags &= ~KF_SHIFT;
+		}
+		else
+			key = 'O';
+		flags |= KF_ALT;
+		break;
+	case '/':
+		if(flags&KF_SHIFT)
+		{
+			key = 'C';
+			flags &= ~KF_SHIFT;
+		}
+		else
+			key = 'V';
+		flags |= KF_ALT;
+		break;
+	case '-':
+		if(flags&KF_SHIFT)
+		{
+			key = '0';
+			flags &= ~KF_SHIFT;
+		}
+		else
+			key = 'J';
+		flags |= KF_ALT;
+		break;
+	case '=':
+		if(flags&KF_SHIFT)
+		{
+			key = 'K';
+			flags &= ~KF_SHIFT;
+		}
+		else
+			key = 'L';
+		flags |= KF_ALT;
+		break;
 	}
 	if(key > 255 || key < 32)
 		key = 0;
@@ -176,7 +232,8 @@ class Frame: public wxFrame
 {
 public:
 	Frame(const wxString& title, const wxPoint& pos)
-		: wxFrame((wxFrame*)NULL, -1, title, pos), org_size(320, 240)
+		: wxFrame((wxFrame*)NULL, -1, title, pos)
+		, org_size(320, 240)
 	{
 		wxMenu* menuFile = new wxMenu;
 		menuFile->Append(ID_OpenFile, _("&Open...\tF3"));
@@ -191,6 +248,13 @@ public:
 		wxMenu* menuDevice = new wxMenu;
 		menuDevice->Append(ID_TapeToggle, _("Start/Stop tape\tF5"));
 		menuDevice->Append(ID_DriveNext, _("Select next drive\tF6"));
+
+		wxMenu* menuJoy = new wxMenu;
+		joy_menu.cursor = menuJoy->Append(ID_JoyCursor, _("Cursor"), _(""), wxITEM_CHECK);
+		joy_menu.kempston = menuJoy->Append(ID_JoyKempston, _("Kempston"), _(""), wxITEM_CHECK);
+		joy_menu.qaop = menuJoy->Append(ID_JoyQAOP, _("QAOP"), _(""), wxITEM_CHECK);
+		joy_menu.sinclair2 = menuJoy->Append(ID_JoySinclair2, _("Sinclair 2"), _(""), wxITEM_CHECK);
+		menuDevice->Append(-1, _("Joystick"), menuJoy);
 
 		wxMenuBar* menuBar = new wxMenuBar;
 		menuBar->Append(menuFile, _("File"));
@@ -207,6 +271,8 @@ public:
 
 		gl_canvas = new GLCanvas(this);
 		gl_canvas->SetFocus();
+
+		UpdateJoyMenu();
 	}
 
 	void OnReset(wxCommandEvent& event)
@@ -265,11 +331,39 @@ public:
 		default: break;
 		}
 	}
+	void OnJoy(wxCommandEvent& event)
+	{
+		gl_canvas->key_flags = 0;
+		if(joy_menu.kempston->IsChecked())
+			gl_canvas->key_flags |= KF_KEMPSTON;
+		if(joy_menu.cursor->IsChecked())
+			gl_canvas->key_flags |= KF_CURSOR;
+		if(joy_menu.qaop->IsChecked())
+			gl_canvas->key_flags |= KF_QAOP;
+		if(joy_menu.sinclair2->IsChecked())
+			gl_canvas->key_flags |= KF_SINCLAIR2;
+	}
+	void UpdateJoyMenu()
+	{
+		joy_menu.kempston->Check(gl_canvas->key_flags&KF_KEMPSTON);
+		joy_menu.cursor->Check(gl_canvas->key_flags&KF_CURSOR);
+		joy_menu.qaop->Check(gl_canvas->key_flags&KF_QAOP);
+		joy_menu.sinclair2->Check(gl_canvas->key_flags&KF_SINCLAIR2);
+	}
 	enum
 	{
 		ID_Quit = 1, ID_OpenFile, ID_Reset, ID_Size100, ID_Size200,
 		ID_TapeToggle, ID_DriveNext,
+		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
 	};
+	struct eJoyMenuItems
+	{
+		wxMenuItem* kempston;
+		wxMenuItem* cursor;
+		wxMenuItem* qaop;
+		wxMenuItem* sinclair2;
+	};
+	eJoyMenuItems joy_menu;
 
 private:
 	DECLARE_EVENT_TABLE()
@@ -286,6 +380,10 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_Size200,	Frame::OnResize)
 	EVT_MENU(Frame::ID_TapeToggle,Frame::OnTapeToggle)
 	EVT_MENU(Frame::ID_DriveNext,Frame::OnDriveNext)
+	EVT_MENU(Frame::ID_JoyKempston,Frame::OnJoy)
+	EVT_MENU(Frame::ID_JoyCursor,Frame::OnJoy)
+	EVT_MENU(Frame::ID_JoyQAOP,	Frame::OnJoy)
+	EVT_MENU(Frame::ID_JoySinclair2,Frame::OnJoy)
 END_EVENT_TABLE()
 
 class App: public wxApp

@@ -102,13 +102,6 @@ static const eKey keys[KEYS_COUNT] =
 //-----------------------------------------------------------------------------
 void eKeyboard::OnKey(char _key, bool _down, bool _shift, bool _ctrl, bool _alt)
 {
-	switch(_key) // simulate cursor keys
-	{
-	case 'l' : _key = '5'; _shift = true; break;
-	case 'r' : _key = '8'; _shift = true; break;
-	case 'u' : _key = '7'; _shift = true; break;
-	case 'd' : _key = '6'; _shift = true; break;
-	}
 	KeyState(_key, _down);
 	KeyState('c', _shift);	// caps shift
 	KeyState('s', _alt);	// symbol shift

@@ -46,7 +46,7 @@ class TDCControl : public CCoeControl, MCoeControlObserver
 {
 public:
 	void ConstructL(const TRect& aRect);
-	TDCControl() : frame(0) {}
+	TDCControl() : frame(0), key_flags(KF_CURSOR) {}
 	virtual ~TDCControl();
 
 	void Reset() { Handler()->OnAction(A_RESET); }
@@ -73,12 +73,14 @@ protected:
 	struct eMouse
 	{
 		enum eDir { D_NONE = 0x00, D_UP = 0x01, D_DOWN = 0x02, D_LEFT = 0x04, D_RIGHT = 0x08 };
-		eMouse() : dir(D_NONE), x(0), y(0) {}
+		eMouse() : enable(true), dir(D_NONE), x(0), y(0) {}
+		bool enable;
 		byte dir;
 		byte x, y;
 		bool Update();
 	};
 	mutable eMouse mouse;
+	dword key_flags;
 };
 bool TDCControl::eMouse::Update()
 {
@@ -133,7 +135,7 @@ void TDCControl::HandleResourceChange(TInt aType)
 
 void TDCControl::Update() const
 {
-	if(mouse.Update())
+	if(mouse.enable && mouse.Update())
 	{
 		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
 	}
@@ -155,7 +157,7 @@ void TDCControl::Update() const
 			r = c&2 ? i : 0;
 			g = c&4 ? i : 0;
 			dword* p = &tex[y*320 + x];
-			*p = BGRX(r, g ,b);
+			*p = BGRX(r, g, b);
 		}
 	}
 	bitmap->UnlockHeap();
@@ -198,7 +200,6 @@ TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
     switch(aType)
     {
     case EEventKeyDown:
-    case EEventKey:
         Handler()->OnKey(ch, KF_DOWN);
         switch(ch)
         {

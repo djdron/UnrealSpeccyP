@@ -31,7 +31,7 @@ static const eButton buttons[BUTTONS_COUNT] =
 	{'u',   0x08 },
 	{'f',	0x10 },
 };
-void eKempstonJoy::OnKey(char _key, bool _down, bool _shift, bool _ctrl, bool _alt)
+void eKempstonJoy::OnKey(char _key, bool _down)
 {
 	KeyState(_key, _down);
 }

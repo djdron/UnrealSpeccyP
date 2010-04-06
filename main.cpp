@@ -41,8 +41,45 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		bool shift = flags&KF_SHIFT;
 		bool ctrl = flags&KF_CTRL;
 		bool alt = flags&KF_ALT;
+
+		if(flags&KF_CURSOR)
+		{
+			switch(key)
+			{
+			case 'l' : key = '5'; shift = down; break;
+			case 'r' : key = '8'; shift = down; break;
+			case 'u' : key = '7'; shift = down; break;
+			case 'd' : key = '6'; shift = down; break;
+			case 'f' : key = '0'; shift = false; break;
+			}
+		}
+		if(flags&KF_QAOP)
+		{
+			switch(key)
+			{
+			case 'l' : key = 'O'; break;
+			case 'r' : key = 'P'; break;
+			case 'u' : key = 'Q'; break;
+			case 'd' : key = 'A'; break;
+			case 'f' : key = ' '; break;
+			}
+		}
+		if(flags&KF_SINCLAIR2)
+		{
+			switch(key)
+			{
+			case 'l' : key = '6'; break;
+			case 'r' : key = '7'; break;
+			case 'u' : key = '9'; break;
+			case 'd' : key = '8'; break;
+			case 'f' : key = '0'; break;
+			}
+		}
 		speccy->Device<eKeyboard>()->OnKey(key, down, shift, ctrl, alt);
-		speccy->Device<eKempstonJoy>()->OnKey(key, down, shift, ctrl, alt);
+		if(flags&KF_KEMPSTON)
+		{
+			speccy->Device<eKempstonJoy>()->OnKey(key, down);
+		}
 	}
 	virtual void OnMouse(xPlatform::eMouseAction action, byte a, byte b)
 	{

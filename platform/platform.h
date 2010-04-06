@@ -17,7 +17,18 @@
 namespace xPlatform
 {
 
-enum eKeyFlags { KF_DOWN = 0x01, KF_SHIFT = 0x08, KF_CTRL = 0x02, KF_ALT = 0x04 };
+enum eKeyFlags
+{
+	KF_DOWN = 0x01,
+	KF_SHIFT = 0x02,
+	KF_CTRL = 0x04,
+	KF_ALT = 0x08,
+
+	KF_KEMPSTON = 0x10,
+	KF_CURSOR = 0x20,
+	KF_QAOP = 0x40,
+	KF_SINCLAIR2 = 0x80
+};
 enum eMouseAction { MA_MOVE, MA_BUTTON, MA_WHEEL };
 enum eAction { A_RESET, A_TAPE_TOGGLE, A_DRIVE_NEXT };
 enum eActionResult
