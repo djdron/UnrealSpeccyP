@@ -272,8 +272,8 @@ void TAppUi::HandleCommandL(TInt aCommand)
 {
 	switch(aCommand)
 	{
-	case EAknSoftkeyBack:
 	case EEikCmdExit:
+	case EAknSoftkeyExit:
 		Exit();
 		break;
 	case EReset:
