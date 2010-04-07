@@ -323,8 +323,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYDOWN:
 		{
 			int vk_key = (int)wParam;
+			if(vk_key == VK_PROCESSKEY)
+				vk_key = ImmGetVirtualKey(hWnd);
 			char key = 0;
-			dword flags = KF_DOWN;
+			dword flags = KF_DOWN|KF_CURSOR|KF_KEMPSTON;
 			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
 			if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
 			TranslateKey(vk_key, key, flags);
@@ -336,12 +338,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYUP:
 		{
 			int vk_key = (int)wParam;
+			if(vk_key == VK_PROCESSKEY)
+				vk_key = ImmGetVirtualKey(hWnd);
 			char key = 0;
 			dword flags = 0;
 			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
 			if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
 			TranslateKey(vk_key, key, flags);
-			Handler()->OnKey(key, 0);
+			Handler()->OnKey(key, KF_CURSOR|KF_KEMPSTON);
 			Handler()->OnLoop();
 		}
 		break;
