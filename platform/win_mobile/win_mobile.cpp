@@ -94,6 +94,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return 0;
 	} 
 
+	ImmDisableIME(0); // disable IME for correct WM_KEYDOWN/WM_KEYUP handle
+
 	WNDCLASS wc;
 	wc.style         = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc   = WndProc;
@@ -323,8 +325,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYDOWN:
 		{
 			int vk_key = (int)wParam;
-			if(vk_key == VK_PROCESSKEY)
-				vk_key = ImmGetVirtualKey(hWnd);
 			char key = 0;
 			dword flags = KF_DOWN|KF_CURSOR|KF_KEMPSTON;
 			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
@@ -338,8 +338,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYUP:
 		{
 			int vk_key = (int)wParam;
-			if(vk_key == VK_PROCESSKEY)
-				vk_key = ImmGetVirtualKey(hWnd);
 			char key = 0;
 			dword flags = 0;
 			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
