@@ -157,6 +157,7 @@ static void TranslateKey(int vk_key, char& key, dword& flags)
 	case VK_SHIFT:		key = 'c';	break;
 	case VK_MENU:		key = 's';	break;
 	case VK_RETURN:		key = 'e';	break;
+	case VK_SPACE:		key = ' ';	break;
 	case VK_TAB:
 		key = '\0';
 		flags |= KF_ALT;
