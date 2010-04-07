@@ -143,8 +143,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 }
 
 #define RGBX(r, g, b)	(((r << 8)&0xf800)|((g << 3)&0x07e0)|(b >> 3))
-static const byte brightness = 200;
-static const byte bright_intensity = 55;
 
 static void TranslateKey(int vk_key, char& key, dword& flags)
 {
@@ -193,21 +191,27 @@ static void TranslateKey(int vk_key, char& key, dword& flags)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	int wmId, wmEvent;
 	static SHACTIVATEINFO s_sai;
 	static HDC hdc_mem = NULL;
 	static HBITMAP bmp_mem = NULL;
 	static word* tex = NULL;
+	static HMENU joy_menu = NULL;
+	static dword key_flags = KF_CURSOR|KF_KEMPSTON;
 
 	enum eTimerId { TM_UPDATE = 1 };
-	enum eCommandId { IDM_EXIT = 40000, IDM_OPEN_FILE, IDM_RESET, IDM_TAPE_TOGGLE };
+	enum eCommandId
+	{
+		IDM_EXIT = 40000,
+		IDM_OPEN_FILE,
+		IDM_RESET,
+		IDM_TAPE_TOGGLE, IDM_TAPE_FAST_TOGGLE,
+		IDM_JOY_KEMPSTON, IDM_JOY_CURSOR, IDM_JOY_QAOP, IDM_JOY_SINCLAIR2
+	};
 
-	switch(message) 
+	switch(message)
 	{
 	case WM_COMMAND:
-		wmId    = LOWORD(wParam);
-		wmEvent = HIWORD(wParam);
-		switch(wmId)
+		switch(LOWORD(wParam))
 		{
 		case IDM_OPEN_FILE:
 			{
@@ -233,11 +237,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_TAPE_TOGGLE:
 			Handler()->OnAction(A_TAPE_TOGGLE);
 			break;
+		case IDM_TAPE_FAST_TOGGLE:
+			Handler()->OnAction(A_TAPE_FAST_TOGGLE);
+			break;
 		case IDM_RESET:
 			Handler()->OnAction(A_RESET);
 			break;
 		case IDM_EXIT:
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
+			break;
+		case IDM_JOY_KEMPSTON:
+			key_flags ^= KF_KEMPSTON;
+			CheckMenuItem(joy_menu, IDM_JOY_KEMPSTON, MF_BYCOMMAND|(key_flags&KF_KEMPSTON ? MF_CHECKED : MF_UNCHECKED));
+			break;
+		case IDM_JOY_CURSOR:
+			key_flags ^= KF_CURSOR;
+			CheckMenuItem(joy_menu, IDM_JOY_CURSOR, MF_BYCOMMAND|(key_flags&KF_CURSOR? MF_CHECKED : MF_UNCHECKED));
+			break;
+		case IDM_JOY_QAOP:
+			key_flags ^= KF_QAOP;
+			CheckMenuItem(joy_menu, IDM_JOY_QAOP, MF_BYCOMMAND|(key_flags&KF_QAOP? MF_CHECKED : MF_UNCHECKED));
+			break;
+		case IDM_JOY_SINCLAIR2:
+			key_flags ^= KF_SINCLAIR2;
+			CheckMenuItem(joy_menu, IDM_JOY_SINCLAIR2, MF_BYCOMMAND|(key_flags&KF_SINCLAIR2? MF_CHECKED : MF_UNCHECKED));
 			break;
 		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -245,11 +268,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			HMENU menu = CreateMenu();
 			HMENU p = CreatePopupMenu();
-			AppendMenu(menu, MF_STRING|MF_POPUP, (UINT)p, TEXT ("File"));
-			AppendMenu(p, MF_STRING, IDM_OPEN_FILE, TEXT ("Open"));
-			AppendMenu(p, MF_STRING, IDM_TAPE_TOGGLE, TEXT ("Start/stop tape"));
-			AppendMenu(p, MF_STRING, IDM_RESET, TEXT ("Reset"));
-			AppendMenu(p, MF_STRING, IDM_EXIT, TEXT ("Exit"));
+			AppendMenu(menu, MF_STRING|MF_POPUP, (UINT)p, TEXT("File"));
+			AppendMenu(p, MF_STRING, IDM_OPEN_FILE, TEXT("Open"));
+			AppendMenu(p, MF_STRING, IDM_TAPE_TOGGLE, TEXT("Start/stop tape"));
+			AppendMenu(p, MF_STRING, IDM_TAPE_FAST_TOGGLE, TEXT("Fast tape"));
+
+			joy_menu = CreatePopupMenu();
+			AppendMenu(joy_menu, MF_STRING|((key_flags&KF_KEMPSTON) ? MF_CHECKED : 0), IDM_JOY_KEMPSTON, TEXT("Kempston"));
+			AppendMenu(joy_menu, MF_STRING|((key_flags&KF_CURSOR) ? MF_CHECKED : 0), IDM_JOY_CURSOR, TEXT("Cursor"));
+			AppendMenu(joy_menu, MF_STRING|((key_flags&KF_QAOP) ? MF_CHECKED : 0), IDM_JOY_QAOP, TEXT("QAOP"));
+			AppendMenu(joy_menu, MF_STRING|((key_flags&KF_SINCLAIR2) ? MF_CHECKED : 0), IDM_JOY_SINCLAIR2, TEXT("Sinclair2"));
+
+			AppendMenu(p, MF_STRING|MF_POPUP, (UINT)joy_menu, TEXT("Joystick"));
+			AppendMenu(p, MF_STRING, IDM_RESET, TEXT("Reset"));
+			AppendMenu(p, MF_STRING, IDM_EXIT, TEXT("Exit"));
 			SHMENUBARINFO mbi;
 			memset(&mbi, 0, sizeof(SHMENUBARINFO));
 			mbi.cbSize     = sizeof(SHMENUBARINFO);
@@ -309,6 +341,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				{
 					byte r, g, b;
 					byte c = data[y*320+x];
+					const byte brightness = 200;
+					const byte bright_intensity = 55;
 					byte i = c&8 ? brightness + bright_intensity : brightness;
 					b = c&1 ? i : 0;
 					r = c&2 ? i : 0;
@@ -327,7 +361,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			int vk_key = (int)wParam;
 			char key = 0;
-			dword flags = KF_DOWN|KF_CURSOR|KF_KEMPSTON;
+			dword flags = KF_DOWN|key_flags;
 			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
 			if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
 			TranslateKey(vk_key, key, flags);
@@ -344,7 +378,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
 			if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
 			TranslateKey(vk_key, key, flags);
-			Handler()->OnKey(key, KF_CURSOR|KF_KEMPSTON);
+			Handler()->OnKey(key, key_flags);
 			Handler()->OnLoop();
 		}
 		break;

@@ -314,7 +314,7 @@ void eWD1793::Process(int tact)
 			else
 			{
 				fdd->Write(rwptr++, crc >> 8);
-				fdd->Write(rwptr++, crc);
+				fdd->Write(rwptr++, (byte)crc);
 				fdd->Write(rwptr, 0xff);
 				if(cmd & CB_MULTIPLE)
 				{
@@ -370,7 +370,7 @@ void eWD1793::Process(int tact)
 					start_crc = -1;
 					fdd->Write(rwptr++, crc >> 8);
 					rwlen--;
-					v = crc;
+					v = (byte)crc;
 				}
 				if(start_crc >= 0 && rwptr >= start_crc)
 				{
@@ -590,7 +590,7 @@ void eWD1793::IoRead(word port, byte* v, int tact)
 		return;
 	Process(tact);
 	*v = 0xff;
-	byte p = port;
+	byte p = (byte)port;
 	if(p & 0x80)		*v = rqs | 0x3F;
 	else if(p == 0x1f)
 	{
@@ -614,7 +614,7 @@ void eWD1793::IoWrite(word port, byte v, int tact)
 	if(!rom->DosSelected() || (port & 0x1F) != 0x1F)
 		return;
 	Process(tact);
-	byte p = port;
+	byte p = (byte)port;
 	if(p == 0x1F) // cmd
 	{
 		if((v & 0xf0) == 0xd0) // force interrupt

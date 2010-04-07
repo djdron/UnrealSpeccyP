@@ -9,6 +9,7 @@
 #include "devices/sound/ay.h"
 #include "devices/sound/beeper.h"
 #include "devices/fdd/wd1793.h"
+#include "z80/z80.h"
 #include "snapshot.h"
 
 static struct eSpeccyHandler : public xPlatform::eHandler
@@ -37,11 +38,10 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	virtual void OnKey(char key, dword flags)
 	{
 		using namespace xPlatform;
-		bool down = flags&KF_DOWN;
-		bool shift = flags&KF_SHIFT;
-		bool ctrl = flags&KF_CTRL;
-		bool alt = flags&KF_ALT;
-
+		bool down = (flags&KF_DOWN) != 0;
+		bool shift = (flags&KF_SHIFT) != 0;
+		bool ctrl = (flags&KF_CTRL) != 0;
+		bool alt = (flags&KF_ALT) != 0;
 		if(flags&KF_CURSOR)
 		{
 			switch(key)
@@ -87,7 +87,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		switch(action)
 		{
 		case MA_MOVE: 	speccy->Device<eKempstonMouse>()->OnMouseMove(a, b); 	break;
-		case MA_BUTTON:	speccy->Device<eKempstonMouse>()->OnMouseButton(a, b);	break;
+		case MA_BUTTON:	speccy->Device<eKempstonMouse>()->OnMouseButton(a, b != 0);	break;
 		default: break;
 		}
 	}
@@ -134,6 +134,17 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 				else
 					tape->Stop();
 				return tape->Started() ? AR_TAPE_STARTED : AR_TAPE_STOPPED;
+			}
+		case A_TAPE_FAST_TOGGLE:
+			{
+				eTape* tape = speccy->Device<eTape>();
+				if(!tape->Inserted())
+					return AR_TAPE_NOT_INSERTED;
+				if(!speccy->CPU()->FastEmul())
+					speccy->CPU()->FastEmul(FastTapeEmul);
+				else
+					speccy->CPU()->FastEmul(NULL);
+				return speccy->CPU()->FastEmul() ? AR_TAPE_FAST_SET : AR_TAPE_FAST_RESET;
 			}
 		case A_DRIVE_NEXT:
 			{
