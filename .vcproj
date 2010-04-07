@@ -520,6 +520,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\platform\log.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\platform\log.h"
+				>
+			</File>
+			<File
 				RelativePath=".\platform\platform.cpp"
 				>
 			</File>
