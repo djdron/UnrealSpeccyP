@@ -430,14 +430,6 @@
 					RelativePath=".\devices\sound\device_sound.h"
 					>
 				</File>
-				<File
-					RelativePath=".\devices\sound\ym2203emu.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\devices\sound\ym2203emu.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="video"

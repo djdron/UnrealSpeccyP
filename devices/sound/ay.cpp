@@ -1,6 +1,23 @@
+/*
+Portable ZX-Spectrum emulator.
+Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "../../std.h"
 #include "../../z80/z80.h"
-#include "ym2203emu.h"
 #include "ay.h"
 
 //=============================================================================
@@ -11,7 +28,6 @@ eAY::eAY()
 	bitA = bitB = bitC = 0;
 	nextfmtick = 0;
 	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
-	chip2203 = YM2203Init(NULL, 0, SNDR_DEFAULT_AY_RATE, 44100);
 	SetChip(CHIP_AY);
 	SetVolumes(0x7FFF, SNDR_VOL_AY, SNDR_PAN_ABC);
 	_Reset();
@@ -21,7 +37,6 @@ eAY::eAY()
 //-----------------------------------------------------------------------------
 eAY::~eAY()
 {
-	YM2203Shutdown(chip2203);
 }
 //=============================================================================
 //	eAY::IoRead
@@ -300,7 +315,6 @@ void eAY::SetTimings(dword system_clock_rate, dword chip_clock_rate, dword sampl
 	nextfmtickfloat = 0.; //Alone Coder
 	nextfmtick = 0; //Alone Coder
 	ayticks_per_fmtick = (float)chip_clock_rate/44100;
-	FMbufMUL=(word)(0.1f*65536); //Alone Coder 0.36.4
 
 	ApplyRegs();
 }
@@ -321,8 +335,6 @@ void eAY::_Reset(dword timestamp)
 	for (int i = 0; i < 14; i++)
 		reg[i] = 0;
 
-	if(chip2203)
-		YM2203ResetChip(chip2203); //Dexus
 	/*
 	ayfq=chip2203->OPN.ST.SSGclock; //Dexus
 	mult_const2 = ((ayfq/conf.intfq) << (MULT_C_1-3))/conf.frame; //Dexus
