@@ -81,6 +81,8 @@ struct eHandler
 	virtual void* AudioData(int source) = 0;
 	virtual dword AudioDataReady(int source) = 0;
 	virtual void AudioDataUse(int source, dword size) = 0;
+
+	virtual bool FullSpeed() const = 0;
 };
 
 eHandler* Handler();

@@ -31,6 +31,7 @@ void InitSound();
 void DoneSound();
 void OnLoopSound();
 
+void VsyncGL(bool on);
 void DrawGL(int w, int h, void* _data);
 
 class GLCanvas : public wxGLCanvas
@@ -50,6 +51,13 @@ public:
 		int w, h;
 		GetClientSize(&w, &h);
 		SetCurrent(*context);
+		static bool vsync = false;
+		bool s = !Handler()->FullSpeed();
+		if(vsync != s)
+		{
+			vsync = s;
+			VsyncGL(vsync);
+		}
 		DrawGL(w, h, Handler()->VideoData());
 		SwapBuffers();
 	}
@@ -58,7 +66,8 @@ public:
 		Handler()->OnLoop();
 		OnLoopSound();
 		Refresh(false);
-		wxMilliSleep(3);
+		if(!Handler()->FullSpeed())
+			wxMilliSleep(3);
 	}
 	virtual void OnEraseBackground(wxEraseEvent& event) {}
 
@@ -265,6 +274,7 @@ public:
 
 		wxMenu* menuDevice = new wxMenu;
 		menuDevice->Append(ID_TapeToggle, _("Start/Stop tape\tF5"));
+		menuDevice->Append(ID_TapeFastToggle, _("Tape fast"));
 		menuDevice->Append(ID_DriveNext, _("Select next drive\tF6"));
 
 		wxMenu* menuJoy = new wxMenu;
@@ -338,6 +348,16 @@ public:
 		default: break;
 		}
 	}
+	void OnTapeFastToggle(wxCommandEvent& event)
+	{
+		switch(Handler()->OnAction(A_TAPE_FAST_TOGGLE))
+		{
+		case AR_TAPE_FAST_SET:		SetStatusText(_("Fast tape speed"));		break;
+		case AR_TAPE_FAST_RESET:	SetStatusText(_("Normal tape speed"));	break;
+		case AR_TAPE_NOT_INSERTED:	SetStatusText(_("Tape not inserted"));	break;
+		default: break;
+		}
+	}
 	void OnDriveNext(wxCommandEvent& event)
 	{
 		switch(Handler()->OnAction(A_DRIVE_NEXT))
@@ -371,7 +391,7 @@ public:
 	enum
 	{
 		ID_Quit = 1, ID_OpenFile, ID_Reset, ID_Size100, ID_Size200,
-		ID_TapeToggle, ID_DriveNext,
+		ID_TapeToggle, ID_TapeFastToggle, ID_DriveNext,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
 	};
 	struct eJoyMenuItems
@@ -397,6 +417,7 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_Size100,	Frame::OnResize)
 	EVT_MENU(Frame::ID_Size200,	Frame::OnResize)
 	EVT_MENU(Frame::ID_TapeToggle,Frame::OnTapeToggle)
+	EVT_MENU(Frame::ID_TapeFastToggle,Frame::OnTapeFastToggle)
 	EVT_MENU(Frame::ID_DriveNext,Frame::OnDriveNext)
 	EVT_MENU(Frame::ID_JoyKempston,Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoyCursor,Frame::OnJoy)

@@ -48,7 +48,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	}
 	virtual void OnLoop()
 	{
-		if(!video_paused)
+		if(FullSpeed() || !video_paused)
 			speccy->Update();
 	}
 	virtual void* VideoData() { return speccy->Device<eUla>()->Screen(); }
@@ -60,6 +60,8 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		bool shift = (flags&KF_SHIFT) != 0;
 		bool ctrl = (flags&KF_CTRL) != 0;
 		bool alt = (flags&KF_ALT) != 0;
+		if(flags&KF_KEMPSTON)
+			speccy->Device<eKempstonJoy>()->OnKey(key, down);
 		if(flags&KF_CURSOR)
 		{
 			switch(key)
@@ -71,7 +73,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 			case 'f' : key = '0'; shift = false; break;
 			}
 		}
-		if(flags&KF_QAOP)
+		else if(flags&KF_QAOP)
 		{
 			switch(key)
 			{
@@ -82,7 +84,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 			case 'f' : key = ' '; break;
 			}
 		}
-		if(flags&KF_SINCLAIR2)
+		else if(flags&KF_SINCLAIR2)
 		{
 			switch(key)
 			{
@@ -94,10 +96,6 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 			}
 		}
 		speccy->Device<eKeyboard>()->OnKey(key, down, shift, ctrl, alt);
-		if(flags&KF_KEMPSTON)
-		{
-			speccy->Device<eKempstonJoy>()->OnKey(key, down);
-		}
 	}
 	virtual void OnMouse(xPlatform::eMouseAction action, byte a, byte b)
 	{
@@ -179,11 +177,13 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		return AR_ERROR;
 	}
 
-	virtual int	AudioSources() { return SOUND_DEV_COUNT; }
+	virtual int	AudioSources() { return FullSpeed() ? 0 : SOUND_DEV_COUNT; }
 	virtual void* AudioData(int source) { return sound_dev[source]->AudioData(); }
 	virtual dword AudioDataReady(int source) { return sound_dev[source]->AudioDataReady(); }
 	virtual void AudioDataUse(int source, dword size) { sound_dev[source]->AudioDataUse(size); }
 	virtual void VideoPaused(bool paused) {	video_paused = paused; }
+
+	virtual bool FullSpeed() const { return speccy->CPU()->FastEmul(); }
 
 	eSpeccy* speccy;
 	bool video_paused;
