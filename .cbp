@@ -67,13 +67,12 @@
 		<Unit filename="devices/sound/beeper.h" />
 		<Unit filename="devices/sound/device_sound.cpp" />
 		<Unit filename="devices/sound/device_sound.h" />
-		<Unit filename="devices/sound/ym2203emu.cpp" />
-		<Unit filename="devices/sound/ym2203emu.h" />
 		<Unit filename="devices/ula.cpp" />
 		<Unit filename="devices/ula.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="platform/dingoo/dingoo.cpp" />
 		<Unit filename="platform/gl/draw.cpp" />
+		<Unit filename="platform/gl/vsync.cpp" />
 		<Unit filename="platform/glut/main_glut.cpp" />
 		<Unit filename="platform/io.cpp" />
 		<Unit filename="platform/io.h" />
