@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include"
+				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include"
 				PreprocessorDefinitions="_WINDOWS"
 				DebugInformationFormat="1"
 			/>
@@ -194,7 +194,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include"
+				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include"
 				PreprocessorDefinitions="_WINDOWS"
 				ExceptionHandling="1"
 				BufferSecurityCheck="false"
@@ -532,6 +532,10 @@
 				>
 				<File
 					RelativePath=".\platform\gl\draw.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\gl\vsync.cpp"
 					>
 				</File>
 			</Filter>

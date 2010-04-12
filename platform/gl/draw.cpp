@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../platform.h"
-#include "../../std.h"
 
 #ifdef USE_GL
 
@@ -26,11 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif//_WINDOWS
 
 #include <GL/gl.h>
-
-#ifdef _LINUX
-//#define GLX_GLXEXT_PROTOTYPES 1
-#include <GL/glx.h>
-#endif//_LINUX
 
 namespace xPlatform
 {
@@ -101,34 +95,6 @@ void DrawGL(int _w, int _h, void* _data)
 
 	glFlush();
 }
-
-#ifdef _LINUX
-void VsyncGL(bool on)
-{
-#ifdef GLX_SGI_swap_control
-	static bool inited = false;
-	static PFNGLXSWAPINTERVALSGIPROC si = NULL;
-	if(!inited)
-	{
-		si = (PFNGLXSWAPINTERVALSGIPROC)glXGetProcAddress((const GLubyte*)"glXSwapIntervalSGI");
-		inited = true;
-	}
-	if(si)
-		si(on);
-//	const char* exts = (const char*)glGetString(GL_EXTENSIONS);
-//	if(strstr(exts, "GLX_SGI_swap_control"))
-	{
-//		glXSwapIntervalSGI(on);
-	}
-#endif//GLX_SGI_swap_control
-}
-#endif//_LINUX
-
-#ifdef _WINDOWS
-void VsyncGL(bool on)
-{
-}
-#endif//_WINDOWS
 
 }
 //namespace xPlatform
