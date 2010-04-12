@@ -4,7 +4,7 @@ ACTIVE_PERL = perl
 PATH := $(CC_INSTALL_PATH)/bin:$(PATH)
 
 # Defaults
-SRC_PATH = ..
+SRC_PATH = ../..
 RSS_PATH = .
 SIS_PATH = sis
 OBJ_BASE = obj
@@ -56,6 +56,11 @@ preALL:
   CXX_DEPS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.d,$(CXXSRCS))
   BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME).$(TARGET_TYPE)
 
+mkdirs:
+	mkdir -p $(DIST_PATH)
+	mkdir -p $(SIS_PATH)
+	mkdir -p $(foreach DIR, $(CXXFOLDERS), $(OBJ_PATH)/$(DIR))
+
 $(IMG_TARGETS): $(IMG_SRCS)
 	mifconv $@ $(subst /,//,$(IMG_ARGS)) $^
 
@@ -65,7 +70,7 @@ $(RSS_TARGETS): $(DIST_PATH)/%.rsc : $(RSS_PATH)/%.rss
 	$(addprefix -I ,$(SYSINCLUDE)) $(addprefix -D ,$(LANG_MACRO)) \
 	-I $(VARIANT) -t$(OBJ_PATH) -u $< -o$@ \
 	-h$(EPOCROOT)/epoc32/include/$(notdir $(basename $@)).rsg
-
+	
 $(CXX_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
@@ -91,6 +96,6 @@ clean: preGCCE preALL
 	rm -rf $(BIN_TARGET)
 	rm -rf $(BIN_TARGET).map
 
-build: preGCCE preALL $(IMG_TARGETS) $(RSS_TARGETS) $(BIN_TARGET)
+build: preGCCE preALL mkdirs $(IMG_TARGETS) $(RSS_TARGETS) $(BIN_TARGET)
 
-.PHONY: build clean pack check preALL preGCCE
+.PHONY: build clean pack check mkdirs preALL preGCCE

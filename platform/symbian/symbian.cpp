@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <caknfileselectiondialog.h>
 
 #include <unreal_speccy_portable.rsg>
-#include "../../symbian/unreal_speccy_portable.hrh"
+#include "../../build/symbian/unreal_speccy_portable.hrh"
 
 namespace xPlatform
 {
