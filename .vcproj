@@ -592,6 +592,34 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="ui"
+			>
+			<File
+				RelativePath=".\ui\controls.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\controls.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\dialogs.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\dialogs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\render.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\render.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\main.cpp"
 			>

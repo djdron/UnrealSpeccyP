@@ -32,7 +32,7 @@ void DoneSound();
 void OnLoopSound();
 
 void VsyncGL(bool on);
-void DrawGL(int w, int h, void* _data);
+void DrawGL(int w, int h, void* _data, dword* _data_ui = NULL);
 
 class GLCanvas : public wxGLCanvas
 {

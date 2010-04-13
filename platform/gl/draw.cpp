@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../platform.h"
+#include "../../ui/render.h"
 
 #ifdef USE_GL
 
@@ -50,7 +51,7 @@ static const GLubyte triangles[2 * 3] =
 	0, 2, 3,
 };
 
-void DrawGL(int _w, int _h, void* _data)
+void DrawGL(int _w, int _h, void* _data, dword* _data_ui)
 {
 	const byte brightness = 200;
 	const byte bright_intensity = 55;
@@ -65,8 +66,18 @@ void DrawGL(int _w, int _h, void* _data)
 			b = c&1 ? i : 0;
 			r = c&2 ? i : 0;
 			g = c&4 ? i : 0;
+			dword color;
+			if(_data_ui)
+			{
+				xRender::eRGBAColor c = _data_ui[y*320+x];
+				color = RGBX((r >> c.a) + c.r, (g >> c.a) + c.g, (b >> c.a) + c.b);
+			}
+			else
+			{
+				color = RGBX(r, g ,b);
+			}
 			dword* p = &tex[y*512+x];
-			*p = RGBX(r, g ,b);
+			*p = color;
 		}
 	}
 
