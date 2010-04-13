@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern "C"
 {
 
+#define CFG_EXTAL	12000000	/* EXTAL freq: 12 MHz */
 #include "jz4740.h"
 
 //entry.a externals
@@ -48,37 +49,101 @@ size_t strlen(const char* src)
 
 void* g_pGameDecodeBuf = NULL;
 
-//SLCD related GPIO pins for the Dingoo A320
-#define PIN_RS_N	(32*2+19)	/* Port 2 pin 19: RS# (register select, active low) */
-
-static void SlcdSet(dword cmd, int data = -1)
+class eTimer
 {
-	__gpio_clear_pin(PIN_RS_N);
+	enum { CHANNEL = 3 };
+public:
+	eTimer()
+	{
+		__tcu_disable_pwm_output(CHANNEL);
+		__tcu_mask_half_match_irq(CHANNEL);
+		__tcu_mask_full_match_irq(CHANNEL);
+		__tcu_select_extalclk(CHANNEL);
+		__tcu_select_clk_div4(CHANNEL);
+		__tcu_set_count(CHANNEL, 0);
+		__tcu_start_counter(CHANNEL);
+	}
+	~eTimer()
+	{
+		__tcu_stop_counter(CHANNEL);
+	}
+	void SetFuture(word ticks)
+	{
+		REG_TCU_TDFR(CHANNEL) = ticks;
+		REG_TCU_TDHR(CHANNEL) = ticks;
+		__tcu_clear_full_match_flag(CHANNEL);
+	}
+	bool IsFuture() { return __tcu_full_match_flag(CHANNEL); }
+}tcu;
+
+class eSlcd
+{
+public:
+	eSlcd() : frame(NULL), frame_back(NULL)
+	{
+		Set(0x03, 0x0030);	//entry mode default
+//		Set(0x2b, 0x0008);	//refresh 51hz
+		Set(0x20, 0x0000);
+		Set(0x21, 0x0000);
+		Set(0x22);			//write to GRAM
+		frame = (word*)_lcd_get_frame();
+		frame_back = (word*)g_pGameDecodeBuf;
+	}
+	~eSlcd() 
+	{
+		Set(0x03, 0x1048);	//entry mode restore
+		Set(0x2b, 0x000d);	//refresh 93hz
+		Set(0x20, 0x0000);
+		Set(0x21, 0x0000);
+		Set(0x22);			//write to GRAM
+	}
+	void Flip();
+	word* FrameBack() { return frame_back; }
+protected:
+	void Set(dword cmd, int data = -1);
+protected:
+	word*	frame;
+	word*	frame_back;
+}slcd;
+
+void eSlcd::Set(dword cmd, int data)
+{
+	// SLCD related GPIO pins for the Dingoo A320
+	const int pin_rs_n = 32*2+19;	// port 2 pin 19: RS# (register select, active low)
+
+	__gpio_clear_pin(pin_rs_n);
 	REG_SLCD_DATA = SLCD_DATA_RS_COMMAND|(cmd&0xffff);
 	while(REG_SLCD_STATE&SLCD_STATE_BUSY);
-	__gpio_set_pin(PIN_RS_N);
-
+	__gpio_set_pin(pin_rs_n);
 	if(data == -1)
 		return;
 	REG_SLCD_DATA = SLCD_DATA_RS_DATA|(data&0xffff);
 	while(REG_SLCD_STATE&SLCD_STATE_BUSY);
 }
+void eSlcd::Flip()
+{
+	word* tmp = frame;
+	frame = frame_back;
+	frame_back = tmp;
 
-static void SlcdInit()
-{
-	SlcdSet(0x03, 0x0030);	//entry mode default
-	SlcdSet(0x2b, 0x0008);	//refresh 51hz
-	SlcdSet(0x20, 0x0000);
-	SlcdSet(0x21, 0x0000);
-	SlcdSet(0x22);			//write to GRAM
-}
-static void SlcdDone()
-{
-	SlcdSet(0x03, 0x1048);	//entry mode restore
-	SlcdSet(0x2b, 0x000d);	//refresh 93hz
-	SlcdSet(0x20, 0x0000);
-	SlcdSet(0x21, 0x0000);
-	SlcdSet(0x22);			//write to GRAM
+	__dcache_writeback_all();
+
+	while(!(REG_DMAC_DCCSR(0)&DMAC_DCCSR_TT));	// Wait for transfer terminated bit
+	REG_SLCD_CTRL = 1;							// Enable DMA on the SLCD
+	REG_DMAC_DCCSR(0) = 0;						// Disable DMA channel while configuring
+	REG_DMAC_DRSR(0) = DMAC_DRSR_RS_SLCD;		// DMA request source is SLCD
+	REG_DMAC_DSAR(0) = (dword)frame&0x1fffffff;	// Set source, target and count
+	REG_DMAC_DTAR(0) = SLCD_FIFO&0x1fffffff;
+	REG_DMAC_DTCR(0) = (320*240*2)/16;
+
+	// Source address increment, source width 32 bit,
+	// destination width 16 bit, data unit size 16 bytes,
+	// block transfer mode, no interrupt
+	REG_DMAC_DCMD(0) = DMAC_DCMD_SAI|DMAC_DCMD_SWDH_32
+		|DMAC_DCMD_DWDH_16|DMAC_DCMD_DS_16BYTE|DMAC_DCMD_TM;
+
+	REG_DMAC_DCCSR(0) |= DMAC_DCCSR_NDES;		// No DMA descriptor used
+	REG_DMAC_DCCSR(0) |= DMAC_DCCSR_EN;			// Set enable bit to start DMA
 }
 
 namespace xPlatform
@@ -170,24 +235,21 @@ void Loop()
 {
 	const byte brightness = 190;
 	const byte bright_intensity = 65;
-	dword refresh_latency = 1000000 / 51;
+	word refresh_latency = CFG_EXTAL / 4 / 50;//0xdf7c; //CFG_EXTAL / 4 / 52; //in tcu ticks 0xdf7c
 
-	dword last_tick = GetTickCount();
 	while(!(KeyPressed(K_BUTTON_SELECT) && KeyPressed(K_BUTTON_START)))
 	{
+		if(_sys_judge_event(NULL) < 0)
+			break;
 		if(KeyPressed(K_TRIGGER_LEFT))	--refresh_latency;
 		if(KeyPressed(K_TRIGGER_RIGHT))	++refresh_latency;
-		for(dword passed = 0; passed < refresh_latency; )
-		{
-			passed = GetTickCount() - last_tick;
-		}
-		last_tick += refresh_latency;
-		_lcd_set_frame();
-		_sys_judge_event(NULL);
+		while(!tcu.IsFuture());
+		tcu.SetFuture(refresh_latency);
+		slcd.Flip();
 		UpdateKeys();
 		Handler()->OnLoop();
 		byte* src = (byte*)Handler()->VideoData();
-		word* dst = (word*)_lcd_get_frame();
+		word* dst = slcd.FrameBack();
 		for(int x = 320; --x >= 0; )
 		{
 			for(int y = 240; --y >= 0; )
@@ -201,8 +263,8 @@ void Loop()
 				*dst++ = RGB565(r, g, b);
 			}
 		}
-		__dcache_writeback_all();
 	}
+//	xIo::Log("timer: %x\n", refresh_latency);
 }
 
 }
@@ -239,11 +301,10 @@ static void CrtDone()
 extern "C" int GameMain(char* res_path)
 {
 	CrtInit();
-	SlcdInit();
 	xPlatform::Init(res_path);
+	xPlatform::Handler()->OnOpenFile(xIo::ResourcePath("images/zx-for71.trd"));
 	xPlatform::Loop();
 	xPlatform::Done();
-	SlcdDone();
 	CrtDone();
 	return 0;
 }
