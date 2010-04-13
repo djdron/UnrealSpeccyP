@@ -26,23 +26,10 @@ eDeviceSound::eDeviceSound()
 {
 	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 }
-//=============================================================================
-//	eDeviceSound::Render
-//-----------------------------------------------------------------------------
-void eDeviceSound::Render(SNDOUT *src, dword srclen, dword tacts, bufptr_t dst_start)
-{
-	FrameStart();
-	for (dword index = 0; index < srclen; index++)
-	{
-		// if(src[index].timestamp > clk_ticks) continue; // wrong input data leads to crash
-		Update(src[index].timestamp, src[index].newvalue.ch.left, src[index].newvalue.ch.right);
-	}
-	FrameEnd(tacts);
-}
 
 const dword TICK_FF = 6;            // oversampling ratio: 2^6 = 64
 const dword TICK_F = (1<<TICK_FF);
-const dword MULT_C = 12;   // fixed point precision for 'system tick -> sound tick'
+//const dword MULT_C = 12;   // fixed point precision for 'system tick -> sound tick'
 // b = 1+ln2(max_sndtick) = 1+ln2((max_sndfq*TICK_F)/min_intfq) = 1+ln2(48000*64/10) ~= 19.2;
 // assert(b+MULT_C <= 32)
 
@@ -52,7 +39,6 @@ const dword MULT_C = 12;   // fixed point precision for 'system tick -> sound ti
 void eDeviceSound::FrameStart()
 {
 	base_tick = tick;
-	firstsmp = 4; //Alone Coder
 }
 //=============================================================================
 //	eDeviceSound::Update
@@ -64,7 +50,6 @@ void eDeviceSound::Update(dword tact, dword l, dword r)
 	if(!((l ^ mix_l) | (r ^ mix_r)))
 		return;
 
-	//[vv]   dword endtick = (timestamp * mult_const) >> MULT_C;
 	qword endtick = (tact * (qword)sample_rate * TICK_F) / clock_rate;
 	Flush( (dword) (base_tick + endtick) );
 	mix_l = l; mix_r = r;
@@ -74,15 +59,10 @@ void eDeviceSound::Update(dword tact, dword l, dword r)
 //-----------------------------------------------------------------------------
 void eDeviceSound::FrameEnd(dword tacts)
 {
-	// adjusting 'clk_ticks' with whole history will fix accumulation of rounding errors
-	//qword endtick = ((passed_clk_ticks + clk_ticks) * mult_const) >> MULT_C;
 	qword endtick = ((passed_clk_ticks + tacts) * (qword)sample_rate * TICK_F) / clock_rate;
 	Flush( (dword) (endtick - passed_snd_ticks) );
 
 	dword ready_samples = dstpos - dst_start;
-
-	oldfrmleft = ((long)useleft + (long)olduseleft)/2; //Alone Coder
-	oldfrmright = ((long)useright + (long)olduseright)/2; //Alone Coder
 
 	tick -= (ready_samples << TICK_FF);
 	passed_snd_ticks += (ready_samples << TICK_FF);
@@ -121,8 +101,6 @@ void eDeviceSound::SetTimings(dword clock_rate, dword sample_rate)
 	tick = base_tick = 0;
 	dstpos = dst_start = buffer;
 	passed_snd_ticks = passed_clk_ticks = 0;
-
-	mult_const = (dword) (((qword)sample_rate << (MULT_C+TICK_FF)) / clock_rate);
 }
 
 static dword filter_diff[TICK_F*2];
@@ -178,8 +156,8 @@ void eDeviceSound::Flush(dword endtick)
 			do
 			{
 				dword sample_value;
-				sample_value = ((s2_l + val_l) >> 16) +
-					((s2_r + val_r) & 0xFFFF0000); // save s2+val
+				sample_value =	((s2_l + val_l) >> 16) +
+								((s2_r + val_r) & 0xFFFF0000); // save s2+val
 
 				dstpos->sample = sample_value;
 				dstpos++;

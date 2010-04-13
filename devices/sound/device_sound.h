@@ -35,8 +35,6 @@ struct SNDOUT
 	SNDSAMPLE newvalue;
 };
 
-typedef SNDSAMPLE* bufptr_t;
-
 const dword SNDR_DEFAULT_SYSTICK_RATE = 3500000; // ZX-Spectrum Z80 clock
 const dword SNDR_DEFAULT_SAMPLE_RATE = 44100;
 
@@ -60,12 +58,9 @@ public:
 	void AudioDataUse(dword size);
 
 protected:
-	// 'render' is a function that converts array of DAC inputs into PCM-buffer
-	void Render(SNDOUT *src, dword srclen, dword clk_ticks, bufptr_t dst);
-
 	dword mix_l, mix_r;
-	bufptr_t dstpos, dst_start;
-	dword clock_rate, sample_rate; //Alone Coder
+	SNDSAMPLE* dstpos, * dst_start;
+	dword clock_rate, sample_rate;
 
 	SNDSAMPLE buffer[BUFFER_LEN];
 
@@ -73,13 +68,8 @@ private:
 	dword tick, base_tick;
 	dword s1_l, s1_r;
 	dword s2_l, s2_r;
-	dword firstsmp; //Alone Coder
-	int oldleft,useleft,olduseleft,oldfrmleft; //Alone Coder
-	int oldright,useright,olduseright,oldfrmright; //Alone Coder
 
-	//   dword clock_rate, sample_rate;
 	qword passed_clk_ticks, passed_snd_ticks;
-	dword mult_const;
 
 	void Flush(dword endtick);
 };

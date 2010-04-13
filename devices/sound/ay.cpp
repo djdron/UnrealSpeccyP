@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 eAY::eAY()
 {
 	bitA = bitB = bitC = 0;
-	nextfmtick = 0;
 	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 	SetChip(CHIP_AY);
 	SetVolumes(0x7FFF, SNDR_VOL_AY, SNDR_PAN_ABC);
@@ -67,20 +66,6 @@ void eAY::IoWrite(word port, byte v, int tact)
 		Write(tact, v);
 	}
 }
-//=============================================================================
-//	eAY::Render
-//-----------------------------------------------------------------------------
-void eAY::Render(AYOUT *src, dword srclen, dword tacts, bufptr_t dst)
-{
-	FrameStart();
-	for(dword index = 0; index < srclen; index++)
-	{
-//		if(src[index].timestamp > clk_ticks) continue; // wrong input data leads to crash
-		Select(src[index].reg_num);
-		Write(src[index].timestamp, src[index].reg_value);
-	}
-	FrameEnd(tacts);
-}
 
 const dword MULT_C_1 = 14; // fixed point precision for 'system tick -> ay tick'
 // b = 1+ln2(max_ay_tick/8) = 1+ln2(max_ay_fq/8 / min_intfq) = 1+ln2(10000000/(10*8)) = 17.9
@@ -106,8 +91,6 @@ void eAY::FrameEnd(dword tacts)
 	passed_clk_ticks += tacts;
 	passed_chip_ticks += t;
 	t = 0;
-	nextfmtickfloat = 0.0f;
-	nextfmtick = 0;
 }
 //=============================================================================
 //	eAY::Flush
@@ -151,26 +134,7 @@ void eAY::Flush(dword chiptick)
 
 		en = ((ec & env) | vc) & ((bitC | bit2) & (bitN | bit5));
 		mix_l += vols[4][en]; mix_r += vols[5][en];
-		//YM2203 here
-		/*      if(conf.sound.ay_chip == CHIP_YM2203)
-		{
-		if(t >= nextfmtick) {
-		nextfmtickfloat += ayticks_per_fmtick;
-		nextfmtick = (int)nextfmtickfloat;
-		if(++FMbufN == FMBUFSIZE) {
-		YM2203UpdateOne(chip2203, FMbufs, FMBUFSIZE);
-		FMbufN = 0;
-		};
-		if(fmsoundon0 == 0) {
-		//FMbufOUT=(int)(FMbuf*conf.sound.ay/8192*0.7f);
-		FMbufOUT=((((INT16)FMbufs[FMbufN])*FMbufMUL)>>16);
-		}
-		else FMbufOUT=0;
-		}
-		mix_l += FMbufOUT; mix_r += FMbufOUT;
-		}; //Alone Coder
-		*/
-		//
+
 		if((mix_l ^ eInherited::mix_l) | (mix_r ^ eInherited::mix_r)) // similar check inside update()
 			Update(t, mix_l, mix_r);
 	}
@@ -188,33 +152,6 @@ void eAY::Select(byte nreg)
 //-----------------------------------------------------------------------------
 void eAY::Write(dword timestamp, byte val)
 {
-	/*
-	if(activereg >= 0x20 && conf.sound.ay_chip == CHIP_YM2203)
-	{
-	if(timestamp) Flush((timestamp * mult_const) >> MULT_C_1); // cputick * ( (chip_clock_rate/8) / system_clock_rate );
-	if(activereg >= 0x2d && activereg <= 0x2f) {
-	int oldayfq=chip2203->OPN.ST.SSGclock;//ayfq
-	YM2203Write(chip2203,0,activereg);
-	YM2203Write(chip2203,1,val);
-	if(oldayfq!=chip2203->OPN.ST.SSGclock) {
-	//if(!conf.sound.ay_samples) Flush(cpu.t);
-	//ayfq=chip2203->OPN.ST.SSGclock;
-	//t=(dword)((__int64)t*ayfq/oldayfq);
-	//mult_const2 = ((ayfq/conf.intfq) << (MULT_C_1-3))/conf.frame;
-	//mult_const3 = TICK_F/2+(dword)((__int64)temp.snd_frame_ticks*conf.intfq*(1<<(MULT_C+3))/ayfq);
-	//ay_div = ((dword)((double)ayfq*0x10*(double)SAMPLE_T/(double)conf.sound.fq));
-	//ay_div2 = (ayfq*0x100)/(conf.sound.fq/32);
-	SetTimings(system_clock_rate,chip2203->OPN.ST.SSGclock,eInherited::sample_rate);
-	}
-	}
-	else
-	{
-	YM2203Write(chip2203,0,activereg);
-	YM2203Write(chip2203,1,val);
-	}
-	return;
-	} //Dexus
-	*/
 	if(activereg >= 0x10)
 		return;
 
@@ -292,16 +229,6 @@ byte eAY::Read()
 //-----------------------------------------------------------------------------
 void eAY::SetTimings(dword system_clock_rate, dword chip_clock_rate, dword sample_rate)
 {
-	/*
-	if(conf.sound.ay_chip == CHIP_YM2203)
-	{ //install YM2203 frequencies
-	chip2203->OPN.ST.clock = conf.sound.ayfq*2;
-	chip2203->OPN.ST.rate = 44100
-	OPNPrescaler_w(&chip2203->OPN, 1 , 1 );
-	//ayfq=chip2203->OPN.ST.SSGclock;
-	chip_clock_rate=chip2203->OPN.ST.SSGclock;
-	} //Dexus
-	*/
 	chip_clock_rate /= 8;
 
 	eAY::system_clock_rate = system_clock_rate;
@@ -311,10 +238,6 @@ void eAY::SetTimings(dword system_clock_rate, dword chip_clock_rate, dword sampl
 	eInherited::SetTimings(chip_clock_rate, sample_rate);
 	passed_chip_ticks = passed_clk_ticks = 0;
 	t = 0; ns = 0xFFFF;
-
-	nextfmtickfloat = 0.; //Alone Coder
-	nextfmtick = 0; //Alone Coder
-	ayticks_per_fmtick = (float)chip_clock_rate/44100;
 
 	ApplyRegs();
 }

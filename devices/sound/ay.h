@@ -100,16 +100,11 @@ public:
 
 	static eDeviceId Id() { return D_AY; }
 protected:
-	// 'render' is a function that converts array of register writes into PCM-buffer
-	void Render(AYOUT *src, dword srclen, dword tacts, bufptr_t dst);
 	void Select(byte nreg);
 	void Write(dword timestamp, byte val);
 	byte Read();
 
 private:
-	float nextfmtickfloat,ayticks_per_fmtick; //Alone Coder
-	dword nextfmtick; //Alone Coder
-
 	dword t, ta, tb, tc, tn, te, env;
 	int denv;
 	dword bitA, bitB, bitC, bitN, ns;
