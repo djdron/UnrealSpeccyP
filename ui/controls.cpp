@@ -1,5 +1,27 @@
+/*
+Portable ZX-Spectrum emulator.
+Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "../std.h"
 #include "controls.h"
+
+#pragma once
+
+#ifdef USE_UI
 
 namespace xUi
 {
@@ -30,24 +52,24 @@ void eList::Update()
 	eRect sr = ScreenBound();
 	if(changed)
 	{
-		xRender::DrawRect(sr, background);
-		eRect r(sr.left, sr.top, sr.right, sr.top + xRender::FontHeight());
+		DrawRect(sr, background);
+		eRect r(sr.left, sr.top, sr.right, sr.top + FontHeight());
 		int i = page_begin;
 		for(; items[i]; ++i)
 		{
 			if(r.bottom > sr.bottom)
 				break;
-			xRender::DrawText(r, items[i]);
-			r.Move(ePoint(0, xRender::FontHeight()));
+			DrawText(r, items[i]);
+			r.Move(ePoint(0, FontHeight()));
 		}
 		page_size = i - page_begin;
 	}
 	if((changed || (selected != last_selected)) && page_size)
 	{
 		eRect cursor(sr.left, 0, sr.right, 0);
-		cursor.top = sr.top + (last_selected - page_begin) * xRender::FontHeight();
-		cursor.bottom = cursor.top + xRender::FontHeight();
-		xRender::DrawRect(cursor, background, 0x08ffffff);
+		cursor.top = sr.top + (last_selected - page_begin) * FontHeight();
+		cursor.bottom = cursor.top + FontHeight();
+		DrawRect(cursor, background, 0x08ffffff);
 		last_selected = selected;
 		if(selected < page_begin)
 		{
@@ -61,9 +83,9 @@ void eList::Update()
 			changed = true;
 			return;
 		}
-		cursor.top = sr.top + (selected - page_begin) * xRender::FontHeight();
-		cursor.bottom = cursor.top + xRender::FontHeight();
-		xRender::DrawRect(cursor, CURSOR_COLOR, 0x08ffffff);
+		cursor.top = sr.top + (selected - page_begin) * FontHeight();
+		cursor.bottom = cursor.top + FontHeight();
+		DrawRect(cursor, CURSOR_COLOR, 0x08ffffff);
 	}
 	changed = false;
 }
@@ -83,3 +105,5 @@ void eList::OnKey(char key)
 
 }
 //namespace xUi
+
+#endif//USE_UI

@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define USE_GL
 //#define USE_GLUT
 #define USE_WXWIDGETS
+#define USE_CUSTOM_UI
 #endif//_WINDOWS || _LINUX
 
 //#define USE_LOG

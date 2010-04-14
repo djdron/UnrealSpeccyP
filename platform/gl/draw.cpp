@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../platform.h"
-#include "../../ui/render.h"
+#include "../../ui/ui.h"
 
 #ifdef USE_GL
 
@@ -67,12 +67,14 @@ void DrawGL(int _w, int _h, void* _data, dword* _data_ui)
 			r = c&2 ? i : 0;
 			g = c&4 ? i : 0;
 			dword color;
+#ifdef USE_UI
 			if(_data_ui)
 			{
-				xRender::eRGBAColor c = _data_ui[y*320+x];
+				xUi::eRGBAColor c = _data_ui[y*320+x];
 				color = RGBX((r >> c.a) + c.r, (g >> c.a) + c.g, (b >> c.a) + c.b);
 			}
 			else
+#endif//USE_UI
 			{
 				color = RGBX(r, g ,b);
 			}

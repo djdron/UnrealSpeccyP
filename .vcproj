@@ -612,11 +612,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ui\render.cpp"
+				RelativePath=".\ui\ui.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ui\render.h"
+				RelativePath=".\ui\ui.h"
 				>
 			</File>
 		</Filter>

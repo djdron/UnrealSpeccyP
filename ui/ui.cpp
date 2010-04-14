@@ -1,8 +1,28 @@
+/*
+Portable ZX-Spectrum emulator.
+Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "../std.h"
-#include "render.h"
+#include "ui.h"
 #include "../platform/io.h"
 
-namespace xRender
+#ifdef USE_UI
+
+namespace xUi
 {
 
 static dword screen[WIDTH*HEIGHT];
@@ -109,4 +129,6 @@ void _CreateFont(int _w, int _h, const char* fname) { font.Create(_w, _h, fname)
 int FontHeight() { return font.h; }
 
 }
-//namespace xRender
+//namespace xUi
+
+#endif//USE_UI

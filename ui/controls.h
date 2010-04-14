@@ -1,9 +1,29 @@
+/*
+Portable ZX-Spectrum emulator.
+Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #ifndef	__CONTROLS_H__
 #define	__CONTROLS_H__
 
-#include "render.h"
+#include "ui.h"
 
 #pragma once
+
+#ifdef USE_UI
 
 namespace xUi
 {
@@ -27,14 +47,14 @@ public:
 		}
 		return r;
 	}
-	xRender::eRGBAColor& Background() { return background; }
+	xUi::eRGBAColor& Background() { return background; }
 	virtual void Update() = 0;
 	virtual void OnKey(char key) {}
 protected:
 	eRect bound;
 	eControl* parent;
 	bool changed;
-	xRender::eRGBAColor background;
+	eRGBAColor background;
 };
 
 //*****************************************************************************
@@ -71,7 +91,7 @@ public:
 		if(changed)
 		{
 			changed = false;
-			xRender::DrawRect(bound, background);
+			DrawRect(bound, background);
 		}
 		for(int i = 0; childs[i]; ++i)
 		{
@@ -125,5 +145,7 @@ protected:
 
 }
 //namespace xUi
+
+#endif//USE_UI
 
 #endif//__CONTROLS_H__
