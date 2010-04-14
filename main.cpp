@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "devices/sound/beeper.h"
 #include "devices/fdd/wd1793.h"
 #include "z80/z80.h"
+#include "ui/dialogs.h"
 #include "snapshot.h"
 
 static struct eSpeccyHandler : public xPlatform::eHandler
@@ -38,6 +39,10 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	{
 		assert(!speccy);
 		speccy = new eSpeccy;
+#ifdef USE_UI
+		ui_manager = new xUi::eManager("/*");
+		ui_manager->Init();
+#endif//USE_UI
 		sound_dev[0] = speccy->Device<eBeeper>();
 		sound_dev[1] = speccy->Device<eAY>();
 		sound_dev[2] = speccy->Device<eTape>();
@@ -45,13 +50,27 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	virtual void OnDone()
 	{
 		SAFE_DELETE(speccy);
+#ifdef USE_UI
+		SAFE_DELETE(ui_manager);
+#endif//USE_UI
 	}
 	virtual void OnLoop()
 	{
 		if(FullSpeed() || !video_paused)
 			speccy->Update();
+#ifdef USE_UI
+		ui_manager->Update();
+#endif//USE_UI
 	}
 	virtual void* VideoData() { return speccy->Device<eUla>()->Screen(); }
+	virtual void* VideoDataUI()
+	{
+#ifdef USE_UI
+		return ui_manager->VideoData();
+#else//USE_UI
+		return NULL;
+#endif//USE_UI
+	}
 	virtual const char* WindowCaption() { return "UnrealSpeccy portable"; }
 	virtual void OnKey(char key, dword flags)
 	{
@@ -60,6 +79,13 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		bool shift = (flags&KF_SHIFT) != 0;
 		bool ctrl = (flags&KF_CTRL) != 0;
 		bool alt = (flags&KF_ALT) != 0;
+
+#ifdef USE_UI
+		ui_manager->OnKey(down ? key : '\0');
+		if(ui_manager->Focused())
+			return;
+#endif//USE_UI
+
 		if(flags&KF_KEMPSTON)
 			speccy->Device<eKempstonJoy>()->OnKey(key, down);
 		if(flags&KF_CURSOR)
@@ -186,6 +212,9 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	virtual bool FullSpeed() const { return speccy->CPU()->FastEmul(); }
 
 	eSpeccy* speccy;
+#ifdef USE_UI
+	xUi::eManager* ui_manager;
+#endif//USE_UI
 	bool video_paused;
 	int drive_for_open;
 

@@ -34,7 +34,7 @@ void DoneSound();
 void OnLoopSound();
 
 void VsyncGL(bool on);
-void DrawGL(int w, int h, void* _data, dword* _data_ui = NULL);
+void DrawGL(int w, int h);
 
 class GLCanvas : public wxGLCanvas
 {
@@ -60,7 +60,7 @@ public:
 			vsync = s;
 			VsyncGL(vsync);
 		}
-		DrawGL(w, h, Handler()->VideoData());
+		DrawGL(w, h);
 		SwapBuffers();
 	}
 	virtual void OnIdle(wxIdleEvent& event)
@@ -193,6 +193,7 @@ void GLCanvas::TranslateKey(int& key, dword& flags)
 	case '*':	key = '8';		break;
 	case '(':	key = '9';		break;
 	case ')':	key = '0';		break;
+	case '~':	key = '`';		break;
 	case '\'':
 		if(flags&KF_SHIFT)
 		{

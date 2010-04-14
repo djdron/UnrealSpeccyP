@@ -51,11 +51,12 @@ static const GLubyte triangles[2 * 3] =
 	0, 2, 3,
 };
 
-void DrawGL(int _w, int _h, void* _data, dword* _data_ui)
+void DrawGL(int _w, int _h)
 {
 	const byte brightness = 200;
 	const byte bright_intensity = 55;
-	byte* data = (byte*)_data;
+	byte* data = (byte*)Handler()->VideoData();
+	dword* data_ui = (dword*)Handler()->VideoDataUI();
 	for(int y = 0; y < 240; ++y)
 	{
 		for(int x = 0; x < 320; ++x)
@@ -68,9 +69,9 @@ void DrawGL(int _w, int _h, void* _data, dword* _data_ui)
 			g = c&4 ? i : 0;
 			dword color;
 #ifdef USE_UI
-			if(_data_ui)
+			if(data_ui)
 			{
-				xUi::eRGBAColor c = _data_ui[y*320+x];
+				xUi::eRGBAColor c = data_ui[y*320+x];
 				color = RGBX((r >> c.a) + c.r, (g >> c.a) + c.g, (b >> c.a) + c.b);
 			}
 			else

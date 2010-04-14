@@ -96,8 +96,8 @@ void eList::OnKey(char key)
 {
 	switch(key)
 	{
-	case 'Q': --selected; break;
-	case 'A': ++selected; break;
+	case 'u': --selected; break;
+	case 'd': ++selected; break;
 	}
 	if(selected < 0) selected = size - 1;
 	if(selected >= size) selected = 0;

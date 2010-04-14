@@ -18,14 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../../std.h"
 #include "../platform.h"
-#include "../../ui/dialogs.h"
 
 #ifdef USE_GLUT
 
 #include <GL/glut.h>
 #include <ctype.h>
-
-xUi::eManager* ui_manager = NULL;
 
 namespace xPlatform
 {
@@ -34,7 +31,7 @@ void InitSound();
 void DoneSound();
 void OnLoopSound();
 
-void DrawGL(int w, int h, void* data, dword* data_ui);
+void DrawGL(int w, int h);
 
 static int window = -1;
 static int w = 1, h = 1;
@@ -49,7 +46,7 @@ static void OnResizeWindow(int Width, int Height)
 
 static void Draw()
 {
-	DrawGL(w, h, Handler()->VideoData(), ui_manager->VideoData());
+	DrawGL(w, h);
 	glutSwapBuffers();
 }
 
@@ -57,7 +54,6 @@ static void OnDraw() { Draw(); }
 static void OnIdle()
 {
 	Handler()->OnLoop();
-	ui_manager->Update();
 	glutPostRedisplay();
 	OnLoopSound();
 }
@@ -108,9 +104,7 @@ static void OnKeyDown(unsigned char _key, int x, int y)
 		flags |= KF_ALT;
 	byte key = toupper(_key);
 	TranslateKey(key, flags);
-	if(!ui_manager->Focused())
-		Handler()->OnKey(key, flags);
-	ui_manager->OnKey(key);
+	Handler()->OnKey(key, flags);
 }
 
 static void OnKeyUp(unsigned char _key, int x, int y)
@@ -118,9 +112,7 @@ static void OnKeyUp(unsigned char _key, int x, int y)
 	dword flags = 0;
 	byte key = toupper(_key);
 	TranslateKey(key, flags);
-	if(!ui_manager->Focused())
-		Handler()->OnKey(key, 0);
-	ui_manager->OnKey('\0');
+	Handler()->OnKey(key, 0);
 }
 
 void Done();
@@ -141,8 +133,6 @@ bool Init(int argc, char* argv[])
 	glutKeyboardUpFunc(&OnKeyUp);
 	InitSound();
 	atexit(Done);
-	ui_manager = new xUi::eManager("/*");
-	ui_manager->Init();
 	return true;
 }
 void Loop()
@@ -153,7 +143,6 @@ void Done()
 {
 	DoneSound();
 	Handler()->OnDone();
-	SAFE_DELETE(ui_manager);
 }
 
 }
