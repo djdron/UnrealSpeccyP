@@ -40,25 +40,22 @@ struct ePoint
 
 struct eRect
 {
-	eRect() { Clear(self); }
-	eRect(ePoint beg) { Clear(self); left = beg.x; top = beg.y; }
-	eRect(int _l, int _t, int _r, int _b) { Clear(self); left = _l; top = _t; right = _r; bottom = _b; }
+	eRect() { left = top = right = bottom = 0; }
+	eRect(ePoint p) { left = top = 0; right = p.x; bottom = p.y; }
+	eRect(int _l, int _t, int _r, int _b) { left = _l; top = _t; right = _r; bottom = _b; }
 	int Width() const { return right - left; }
 	int Height() const { return bottom - top; }
-	eRect& Move(ePoint offs) { beg += offs; end += offs; return self; }
-	union
-	{
-		struct { ePoint beg, end; };
-		struct { int left, top, right, bottom; };
-	};
+	eRect& Move(const ePoint& offs) { left += offs.x; right += offs.x; top += offs.y; bottom += offs.y; return self; }
+	ePoint Beg() const { return ePoint(left, top); }
+	ePoint End() const { return ePoint(right, bottom); }
+	int left, top, right, bottom;
 };
 
 enum { WIDTH = 320, HEIGHT = 240 };
 
 struct eRGBAColor
 {
-	eRGBAColor() { Clear(self); }
-	eRGBAColor(dword c) { rgba = c; }
+	eRGBAColor(dword c = 0) { rgba = c; }
 	eRGBAColor(byte _r, byte _g, byte _b, byte _a = 0xff) : r(_r), g(_g), b(_b), a(_a) {}
 	eRGBAColor& operator/=(byte v) { r /= v; g /= v; b /= v; return self; }
 	union

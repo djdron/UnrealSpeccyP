@@ -32,7 +32,7 @@ namespace xPlatform
 
 static dword tex[512*256];
 
-#define RGBX(r, g, b) ((b << 16)|(g << 8)|r)
+#define RGBX(r, g, b) (((b) << 16)|((g) << 8)|(r))
 
 //=============================================================================
 //	DrawGL
@@ -56,7 +56,9 @@ void DrawGL(int _w, int _h)
 	const byte brightness = 200;
 	const byte bright_intensity = 55;
 	byte* data = (byte*)Handler()->VideoData();
+#ifdef USE_UI
 	dword* data_ui = (dword*)Handler()->VideoDataUI();
+#endif//USE_UI
 	for(int y = 0; y < 240; ++y)
 	{
 		for(int x = 0; x < 320; ++x)

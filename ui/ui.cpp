@@ -78,7 +78,7 @@ void DrawRect(const eRect& r, const eRGBAColor& c, const eRGBAColor& key)
 static class eFont
 {
 public:
-	eFont() { Clear(self); }
+	eFont() : w(0), h(0), data(NULL) {}
 	~eFont() { SAFE_DELETE(data); }
 	void Create(int _w, int _h, const char* fname)
 	{
@@ -114,8 +114,8 @@ public:
 
 void DrawText(const eRect& r, const char* s)
 {
-	strupr(const_cast<char*>(s));
-	ePoint p = r.beg;
+//	strupr(const_cast<char*>(s));
+	ePoint p = r.Beg();
 	for(int i = 0; s[i]; ++i)
 	{
 		if(p.x + font.w > r.right)

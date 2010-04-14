@@ -43,7 +43,7 @@ public:
 		eRect r = Bound();
 		for(eControl* c = parent; c; c = c->parent)
 		{
-			r.Move(c->Bound().beg);
+			r.Move(c->Bound().Beg());
 		}
 		return r;
 	}

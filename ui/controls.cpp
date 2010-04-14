@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../std.h"
 #include "controls.h"
 
-#pragma once
-
 #ifdef USE_UI
 
 namespace xUi

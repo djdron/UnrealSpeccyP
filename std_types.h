@@ -35,6 +35,5 @@ enum eZeroValue { ZERO };
 #define self *this
 template<class T> void SAFE_DELETE(T*& p) { if(p) delete p; p = NULL;}
 #define SAFE_CALL(p) if(p) p
-template<class T> void Clear(T& c) { memset(&c, 0, sizeof(T)); }
 
 #endif//__TYPES_H__

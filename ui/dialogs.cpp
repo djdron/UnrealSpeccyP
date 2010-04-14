@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../std.h"
 #include "dialogs.h"
 
-#include <io.h>
+//#include <io.h>
 
 #ifdef USE_UI
 
@@ -44,10 +44,16 @@ void eFileOpenDialog::Init()
 //-----------------------------------------------------------------------------
 void eFileOpenDialog::OnChangePath()
 {
+	list->Clear();
+#ifdef _LINUX
+	list->Insert("FILE 1");
+	list->Insert("FILE 2");
+	list->Insert("FILE 3");
+#endif//_LINUX
+#ifdef _WINDOWS
 	_finddata_t fd;
 	dword handle = _findfirst(path, &fd);
 	dword res = handle;
-	list->Clear();
 	memset(folders, 0, sizeof(folders));
 	int i = 0;
 	while(res != -1)
@@ -60,6 +66,7 @@ void eFileOpenDialog::OnChangePath()
 		res = _findnext(handle, &fd);
 	}
 	_findclose(handle);
+#endif//_WINDOWS
 }
 static void GetUpLevel(char* path, int level = 1)
 {
