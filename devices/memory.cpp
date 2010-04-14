@@ -79,10 +79,10 @@ void eRom::LoadRom(int page, const char* rom)
 //-----------------------------------------------------------------------------
 void eRom::Init()
 {
-	LoadRom(ROM_128, xIo::ResourcePath("rom/128_low.rom"));
-	LoadRom(ROM_SOS, xIo::ResourcePath("rom/sos.rom"));
-	LoadRom(ROM_SYS, xIo::ResourcePath("rom/service.rom"));
-	LoadRom(ROM_DOS, xIo::ResourcePath("rom/dos513f.rom"));
+	LoadRom(ROM_128, xIo::ResourcePath("res/rom/128_low.rom"));
+	LoadRom(ROM_SOS, xIo::ResourcePath("res/rom/sos.rom"));
+	LoadRom(ROM_SYS, xIo::ResourcePath("res/rom/service.rom"));
+	LoadRom(ROM_DOS, xIo::ResourcePath("res/rom/dos513f.rom"));
 }
 //=============================================================================
 //	eRom::Reset

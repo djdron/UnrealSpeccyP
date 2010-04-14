@@ -159,9 +159,17 @@ void Done()
 }
 //namespace xPlatform
 
+#ifdef _WINDOWS
+#include <windows.h>
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+{
+	int argc = 0;
+	LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+#else//_WINDOWS
 int main(int argc, char* argv[])
 {
-	if(!xPlatform::Init(argc, argv))
+#endif//_WINDOWS
+	if(!xPlatform::Init(argc, (char**)argv))
 		return -1;
 	xPlatform::Loop();
 	xPlatform::Done();

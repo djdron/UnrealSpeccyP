@@ -44,7 +44,7 @@ public:
 	~eManager() { SAFE_DELETE(dialog); }
 	void Init()
 	{
-		xRender::_CreateFont(6, 6, "res/spxtrm4f.fnt");
+		xRender::_CreateFont(6, 6, "res/font/spxtrm4f.fnt");
 	}
 	dword* VideoData() const { return dialog ? xRender::Screen() : NULL; }
 	bool Focused() const { return dialog; }
