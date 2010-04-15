@@ -19,7 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../std.h"
 #include "dialogs.h"
 
-//#include <io.h>
+#ifdef _WINDOWS
+#include <io.h>
+#endif//_WINDOWS
 
 #ifdef USE_UI
 
