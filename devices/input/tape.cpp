@@ -900,7 +900,7 @@ byte eTape::TapeBit(int tact)
 		dword t = (dword)(tape.edge_change - speccy->T());
 		if((int)t >= 0)
 		{
-			const short vol = 2048;
+			const short vol = 1000;
 			short mono = tape.tape_bit ? vol : 0;
 			Update(tact, mono, mono);
 		}

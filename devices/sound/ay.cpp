@@ -257,14 +257,6 @@ void eAY::_Reset(dword timestamp)
 {
 	for (int i = 0; i < 14; i++)
 		reg[i] = 0;
-
-	/*
-	ayfq=chip2203->OPN.ST.SSGclock; //Dexus
-	mult_const2 = ((ayfq/conf.intfq) << (MULT_C_1-3))/conf.frame; //Dexus
-	mult_const3 = TICK_F/2+(dword)((__int64)temp.snd_frame_ticks*conf.intfq*(1<<(MULT_C+3))/ayfq); //Dexus
-	ay_div = ((dword)((double)ayfq*0x10*(double)SAMPLE_T/(double)conf.sound.fq)); //Dexus
-	ay_div2 = (ayfq*0x100)/(conf.sound.fq/32); //Dexus
-	*/
 	ApplyRegs(timestamp);
 }
 //=============================================================================

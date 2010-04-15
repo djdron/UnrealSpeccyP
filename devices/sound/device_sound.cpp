@@ -51,7 +51,7 @@ void eDeviceSound::Update(dword tact, dword l, dword r)
 		return;
 
 	qword endtick = (tact * (qword)sample_rate * TICK_F) / clock_rate;
-	Flush( (dword) (base_tick + endtick) );
+	Flush((dword)(base_tick + endtick));
 	mix_l = l; mix_r = r;
 }
 //=============================================================================
@@ -59,14 +59,8 @@ void eDeviceSound::Update(dword tact, dword l, dword r)
 //-----------------------------------------------------------------------------
 void eDeviceSound::FrameEnd(dword tacts)
 {
-	qword endtick = ((passed_clk_ticks + tacts) * (qword)sample_rate * TICK_F) / clock_rate;
-	Flush( (dword) (endtick - passed_snd_ticks) );
-
-	dword ready_samples = dstpos - dst_start;
-
-	tick -= (ready_samples << TICK_FF);
-	passed_snd_ticks += (ready_samples << TICK_FF);
-	passed_clk_ticks += tacts;
+	qword endtick = (tacts * (qword)sample_rate * TICK_F) / clock_rate;
+	Flush((dword)(base_tick + endtick));
 }
 //=============================================================================
 //	eDeviceSound::AudioData
@@ -100,7 +94,6 @@ void eDeviceSound::SetTimings(dword clock_rate, dword sample_rate)
 
 	tick = base_tick = 0;
 	dstpos = dst_start = buffer;
-	passed_snd_ticks = passed_clk_ticks = 0;
 }
 
 static dword filter_diff[TICK_F*2];
@@ -132,8 +125,8 @@ void eDeviceSound::Flush(dword endtick)
 		scale = filter_sum_full_u - filter_diff[(tick & (TICK_F-1)) + TICK_F];
 
 		dword sample_value;
-		sample_value = ((mix_l*scale + s2_l) >> 16) +
-			((mix_r*scale + s2_r) & 0xFFFF0000);
+		sample_value =	((mix_l*scale + s2_l) >> 16) +
+						((mix_r*scale + s2_r) & 0xFFFF0000);
 
 		dstpos->sample = sample_value;
 		dstpos++;

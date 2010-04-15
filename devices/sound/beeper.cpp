@@ -26,9 +26,10 @@ void eBeeper::IoWrite(word port, byte v, int tact)
 {
 	if(port & 1)
 		return;
-	const short vol = 8192;
-	short spk = (v & 0x10) ? vol : 0;
-	short mic = (v & 0x08) ? vol : 0;
+	const short spk_vol = 8192;
+	const short mic_vol = 1000;
+	short spk = (v & 0x10) ? spk_vol : 0;
+	short mic = (v & 0x08) ? mic_vol : 0;
 	short mono = spk + mic;
 	Update(tact, mono, mono);
 }

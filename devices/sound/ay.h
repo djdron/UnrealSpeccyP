@@ -39,14 +39,6 @@ struct AYREGS
 };
 #pragma pack(pop)
 
-struct AYOUT
-{
-	dword timestamp; // in system ticks
-	byte reg_num;
-	byte reg_value;
-	byte res1, res2; // padding
-};
-
 // output volumes (#0000-#FFFF) for given envelope state or R8-R10 value
 // AY chip has only 16 different volume values, so v[0]=v[1], v[2]=v[3], ...
 struct SNDCHIP_VOLTAB

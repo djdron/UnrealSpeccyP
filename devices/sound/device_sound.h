@@ -29,12 +29,6 @@ union SNDSAMPLE
 	struct { word left, right; } ch; // or left/right separately
 };
 
-struct SNDOUT
-{
-	dword timestamp; // in 'system clock' ticks
-	SNDSAMPLE newvalue;
-};
-
 const dword SNDR_DEFAULT_SYSTICK_RATE = 3500000; // ZX-Spectrum Z80 clock
 const dword SNDR_DEFAULT_SAMPLE_RATE = 44100;
 
@@ -68,8 +62,6 @@ private:
 	dword tick, base_tick;
 	dword s1_l, s1_r;
 	dword s2_l, s2_r;
-
-	qword passed_clk_ticks, passed_snd_ticks;
 
 	void Flush(dword endtick);
 };
