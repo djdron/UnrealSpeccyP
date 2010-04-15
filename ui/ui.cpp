@@ -114,7 +114,7 @@ public:
 
 void DrawText(const eRect& r, const char* s)
 {
-//	strupr(const_cast<char*>(s));
+	strupr(const_cast<char*>(s));
 	ePoint p = r.Beg();
 	for(int i = 0; s[i]; ++i)
 	{
