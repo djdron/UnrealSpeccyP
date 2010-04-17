@@ -672,7 +672,6 @@
 <option id="gnu.cpp.link.option.libs.1213850461" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="GL"/>
 <listOptionValue builtIn="false" value="openal"/>
-<listOptionValue builtIn="false" value="glut"/>
 </option>
 <option id="gnu.cpp.link.option.flags.754505804" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="`wx-config --libs core,base,gl`" valueType="string"/>
 <option id="gnu.cpp.link.option.strip.392474125" name="Omit all symbol information (-s)" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
