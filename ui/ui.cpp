@@ -114,13 +114,16 @@ public:
 
 void DrawText(const eRect& r, const char* s)
 {
-	strupr(const_cast<char*>(s));
+	//	strupr(const_cast<char*>(s));
 	ePoint p = r.Beg();
 	for(int i = 0; s[i]; ++i)
 	{
 		if(p.x + font.w > r.right)
 			break;
-		font.Draw(s[i], p);
+		char c = s[i];
+		if(c >= 96)
+			c -= 32;
+		font.Draw(c, p);
 		p.x += font.w;
 	}
 }

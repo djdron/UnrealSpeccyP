@@ -35,6 +35,7 @@ class eControl
 {
 public:
 	eControl() : parent(NULL), changed(true), background(0) {}
+	virtual ~eControl() {}
 	virtual void Init() {}
 	eRect& Bound() { return bound; }
 	void Parent(eControl* c) { parent = c; }
@@ -65,7 +66,7 @@ class eDialog : public eControl
 	enum { MAX_CHILDS = 32 };
 public:
 	eDialog() { *childs = NULL; }
-	~eDialog()
+	virtual ~eDialog()
 	{
 		for(int i = 0; childs[i]; ++i)
 		{
@@ -118,7 +119,7 @@ class eList : public eControl
 	enum { CURSOR_COLOR = 0x08b06000 };
 public:
 	eList() : size(0), last_selected(0), selected(0), page_begin(0), page_size(0) { *items = NULL; }
-	~eList() { Clear(); }
+	virtual ~eList() { Clear(); }
 	void Clear()
 	{
 		changed = true;
@@ -130,8 +131,8 @@ public:
 		size = last_selected = selected = page_begin = page_size = 0;
 	}
 	void Insert(const char* item);
-	const char* Selected() const { return items[selected]; }
-	int Selector() const { return selected; }
+	const char* Selected() const { return size ? items[selected] : NULL; }
+	int Selector() const { return size ? selected : -1; }
 	virtual void Update();
 	virtual void OnKey(char key);
 protected:

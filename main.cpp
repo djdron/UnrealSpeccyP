@@ -40,7 +40,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		assert(!speccy);
 		speccy = new eSpeccy;
 #ifdef USE_UI
-		ui_manager = new xUi::eManager("/*");
+		ui_manager = new xUi::eManager("\\*.*");
 		ui_manager->Init();
 #endif//USE_UI
 		sound_dev[0] = speccy->Device<eBeeper>();
@@ -81,7 +81,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		bool alt = (flags&KF_ALT) != 0;
 
 #ifdef USE_UI
-		ui_manager->OnKey(down ? key : '\0');
+		ui_manager->OnKey(down ? key : '\0', flags);
 		if(ui_manager->Focused())
 			return;
 #endif//USE_UI

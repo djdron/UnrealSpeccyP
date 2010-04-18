@@ -85,11 +85,11 @@ public:
 			SAFE_DELETE(dialog);
 		}
 	}
-	void OnKey(char _key)
+	void OnKey(char _key, bool pressed)
 	{
-		if(_key == key)
+		if((pressed && (_key == key)) || (!pressed && (_key != key)))
 			return;
-		key = _key;
+		key = pressed ? _key : '\0';
 		if(!key)
 			keypress_timer = 0;
 		if(key == '`')

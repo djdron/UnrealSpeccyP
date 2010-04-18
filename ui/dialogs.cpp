@@ -34,7 +34,7 @@ namespace xUi
 void eFileOpenDialog::Init()
 {
 	background = BACKGROUND_COLOR;
-	eRect r(8, 8, 140, HEIGHT - 8);
+	eRect r(8, 8, 120, HEIGHT / 2);
 	Bound() = r;
 	list = new eList;
 	list->Bound() = eRect(6, 6, r.Width() - 6, r.Height() - 6);
@@ -46,6 +46,7 @@ void eFileOpenDialog::Init()
 //-----------------------------------------------------------------------------
 void eFileOpenDialog::OnChangePath()
 {
+#ifndef _DINGOO
 	list->Clear();
 #ifdef _LINUX
 	list->Insert("FILE 1");
@@ -69,6 +70,23 @@ void eFileOpenDialog::OnChangePath()
 	}
 	_findclose(handle);
 #endif//_WINDOWS
+#else
+	eFindData fd;
+	int res = fsys_findfirst(path, -1, &fd);
+	list->Clear();
+	memset(folders, 0, sizeof(folders));
+	int i = 0;
+	while(!res)
+	{
+		if(strcmp(fd.name, "."))
+		{
+			folders[i++] = fd.attrib&0x10;
+			list->Insert(fd.name);
+		}
+		res = fsys_findnext(&fd);
+	}
+	fsys_findclose(&fd);
+#endif
 }
 static void GetUpLevel(char* path, int level = 1)
 {
@@ -86,13 +104,13 @@ static void GetUpLevel(char* path, int level = 1)
 //-----------------------------------------------------------------------------
 void eFileOpenDialog::OnKey(char key)
 {
-	if(key == 'e')
+	if(key == 'e' && list->Selected())
 	{
 		if(folders[list->Selector()])
 		{
 			GetUpLevel(path);
 			strcat(path, list->Selected());
-			strcat(path, "/*");
+			strcat(path, "\\*.*");
 			OnChangePath();
 			return;
 		}
