@@ -53,7 +53,8 @@ STACKSIZE = 0x28000
 # Directories
 # **********************************************
 
-SRCDIR    = ./lib ../ ../z80 ../devices ../devices/sound ../devices/fdd ../devices/input ../platform ../platform/dingoo
+SRCDIR    = ./lib ../../ ../../z80 ../../devices ../../devices/sound \
+../../devices/fdd ../../devices/input ../../platform ../../platform/dingoo ../../ui
 VPATH     = $(SRCDIR)
 LIBROOT   = ./lib
 
@@ -69,7 +70,7 @@ MAP       = $(TARGET).map
 # Compiler and linker options
 # **********************************************
 
-INCLUDE   = -I../platform/dingoo -I$(MIPSTOOLS)/mipsel-linux/include -I$
+INCLUDE   = -I../../platform/dingoo -I$(MIPSTOOLS)/mipsel-linux/include -I$
 
 W_OPTS    = -Wall -finline-functions -fomit-frame-pointer -msoft-float -fno-builtin -fno-exceptions \
 -nostartfiles -nodefaultlibs -nostdlib -fno-rtti
