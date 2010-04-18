@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Unreal Speccy Portable
+Comment=portable ZX-Spectrum emulator
+Exec=unreal-speccy-portable
+Icon=unreal-speccy-portable
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=Application;Game;
+StartupNotify=true
+MimeType=
+GenericName[en_GR]=
