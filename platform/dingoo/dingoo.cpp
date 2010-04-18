@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../std.h"
 #include "../platform.h"
 #include "../io.h"
+#include "../../ui/dialogs.h"
 
 #ifdef _DINGOO
 
@@ -37,10 +38,15 @@ void	_kbd_get_status(void*);
 int		_sys_judge_event(void*);
 dword	GetTickCount();
 
+void* waveout_open(void*);
+int waveout_write(void*, void* buffer, int count);
+int waveout_close(void*);
+int waveout_set_volume(dword vol);
+
 size_t strlen(const char* src)
 {
-	dword i;
-	for(i = 0; src[i] != '\0'; ++i);
+	int i = 0;
+	for(; src[i]; ++i);
 	return i;
 }
 
@@ -146,6 +152,36 @@ void eSlcd::Flip()
 	REG_DMAC_DCCSR(0) |= DMAC_DCCSR_EN;			// Set enable bit to start DMA
 }
 
+class eSound
+{
+public:
+	eSound()
+	{
+		waveout_set_volume(30);
+		struct eWaveoutOpen
+		{
+			dword	frequency;
+			word	bits;
+			byte	channels;
+			byte	volume;
+		}wo;
+		wo.bits = 16;
+		wo.channels = 2;
+		wo.frequency = 44100;
+		wo.volume = 30;
+		handle = waveout_open(&wo);
+	}
+	~eSound() { waveout_close(handle); }
+	void Write(void* data, int count)
+	{
+		waveout_write(handle, data, count);
+	}
+protected:
+	void* handle;
+}sound;
+
+xUi::eManager* ui_manager = NULL;
+
 namespace xPlatform
 {
 
@@ -153,20 +189,23 @@ bool Init(const char* res_path)
 {
 	char buf[1024];
 	strcpy(buf, __to_locale_ansi((wchar_t*)res_path));
-	int l = 0;
-	for(int i = 0; buf[i] != '\0'; ++i)
+	int i = strlen(buf);
+	for(; --i >= 0; )
 	{
 		if((buf[i] == '\\') || (buf[i] == '/'))
-			l = i;
+			break;
 	}
-	buf[++l] = '\0';
+	buf[++i] = '\0';
 	xIo::SetResourcePath(buf);
 	Handler()->OnInit();
+	ui_manager = new xUi::eManager(xIo::ResourcePath("\\*.*"));
+	ui_manager->Init();
 	return true;
 }
 void Done()
 {
 	Handler()->OnDone();
+	SAFE_DELETE(ui_manager);
 }
 
 enum eKeyBit
@@ -206,7 +245,9 @@ static bool KeyPressed(dword key)
 static void UpdateKey(eKeyBit key, char zx_key)
 {
 	dword flags = KeyPressed(key) ? KF_DOWN : 0;
-	Handler()->OnKey(zx_key, flags);
+	if(!ui_manager->Focused())
+		Handler()->OnKey(zx_key, flags);
+	ui_manager->OnKey(zx_key, flags);
 }
 
 static void UpdateKeys()
@@ -225,46 +266,78 @@ static void UpdateKeys()
 	UpdateKey(K_BUTTON_X, '0');
 	UpdateKey(K_BUTTON_Y, ' ');
 
-	UpdateKey(K_TRIGGER_LEFT, 'c');
-	UpdateKey(K_TRIGGER_RIGHT, 's');
+	UpdateKey(K_TRIGGER_LEFT, '1');
+	UpdateKey(K_TRIGGER_RIGHT, '2');
+
+	UpdateKey(K_BUTTON_START, '`');
 }
 
 #define RGB565(r, g, b)	(((b&~7) << 8)|((g&~3) << 3)|(r >> 3))
 
-void Loop()
+void Draw()
 {
 	const byte brightness = 190;
 	const byte bright_intensity = 65;
-	word refresh_latency = CFG_EXTAL / 4 / 50;//0xdf7c; //CFG_EXTAL / 4 / 52; //in tcu ticks 0xdf7c
+	byte* src = (byte*)Handler()->VideoData();
+	word* dst = slcd.FrameBack();
+	dword* _data_ui = ui_manager->VideoData();
+	for(int x = 320; --x >= 0; )
+	{
+		for(int y = 240; --y >= 0; )
+		{
+			byte r, g, b;
+			byte c = src[y*320+x];
+			byte i = c&8 ? brightness + bright_intensity : brightness;
+			b = c&1 ? i : 0;
+			r = c&2 ? i : 0;
+			g = c&4 ? i : 0;
+			dword color;
+			if(_data_ui)
+			{
+				xRender::eRGBAColor c = _data_ui[y*320+x];
+				color = RGB565((r >> c.a) + c.r, (g >> c.a) + c.g, (b >> c.a) + c.b);
+			}
+			else
+			{
+				color = RGB565(r, g ,b);
+			}
+			*dst++ = color;
+		}
+	}
+}
 
+void OnLoopSound()
+{
+	bool writed = false;
+	for(int i = Handler()->AudioSources(); --i >= 0;)
+	{
+		dword data_ready = Handler()->AudioDataReady(i);
+		void* data = Handler()->AudioData(i);
+		if(data_ready && !writed)
+		{
+			writed = true;
+			sound.Write(data, data_ready);
+		}
+		Handler()->AudioDataUse(i, data_ready);
+	}
+}
+
+void Loop()
+{
+	const word refresh_latency = CFG_EXTAL / 4 / 50; //in tcu ticks 0xdf7c
 	while(!(KeyPressed(K_BUTTON_SELECT) && KeyPressed(K_BUTTON_START)))
 	{
 		if(_sys_judge_event(NULL) < 0)
 			break;
-		if(KeyPressed(K_TRIGGER_LEFT))	--refresh_latency;
-		if(KeyPressed(K_TRIGGER_RIGHT))	++refresh_latency;
 		while(!tcu.IsFuture());
 		tcu.SetFuture(refresh_latency);
 		slcd.Flip();
+		OnLoopSound();
 		UpdateKeys();
+		ui_manager->Update();
 		Handler()->OnLoop();
-		byte* src = (byte*)Handler()->VideoData();
-		word* dst = slcd.FrameBack();
-		for(int x = 320; --x >= 0; )
-		{
-			for(int y = 240; --y >= 0; )
-			{
-				byte r, g, b;
-				byte c = src[y*320+x];
-				byte i = c&8 ? brightness + bright_intensity : brightness;
-				b = c&1 ? i : 0;
-				r = c&2 ? i : 0;
-				g = c&4 ? i : 0;
-				*dst++ = RGB565(r, g, b);
-			}
-		}
+		Draw();
 	}
-//	xIo::Log("timer: %x\n", refresh_latency);
 }
 
 }
@@ -275,6 +348,7 @@ void* operator new(size_t size) { return malloc(size); }
 void* operator new[](size_t size) { return malloc(size); }
 void operator delete(void* p) { if(p) free(p); }
 void operator delete[](void* p) { if(p) free(p); }
+extern "C" void __cxa_pure_virtual() {}
 
 typedef void (*_PVFV)();
 extern _PVFV __CTOR_LIST__[];
@@ -302,7 +376,6 @@ extern "C" int GameMain(char* res_path)
 {
 	CrtInit();
 	xPlatform::Init(res_path);
-	xPlatform::Handler()->OnOpenFile(xIo::ResourcePath("images/zx-for71.trd"));
 	xPlatform::Loop();
 	xPlatform::Done();
 	CrtDone();
