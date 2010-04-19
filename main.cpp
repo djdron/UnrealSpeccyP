@@ -81,7 +81,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		bool alt = (flags&KF_ALT) != 0;
 
 #ifdef USE_UI
-		ui_manager->OnKey(down ? key : '\0', flags);
+		ui_manager->OnKey(key, down);
 		if(ui_manager->Focused())
 			return;
 #endif//USE_UI
