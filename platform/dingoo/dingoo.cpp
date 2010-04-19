@@ -36,12 +36,10 @@ void*	_lcd_get_frame();
 void	_lcd_set_frame();
 void	_kbd_get_status(void*);
 int		_sys_judge_event(void*);
-dword	GetTickCount();
-
-void* waveout_open(void*);
-int waveout_write(void*, void* buffer, int count);
-int waveout_close(void*);
-int waveout_set_volume(dword vol);
+void*	waveout_open(void*);
+int		waveout_write(void*, void* buffer, int count);
+int		waveout_close(void*);
+int		waveout_set_volume(dword vol);
 
 size_t strlen(const char* src)
 {
@@ -180,8 +178,6 @@ protected:
 	void* handle;
 }sound;
 
-xUi::eManager* ui_manager = NULL;
-
 namespace xPlatform
 {
 
@@ -198,14 +194,11 @@ bool Init(const char* res_path)
 	buf[++i] = '\0';
 	xIo::SetResourcePath(buf);
 	Handler()->OnInit();
-	ui_manager = new xUi::eManager(xIo::ResourcePath("\\*.*"));
-	ui_manager->Init();
 	return true;
 }
 void Done()
 {
 	Handler()->OnDone();
-	SAFE_DELETE(ui_manager);
 }
 
 enum eKeyBit
@@ -245,9 +238,7 @@ static bool KeyPressed(dword key)
 static void UpdateKey(eKeyBit key, char zx_key)
 {
 	dword flags = KeyPressed(key) ? KF_DOWN : 0;
-	if(!ui_manager->Focused())
-		Handler()->OnKey(zx_key, flags);
-	ui_manager->OnKey(zx_key, flags);
+	Handler()->OnKey(zx_key, flags);
 }
 
 static void UpdateKeys()
@@ -308,18 +299,36 @@ void Draw()
 
 void OnLoopSound()
 {
-	bool writed = false;
-	for(int i = Handler()->AudioSources(); --i >= 0;)
+	//mix sound sources
+	static word sound_stream[16384*2];
+	dword common_size = 0;
+	for(int i = 0; i < Handler()->AudioSources(); ++i)
 	{
-		dword data_ready = Handler()->AudioDataReady(i);
-		void* data = Handler()->AudioData(i);
-		if(data_ready && !writed)
-		{
-			writed = true;
-			sound.Write(data, data_ready);
-		}
-		Handler()->AudioDataUse(i, data_ready);
+		dword size = Handler()->AudioDataReady(i);
+		if(size > common_size)
+			common_size = size;
 	}
+	for(int i = 0; i < Handler()->AudioSources(); ++i)
+	{
+		dword size = Handler()->AudioDataReady(i);
+		void* data = Handler()->AudioData(i);
+		if(!i)
+		{
+			memcpy(sound_stream, (byte*)data, size);
+			memset(sound_stream + size, 0, common_size - size);
+		}
+		else
+		{
+			word* src = (word*)data;
+			word* dst = &sound_stream;
+			for(int j = 0; j < size; ++j)
+			{
+				*dst++ += *src++;
+			}
+		}
+		Handler()->AudioDataUse(i, size);
+	}
+	sound.Write(sound_stream, common_size);
 }
 
 void Loop()
@@ -327,14 +336,13 @@ void Loop()
 	const word refresh_latency = CFG_EXTAL / 4 / 50; //in tcu ticks 0xdf7c
 	while(!(KeyPressed(K_BUTTON_SELECT) && KeyPressed(K_BUTTON_START)))
 	{
-		if(_sys_judge_event(NULL) < 0)
-			break;
+// 		if(_sys_judge_event(NULL) < 0)
+// 			break;
 		while(!tcu.IsFuture());
 		tcu.SetFuture(refresh_latency);
 		slcd.Flip();
 		OnLoopSound();
 		UpdateKeys();
-		ui_manager->Update();
 		Handler()->OnLoop();
 		Draw();
 	}

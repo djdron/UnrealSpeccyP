@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "z80/z80.h"
 #include "ui/dialogs.h"
 #include "snapshot.h"
+#include "platform/io.h"
 
 static struct eSpeccyHandler : public xPlatform::eHandler
 {
@@ -40,7 +41,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		assert(!speccy);
 		speccy = new eSpeccy;
 #ifdef USE_UI
-		ui_manager = new xUi::eManager("\\*.*");
+		ui_manager = new xUi::eManager(xIo::ResourcePath("\\*.*"));
 		ui_manager->Init();
 #endif//USE_UI
 		sound_dev[0] = speccy->Device<eBeeper>();
