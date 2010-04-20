@@ -19,7 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../std.h"
 #include "../platform.h"
 #include "../io.h"
-#include "../../ui/dialogs.h"
+#include "../../ui/ui.h"
+
+#define __inline__
 
 #ifdef _DINGOO
 
@@ -55,7 +57,7 @@ void* g_pGameDecodeBuf = NULL;
 
 class eTimer
 {
-	enum { CHANNEL = 3 };
+	enum { CHANNEL = 3, REFRESH_LATENCY = CFG_EXTAL / 4 / 50 }; //in tcu ticks 0xdf7c
 public:
 	eTimer()
 	{
@@ -71,6 +73,13 @@ public:
 	{
 		__tcu_stop_counter(CHANNEL);
 	}
+	void Wait()
+	{
+		while(!IsFuture());
+		SetFuture(REFRESH_LATENCY);
+	}
+
+protected:
 	void SetFuture(word ticks)
 	{
 		REG_TCU_TDFR(CHANNEL) = ticks;
@@ -78,12 +87,12 @@ public:
 		__tcu_clear_full_match_flag(CHANNEL);
 	}
 	bool IsFuture() { return __tcu_full_match_flag(CHANNEL); }
-}tcu;
+}timer;
 
-class eSlcd
+class eVideo
 {
 public:
-	eSlcd() : frame(NULL), frame_back(NULL)
+	eVideo() : frame(NULL), frame_back(NULL)
 	{
 		Set(0x03, 0x0030);	//entry mode default
 //		Set(0x2b, 0x0008);	//refresh 51hz
@@ -93,7 +102,7 @@ public:
 		frame = (word*)_lcd_get_frame();
 		frame_back = (word*)g_pGameDecodeBuf;
 	}
-	~eSlcd() 
+	~eVideo() 
 	{
 		Set(0x03, 0x1048);	//entry mode restore
 		Set(0x2b, 0x000d);	//refresh 93hz
@@ -102,15 +111,16 @@ public:
 		Set(0x22);			//write to GRAM
 	}
 	void Flip();
-	word* FrameBack() { return frame_back; }
+	void Update();
 protected:
 	void Set(dword cmd, int data = -1);
+	word* FrameBack() { return frame_back; }
 protected:
 	word*	frame;
 	word*	frame_back;
-}slcd;
+}video;
 
-void eSlcd::Set(dword cmd, int data)
+void eVideo::Set(dword cmd, int data)
 {
 	// SLCD related GPIO pins for the Dingoo A320
 	const int pin_rs_n = 32*2+19;	// port 2 pin 19: RS# (register select, active low)
@@ -124,7 +134,7 @@ void eSlcd::Set(dword cmd, int data)
 	REG_SLCD_DATA = SLCD_DATA_RS_DATA|(data&0xffff);
 	while(REG_SLCD_STATE&SLCD_STATE_BUSY);
 }
-void eSlcd::Flip()
+void eVideo::Flip()
 {
 	word* tmp = frame;
 	frame = frame_back;
@@ -150,10 +160,44 @@ void eSlcd::Flip()
 	REG_DMAC_DCCSR(0) |= DMAC_DCCSR_EN;			// Set enable bit to start DMA
 }
 
-class eSound
+void eVideo::Update()
+{
+#define RGB565(r, g, b)	(((b&~7) << 8)|((g&~3) << 3)|(r >> 3))
+
+	enum { BRIGHTNESS = 190, BRIGHT_INTENSITY = 65 };
+	using namespace xPlatform;
+	byte* src = (byte*)Handler()->VideoData();
+	dword* src_ui = (dword*)Handler()->VideoDataUI();
+	word* dst = video.FrameBack();
+	for(int x = 320; --x >= 0; )
+	{
+		for(int y = 240; --y >= 0; )
+		{
+			byte r, g, b;
+			byte c = src[y*320+x];
+			byte i = c&8 ? BRIGHTNESS + BRIGHT_INTENSITY : BRIGHTNESS;
+			b = c&1 ? i : 0;
+			r = c&2 ? i : 0;
+			g = c&4 ? i : 0;
+			dword color;
+			if(src_ui)
+			{
+				xUi::eRGBAColor c = src_ui[y*320+x];
+				color = RGB565((r >> c.a) + c.r, (g >> c.a) + c.g, (b >> c.a) + c.b);
+			}
+			else
+			{
+				color = RGB565(r, g ,b);
+			}
+			*dst++ = color;
+		}
+	}
+}
+
+class eAudio
 {
 public:
-	eSound()
+	eAudio() : source(0)
 	{
 		waveout_set_volume(30);
 		struct eWaveoutOpen
@@ -162,21 +206,136 @@ public:
 			word	bits;
 			byte	channels;
 			byte	volume;
-		}wo;
-		wo.bits = 16;
-		wo.channels = 2;
-		wo.frequency = 44100;
-		wo.volume = 30;
+		}wo = { 44100, 16, 2, 30 };
 		handle = waveout_open(&wo);
 	}
-	~eSound() { waveout_close(handle); }
-	void Write(void* data, int count)
+	~eAudio() { waveout_close(handle); }
+	void Update();
+	void NextSource()
 	{
-		waveout_write(handle, data, count);
+		source = source < xPlatform::Handler()->AudioSources() - 1 ? source + 1 : 0;
 	}
 protected:
 	void* handle;
-}sound;
+	int source;
+}audio;
+
+void eAudio::Update()
+{
+	using namespace xPlatform;
+	for(int i = Handler()->AudioSources(); --i >= 0;)
+	{
+		dword size = Handler()->AudioDataReady(i);
+		if(i == source)
+		{
+			waveout_write(handle, Handler()->AudioData(i), size);
+		}
+		Handler()->AudioDataUse(i, size);
+	}
+	return;
+/*
+	//mix sound sources
+	static word sound_stream[16384*2];
+	dword common_size = 0;
+	for(int i = 0; i < Handler()->AudioSources(); ++i)
+	{
+		dword size = Handler()->AudioDataReady(i);
+		if(size > common_size)
+			common_size = size;
+	}
+	for(int i = 0; i < Handler()->AudioSources(); ++i)
+	{
+		dword size = Handler()->AudioDataReady(i);
+		void* data = Handler()->AudioData(i);
+		if(!i)
+		{
+			memcpy(sound_stream, (byte*)data, size);
+			memset(sound_stream + size, 0, common_size - size);
+		}
+		else
+		{
+			word* src = (word*)data;
+			word* dst = &sound_stream;
+			for(int j = 0; j < size/2; ++j)			{				*dst++ += *src++;			}		}
+		Handler()->AudioDataUse(i, size);
+	}
+	sound.Write(sound_stream, common_size);*/
+}
+
+class eKeys
+{
+public:
+	eKeys() {}
+	void Update();
+	bool Quit() const
+	{
+		return KeyPressed(K_BUTTON_SELECT) && KeyPressed(K_BUTTON_START);
+	}
+
+	enum eKeyBit
+	{
+		K_POWER			= 7,
+		K_BUTTON_A		= 31,
+		K_BUTTON_B		= 21,
+		K_BUTTON_X		= 16,
+		K_BUTTON_Y      = 6,
+		K_BUTTON_START	= 11,
+		K_BUTTON_SELECT	= 10,
+
+		K_TRIGGER_LEFT	= 8,
+		K_TRIGGER_RIGHT	= 29,
+
+		K_DPAD_UP		= 20,
+		K_DPAD_DOWN		= 27,
+		K_DPAD_LEFT		= 28,
+		K_DPAD_RIGHT	= 18
+	};
+
+protected:
+	bool KeyPressed(eKeyBit key) const
+	{
+		struct eKeyStatus
+		{
+			dword pressed;
+			dword released;
+			dword status;
+		}ks;
+		_kbd_get_status(&ks);
+		bool pressed = ks.status & (1 << key);
+		return pressed;
+	}
+	void UpdateKey(eKeyBit key, char zx_key)
+	{
+		dword flags = KeyPressed(key) ? xPlatform::KF_DOWN : 0;
+		xPlatform::Handler()->OnKey(zx_key, flags);
+	}
+}keys;
+
+void eKeys::Update()
+{
+	if(KeyPressed(K_BUTTON_SELECT))
+	{
+		xPlatform::Handler()->OnAction(xPlatform::A_RESET);
+	}
+	if(KeyPressed(K_POWER))
+	{
+		audio.NextSource();
+	}
+	UpdateKey(K_DPAD_UP, 'Q');
+	UpdateKey(K_DPAD_DOWN, 'A');
+	UpdateKey(K_DPAD_LEFT, 'O');
+	UpdateKey(K_DPAD_RIGHT, 'P');
+
+	UpdateKey(K_BUTTON_A, 'M');
+	UpdateKey(K_BUTTON_B, 'e');
+	UpdateKey(K_BUTTON_X, '0');
+	UpdateKey(K_BUTTON_Y, ' ');
+
+	UpdateKey(K_TRIGGER_LEFT, '1');
+	UpdateKey(K_TRIGGER_RIGHT, '2');
+
+	UpdateKey(K_BUTTON_START, '`');
+}
 
 namespace xPlatform
 {
@@ -201,150 +360,18 @@ void Done()
 	Handler()->OnDone();
 }
 
-enum eKeyBit
-{
-	K_POWER			= 7,
-	K_BUTTON_A		= 31,
-	K_BUTTON_B		= 21,
-	K_BUTTON_X		= 16,
-	K_BUTTON_Y      = 6,
-	K_BUTTON_START	= 11,
-	K_BUTTON_SELECT	= 10,
-
-	K_TRIGGER_LEFT	= 8,
-	K_TRIGGER_RIGHT	= 29,
-
-	K_DPAD_UP		= 20,
-	K_DPAD_DOWN		= 27,
-	K_DPAD_LEFT		= 28,
-	K_DPAD_RIGHT	= 18
-};
-
-struct eKeyStatus
-{
-	dword pressed;
-	dword released;
-	dword status;
-};
-
-static bool KeyPressed(dword key)
-{
-	eKeyStatus ks;
-	_kbd_get_status(&ks);
-	bool pressed = ks.status & (1 << key);
-	return pressed;
-}
-
-static void UpdateKey(eKeyBit key, char zx_key)
-{
-	dword flags = KeyPressed(key) ? KF_DOWN : 0;
-	Handler()->OnKey(zx_key, flags);
-}
-
-static void UpdateKeys()
-{
-	if(KeyPressed(K_BUTTON_SELECT))
-	{
-		Handler()->OnAction(A_RESET);
-	}
-	UpdateKey(K_DPAD_UP, 'Q');
-	UpdateKey(K_DPAD_DOWN, 'A');
-	UpdateKey(K_DPAD_LEFT, 'O');
-	UpdateKey(K_DPAD_RIGHT, 'P');
-
-	UpdateKey(K_BUTTON_A, 'M');
-	UpdateKey(K_BUTTON_B, 'e');
-	UpdateKey(K_BUTTON_X, '0');
-	UpdateKey(K_BUTTON_Y, ' ');
-
-	UpdateKey(K_TRIGGER_LEFT, '1');
-	UpdateKey(K_TRIGGER_RIGHT, '2');
-
-	UpdateKey(K_BUTTON_START, '`');
-}
-
-#define RGB565(r, g, b)	(((b&~7) << 8)|((g&~3) << 3)|(r >> 3))
-
-void Draw()
-{
-	const byte brightness = 190;
-	const byte bright_intensity = 65;
-	byte* src = (byte*)Handler()->VideoData();
-	word* dst = slcd.FrameBack();
-	dword* _data_ui = ui_manager->VideoData();
-	for(int x = 320; --x >= 0; )
-	{
-		for(int y = 240; --y >= 0; )
-		{
-			byte r, g, b;
-			byte c = src[y*320+x];
-			byte i = c&8 ? brightness + bright_intensity : brightness;
-			b = c&1 ? i : 0;
-			r = c&2 ? i : 0;
-			g = c&4 ? i : 0;
-			dword color;
-			if(_data_ui)
-			{
-				xRender::eRGBAColor c = _data_ui[y*320+x];
-				color = RGB565((r >> c.a) + c.r, (g >> c.a) + c.g, (b >> c.a) + c.b);
-			}
-			else
-			{
-				color = RGB565(r, g ,b);
-			}
-			*dst++ = color;
-		}
-	}
-}
-
-void OnLoopSound()
-{
-	//mix sound sources
-	static word sound_stream[16384*2];
-	dword common_size = 0;
-	for(int i = 0; i < Handler()->AudioSources(); ++i)
-	{
-		dword size = Handler()->AudioDataReady(i);
-		if(size > common_size)
-			common_size = size;
-	}
-	for(int i = 0; i < Handler()->AudioSources(); ++i)
-	{
-		dword size = Handler()->AudioDataReady(i);
-		void* data = Handler()->AudioData(i);
-		if(!i)
-		{
-			memcpy(sound_stream, (byte*)data, size);
-			memset(sound_stream + size, 0, common_size - size);
-		}
-		else
-		{
-			word* src = (word*)data;
-			word* dst = &sound_stream;
-			for(int j = 0; j < size; ++j)
-			{
-				*dst++ += *src++;
-			}
-		}
-		Handler()->AudioDataUse(i, size);
-	}
-	sound.Write(sound_stream, common_size);
-}
-
 void Loop()
 {
-	const word refresh_latency = CFG_EXTAL / 4 / 50; //in tcu ticks 0xdf7c
-	while(!(KeyPressed(K_BUTTON_SELECT) && KeyPressed(K_BUTTON_START)))
+	while(!keys.Quit())
 	{
-// 		if(_sys_judge_event(NULL) < 0)
-// 			break;
-		while(!tcu.IsFuture());
-		tcu.SetFuture(refresh_latency);
-		slcd.Flip();
-		OnLoopSound();
-		UpdateKeys();
+		if(_sys_judge_event(NULL) < 0)
+			break;
+		timer.Wait();
+		video.Flip();
+		audio.Update();
+		keys.Update();
 		Handler()->OnLoop();
-		Draw();
+		video.Update();
 	}
 }
 
