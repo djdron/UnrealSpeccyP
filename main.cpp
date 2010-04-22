@@ -72,7 +72,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		return NULL;
 #endif//USE_UI
 	}
-	virtual const char* WindowCaption() { return "UnrealSpeccy portable"; }
+	virtual const char* WindowCaption() { return "Unreal Speccy Portable"; }
 	virtual void OnKey(char key, dword flags)
 	{
 		using namespace xPlatform;

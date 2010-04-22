@@ -36,6 +36,9 @@ void OnLoopSound();
 void VsyncGL(bool on);
 void DrawGL(int w, int h);
 
+const wxEventType evtMouseCapture = wxNewEventType();
+enum wxEventMouseCaptureId { evID_MOUSE_CAPTURED = 1, evID_MOUSE_RELEASED };
+
 class GLCanvas : public wxGLCanvas
 {
 	typedef wxGLCanvas eInherited;
@@ -104,10 +107,9 @@ public:
 		if(!HasCapture())
 			return;
 		byte x = event.GetX() - mouse_x;
-		byte y = -event.GetY() - mouse_y;
-		mouse_x = event.GetX();
-		mouse_y = -event.GetY();
-		Handler()->OnMouse(MA_MOVE, x, y);
+		byte y = event.GetY() - mouse_y;
+		WarpPointer(mouse_x, mouse_y);
+		Handler()->OnMouse(MA_MOVE, x, -y);
 	}
 	virtual void OnMouseKey(wxMouseEvent& event)
 	{
@@ -116,10 +118,14 @@ public:
 		{
 			if(event.Button(wxMOUSE_BTN_LEFT) && event.ButtonDown())
 			{
-				SetCursor(wxCURSOR_BLANK);
+				wxImage image_blank(1, 1);
+				image_blank.SetMask();
+				image_blank.SetMaskColour(0, 0, 0);
+				SetCursor(image_blank);
 				mouse_x = event.GetX();
-				mouse_y = -event.GetY();
+				mouse_y = event.GetY();
 				CaptureMouse();
+				wxPostEvent(this, wxCommandEvent(evtMouseCapture, evID_MOUSE_CAPTURED));
 			}
 		}
 		else
@@ -131,8 +137,12 @@ public:
 	}
 	void KillMouseFocus()
 	{
-		ReleaseMouse();
-		SetCursor(wxNullCursor);
+		if(HasCapture())
+		{
+			ReleaseMouse();
+			SetCursor(wxNullCursor);
+			wxPostEvent(this, wxCommandEvent(evtMouseCapture, evID_MOUSE_RELEASED));
+		}
 	}
 	void TranslateKey(int& key, dword& flags);
 
@@ -144,7 +154,7 @@ public:
 protected:
 
 	wxGLContext* context;
-	byte mouse_x, mouse_y;
+	wxCoord mouse_x, mouse_y;
 };
 int GLCanvas::canvas_attr[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, 0 };
 
@@ -384,6 +394,14 @@ public:
 		if(joy_menu.sinclair2->IsChecked())
 			gl_canvas->key_flags |= KF_SINCLAIR2;
 	}
+	void OnMouseCapture(wxCommandEvent& event)
+	{
+		switch(event.GetId())
+		{
+		case evID_MOUSE_CAPTURED:	SetStatusText(_("Mouse captured, press ESC to cancel"));	break;
+		case evID_MOUSE_RELEASED:	SetStatusText(_("Mouse released"));	break;
+		}
+	}
 	void UpdateJoyMenu()
 	{
 		joy_menu.kempston->Check(gl_canvas->key_flags&KF_KEMPSTON);
@@ -426,6 +444,7 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_JoyCursor,Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoyQAOP,	Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoySinclair2,Frame::OnJoy)
+	EVT_COMMAND(wxID_ANY, evtMouseCapture, Frame::OnMouseCapture)
 END_EVENT_TABLE()
 
 class App: public wxApp
