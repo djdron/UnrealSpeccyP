@@ -125,7 +125,8 @@ public:
 				mouse_x = event.GetX();
 				mouse_y = event.GetY();
 				CaptureMouse();
-				wxPostEvent(this, wxCommandEvent(evtMouseCapture, evID_MOUSE_CAPTURED));
+				wxCommandEvent ev(evtMouseCapture, evID_MOUSE_CAPTURED);
+				wxPostEvent(this, ev);
 			}
 		}
 		else
@@ -141,7 +142,8 @@ public:
 		{
 			ReleaseMouse();
 			SetCursor(wxNullCursor);
-			wxPostEvent(this, wxCommandEvent(evtMouseCapture, evID_MOUSE_RELEASED));
+			wxCommandEvent ev(evtMouseCapture, evID_MOUSE_RELEASED);
+			wxPostEvent(this, ev);
 		}
 	}
 	void TranslateKey(int& key, dword& flags);
@@ -307,8 +309,9 @@ public:
 		CreateStatusBar();
 		SetStatusText(_("Ready..."));
 
+		SetClientSize(org_size);
+		SetMinSize(GetSize());
 		SetClientSize(org_size*2);
-		SetMinSize(ClientToWindowSize(org_size));
 
 		gl_canvas = new GLCanvas(this);
 		gl_canvas->SetFocus();
