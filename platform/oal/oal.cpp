@@ -105,11 +105,7 @@ static ALCcontext* context = NULL;
 
 void InitSound()
 {
-#ifdef _LINUX
-	device = alcOpenDevice("PortAudio Software");
-#else
 	device = alcOpenDevice(NULL);
-#endif
 	context = alcCreateContext(device, NULL);
 	alcMakeContextCurrent(context);
 	alcProcessContext(context);
