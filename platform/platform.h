@@ -27,8 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define USE_OAL
 #define USE_GL
-#define USE_GLUT
-//#define USE_WXWIDGETS
+//#define USE_GLUT
+#define USE_WXWIDGETS
 
 #endif//_WINDOWS || _LINUX
 
