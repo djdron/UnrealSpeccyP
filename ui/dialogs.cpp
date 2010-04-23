@@ -46,13 +46,13 @@ void eFileOpenDialog::Init()
 //-----------------------------------------------------------------------------
 void eFileOpenDialog::OnChangePath()
 {
-#ifndef _DINGOO
 	list->Clear();
 #ifdef _LINUX
 	list->Insert("FILE 1");
 	list->Insert("FILE 2");
 	list->Insert("FILE 3");
 #endif//_LINUX
+
 #ifdef _WINDOWS
 	_finddata_t fd;
 	dword handle = _findfirst(path, &fd);
@@ -70,7 +70,8 @@ void eFileOpenDialog::OnChangePath()
 	}
 	_findclose(handle);
 #endif//_WINDOWS
-#else
+
+#ifdef _DINGOO
 	eFindData fd;
 	int res = fsys_findfirst(path, -1, &fd);
 	list->Clear();
@@ -86,7 +87,7 @@ void eFileOpenDialog::OnChangePath()
 		res = fsys_findnext(&fd);
 	}
 	fsys_findclose(&fd);
-#endif
+#endif//_DINGOO
 }
 static void GetUpLevel(char* path, int level = 1)
 {

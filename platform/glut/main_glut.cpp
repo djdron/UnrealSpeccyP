@@ -91,6 +91,18 @@ static void TranslateKey(byte& _key, dword& _flags)
 	case ')':	_key = '0';		break;
 	}
 }
+static byte TranslateKeySpecial(int _key, dword& _flags)
+{
+	switch(_key)
+	{
+	case GLUT_KEY_LEFT:		return 'l';
+	case GLUT_KEY_RIGHT:	return 'r';
+	case GLUT_KEY_UP:		return 'u';
+	case GLUT_KEY_DOWN:		return 'd';
+	case GLUT_KEY_INSERT:	return 'f';
+	}
+	return 0;
+}
 
 static void OnKeyDown(unsigned char _key, int x, int y)
 {
@@ -106,13 +118,33 @@ static void OnKeyDown(unsigned char _key, int x, int y)
 	TranslateKey(key, flags);
 	Handler()->OnKey(key, flags);
 }
-
 static void OnKeyUp(unsigned char _key, int x, int y)
 {
 	dword flags = 0;
 	byte key = toupper(_key);
 	TranslateKey(key, flags);
 	Handler()->OnKey(key, 0);
+}
+
+static void OnKeySpecialDown(int _key, int x, int y)
+{
+	dword flags = KF_DOWN|KF_CURSOR|KF_KEMPSTON;
+	int m = glutGetModifiers();
+	if(m&GLUT_ACTIVE_SHIFT)
+		flags |= KF_SHIFT;
+	if(m&GLUT_ACTIVE_CTRL)
+		flags |= KF_CTRL;
+	if(m&GLUT_ACTIVE_ALT)
+		flags |= KF_ALT;
+	byte key = TranslateKeySpecial(_key, flags);
+	Handler()->OnKey(key, flags);
+}
+
+static void OnKeySpecialUp(int _key, int x, int y)
+{
+	dword flags = 0;
+	byte key = TranslateKeySpecial(_key, flags);
+	Handler()->OnKey(key, KF_CURSOR|KF_KEMPSTON);
 }
 
 void Done();
@@ -124,13 +156,15 @@ bool Init(int argc, char* argv[])
 	glutInitWindowPosition(100, 100);
 	Handler()->OnInit();
 	window = glutCreateWindow(Handler()->WindowCaption());
-	glutDisplayFunc(&OnDraw);
+	glutDisplayFunc(OnDraw);
 //	glutFullScreen();
-	glutIdleFunc(&OnIdle);
-	glutReshapeFunc(&OnResizeWindow);
+	glutIdleFunc(OnIdle);
+	glutReshapeFunc(OnResizeWindow);
 	glutIgnoreKeyRepeat(true);
-	glutKeyboardFunc(&OnKeyDown);
-	glutKeyboardUpFunc(&OnKeyUp);
+	glutKeyboardFunc(OnKeyDown);
+	glutKeyboardUpFunc(OnKeyUp);
+	glutSpecialFunc(OnKeySpecialDown);
+	glutSpecialUpFunc(OnKeySpecialUp);
 	InitSound();
 	atexit(Done);
 	return true;
