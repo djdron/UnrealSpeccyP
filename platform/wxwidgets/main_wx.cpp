@@ -46,7 +46,7 @@ public:
 	GLCanvas(wxWindow* parent)
 	: eInherited(parent, wxID_ANY, canvas_attr)
 	, key_flags(KF_CURSOR|KF_KEMPSTON)
-	, mouse_x(0), mouse_y(0)
+	, mouse_pos(0, 0)
 	{
 		context = new wxGLContext(this);
 	}
@@ -106,10 +106,13 @@ public:
 		event.Skip();
 		if(!HasCapture())
 			return;
-		byte x = event.GetX() - mouse_x;
-		byte y = event.GetY() - mouse_y;
-		WarpPointer(mouse_x, mouse_y);
-		Handler()->OnMouse(MA_MOVE, x, -y);
+		wxPoint p = event.GetPosition();
+		wxPoint d = p - mouse_pos;
+		if(d.x || d.y)
+		{
+			WarpPointer(mouse_pos.x, mouse_pos.y);
+		}
+		Handler()->OnMouse(MA_MOVE, d.x, -d.y);
 	}
 	virtual void OnMouseKey(wxMouseEvent& event)
 	{
@@ -122,8 +125,7 @@ public:
 				image_blank.SetMask();
 				image_blank.SetMaskColour(0, 0, 0);
 				SetCursor(image_blank);
-				mouse_x = event.GetX();
-				mouse_y = event.GetY();
+				mouse_pos = event.GetPosition();
 				CaptureMouse();
 				wxCommandEvent ev(evtMouseCapture, evID_MOUSE_CAPTURED);
 				wxPostEvent(this, ev);
@@ -156,7 +158,7 @@ public:
 protected:
 
 	wxGLContext* context;
-	wxCoord mouse_x, mouse_y;
+	wxPoint mouse_pos;
 };
 int GLCanvas::canvas_attr[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, 0 };
 
