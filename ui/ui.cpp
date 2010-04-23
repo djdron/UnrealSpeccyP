@@ -128,8 +128,8 @@ void DrawText(const eRect& r, const char* s)
 	}
 }
 
-void _CreateFont(int _w, int _h, const char* fname) { font.Create(_w, _h, fname); }
-int FontHeight() { return font.h; }
+void CreateFont(int _w, int _h, const char* fname) { font.Create(_w, _h, fname); }
+ePoint FontSize() { return ePoint(font.w, font.h); }
 
 }
 //namespace xUi

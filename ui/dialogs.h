@@ -46,7 +46,7 @@ public:
 	virtual void OnKey(char key);
 protected:
 	void OnChangePath();
-	enum { BACKGROUND_COLOR = 0x01000000 };
+	enum { BACKGROUND_COLOR = 0x01202020 };
 protected:
 	char path[256];
 	eList* list;
@@ -54,61 +54,53 @@ protected:
 	const char* selected;
 };
 
+//*****************************************************************************
+//	eKeysDialog
+//-----------------------------------------------------------------------------
+class eKeysDialog : public eDialog
+{
+public:
+	eKeysDialog() : key(0) {}
+	virtual void Init();
+	byte Key() const { return key; }
+	enum eId { ID_CAPS = 0, ID_SYMBOL, ID_ENTER, ID_SPACE };
+protected:
+	virtual void OnNotify(dword id) { key = id; }
+	dword AllocateId(const char* key) const;
+	enum { BACKGROUND_COLOR = 0x01202020 };
+protected:
+	byte key;
+};
+
+
+//*****************************************************************************
+//	eManager
+//-----------------------------------------------------------------------------
 class eManager
 {
 public:
-	eManager(const char* _path) : dialog(NULL), key('\0'), keypress_timer(0)
+	eManager(const char* _path) : fo_dialog(NULL), keys_dialog(NULL), key('\0'), keypress_timer(0)
 	{
 		strcpy(path, _path);
 	}
-	~eManager() { SAFE_DELETE(dialog); }
+	~eManager()
+	{
+		SAFE_DELETE(fo_dialog);
+		SAFE_DELETE(keys_dialog);
+	}
 	void Init()
 	{
-		_CreateFont(6, 6, "res/font/spxtrm4f.fnt");
+		CreateFont(6, 6, "res/font/spxtrm4f.fnt");
 	}
-	dword* VideoData() const { return dialog ? Screen() : NULL; }
-	bool Focused() const { return dialog; }
-	void Update()
-	{
-		if(key)
-		{
-			if(!keypress_timer || keypress_timer > KEY_REPEAT_DELAY)
-			{
-				SAFE_CALL(dialog)->OnKey(key);
-			}
-			++keypress_timer;
-		}
-		SAFE_CALL(dialog)->Update();
-		if(dialog && dialog->Selected())
-		{
-			xPlatform::Handler()->OnOpenFile(dialog->Selected());
-			SAFE_DELETE(dialog);
-		}
-	}
-	void OnKey(char _key, bool pressed)
-	{
-		if((pressed && (_key == key)) || (!pressed && (_key != key)))
-			return;
-		key = pressed ? _key : '\0';
-		if(!key)
-			keypress_timer = 0;
-		if(key == '`')
-		{
-			if(!dialog)
-			{
-				dialog = new eFileOpenDialog(path);
-				dialog->Init();
-			}
-			else
-			{
-				SAFE_DELETE(dialog);
-			}
-		}
-	}
+	dword* VideoData() const { return (fo_dialog || keys_dialog) ? Screen() : NULL; }
+	bool Focused() const { return fo_dialog || keys_dialog; }
+	void Update();
+	void OnKey(char _key, bool pressed);
 	enum { KEY_REPEAT_DELAY = 10 };
 protected:
 	char path[256];
-	xUi::eFileOpenDialog* dialog;
+	eFileOpenDialog* fo_dialog;
+	eKeysDialog* keys_dialog;
 	char key;
 	int keypress_timer;
 };

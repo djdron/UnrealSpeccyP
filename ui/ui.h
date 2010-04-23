@@ -34,7 +34,8 @@ struct ePoint
 {
 	ePoint() : x(0), y(0) {}
 	ePoint(int _x, int _y) : x(_x), y(_y) {}
-	ePoint& operator+=(ePoint p) { x += p.x; y += p.y; return self; }
+	ePoint& operator+=(const ePoint& p) { x += p.x; y += p.y; return self; }
+	ePoint operator+(const ePoint& p) { ePoint t = self; t += p; return t; }
 	int x, y;
 };
 
@@ -70,8 +71,8 @@ void DrawRect(const eRect& r, const eRGBAColor& c);
 void DrawRect(const eRect& r, const eRGBAColor& c, const eRGBAColor& key);
 void BlendRect(const eRect& r, const eRGBAColor& c);
 void DrawText(const eRect& r, const char* src);
-void _CreateFont(int _w, int _h, const char* fname);
-int FontHeight();
+void CreateFont(int _w, int _h, const char* fname);
+ePoint FontSize();
 }
 //namespace xUi
 

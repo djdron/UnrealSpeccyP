@@ -37,8 +37,9 @@ public:
 	eControl() : parent(NULL), changed(true), background(0) {}
 	virtual ~eControl() {}
 	virtual void Init() {}
-	eRect& Bound() { return bound; }
+	void Id(dword v) { id = v; }
 	void Parent(eControl* c) { parent = c; }
+	eRect& Bound() { return bound; }
 	eRect ScreenBound()
 	{
 		eRect r = Bound();
@@ -50,12 +51,20 @@ public:
 	}
 	xUi::eRGBAColor& Background() { return background; }
 	virtual void Update() = 0;
-	virtual void OnKey(char key) {}
+	virtual void OnKey(char key) = 0;
+protected:
+	virtual void Notify(byte id, byte from)
+	{
+		OnNotify(id, from);
+		SAFE_CALL(parent)->Notify(id, from);
+	}
+	virtual void OnNotify(byte id, byte from) {}
 protected:
 	eRect bound;
 	eControl* parent;
 	bool changed;
 	eRGBAColor background;
+	byte id;
 };
 
 //*****************************************************************************
@@ -63,7 +72,7 @@ protected:
 //-----------------------------------------------------------------------------
 class eDialog : public eControl
 {
-	enum { MAX_CHILDS = 32 };
+	enum { MAX_CHILDS = 64 };
 public:
 	eDialog() { *childs = NULL; }
 	virtual ~eDialog()
@@ -72,6 +81,7 @@ public:
 		{
 			delete childs[i];
 		}
+		DrawRect(bound, 0);
 	}
 	void Insert(eControl* child)
 	{
@@ -108,6 +118,22 @@ public:
 	}
 protected:
 	eControl* childs[MAX_CHILDS + 1];
+};
+
+//*****************************************************************************
+//	eButton
+//-----------------------------------------------------------------------------
+class eButton : public eControl
+{
+public:
+	eButton() { *text = '\0'; }
+	void Text(const char* s) { assert(strlen(s) <= MAX_TEXT_SIZE); strcpy(text, s); }
+	virtual void Update();
+	virtual void OnKey(char key);
+	enum { MAX_TEXT_SIZE = 64 };
+	enum eNotify { N_PUSH, N_POP };
+protected:
+	char text[MAX_TEXT_SIZE + 1];
 };
 
 //*****************************************************************************

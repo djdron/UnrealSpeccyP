@@ -25,6 +25,29 @@ namespace xUi
 {
 
 //=============================================================================
+//	eButton::Update
+//-----------------------------------------------------------------------------
+void eButton::Update()
+{
+	if(changed)
+	{
+		changed = false;
+		eRect sr = ScreenBound();
+		ePoint cen = sr.Beg() + ePoint(sr.Width() / 2, sr.Height() / 2);
+		ePoint t_half((strlen(text) * FontSize().x / 2), FontSize().y / 2);
+		eRect r(cen.x - t_half.x, cen.y - t_half.y, cen.x + t_half.x, cen.y + t_half.y);
+		DrawText(r, text);
+	}
+}
+//=============================================================================
+//	eButton::OnKey
+//-----------------------------------------------------------------------------
+void eButton::OnKey(char key)
+{
+	Notify(key ? N_PUSH : N_POP, id);
+}
+
+//=============================================================================
 //	eList::Insert
 //-----------------------------------------------------------------------------
 void eList::Insert(const char* item)
@@ -51,22 +74,22 @@ void eList::Update()
 	if(changed)
 	{
 		DrawRect(sr, background);
-		eRect r(sr.left, sr.top, sr.right, sr.top + FontHeight());
+		eRect r(sr.left, sr.top, sr.right, sr.top + FontSize().y);
 		int i = page_begin;
 		for(; items[i]; ++i)
 		{
 			if(r.bottom > sr.bottom)
 				break;
 			DrawText(r, items[i]);
-			r.Move(ePoint(0, FontHeight()));
+			r.Move(ePoint(0, FontSize().y));
 		}
 		page_size = i - page_begin;
 	}
 	if((changed || (selected != last_selected)) && page_size)
 	{
 		eRect cursor(sr.left, 0, sr.right, 0);
-		cursor.top = sr.top + (last_selected - page_begin) * FontHeight();
-		cursor.bottom = cursor.top + FontHeight();
+		cursor.top = sr.top + (last_selected - page_begin) * FontSize().y;
+		cursor.bottom = cursor.top + FontSize().y;
 		DrawRect(cursor, background, 0x08ffffff);
 		last_selected = selected;
 		if(selected < page_begin)
@@ -81,8 +104,8 @@ void eList::Update()
 			changed = true;
 			return;
 		}
-		cursor.top = sr.top + (selected - page_begin) * FontHeight();
-		cursor.bottom = cursor.top + FontHeight();
+		cursor.top = sr.top + (selected - page_begin) * FontSize().y;
+		cursor.bottom = cursor.top + FontSize().y;
 		DrawRect(cursor, CURSOR_COLOR, 0x08ffffff);
 	}
 	changed = false;
