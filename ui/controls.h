@@ -34,11 +34,12 @@ namespace xUi
 class eControl
 {
 public:
-	eControl() : parent(NULL), changed(true), background(0) {}
+	eControl() : parent(NULL), changed(true), focused(false), last_focused(false), background(0), id(-1) {}
 	virtual ~eControl() {}
 	virtual void Init() {}
-	void Id(dword v) { id = v; }
+	void Id(byte v) { id = v; }
 	void Parent(eControl* c) { parent = c; }
+	void Focused(bool b) { focused = b; }
 	eRect& Bound() { return bound; }
 	eRect ScreenBound()
 	{
@@ -50,19 +51,30 @@ public:
 		return r;
 	}
 	xUi::eRGBAColor& Background() { return background; }
-	virtual void Update() = 0;
-	virtual void OnKey(char key) = 0;
-protected:
-	virtual void Notify(byte id, byte from)
+	virtual void Update()
 	{
-		OnNotify(id, from);
-		SAFE_CALL(parent)->Notify(id, from);
+		if(changed || (focused != last_focused))
+		{
+			last_focused = focused;
+			if(focused)	DrawRect(ScreenBound(), FOCUS_COLOR, 0x08ffffff);
+			else		DrawRect(ScreenBound(), background, 0x08ffffff);
+		}
 	}
-	virtual void OnNotify(byte id, byte from) {}
+	virtual void OnKey(char key, dword flags) = 0;
+protected:
+	virtual void Notify(byte n, byte from)
+	{
+		OnNotify(n, from);
+		SAFE_CALL(parent)->Notify(n, from);
+	}
+	virtual void OnNotify(byte n, byte from) {}
+	enum { FOCUS_COLOR = 0x08008000 };
 protected:
 	eRect bound;
 	eControl* parent;
 	bool changed;
+	bool focused;
+	bool last_focused;
 	eRGBAColor background;
 	byte id;
 };
@@ -74,7 +86,7 @@ class eDialog : public eControl
 {
 	enum { MAX_CHILDS = 64 };
 public:
-	eDialog() { *childs = NULL; }
+	eDialog() : focused(NULL) { *childs = NULL; }
 	virtual ~eDialog()
 	{
 		for(int i = 0; childs[i]; ++i)
@@ -83,41 +95,14 @@ public:
 		}
 		DrawRect(bound, 0);
 	}
-	void Insert(eControl* child)
-	{
-		for(int i = 0; i < MAX_CHILDS; ++i)
-		{
-			if(childs[i])
-				continue;
-			child->Parent(this);
-			child->Background() = background;
-			child->Init();
-			childs[i] = child;
-			childs[i + 1] = NULL;
-			break;
-		}
-	}
-	virtual void Update()
-	{
-		if(changed)
-		{
-			changed = false;
-			DrawRect(bound, background);
-		}
-		for(int i = 0; childs[i]; ++i)
-		{
-			childs[i]->Update();
-		}
-	}
-	virtual void OnKey(char key)
-	{
-		for(int i = 0; childs[i]; ++i)
-		{
-			childs[i]->OnKey(key);
-		}
-	}
+	void Insert(eControl* child);
+	virtual void Update();
+	virtual void OnKey(char key, dword flags);
+protected:
+	void ChooseFocus(char key);
 protected:
 	eControl* childs[MAX_CHILDS + 1];
+	eControl* focused;
 };
 
 //*****************************************************************************
@@ -125,15 +110,20 @@ protected:
 //-----------------------------------------------------------------------------
 class eButton : public eControl
 {
-public:
-	eButton() { *text = '\0'; }
-	void Text(const char* s) { assert(strlen(s) <= MAX_TEXT_SIZE); strcpy(text, s); }
-	virtual void Update();
-	virtual void OnKey(char key);
 	enum { MAX_TEXT_SIZE = 64 };
+	enum { PUSH_COLOR = 0x080000b0 };
+	typedef eControl eInherited;
+public:
+	eButton() : pushed(false), last_pushed(false) { *text = '\0'; }
+	void Text(const char* s) { assert(strlen(s) <= MAX_TEXT_SIZE); strcpy(text, s); }
+	void Push(bool b) { pushed = b; }
+	virtual void Update();
+	virtual void OnKey(char key, dword flags);
 	enum eNotify { N_PUSH, N_POP };
 protected:
 	char text[MAX_TEXT_SIZE + 1];
+	bool pushed;
+	bool last_pushed;
 };
 
 //*****************************************************************************
@@ -160,7 +150,7 @@ public:
 	const char* Selected() const { return size ? items[selected] : NULL; }
 	int Selector() const { return size ? selected : -1; }
 	virtual void Update();
-	virtual void OnKey(char key);
+	virtual void OnKey(char key, dword flags);
 protected:
 	const char* items[MAX_ITEMS + 1];
 	int size;

@@ -25,10 +25,95 @@ namespace xUi
 {
 
 //=============================================================================
+//	eDialog::Insert
+//-----------------------------------------------------------------------------
+void eDialog::Insert(eControl* child)
+{
+	for(int i = 0; i < MAX_CHILDS; ++i)
+	{
+		if(childs[i])
+			continue;
+		child->Parent(this);
+		child->Background() = background;
+		child->Init();
+		childs[i] = child;
+		childs[i + 1] = NULL;
+		break;
+	}
+}
+//=============================================================================
+//	eDialog::Update
+//-----------------------------------------------------------------------------
+void eDialog::Update()
+{
+	if(changed)
+	{
+		changed = false;
+		DrawRect(bound, background);
+		focused = *childs;
+		focused->Focused(true);
+	}
+	for(int i = 0; childs[i]; ++i)
+	{
+		childs[i]->Update();
+	}
+}
+//=============================================================================
+//	eDialog::ChooseFocus
+//-----------------------------------------------------------------------------
+void eDialog::ChooseFocus(char key)
+{
+	if(!focused)
+		return;
+	ePoint org = focused->Bound().Beg();
+	eControl* f = NULL;
+	ePoint fp;
+	for(int i = 0; i < MAX_CHILDS; ++i)
+	{
+		if(!childs[i])
+			break;
+		const ePoint& p = childs[i]->Bound().Beg();
+		if(((key == 'l' || key == 'r') && p.y != org.y)
+			|| ((key == 'u' || key == 'd') && p.x != org.x))
+			continue;
+		if((key == 'l' && p.x < org.x && (!f || p.x > fp.x))
+			|| (key == 'r' && p.x > org.x && (!f || p.x < fp.x))
+			|| (key == 'u' && p.y < org.y && (!f || p.y > fp.y))
+			|| (key == 'd' && p.y > org.y && (!f || p.y < fp.y)))
+		{
+			f = childs[i];
+			fp = f->Bound().Beg();
+		}
+	}
+	if(f)
+	{
+		focused->Focused(false);
+		focused = f;
+		focused->Focused(true);
+	}
+}
+//=============================================================================
+//	eDialog::OnKey
+//-----------------------------------------------------------------------------
+void eDialog::OnKey(char key, dword flags)
+{
+	switch(key)
+	{
+	case 'l':
+	case 'r':
+	case 'u':
+	case 'd':
+		ChooseFocus(key);
+	}
+	SAFE_CALL(focused)->OnKey(key, flags);
+}
+
+//=============================================================================
 //	eButton::Update
 //-----------------------------------------------------------------------------
 void eButton::Update()
 {
+	eInherited::Update();
 	if(changed)
 	{
 		changed = false;
@@ -38,13 +123,23 @@ void eButton::Update()
 		eRect r(cen.x - t_half.x, cen.y - t_half.y, cen.x + t_half.x, cen.y + t_half.y);
 		DrawText(r, text);
 	}
+	if(pushed != last_pushed)
+	{
+		last_pushed = pushed;
+		if(pushed)	DrawRect(ScreenBound(), PUSH_COLOR, 0x08ffffff);
+		else		DrawRect(ScreenBound(), focused ? FOCUS_COLOR : background, 0x08ffffff);
+		Notify(pushed ? N_PUSH : N_POP, id);
+	}
 }
 //=============================================================================
 //	eButton::OnKey
 //-----------------------------------------------------------------------------
-void eButton::OnKey(char key)
+void eButton::OnKey(char key, dword flags)
 {
-	Notify(key ? N_PUSH : N_POP, id);
+	if(!key || key == 'e' || key == ' ')
+	{
+		pushed = key;
+	}
 }
 
 //=============================================================================
@@ -113,7 +208,7 @@ void eList::Update()
 //=============================================================================
 //	eList::OnKey
 //-----------------------------------------------------------------------------
-void eList::OnKey(char key)
+void eList::OnKey(char key, dword flags)
 {
 	switch(key)
 	{

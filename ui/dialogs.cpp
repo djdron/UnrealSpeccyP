@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../std.h"
 #include "dialogs.h"
+#include "../platform/platform.h"
 
 #ifdef _WINDOWS
 #include <io.h>
@@ -103,7 +104,7 @@ static void GetUpLevel(char* path, int level = 1)
 //=============================================================================
 //	eFileOpenDialog::OnKey
 //-----------------------------------------------------------------------------
-void eFileOpenDialog::OnKey(char key)
+void eFileOpenDialog::OnKey(char key, dword flags)
 {
 	if(key == 'e' && list->Selected())
 	{
@@ -120,7 +121,7 @@ void eFileOpenDialog::OnKey(char key)
 		selected = path;
 		return;
 	}
-	eInherited::OnKey(key);
+	eInherited::OnKey(key, flags);
 }
 
 static const char* zx_keys[] =
@@ -134,13 +135,13 @@ static const char* zx_keys[] =
 //=============================================================================
 //	eKeysDialog::AllocateId
 //-----------------------------------------------------------------------------
-dword eKeysDialog::AllocateId(const char* key) const
+byte eKeysDialog::AllocateId(const char* key) const
 {
 	if(strlen(key) == 1)	return *key;
-	if(!strcmp(key, "Cs"))	return ID_CAPS;
-	if(!strcmp(key, "Ss"))	return ID_SYMBOL;
-	if(!strcmp(key, "En"))	return ID_ENTER;
-	if(!strcmp(key, "Sp"))	return ID_SPACE;
+	if(!strcmp(key, "Cs"))	return 'c';
+	if(!strcmp(key, "Ss"))	return 's';
+	if(!strcmp(key, "En"))	return 'e';
+	if(!strcmp(key, "Sp"))	return ' ';
 	return -1;
 }
 //=============================================================================
@@ -174,7 +175,30 @@ void eKeysDialog::Init()
 		r_item.Move(ePoint(0, delta.y));
 	}
 }
-
+//=============================================================================
+//	eKeysDialog::OnKey
+//-----------------------------------------------------------------------------
+void eKeysDialog::OnKey(char key, dword flags)
+{
+	((eButton*)childs[30])->Push(flags&xPlatform::KF_SHIFT);
+	((eButton*)childs[38])->Push(flags&xPlatform::KF_ALT);
+	eInherited::OnKey(key, flags);
+}
+//=============================================================================
+//	eKeysDialog::OnNotify
+//-----------------------------------------------------------------------------
+void eKeysDialog::OnNotify(byte n, byte from)
+{
+	bool pushed = n == eButton::N_PUSH;
+	switch(from)
+	{
+	case 'c': caps = pushed;	break;
+	case 's': symbol = pushed;	break;
+	default:
+		key = from;
+		pressed = pushed;
+	}
+}
 
 //=============================================================================
 //	eManager::Update
@@ -185,8 +209,8 @@ void eManager::Update()
 	{
 		if(keypress_timer > KEY_REPEAT_DELAY)
 		{
-			SAFE_CALL(fo_dialog)->OnKey(key);
-			SAFE_CALL(keys_dialog)->OnKey(key);
+			SAFE_CALL(fo_dialog)->OnKey(key, key_flags);
+			SAFE_CALL(keys_dialog)->OnKey(key, key_flags);
 		}
 		++keypress_timer;
 	}
@@ -200,33 +224,35 @@ void eManager::Update()
 	if(keys_dialog)
 	{
 		byte key = keys_dialog->Key();
-		dword flags = key ? xPlatform::KF_DOWN : 0;
+		dword flags = keys_dialog->Pressed() ? xPlatform::KF_DOWN : 0;
+		flags |= keys_dialog->Caps() ? xPlatform::KF_SHIFT : 0;
+		flags |= keys_dialog->Symbol() ? xPlatform::KF_ALT : 0;
+		flags |= xPlatform::KF_UI_SENDER;
 		xPlatform::Handler()->OnKey(key, flags);
 	}
 }
 //=============================================================================
 //	eManager::OnKey
 //-----------------------------------------------------------------------------
-void eManager::OnKey(char _key, bool pressed)
+void eManager::OnKey(char _key, dword flags)
 {
+	key_flags = flags;
+	bool pressed = flags&xPlatform::KF_DOWN;
 	if((pressed && (_key == key)) || (!pressed && (_key != key)))
 		return;
 	key = pressed ? _key : '\0';
 	if(!key)
 		keypress_timer = 0;
-	SAFE_CALL(fo_dialog)->OnKey(key);
-	SAFE_CALL(keys_dialog)->OnKey(key);
-	if(key == '`' || key == '~')
+	SAFE_CALL(fo_dialog)->OnKey(key, flags);
+	SAFE_CALL(keys_dialog)->OnKey(key, flags);
+	if(key == '`' || key == '\\')
 	{
 		if(!fo_dialog && !keys_dialog)
 		{
-			if(key == '`')
+			switch(key)
 			{
-				fo_dialog = new eFileOpenDialog(path);
-			}
-			else
-			{
-				keys_dialog = new eKeysDialog;
+			case '`': fo_dialog = new eFileOpenDialog(path);	break;
+			case '\\': keys_dialog = new eKeysDialog;			break;
 			}
 			SAFE_CALL(fo_dialog)->Init();
 			SAFE_CALL(keys_dialog)->Init();

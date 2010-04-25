@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define	__DIALOGS_H__
 
 #include "controls.h"
-#include "../platform/platform.h"
 
 #pragma once
 
@@ -43,7 +42,7 @@ public:
 	}
 	virtual void Init();
 	const char* Selected() { return selected; }
-	virtual void OnKey(char key);
+	virtual void OnKey(char key, dword flags);
 protected:
 	void OnChangePath();
 	enum { BACKGROUND_COLOR = 0x01202020 };
@@ -59,17 +58,25 @@ protected:
 //-----------------------------------------------------------------------------
 class eKeysDialog : public eDialog
 {
+	typedef eDialog eInherited;
 public:
-	eKeysDialog() : key(0) {}
+	eKeysDialog() : key(0), pressed(false), caps(false), symbol(false) {}
 	virtual void Init();
 	byte Key() const { return key; }
-	enum eId { ID_CAPS = 0, ID_SYMBOL, ID_ENTER, ID_SPACE };
+	bool Pressed() const { return pressed; }
+	bool Caps() const { return caps; }
+	bool Symbol() const { return symbol; }
+	virtual void OnKey(char key, dword flags);
+	enum eId { ID_CAPS = 0, ID_SYMBOL };
 protected:
-	virtual void OnNotify(dword id) { key = id; }
-	dword AllocateId(const char* key) const;
+	virtual void OnNotify(byte n, byte from);
+	byte AllocateId(const char* key) const;
 	enum { BACKGROUND_COLOR = 0x01202020 };
 protected:
 	byte key;
+	bool pressed;
+	bool caps;
+	bool symbol;
 };
 
 
@@ -79,7 +86,7 @@ protected:
 class eManager
 {
 public:
-	eManager(const char* _path) : fo_dialog(NULL), keys_dialog(NULL), key('\0'), keypress_timer(0)
+	eManager(const char* _path) : fo_dialog(NULL), keys_dialog(NULL), key(0), key_flags(0), keypress_timer(0)
 	{
 		strcpy(path, _path);
 	}
@@ -95,13 +102,14 @@ public:
 	dword* VideoData() const { return (fo_dialog || keys_dialog) ? Screen() : NULL; }
 	bool Focused() const { return fo_dialog || keys_dialog; }
 	void Update();
-	void OnKey(char _key, bool pressed);
+	void OnKey(char _key, dword flags);
 	enum { KEY_REPEAT_DELAY = 10 };
 protected:
 	char path[256];
 	eFileOpenDialog* fo_dialog;
 	eKeysDialog* keys_dialog;
 	char key;
+	dword key_flags;
 	int keypress_timer;
 };
 

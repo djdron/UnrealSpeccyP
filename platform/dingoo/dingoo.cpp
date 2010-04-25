@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../io.h"
 #include "../../ui/ui.h"
 
-#define __inline__
+//#define __inline__
 
 #ifdef _DINGOO
 
@@ -269,9 +269,9 @@ public:
 	void Update();
 	bool Quit() const
 	{
-		return KeyPressed(K_BUTTON_SELECT) && KeyPressed(K_BUTTON_START);
+		return Pressed(K_BUTTON_SELECT) && Pressed(K_BUTTON_START);
 	}
-
+protected:
 	enum eKeyBit
 	{
 		K_POWER			= 7,
@@ -281,60 +281,102 @@ public:
 		K_BUTTON_Y      = 6,
 		K_BUTTON_START	= 11,
 		K_BUTTON_SELECT	= 10,
-
 		K_TRIGGER_LEFT	= 8,
 		K_TRIGGER_RIGHT	= 29,
-
 		K_DPAD_UP		= 20,
 		K_DPAD_DOWN		= 27,
 		K_DPAD_LEFT		= 28,
 		K_DPAD_RIGHT	= 18
 	};
-
-protected:
-	bool KeyPressed(eKeyBit key) const
+	struct eKeyStatus
 	{
-		struct eKeyStatus
-		{
-			dword pressed;
-			dword released;
-			dword status;
-		}ks;
+		dword pressed;
+		dword released;
+		dword status;
+	};
+protected:
+	bool Pressed(eKeyBit key) const
+	{
+		eKeyStatus ks;
 		_kbd_get_status(&ks);
 		bool pressed = ks.status & (1 << key);
 		return pressed;
 	}
-	void UpdateKey(eKeyBit key, char zx_key)
+	void UpdateKey(eKeyBit key, char zx_key, dword flags = 0)
 	{
-		dword flags = KeyPressed(key) ? xPlatform::KF_DOWN : 0;
+		flags |= Pressed(key) ? xPlatform::KF_DOWN : 0;
 		xPlatform::Handler()->OnKey(zx_key, flags);
 	}
 }keys;
 
 void eKeys::Update()
 {
-	if(KeyPressed(K_BUTTON_SELECT))
+	using namespace xPlatform;
+	dword flags = KF_KEMPSTON;
+	bool ui_focused = Handler()->VideoDataUI();
+	if(!ui_focused)
 	{
-		xPlatform::Handler()->OnAction(xPlatform::A_RESET);
+		if(Pressed(K_TRIGGER_LEFT))
+		{
+			Handler()->OnAction(A_RESET);
+		}
+		static bool audio_next = false;
+		if(Pressed(K_TRIGGER_RIGHT))
+		{
+			if(!audio_next)
+			{
+				audio_next = true;
+				audio.NextSource();
+			}
+		}
+		else
+		{
+			audio_next = false;
+		}
+		UpdateKey(K_DPAD_UP, 'Q');
+		UpdateKey(K_DPAD_DOWN, 'A');
+		UpdateKey(K_DPAD_LEFT, 'O');
+		UpdateKey(K_DPAD_RIGHT, 'P');
+		UpdateKey(K_BUTTON_A, 'M');
 	}
-	if(KeyPressed(K_POWER))
+	else
 	{
-		audio.NextSource();
+		flags = Pressed(K_TRIGGER_LEFT) ? KF_SHIFT : 0;
+		flags |= Pressed(K_TRIGGER_RIGHT) ? KF_ALT : 0;
+		if(flags && !Pressed(K_DPAD_UP) && !Pressed(K_DPAD_DOWN)
+			&& !Pressed(K_DPAD_LEFT) && !Pressed(K_DPAD_RIGHT)
+			&& !Pressed(K_BUTTON_A) && !Pressed(K_BUTTON_B)
+			&& !Pressed(K_BUTTON_X) && !Pressed(K_BUTTON_Y))
+		{
+			UpdateKey(K_TRIGGER_LEFT, flags&KF_SHIFT ? 'c' : 's', flags);
+		}
 	}
-	UpdateKey(K_DPAD_UP, 'Q');
-	UpdateKey(K_DPAD_DOWN, 'A');
-	UpdateKey(K_DPAD_LEFT, 'O');
-	UpdateKey(K_DPAD_RIGHT, 'P');
+	UpdateKey(K_DPAD_UP, 'u', flags);
+	UpdateKey(K_DPAD_DOWN, 'd', flags);
+	UpdateKey(K_DPAD_LEFT, 'l', flags);
+	UpdateKey(K_DPAD_RIGHT, 'r', flags);
+	UpdateKey(K_BUTTON_A, 'f', flags);
 
-	UpdateKey(K_BUTTON_A, 'M');
-	UpdateKey(K_BUTTON_B, 'e');
-	UpdateKey(K_BUTTON_X, '0');
-	UpdateKey(K_BUTTON_Y, ' ');
+	UpdateKey(K_BUTTON_B, 'e', flags);
+	UpdateKey(K_BUTTON_X, '0', flags);
+	UpdateKey(K_BUTTON_Y, ' ', flags);
 
-	UpdateKey(K_TRIGGER_LEFT, '1');
-	UpdateKey(K_TRIGGER_RIGHT, '2');
+	UpdateKey(K_BUTTON_SELECT, '`'); //open dialog
+	UpdateKey(K_BUTTON_START, '\\'); //keys dialog
 
-	UpdateKey(K_BUTTON_START, '`');
+	static bool tape_toggle = false;
+	if(Pressed(K_POWER))
+	{
+		if(!tape_toggle)
+		{
+			tape_toggle = true;
+			Handler()->OnAction(A_TAPE_TOGGLE);
+		}
+	}
+	else
+	{
+		tape_toggle = false;
+	}
 }
 
 namespace xPlatform
