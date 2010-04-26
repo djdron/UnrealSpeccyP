@@ -87,27 +87,10 @@ protected:
 	byte Read(word addr) const;
 	void Write(word addr, byte v);
 
-	void inc8(byte& x);
-	void dec8(byte& x);
-	void add8(byte src);
-	void adc8(byte src);
-	void sub8(byte src);
-	void sbc8(byte src);
-	void and8(byte src);
-	void or8(byte src);
-	void xor8(byte src);
-	void cp8(byte src);
-	void bit(byte src, byte bit);
-	void bitmem(byte src, byte bit);
-
-	void res(byte& src, byte bit) const;
-	byte resbyte(byte src, byte bit) const;
-	void set(byte& src, byte bit) const;
-	byte setbyte(byte src, byte bit) const;
-
 	typedef void (eZ80::*CALLFUNC)();
 	typedef byte (eZ80::*CALLFUNCI)(byte);
 
+	#include "z80_op.h"
 	#include "z80_op_noprefix.h"
 	#include "z80_op_cb.h"
 	#include "z80_op_dd.h"

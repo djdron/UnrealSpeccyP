@@ -334,6 +334,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\z80\z80_op.h"
+				>
+			</File>
+			<File
 				RelativePath=".\z80\z80_op_cb.h"
 				>
 			</File>
