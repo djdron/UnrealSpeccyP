@@ -37,8 +37,10 @@ public:
 	virtual void FrameUpdate() {}
 	virtual void FrameEnd(dword tacts) {}
 
+	enum eIoNeed { NIO_READ = 0x01, NIO_WRITE = 0x02 };
 	virtual void IoRead(word port, byte* v, int tact) {}
 	virtual void IoWrite(word port, byte v, int tact) {}
+	virtual dword IoNeed() const { return 0; }
 protected:
 	bool	enabled;
 };
@@ -59,7 +61,7 @@ public:
 	template<class T> void Add(T* d) { _Add(T::Id(), d); }
 	template<class T> T* Get() const { return (T*)_Get(T::Id()); }
 
-	byte IoRead(word port, int tact) const;
+	byte IoRead(word port, int tact);
 	void IoWrite(word port, byte v, int tact);
 
 	void FrameStart();
@@ -70,6 +72,8 @@ protected:
 	void _Add(eDeviceId id, eDevice* d);
 	eDevice* _Get(eDeviceId id) const { return items[id]; }
 	eDevice* items[D_COUNT];
+	eDevice* items_io_read[D_COUNT + 1];
+	eDevice* items_io_write[D_COUNT + 1];
 };
 
 #endif//__DEVICE_H__

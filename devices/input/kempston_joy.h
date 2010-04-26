@@ -32,6 +32,7 @@ public:
 	void OnKey(char key, bool down);
 
 	static eDeviceId Id() { return D_KEMPSTON_JOY; }
+	virtual dword IoNeed() const { return NIO_READ; }
 protected:
 	void KeyState(char key, bool down);
 	byte state;

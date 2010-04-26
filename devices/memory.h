@@ -65,6 +65,7 @@ public:
 	bool DosSelected() const { return page_selected == ROM_DOS; }
 
 	static eDeviceId Id() { return D_ROM; }
+	virtual dword IoNeed() const { return NIO_WRITE; }
 protected:
 	void LoadRom(int page, const char* rom);
 	enum
@@ -87,6 +88,7 @@ public:
 	virtual void Reset();
 	virtual void IoWrite(word port, byte v, int tact);
 	static eDeviceId Id() { return D_RAM; }
+	virtual dword IoNeed() const { return NIO_WRITE; }
 protected:
 	eMemory* memory;
 };

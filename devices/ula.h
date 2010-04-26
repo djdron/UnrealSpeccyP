@@ -43,6 +43,7 @@ public:
 	void*	Screen() const { return screen; }
 
 	static eDeviceId Id() { return D_ULA; }
+	virtual dword IoNeed() const { return NIO_WRITE|NIO_READ; }
 protected:
 	void	CreateTables();
 	void	CreateTimings();

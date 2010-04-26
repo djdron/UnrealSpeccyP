@@ -80,8 +80,12 @@ protected:
 	void Int();
 	void Nmi();
 	void Step();
-
-	byte Fetch(); //m1_cycle data fetch
+	byte Fetch()
+	{
+		r_low++;// = (cpu->r & 0x80) + ((cpu->r+1) & 0x7F);
+		t += 4;
+		return Read(pc++);
+	}
 	byte IoRead(word port) const;
 	void IoWrite(word port, byte v);
 	byte Read(word addr) const;

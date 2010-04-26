@@ -91,6 +91,7 @@ public:
 	virtual void FrameEnd(dword tacts);
 
 	static eDeviceId Id() { return D_AY; }
+	virtual dword IoNeed() const { return NIO_WRITE|NIO_READ; }
 protected:
 	void Select(byte nreg);
 	void Write(dword timestamp, byte val);

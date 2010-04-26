@@ -31,6 +31,7 @@ class eBeeper : public eDeviceSound
 public:
 	virtual void IoWrite(word port, byte v, int tact);
 	static eDeviceId Id() { return D_BEEPER; }
+	virtual dword IoNeed() const { return NIO_WRITE; }
 };
 
 #endif//__BEEPER_H__

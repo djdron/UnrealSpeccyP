@@ -40,6 +40,7 @@ public:
 	bool Open(const char* image, int drive);
 
 	static eDeviceId Id() { return D_WD1793; }
+	virtual dword IoNeed() const { return NIO_WRITE|NIO_READ; }
 protected:
 	void	Process(int tact);
 	void	ReadFirstByte();

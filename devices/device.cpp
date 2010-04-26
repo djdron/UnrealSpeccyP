@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 eDevices::eDevices()
 {
 	memset(items, 0, sizeof(items));
+	memset(items_io_read, 0, sizeof(items_io_read));
+	memset(items_io_write, 0, sizeof(items_io_write));
 }
 //=============================================================================
 //	eDevices::~eDevices
@@ -43,7 +45,7 @@ void eDevices::Reset()
 {
 	for(int i = 0; i < D_COUNT; ++i)
 	{
-		SAFE_CALL(items[i])->Reset();
+		items[i]->Reset();
 	}
 }
 //=============================================================================
@@ -53,7 +55,7 @@ void eDevices::FrameStart()
 {
 	for(int i = 0; i < D_COUNT; ++i)
 	{
-		SAFE_CALL(items[i])->FrameStart();
+		items[i]->FrameStart();
 	}
 }
 //=============================================================================
@@ -63,7 +65,7 @@ void eDevices::FrameUpdate()
 {
 	for(int i = 0; i < D_COUNT; ++i)
 	{
-		SAFE_CALL(items[i])->FrameUpdate();
+		items[i]->FrameUpdate();
 	}
 }
 //=============================================================================
@@ -73,7 +75,7 @@ void eDevices::FrameEnd(dword tacts)
 {
 	for(int i = 0; i < D_COUNT; ++i)
 	{
-		SAFE_CALL(items[i])->FrameEnd(tacts);
+		items[i]->FrameEnd(tacts);
 	}
 }
 //=============================================================================
@@ -84,16 +86,32 @@ void eDevices::_Add(eDeviceId id, eDevice* d)
 	assert(d && !items[id]);
 	d->Init();
 	items[id] = d;
+	if(d->IoNeed()&eDevice::NIO_READ)
+	{
+		eDevice** dl = items_io_read;
+		while(*dl)
+			 ++dl;
+		*dl = d;
+	}
+	if(d->IoNeed()&eDevice::NIO_WRITE)
+	{
+		eDevice** dl = items_io_write;
+		while(*dl)
+			++dl;
+		*dl = d;
+	}
 }
 //=============================================================================
 //	eDevices::IoRead
 //-----------------------------------------------------------------------------
-byte eDevices::IoRead(word port, int tact) const
+byte eDevices::IoRead(word port, int tact)
 {
 	byte v = 0xff;
-	for(int i = 0; i < D_COUNT; ++i)
+	eDevice** dl = items_io_read;
+	while(*dl)
 	{
-		SAFE_CALL(items[i])->IoRead(port, &v, tact);
+		(*dl)->IoRead(port, &v, tact);
+		++dl;
 	}
 	return v;
 }
@@ -102,8 +120,10 @@ byte eDevices::IoRead(word port, int tact) const
 //-----------------------------------------------------------------------------
 void eDevices::IoWrite(word port, byte v, int tact)
 {
-	for(int i = 0; i < D_COUNT; ++i)
+	eDevice** dl = items_io_write;
+	while(*dl)
 	{
-		SAFE_CALL(items[i])->IoWrite(port, v, tact);
+		(*dl)->IoWrite(port, v, tact);
+		++dl;
 	}
 }
