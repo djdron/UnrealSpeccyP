@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform.h"
 #include "../io.h"
 #include "../log.h"
+#include "../../ui/ui.h"
 
 #include <eikstart.h>
 #include <eikedwin.h>
@@ -67,7 +68,7 @@ public:
 	void ConstructL(const TRect& aRect);
 	TDCControl()
 		: iPeriodic(NULL), bitmap(NULL), frame(0), key_flags(KF_CURSOR|KF_KEMPSTON)
-		, key_input(NULL), key_input_active(false), key_to_press(0) {}
+		{}
 	virtual ~TDCControl();
 
 	void Reset() { Handler()->OnAction(A_RESET); }
@@ -81,8 +82,8 @@ private:
 	void OnTimer();
 	void Update() const;
 	void HandleResourceChange(TInt aType);
-	TInt CountComponentControls() const { return 1; }
-	CCoeControl* ComponentControl(TInt aIndex) const { return aIndex == 0 ? key_input : NULL; }
+	TInt CountComponentControls() const { return 0; }
+	CCoeControl* ComponentControl(TInt aIndex) const { return NULL; }
 	void Draw(const TRect& aRect) const;
 	void HandleControlEventL(CCoeControl* aControl,TCoeEvent aEventType) {}
 	TKeyResponse OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType);
@@ -102,10 +103,6 @@ protected:
 	};
 	mutable eMouse mouse;
 	dword key_flags;
-
-	CEikEdwin* key_input;
-	bool key_input_active;
-	mutable char key_to_press;
 };
 bool TDCControl::eMouse::Update()
 {
@@ -121,12 +118,6 @@ bool TDCControl::eMouse::Update()
 void TDCControl::ConstructL(const TRect& /*aRect*/)
 {
 	CreateWindowL();
-	key_input = new (ELeave) CEikEdwin;
-	key_input->SetContainerWindowL(*this);
-	key_input->ConstructL(0, 1, 1, 1);
-	key_input->SetExtent(TPoint(10, 250), TSize(32, 32));
-	key_input->SetOnlyASCIIChars(ETrue);
-	key_input->SetAknEditorPermittedCaseModes(EAknEditorUpperCase);
 	SetExtentToWholeScreen();
 	ActivateL();
     Init();
@@ -155,7 +146,7 @@ void TDCControl::Draw(const TRect& /*aRect*/) const
 }
 void TDCControl::HandleResourceChange(TInt aType)
 {
-	switch( aType )
+	switch(aType)
 	{
 	case KEikDynamicLayoutVariantSwitch:
 		SetExtentToWholeScreen();
@@ -170,14 +161,11 @@ void TDCControl::Update() const
 	{
 		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
 	}
-	if(key_to_press)
-		Handler()->OnKey(key_to_press, KF_DOWN);
 	Handler()->OnLoop();
-	if(key_to_press)
-		Handler()->OnKey(key_to_press, 0);
-	key_to_press = 0;
 	byte* data = (byte*)Handler()->VideoData();
-
+#ifdef USE_UI
+	dword* data_ui = (dword*)Handler()->VideoDataUI();
+#endif//USE_UI
 	bitmap->LockHeap();
 	dword* tex = (dword*)bitmap->DataAddress();
     const byte brightness = 200;
@@ -193,7 +181,15 @@ void TDCControl::Update() const
 			r = c&2 ? i : 0;
 			g = c&4 ? i : 0;
 			dword* p = &tex[y*320 + x];
-			*p = BGRX(r, g, b);
+#ifdef USE_UI
+			if(data_ui)
+			{
+				xUi::eRGBAColor c = data_ui[y*320+x];
+				*p = BGRX((r >> c.a) + c.r, (g >> c.a) + c.g, (b >> c.a) + c.b);
+			}
+			else
+#endif//USE_UI
+				*p = BGRX(r, g ,b);
 		}
 	}
 	bitmap->UnlockHeap();
@@ -230,41 +226,14 @@ static char TranslateKey(const TKeyEvent& aKeyEvent)
     case EStdKeyDownArrow:      return 'd';
     case EStdKeyHash:			return ' ';
     case '0':					return 'e';
+    case '*':					return '`';
+    case '1':					return '\\';
     default : break;
     }
     return 0;
 }
 TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)
 {
-	if(!key_input_active)
-	{
-		if(aType == EEventKeyUp && (aKeyEvent.iScanCode == '*'))
-		{
-			key_input_active = true;
-			key_input->SetFocus(ETrue);
-	        return EKeyWasNotConsumed;
-		}
-	}
-	else
-	{
-		if(aType == EEventKeyUp && (aKeyEvent.iScanCode == EStdKeyDevice3 || aKeyEvent.iScanCode == EStdKeyEnter))
-		{
-			wchar_t text_w[2];
-			TPtr16 ptr16((TUint16*)text_w, 2);
-			key_input->GetText(ptr16);
-			char text[2];
-			TPtr8 ptr8((TUint8*)text, 2);
-			ptr8.Copy(ptr16);
-			key_to_press = text[0];
-			key_input->SelectAllL();
-			key_input->ClearSelectionL();
-			key_input->SetFocus(EFalse);
-			key_input_active = false;
-	        return EKeyWasNotConsumed;
-		}
-		else
-			return key_input->OfferKeyEventL(aKeyEvent, aType);
-	}
     char ch = TranslateKey(aKeyEvent);
     if(!ch)
         return EKeyWasNotConsumed;

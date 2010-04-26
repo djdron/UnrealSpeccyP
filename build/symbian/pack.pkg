@@ -18,10 +18,11 @@
 "dist\gcce\unreal_speccy_portable.rsc"	-"!:\resource\apps\unreal_speccy_portable.rsc"
 "dist\gcce\unreal_speccy_portable_reg.rsc"	-"!:\private\10003a3f\import\apps\unreal_speccy_portable_reg.rsc"
 "dist\gcce\unreal_speccy_portable.mif"	-"!:\resource\apps\unreal_speccy_portable.mif"
-"..\..\rom\128_low.rom"	-"!:\private\A000821A\rom\128_low.rom"
-"..\..\rom\dos513f.rom"	-"!:\private\A000821A\rom\dos513f.rom"
-"..\..\rom\service.rom"	-"!:\private\A000821A\rom\service.rom"
-"..\..\rom\sos.rom"		-"!:\private\A000821A\rom\sos.rom"
+"..\..\res\rom\128_low.rom"	-"!:\private\A000821A\res\rom\128_low.rom"
+"..\..\res\rom\dos513f.rom"	-"!:\private\A000821A\res\rom\dos513f.rom"
+"..\..\res\rom\service.rom"	-"!:\private\A000821A\res\rom\service.rom"
+"..\..\res\rom\sos.rom"		-"!:\private\A000821A\res\rom\sos.rom"
+"..\..\res\font\spxtrm4f.fnt"		-"!:\private\A000821A\res\font\spxtrm4f.fnt"
 
 ;required for application to be covered by backup/restore facility 
 "br.xml"	-"!:\private\A000821A\backup_registration.xml"

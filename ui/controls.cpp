@@ -136,7 +136,7 @@ void eButton::Update()
 //-----------------------------------------------------------------------------
 void eButton::OnKey(char key, dword flags)
 {
-	if(!key || key == 'e' || key == ' ')
+	if(!key || key == 'e' || key == ' ' || key == 'f')
 	{
 		pushed = key;
 	}
