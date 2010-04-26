@@ -92,6 +92,7 @@
 		<Unit filename="std_types.h" />
 		<Unit filename="z80/z80.cpp" />
 		<Unit filename="z80/z80.h" />
+		<Unit filename="z80/z80_op.h" />
 		<Unit filename="z80/z80_op_cb.h" />
 		<Unit filename="z80/z80_op_dd.h" />
 		<Unit filename="z80/z80_op_ddcb.h" />
