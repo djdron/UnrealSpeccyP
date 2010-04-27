@@ -37,7 +37,7 @@ public:
 	virtual void FrameUpdate() {}
 	virtual void FrameEnd(dword tacts) {}
 
-	enum eIoNeed { NIO_READ = 0x01, NIO_WRITE = 0x02 };
+	enum eIoNeed { ION_READ = 0x01, ION_WRITE = 0x02 };
 	virtual void IoRead(word port, byte* v, int tact) {}
 	virtual void IoWrite(word port, byte v, int tact) {}
 	virtual dword IoNeed() const { return 0; }

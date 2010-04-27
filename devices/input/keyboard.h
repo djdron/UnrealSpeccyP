@@ -32,7 +32,7 @@ public:
 	void OnKey(char key, bool down, bool shift, bool ctrl, bool alt);
 
 	static eDeviceId Id() { return D_KEYBOARD; }
-	virtual dword IoNeed() const { return NIO_READ; }
+	virtual dword IoNeed() const { return ION_READ; }
 protected:
 	void KeyState(char key, bool down);
 	byte Read(byte scan) const;

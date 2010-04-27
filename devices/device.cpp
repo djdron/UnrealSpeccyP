@@ -86,14 +86,14 @@ void eDevices::_Add(eDeviceId id, eDevice* d)
 	assert(d && !items[id]);
 	d->Init();
 	items[id] = d;
-	if(d->IoNeed()&eDevice::NIO_READ)
+	if(d->IoNeed()&eDevice::ION_READ)
 	{
 		eDevice** dl = items_io_read;
 		while(*dl)
 			 ++dl;
 		*dl = d;
 	}
-	if(d->IoNeed()&eDevice::NIO_WRITE)
+	if(d->IoNeed()&eDevice::ION_WRITE)
 	{
 		eDevice** dl = items_io_write;
 		while(*dl)

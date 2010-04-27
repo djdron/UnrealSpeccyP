@@ -42,7 +42,7 @@ public:
 	bool Inserted() const;
 
 	static eDeviceId Id() { return D_TAPE; }
-	virtual dword IoNeed() const { return NIO_READ; }
+	virtual dword IoNeed() const { return ION_READ; }
 
 	byte TapeBit(int tact);
 protected:

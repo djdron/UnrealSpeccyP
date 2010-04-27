@@ -33,7 +33,7 @@ public:
 	void OnMouseButton(byte index, bool state);
 
 	static eDeviceId Id() { return D_KEMPSTON_MOUSE; }
-	virtual dword IoNeed() const { return NIO_READ; }
+	virtual dword IoNeed() const { return ION_READ; }
 protected:
 	byte x, y, buttons;
 };
