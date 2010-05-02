@@ -90,6 +90,12 @@
 		<Unit filename="speccy.h" />
 		<Unit filename="std.h" />
 		<Unit filename="std_types.h" />
+		<Unit filename="ui/controls.cpp" />
+		<Unit filename="ui/controls.h" />
+		<Unit filename="ui/dialogs.cpp" />
+		<Unit filename="ui/dialogs.h" />
+		<Unit filename="ui/ui.cpp" />
+		<Unit filename="ui/ui.h" />
 		<Unit filename="z80/z80.cpp" />
 		<Unit filename="z80/z80.h" />
 		<Unit filename="z80/z80_op.h" />
