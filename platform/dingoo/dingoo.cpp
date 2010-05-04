@@ -78,7 +78,6 @@ public:
 		while(!IsFuture());
 		SetFuture(REFRESH_LATENCY);
 	}
-
 protected:
 	void SetFuture(word ticks)
 	{
@@ -88,6 +87,8 @@ protected:
 	}
 	bool IsFuture() { return __tcu_full_match_flag(CHANNEL); }
 }timer;
+
+#define RGB565(r, g, b)	(((b&~7) << 8)|((g&~3) << 3)|(r >> 3))
 
 class eVideo
 {
@@ -101,6 +102,15 @@ public:
 		Set(0x22);			//write to GRAM
 		frame = (word*)_lcd_get_frame();
 		frame_back = (word*)g_pGameDecodeBuf;
+
+		for(int c = 0; c < 16; ++c)
+		{
+			byte i = c&8 ? BRIGHTNESS + BRIGHT_INTENSITY : BRIGHTNESS;
+			byte b = c&1 ? i : 0;
+			byte r = c&2 ? i : 0;
+			byte g = c&4 ? i : 0;
+			colors[c] = RGB565(r, g, b);
+		}
 	}
 	~eVideo() 
 	{
@@ -115,9 +125,11 @@ public:
 protected:
 	void Set(dword cmd, int data = -1);
 	word* FrameBack() { return frame_back; }
+	enum { BRIGHTNESS = 190, BRIGHT_INTENSITY = 65 };
 protected:
 	word*	frame;
 	word*	frame_back;
+	word	colors[16];
 }video;
 
 void eVideo::Set(dword cmd, int data)
@@ -162,34 +174,34 @@ void eVideo::Flip()
 
 void eVideo::Update()
 {
-#define RGB565(r, g, b)	(((b&~7) << 8)|((g&~3) << 3)|(r >> 3))
-
-	enum { BRIGHTNESS = 190, BRIGHT_INTENSITY = 65 };
 	using namespace xPlatform;
 	byte* src = (byte*)Handler()->VideoData();
-	dword* src_ui = (dword*)Handler()->VideoDataUI();
+	dword* src2 = (dword*)Handler()->VideoDataUI();
 	word* dst = video.FrameBack();
-	for(int x = 320; --x >= 0; )
+	if(src2)
 	{
-		for(int y = 240; --y >= 0; )
+		for(int offs_base = 320*240; --offs_base >= 320*239; )
 		{
-			byte r, g, b;
-			byte c = src[y*320+x];
-			byte i = c&8 ? BRIGHTNESS + BRIGHT_INTENSITY : BRIGHTNESS;
-			b = c&1 ? i : 0;
-			r = c&2 ? i : 0;
-			g = c&4 ? i : 0;
-			dword color;
-			if(src_ui)
+			for(int offs = offs_base; offs >= 0; offs -= 320)
 			{
-				xUi::eRGBAColor c = src_ui[y*320+x];
-				color = RGB565((r >> c.a) + c.r, (g >> c.a) + c.g, (b >> c.a) + c.b);
+				byte c = src[offs];
+				byte i = c&8 ? BRIGHTNESS + BRIGHT_INTENSITY : BRIGHTNESS;
+				byte b = c&1 ? i : 0;
+				byte r = c&2 ? i : 0;
+				byte g = c&4 ? i : 0;
+				xUi::eRGBAColor c2 = src2[offs];
+				*dst++ = RGB565((r >> c2.a) + c2.r, (g >> c2.a) + c2.g, (b >> c2.a) + c2.b);
 			}
-			else
+		}
+	}
+	else
+	{
+		for(int offs_base = 320*240; --offs_base >= 320*239; )
+		{
+			for(int offs = offs_base; offs >= 0; offs -= 320)
 			{
-				color = RGB565(r, g ,b);
+				*dst++ = colors[src[offs]];
 			}
-			*dst++ = color;
 		}
 	}
 }
@@ -197,7 +209,7 @@ void eVideo::Update()
 class eAudio
 {
 public:
-	eAudio() : source(0)
+	eAudio() : source(1)
 	{
 		waveout_set_volume(30);
 		struct eWaveoutOpen
@@ -226,7 +238,8 @@ void eAudio::Update()
 	for(int i = Handler()->AudioSources(); --i >= 0;)
 	{
 		dword size = Handler()->AudioDataReady(i);
-		if(i == source)
+		bool ui_enabled = Handler()->VideoDataUI();
+		if(i == source && !ui_enabled)
 		{
 			waveout_write(handle, Handler()->AudioData(i), size);
 		}
@@ -348,7 +361,8 @@ void eKeys::Update()
 			&& !Pressed(K_BUTTON_A) && !Pressed(K_BUTTON_B)
 			&& !Pressed(K_BUTTON_X) && !Pressed(K_BUTTON_Y))
 		{
-			UpdateKey(K_TRIGGER_LEFT, flags&KF_SHIFT ? 'c' : 's', flags);
+			UpdateKey(flags&KF_SHIFT ? K_TRIGGER_LEFT : K_TRIGGER_RIGHT
+				, flags&KF_SHIFT ? 'c' : 's', flags);
 		}
 	}
 	UpdateKey(K_DPAD_UP, 'u', flags);
@@ -404,10 +418,8 @@ void Done()
 
 void Loop()
 {
-	while(!keys.Quit())
+	while(!keys.Quit() && _sys_judge_event(NULL) >= 0)
 	{
-		if(_sys_judge_event(NULL) < 0)
-			break;
 		timer.Wait();
 		video.Flip();
 		audio.Update();
