@@ -30,6 +30,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "devices/sound/beeper.h"
 #include "devices/sound/ay.h"
 #include "devices/fdd/wd1793.h"
+#include "tools/profiler.h"
+
+DECLARE_PROFILER_SECTION(speccy_update_frame);
+DECLARE_PROFILER_SECTION(speccy_update_devices_start);
+DECLARE_PROFILER_SECTION(speccy_update_devices);
+DECLARE_PROFILER_SECTION(speccy_update_devices_end);
 
 //=============================================================================
 //	eSpeccy::eSpeccy
@@ -77,10 +83,22 @@ void eSpeccy::Reset()
 //-----------------------------------------------------------------------------
 void eSpeccy::Update()
 {
-	devices.FrameStart();
-	cpu->Update(int_len, &nmi_pending);
+	{
+		PROFILER_SECTION(speccy_update_devices_start);
+		devices.FrameStart();
+	}
+	{
+		PROFILER_SECTION(speccy_update_frame);
+		cpu->Update(int_len, &nmi_pending);
+	}
 	dword t = cpu->FrameTacts() + cpu->T();
-	devices.FrameUpdate();
-	devices.FrameEnd(t);
+	{
+		PROFILER_SECTION(speccy_update_devices);
+		devices.FrameUpdate();
+	}
+	{
+		PROFILER_SECTION(speccy_update_devices_end);
+		devices.FrameEnd(t);
+	}
 	t_states += cpu->FrameTacts();
 }

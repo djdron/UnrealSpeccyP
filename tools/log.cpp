@@ -16,28 +16,45 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __LOG_H__
-#define __LOG_H__
+#include "log.h"
 
-#include "platform.h"
+#ifdef USE_LOG
+
+#include "../std.h"
+#include "../platform/io.h"
 
 namespace xLog
 {
 
-#ifdef USE_LOG
-void SetLogPath(const char* path);
-void Write(const char* text);
-#else//USE_LOG
-inline void SetLogPath(const char* path) {}
-#endif//USE_LOG
+static char log_path[xIo::MAX_PATH_LEN] = { 0 };
+void SetLogPath(const char* _path)
+{
+	strcpy(log_path, _path);
+}
+static FILE* log_file = NULL;
+static void Close()
+{
+	fclose(log_file);
+	log_file = NULL;
+}
+static void Open()
+{
+	char log_name[xIo::MAX_PATH_LEN];
+	strcpy(log_name, log_path);
+	strcat(log_name, "usp.log");
+	log_file = fopen(log_name, "w");
+	assert(log_file);
+	atexit(Close);
+}
+void Write(const char* text)
+{
+	if(!log_file)
+		Open();
+	fputs(text, log_file);
+	fflush(log_file);
+}
 
 }
 //namespace xLog
 
-#ifdef USE_LOG
-#define _LOG(a) xLog::Write(a)
-#else//USE_LOG
-#define _LOG(a)
 #endif//USE_LOG
-
-#endif//__LOG_H__

@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../platform.h"
 #include "../../ui/ui.h"
+#include "../../tools/profiler.h"
 
 #ifdef USE_GL
 
@@ -26,6 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif//_WINDOWS
 
 #include <GL/gl.h>
+
+DECLARE_PROFILER_SECTION(gl_draw_prepare);
+DECLARE_PROFILER_SECTION(gl_draw);
 
 namespace xPlatform
 {
@@ -53,6 +57,7 @@ static const GLubyte triangles[2 * 3] =
 
 void DrawGL(int _w, int _h)
 {
+	PROFILER_BEGIN(gl_draw_prepare);
 	const byte brightness = 200;
 	const byte bright_intensity = 55;
 	byte* data = (byte*)Handler()->VideoData();
@@ -85,7 +90,9 @@ void DrawGL(int _w, int _h)
 			*p = color;
 		}
 	}
+	PROFILER_END(gl_draw_prepare);
 
+	PROFILER_SECTION(gl_draw);
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
     glScalef(320.0f/512.0f, 240.0f/256.0f, 1.0f);

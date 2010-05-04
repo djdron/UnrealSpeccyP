@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui/dialogs.h"
 #include "snapshot.h"
 #include "platform/io.h"
+#include "tools/profiler.h"
 
 static struct eSpeccyHandler : public xPlatform::eHandler
 {
@@ -54,6 +55,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 #ifdef USE_UI
 		SAFE_DELETE(ui_manager);
 #endif//USE_UI
+		PROFILER_DUMP;
 	}
 	virtual void OnLoop()
 	{

@@ -32,8 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #endif//_WINDOWS || _LINUX
 
-//#define USE_LOG
-
 namespace xPlatform
 {
 

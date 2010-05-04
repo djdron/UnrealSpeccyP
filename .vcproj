@@ -516,14 +516,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\platform\log.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\platform\log.h"
-				>
-			</File>
-			<File
 				RelativePath=".\platform\platform.cpp"
 				>
 			</File>
@@ -621,6 +613,26 @@
 			</File>
 			<File
 				RelativePath=".\ui\ui.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="tools"
+			>
+			<File
+				RelativePath=".\tools\log.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\tools\log.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tools\profiler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\tools\profiler.h"
 				>
 			</File>
 		</Filter>
