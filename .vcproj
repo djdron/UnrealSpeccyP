@@ -566,12 +566,36 @@
 					RelativePath=".\platform\dingoo\dingoo.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\platform\dingoo\jz4740.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\dingoo\stdio.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="win_mobile"
 				>
 				<File
 					RelativePath=".\platform\win_mobile\win_mobile.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="symbian"
+				>
+				<File
+					RelativePath=".\platform\symbian\division.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\symbian\symbian.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\symbian\symbian_gles.cpp"
 					>
 				</File>
 			</Filter>
@@ -633,6 +657,22 @@
 			</File>
 			<File
 				RelativePath=".\tools\profiler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tools\tick.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tools\tick_clock.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tools\tick_qpc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tools\time.h"
 				>
 			</File>
 		</Filter>

@@ -24,6 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xProfiler
 {
 
+//=============================================================================
+//	eSection::eSection
+//-----------------------------------------------------------------------------
 eSection::eSection(const char* _name) : name(_name), entry_count(0), next(NULL)
 {
 	if(!First())
@@ -36,7 +39,9 @@ eSection::eSection(const char* _name) : name(_name), entry_count(0), next(NULL)
 		i->next = this;
 	}
 }
-
+//=============================================================================
+//	eSection::End
+//-----------------------------------------------------------------------------
 void eSection::End()
 {
 	eTime t = start_tick.Passed();
@@ -54,12 +59,18 @@ void eSection::End()
 	}
 	++entry_count;
 }
+//=============================================================================
+//	eSection::Dump
+//-----------------------------------------------------------------------------
 void eSection::Dump()
 {
 	char dump[1024];
 	sprintf(dump, "section(%s): %g/%g/%g (%u)\n", name, time_total.Ms(), time_min.Ms(), time_max.Ms(), entry_count);
 	_LOG(dump);
 }
+//=============================================================================
+//	eSection::DumpAll
+//-----------------------------------------------------------------------------
 void eSection::DumpAll()
 {
 	for(eSection* i = First(); i; i = i->Next())

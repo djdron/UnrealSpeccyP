@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __PROFILER_H__
 
 #include "../std.h"
-#include <time.h>
+#include "tick.h"
 
 #pragma once
 
@@ -30,45 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace xProfiler
 {
-
-class eTime
-{
-public:
-	eTime() : mks(0) {}
-
-	eTime(float sec) { mks = sec*1e6f; }
-
-	float	Sec() const	{ return float(mks)/1e6f; }
-	float	Ms() const	{ return float(mks)/1e3f; }
-	qword	Mks() const	{ return mks; }
-
-	void	SetMks(qword _mks) { mks = _mks; }
-
-	eTime&	operator+=(const eTime& t) { mks += t.mks; return self; }
-	eTime&	operator-=(const eTime& t) { mks -= t.mks; return self; }
-	bool	operator<(const eTime& t) const { return mks < t.mks; }
-	bool	operator>(const eTime& t) const { return mks > t.mks; }
-
-protected:
-	qword	mks;
-};
-
-class eTick
-{
-public:
-	eTick() : tick(0) {}
-	void	SetCurrent() { tick = clock(); }
-	eTime	Passed() const
-	{
-		clock_t c = clock();
-		c -= tick;
-		eTime t;
-		t.SetMks(c*1e6/CLOCKS_PER_SEC);
-		return t;
-	}
-protected:
-	clock_t tick;
-};
 
 class eSection
 {
