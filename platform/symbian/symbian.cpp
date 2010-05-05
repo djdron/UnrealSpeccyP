@@ -146,7 +146,7 @@ void TDCControl::ConstructL(const TRect& /*aRect*/)
 
 	bitmap = new CFbsBitmap;//(iEikonEnv->WsSession());
 	bitmap->Create(TSize(320, 240), EColor16MU);
-	iPeriodic = CPeriodic::NewL( CActive::EPriorityIdle );
+	iPeriodic = CPeriodic::NewL( CActive::EPriorityStandard );
 	// 50 fps 20000 mks interval
 	iPeriodic->Start(20000, 20000, TCallBack( TDCControl::TimerCallBack, this));
 }
