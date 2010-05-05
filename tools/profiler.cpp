@@ -24,17 +24,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xProfiler
 {
 
-eSection* eSection::first = NULL;
-
-eSection::eSection(const char* _name) : name(_name), entry_count(0)
+eSection::eSection(const char* _name) : name(_name), entry_count(0), next(NULL)
 {
-	if(!first)
-		first = this;
+	if(!First())
+		First() = this;
 	else
 	{
-		eSection* i = first;
-		while(i->next)
-			i = i->next;
+		eSection* i = First();
+		while(i->Next())
+			i = i->Next();
 		i->next = this;
 	}
 }
@@ -64,7 +62,7 @@ void eSection::Dump()
 }
 void eSection::DumpAll()
 {
-	for(eSection* i = eSection::first; i; i = i->next)
+	for(eSection* i = First(); i; i = i->Next())
 	{
 		i->Dump();
 	}

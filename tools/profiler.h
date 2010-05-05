@@ -81,7 +81,7 @@ public:
 	void	End();
 	void	Dump();
 
-	static eSection* First() { return first; }
+	static eSection*& First() { static eSection* first = NULL; return first; }
 	eSection* Next() { return next; }
 
 	static void	DumpAll();
@@ -94,7 +94,6 @@ protected:
 	eTick	start_tick;
 	int		entry_count;
 
-	static eSection* first;
 	eSection* next;
 };
 
