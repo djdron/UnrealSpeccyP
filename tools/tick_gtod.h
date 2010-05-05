@@ -16,23 +16,34 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__TICK_H__
-#define	__TICK_H__
+#ifndef	__TICK_GTOD_H__
+#define	__TICK_GTOD_H__
 
-#include "time.h"
+#include <sys/time.h>
 
 #pragma once
 
-#ifdef _WINDOWS
-#include "tick_qpc.h"
-#endif//_WINDOWS
+class eTickGtod
+{
+public:
+	eTickGtod() { tick.tv_sec = 0; tick.tv_usec = 0; }
+	void	SetCurrent() { gettimeofday(&tick, NULL); }
+	eTime	Passed() const
+	{
+		timeval c;
+		gettimeofday(&c, NULL);
+		long long int mks = (c.tv_sec - tick.tv_sec)*1e6;
+		mks += c.tv_usec - tick.tv_usec;
+		eTime t;
+		t.SetMks(mks);
+		return t;
+	}
 
-#ifdef _LINUX
-#include "tick_gtod.h"
-#endif//_LINUX
+protected:
+	timeval tick;
+};
 
-#ifndef TICK_DECLARED
-#include "tick_clock.h"
-#endif//TICK_DEFINED
+#define TICK_DECLARED
+typedef eTickGtod eTick;
 
-#endif//__TICK_H__
+#endif//__TICK_GTOD_H__
