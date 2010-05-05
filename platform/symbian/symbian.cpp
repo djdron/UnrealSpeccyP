@@ -22,8 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../platform.h"
 #include "../io.h"
-#include "../log.h"
+#include "../../tools/log.h"
 #include "../../ui/ui.h"
+#include "../../tools/profiler.h"
 
 #include <eikstart.h>
 #include <eikedwin.h>
@@ -35,6 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <unreal_speccy_portable.rsg>
 #include "../../build/symbian/unreal_speccy_portable.hrh"
+
+DECLARE_PROFILER_SECTION(dc_draw_symbian);
 
 namespace xPlatform
 {
@@ -103,6 +106,8 @@ protected:
 	};
 	mutable eMouse mouse;
 	dword key_flags;
+
+	dword color_cache[16];
 };
 bool TDCControl::eMouse::Update()
 {
@@ -115,12 +120,30 @@ bool TDCControl::eMouse::Update()
 
 	return dir != D_NONE;
 }
+
+static inline dword BGRX(byte r, byte g, byte b)
+{
+	return (r << 16)|(g << 8)|b;
+}
+
 void TDCControl::ConstructL(const TRect& /*aRect*/)
 {
 	CreateWindowL();
 	SetExtentToWholeScreen();
 	ActivateL();
     Init();
+
+    const byte brightness = 200;
+    const byte bright_intensity = 55;
+    for(int c = 0; c < 16; ++c)
+    {
+		byte i = c&8 ? brightness + bright_intensity : brightness;
+		byte b = c&1 ? i : 0;
+		byte r = c&2 ? i : 0;
+		byte g = c&4 ? i : 0;
+		color_cache[c] = BGRX(r, g ,b);
+    }
+
 	bitmap = new CFbsBitmap;//(iEikonEnv->WsSession());
 	bitmap->Create(TSize(320, 240), EColor16MU);
 	iPeriodic = CPeriodic::NewL( CActive::EPriorityIdle );
@@ -153,7 +176,6 @@ void TDCControl::HandleResourceChange(TInt aType)
 		break;
 	}
 }
-#define BGRX(r, g, b) ((r << 16)|(g << 8)|b)
 
 void TDCControl::Update() const
 {
@@ -162,37 +184,31 @@ void TDCControl::Update() const
 		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
 	}
 	Handler()->OnLoop();
+
+	PROFILER_BEGIN(dc_draw_symbian);
 	byte* data = (byte*)Handler()->VideoData();
-#ifdef USE_UI
 	dword* data_ui = (dword*)Handler()->VideoDataUI();
-#endif//USE_UI
 	bitmap->LockHeap();
 	dword* tex = (dword*)bitmap->DataAddress();
-    const byte brightness = 200;
-    const byte bright_intensity = 55;
-	for(int y = 0; y < 240; ++y)
+
+	if(data_ui)
 	{
-		for(int x = 0; x < 320; ++x)
+		for(int i = 0; i < 320*240; ++i)
 		{
-			byte r, g, b;
-			byte c = data[y*320 + x];
-			byte i = c&8 ? brightness + bright_intensity : brightness;
-			b = c&1 ? i : 0;
-			r = c&2 ? i : 0;
-			g = c&4 ? i : 0;
-			dword* p = &tex[y*320 + x];
-#ifdef USE_UI
-			if(data_ui)
-			{
-				xUi::eRGBAColor c = data_ui[y*320+x];
-				*p = BGRX((r >> c.a) + c.r, (g >> c.a) + c.g, (b >> c.a) + c.b);
-			}
-			else
-#endif//USE_UI
-				*p = BGRX(r, g ,b);
+			xUi::eRGBAColor c_ui = *data_ui++;
+			xUi::eRGBAColor c = color_cache[*data++];
+			*tex++ = BGRX((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b);
+		}
+	}
+	else
+	{
+		for(int i = 0; i < 320*240; ++i)
+		{
+			*tex++ = color_cache[*data++];
 		}
 	}
 	bitmap->UnlockHeap();
+	PROFILER_END(dc_draw_symbian);
 }
 void TDCControl::OnTimer()
 {
@@ -226,8 +242,7 @@ static char TranslateKey(const TKeyEvent& aKeyEvent)
     case EStdKeyDownArrow:      return 'd';
     case EStdKeyHash:			return ' ';
     case '0':					return 'e';
-    case '*':					return '`';
-    case '1':					return '\\';
+    case '*':					return '\\';
     default : break;
     }
     return 0;

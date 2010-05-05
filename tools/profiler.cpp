@@ -65,7 +65,7 @@ void eSection::End()
 void eSection::Dump()
 {
 	char dump[1024];
-	sprintf(dump, "section(%s): %g/%g/%g (%u)\n", name, time_total.Ms(), time_min.Ms(), time_max.Ms(), entry_count);
+	sprintf(dump, "section(%s): %.2f/%.2f/%.2f (%u)\n", name, time_total.Ms()/entry_count, time_min.Ms(), time_max.Ms(), entry_count);
 	_LOG(dump);
 }
 //=============================================================================

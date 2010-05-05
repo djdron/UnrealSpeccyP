@@ -16,27 +16,31 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__TICK_H__
-#define	__TICK_H__
+#ifndef	__TICK_SYMBIAN_H__
+#define	__TICK_SYMBIAN_H__
 
-#include "time.h"
+#include <e32std.h>
 
 #pragma once
 
-#ifdef _WINDOWS
-#include "tick_qpc.h"
-#endif//_WINDOWS
+class eTickSymbian
+{
+public:
+	void	SetCurrent() { tick.UniversalTime(); }
+	eTime	Passed() const
+	{
+		TTime c;
+		c.UniversalTime();
+		TTimeIntervalMicroSeconds mks = c.MicroSecondsFrom(tick);
+		eTime t;
+		t.SetMks(mks.Int64());
+		return t;
+	}
+protected:
+	TTime tick;
+};
 
-#ifdef _LINUX
-#include "tick_gtod.h"
-#endif//_LINUX
+#define TICK_DECLARED
+typedef eTickSymbian eTick;
 
-#ifdef _SYMBIAN
-#include "../platform/symbian/tick.h"
-#endif//_SYMBIAN
-
-#ifndef TICK_DECLARED
-#include "tick_clock.h"
-#endif//TICK_DEFINED
-
-#endif//__TICK_H__
+#endif//__TICK_SYMBIAN_H__
