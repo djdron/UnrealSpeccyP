@@ -33,6 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <akndoc.h>
 #include <akncommondialogs.h>
 #include <caknfileselectiondialog.h>
+#include <avkon.rsg>
+#include <aknsoundsystem.h>
 
 #include <unreal_speccy_portable.rsg>
 #include "../../build/symbian/unreal_speccy_portable.hrh"
@@ -131,18 +133,18 @@ void TDCControl::ConstructL(const TRect& /*aRect*/)
 	CreateWindowL();
 	SetExtentToWholeScreen();
 	ActivateL();
-    Init();
+	Init();
 
-    const byte brightness = 200;
-    const byte bright_intensity = 55;
-    for(int c = 0; c < 16; ++c)
-    {
+	const byte brightness = 200;
+	const byte bright_intensity = 55;
+	for(int c = 0; c < 16; ++c)
+	{
 		byte i = c&8 ? brightness + bright_intensity : brightness;
 		byte b = c&1 ? i : 0;
 		byte r = c&2 ? i : 0;
 		byte g = c&4 ? i : 0;
 		color_cache[c] = BGRX(r, g ,b);
-    }
+	}
 
 	bitmap = new CFbsBitmap;//(iEikonEnv->WsSession());
 	bitmap->Create(TSize(320, 240), EColor16MU);
@@ -304,6 +306,13 @@ public:
 		gl_control->ConstructL(ClientRect());
 		AddToStackL( gl_control );
 		SetKeyBlockMode(ENoKeyBlock);
+		CAknKeySoundSystem* ks = KeySounds();
+		if(ks)
+		{
+			ks->PushContextL(R_AVKON_SILENT_SKEY_LIST);
+			ks->BringToForeground();
+			ks->LockContext();
+		}
 	}
 	virtual ~TAppUi()
 	{
@@ -311,6 +320,12 @@ public:
 		{
 			RemoveFromStack(gl_control);
 			delete gl_control;
+		}
+		CAknKeySoundSystem* ks = KeySounds();
+		if(ks)
+		{
+			ks->ReleaseContext();
+			ks->PopContext();
 		}
 	}
 
