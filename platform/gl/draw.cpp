@@ -54,40 +54,55 @@ static const GLubyte triangles[2 * 3] =
 	0, 1, 2,
 	0, 2, 3,
 };
+static struct eCachedColors
+{
+	eCachedColors()
+	{
+		const byte brightness = 200;
+		const byte bright_intensity = 55;
+		for(int c = 0; c < 16; ++c)
+		{
+			byte i = c&8 ? brightness + bright_intensity : brightness;
+			byte b = c&1 ? i : 0;
+			byte r = c&2 ? i : 0;
+			byte g = c&4 ? i : 0;
+			items[c] = RGBX(r, g, b);
+		}
+	}
+	dword items[16];
+}
+color_cache;
 
 void DrawGL(int _w, int _h)
 {
 	PROFILER_BEGIN(gl_draw_prepare);
-	const byte brightness = 200;
-	const byte bright_intensity = 55;
 	byte* data = (byte*)Handler()->VideoData();
+	dword* p = tex;
 #ifdef USE_UI
 	dword* data_ui = (dword*)Handler()->VideoDataUI();
-#endif//USE_UI
-	for(int y = 0; y < 240; ++y)
+	if(data_ui)
 	{
-		for(int x = 0; x < 320; ++x)
+		for(int y = 0; y < 240; ++y)
 		{
-			byte r, g, b;
-			byte c = data[y*320+x];
-			byte i = c&8 ? brightness + bright_intensity : brightness;
-			b = c&1 ? i : 0;
-			r = c&2 ? i : 0;
-			g = c&4 ? i : 0;
-			dword color;
-#ifdef USE_UI
-			if(data_ui)
+			for(int x = 0; x < 320; ++x)
 			{
-				xUi::eRGBAColor c = data_ui[y*320+x];
-				color = RGBX((r >> c.a) + c.r, (g >> c.a) + c.g, (b >> c.a) + c.b);
+				xUi::eRGBAColor c_ui = *data_ui++;
+				xUi::eRGBAColor c = color_cache.items[*data++];
+				*p++ = RGBX((c.r >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.b >> c_ui.a) + c_ui.b);
 			}
-			else
+			p += 512 - 320;
+		}
+	}
+	else
 #endif//USE_UI
+	{
+		for(int y = 0; y < 240; ++y)
+		{
+			for(int x = 0; x < 320; ++x)
 			{
-				color = RGBX(r, g ,b);
+				*p++ = color_cache.items[*data++];
 			}
-			dword* p = &tex[y*512+x];
-			*p = color;
+			p += 512 - 320;
 		}
 	}
 	PROFILER_END(gl_draw_prepare);
