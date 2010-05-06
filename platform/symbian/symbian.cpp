@@ -303,6 +303,7 @@ public:
 		gl_control->SetMopParent(this);
 		gl_control->ConstructL(ClientRect());
 		AddToStackL( gl_control );
+		SetKeyBlockMode(ENoKeyBlock);
 	}
 	virtual ~TAppUi()
 	{
