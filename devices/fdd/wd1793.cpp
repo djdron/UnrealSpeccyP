@@ -604,7 +604,7 @@ void eWD1793::Load()
 //-----------------------------------------------------------------------------
 bool eWD1793::IoRead(word port) const
 {
-	if(port&0x1f != 0x1f)
+	if((port&0x1f) != 0x1f)
 		return false;
 	byte p = (byte)port;
 	return p == 0x1f || p == 0x3f || p == 0x5f || p == 0x7f || p & 0x80;
@@ -614,7 +614,7 @@ bool eWD1793::IoRead(word port) const
 //-----------------------------------------------------------------------------
 bool eWD1793::IoWrite(word port) const
 {
-	if(port&0x1f != 0x1f)
+	if((port&0x1f) != 0x1f)
 		return false;
 	byte p = (byte)port;
 	return p == 0x1f || p == 0x3f || p == 0x5f || p == 0x7f || p & 0x80;
