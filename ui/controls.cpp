@@ -113,6 +113,7 @@ void eDialog::OnKey(char key, dword flags)
 //-----------------------------------------------------------------------------
 void eButton::Update()
 {
+	bool change_focus = focused != last_focused;
 	eInherited::Update();
 	if(changed)
 	{
@@ -130,16 +131,29 @@ void eButton::Update()
 		else		DrawRect(ScreenBound(), focused ? FOCUS_COLOR : background, 0x08ffffff);
 		Notify(pushed ? N_PUSH : N_POP, id);
 	}
+	if(change_focus && triggered)
+	{
+		DrawRect(ScreenBound(), PUSH_COLOR, 0x08ffffff);
+	}
 }
 //=============================================================================
 //	eButton::OnKey
 //-----------------------------------------------------------------------------
 void eButton::OnKey(char key, dword flags)
 {
-	if(!key || key == 'e' || key == ' ' || key == 'f')
+	if(key == last_key)
+		return;
+	if((!triggered && !key) || key == 'e' || key == 'f')
 	{
+		triggered = false;
 		pushed = key;
 	}
+	else if(key == ' ')
+	{
+		triggered = !triggered;
+		pushed = triggered;
+	}
+	last_key = key;
 }
 
 //=============================================================================
@@ -212,8 +226,10 @@ void eList::OnKey(char key, dword flags)
 {
 	switch(key)
 	{
-	case 'u': --selected; break;
-	case 'd': ++selected; break;
+	case 'l': selected -= page_size;	break;
+	case 'r': selected += page_size;	break;
+	case 'u': --selected;				break;
+	case 'd': ++selected;				break;
 	}
 	if(selected < 0) selected = size - 1;
 	if(selected >= size) selected = 0;

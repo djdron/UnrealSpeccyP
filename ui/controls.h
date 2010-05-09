@@ -114,7 +114,7 @@ class eButton : public eControl
 	enum { PUSH_COLOR = 0x080000b0 };
 	typedef eControl eInherited;
 public:
-	eButton() : pushed(false), last_pushed(false) { *text = '\0'; }
+	eButton() : pushed(false), triggered(false), last_pushed(false), last_key(0) { *text = '\0'; }
 	void Text(const char* s) { assert(strlen(s) <= MAX_TEXT_SIZE); strcpy(text, s); }
 	void Push(bool b) { pushed = b; }
 	virtual void Update();
@@ -123,7 +123,9 @@ public:
 protected:
 	char text[MAX_TEXT_SIZE + 1];
 	bool pushed;
+	bool triggered;
 	bool last_pushed;
+	char last_key;
 };
 
 //*****************************************************************************
@@ -131,7 +133,7 @@ protected:
 //-----------------------------------------------------------------------------
 class eList : public eControl
 {
-	enum { MAX_ITEMS = 256 };
+	enum { MAX_ITEMS = 2000 };
 	enum { CURSOR_COLOR = 0x08b06000 };
 public:
 	eList() : size(0), last_selected(0), selected(0), page_begin(0), page_size(0) { *items = NULL; }

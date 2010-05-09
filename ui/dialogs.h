@@ -49,7 +49,7 @@ protected:
 protected:
 	char path[256];
 	eList* list;
-	bool folders[256];
+	bool folders[2000];
 	const char* selected;
 };
 

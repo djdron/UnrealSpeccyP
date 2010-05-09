@@ -180,8 +180,8 @@ void eKeysDialog::Init()
 //-----------------------------------------------------------------------------
 void eKeysDialog::OnKey(char key, dword flags)
 {
-	((eButton*)childs[30])->Push(flags&xPlatform::KF_SHIFT);
-	((eButton*)childs[38])->Push(flags&xPlatform::KF_ALT);
+// 	((eButton*)childs[30])->Push(flags&xPlatform::KF_SHIFT);
+// 	((eButton*)childs[38])->Push(flags&xPlatform::KF_ALT);
 	eInherited::OnKey(key, flags);
 }
 //=============================================================================
