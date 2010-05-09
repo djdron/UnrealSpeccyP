@@ -28,6 +28,7 @@ class eKempstonMouse : public eDevice
 public:
 	virtual void Init();
 	virtual void Reset();
+	virtual bool IoRead(word port) const;
 	virtual void IoRead(word port, byte* v, int tact);
 	void OnMouseMove(byte dx, byte dy);
 	void OnMouseButton(byte index, bool state);

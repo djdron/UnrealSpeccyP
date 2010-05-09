@@ -58,6 +58,7 @@ eSpeccy::eSpeccy() : cpu(NULL), memory(NULL), frame_tacts(0)
 	devices.Add(new eAY);
 	devices.Add(new eWD1793(this, Device<eRom>()));
 	devices.Add(new eTape(this));
+	devices.Init();
 	cpu = new xZ80::eZ80(memory, &devices, frame_tacts);
 
 	Reset();

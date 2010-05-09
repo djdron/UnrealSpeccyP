@@ -36,8 +36,10 @@ public:
 	virtual void Init();
 	virtual void Reset();
 	virtual void FrameUpdate();
-	virtual void IoWrite(word port, byte v, int tact);
+	virtual bool IoRead(word port) const;
+	virtual bool IoWrite(word port) const;
 	virtual void IoRead(word port, byte* v, int tact);
+	virtual void IoWrite(word port, byte v, int tact);
 
 	void	Write(word addr, byte v, int tact);
 	void*	Screen() const { return screen; }

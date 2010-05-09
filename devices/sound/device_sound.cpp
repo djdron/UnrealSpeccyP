@@ -45,13 +45,10 @@ void eDeviceSound::FrameStart()
 //-----------------------------------------------------------------------------
 void eDeviceSound::Update(dword tact, dword l, dword r)
 {
-	if(!enabled)
-		return;
 	if(!((l ^ mix_l) | (r ^ mix_r)))
 		return;
-
-	qword endtick = (tact * (qword)sample_rate * TICK_F) / clock_rate;
-	Flush((dword)(base_tick + endtick));
+	dword endtick = (tact * (qword)sample_rate * TICK_F) / clock_rate;
+	Flush(base_tick + endtick);
 	mix_l = l; mix_r = r;
 }
 //=============================================================================
@@ -59,8 +56,8 @@ void eDeviceSound::Update(dword tact, dword l, dword r)
 //-----------------------------------------------------------------------------
 void eDeviceSound::FrameEnd(dword tacts)
 {
-	qword endtick = (tacts * (qword)sample_rate * TICK_F) / clock_rate;
-	Flush((dword)(base_tick + endtick));
+	dword endtick = (tacts * (qword)sample_rate * TICK_F) / clock_rate;
+	Flush(base_tick + endtick);
 }
 //=============================================================================
 //	eDeviceSound::AudioData

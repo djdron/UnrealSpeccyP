@@ -27,10 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class eDevice
 {
 public:
-	eDevice() : enabled(true) {}
+	eDevice() {}
 	virtual ~eDevice() {}
-	void Enable(bool e) { enabled = e; }
-
 	virtual void Init() {}
 	virtual void Reset() {}
 	virtual void FrameStart() {}
@@ -38,11 +36,11 @@ public:
 	virtual void FrameEnd(dword tacts) {}
 
 	enum eIoNeed { ION_READ = 0x01, ION_WRITE = 0x02 };
+	virtual bool IoRead(word port) const { return false; }
+	virtual bool IoWrite(word port) const { return false; }
 	virtual void IoRead(word port, byte* v, int tact) {}
 	virtual void IoWrite(word port, byte v, int tact) {}
 	virtual dword IoNeed() const { return 0; }
-protected:
-	bool	enabled;
 };
 
 enum eDeviceId { D_ROM, D_RAM, D_ULA, D_KEYBOARD, D_KEMPSTON_JOY, D_KEMPSTON_MOUSE, D_BEEPER, D_AY, D_WD1793, D_TAPE, D_COUNT };
@@ -56,6 +54,7 @@ public:
 	eDevices();
 	~eDevices();
 
+	void Init();
 	void Reset();
 
 	template<class T> void Add(T* d) { _Add(T::Id(), d); }
@@ -74,6 +73,10 @@ protected:
 	eDevice* items[D_COUNT];
 	eDevice* items_io_read[D_COUNT + 1];
 	eDevice* items_io_write[D_COUNT + 1];
+	byte io_read_map[0x10000];
+	byte io_write_map[0x10000];
+	eDevice* io_read_cache[0x100][9];
+	eDevice* io_write_cache[0x100][9];
 };
 
 #endif//__DEVICE_H__

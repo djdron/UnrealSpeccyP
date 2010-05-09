@@ -20,30 +20,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "kempston_mouse.h"
 
 void eKempstonMouse::Init() { Reset(); }
+//=============================================================================
+//	eKempstonMouse::Reset
+//-----------------------------------------------------------------------------
 void eKempstonMouse::Reset()
 {
     x = 31; // assign random different coords (some programs test this)
     y = 85;
     buttons = 0xFF;
 }
+//=============================================================================
+//	eKempstonMouse::IoRead
+//-----------------------------------------------------------------------------
+bool eKempstonMouse::IoRead(word port) const
+{
+	if(port&0x20)
+		return false;
+	port |= 0xfa00; // A13,A15 not used in decoding
+	if(port != 0xfadf && port != 0xfbdf && port != 0xffdf)
+		return false;
+	return true;
+}
+//=============================================================================
+//	eKempstonMouse::IoRead
+//-----------------------------------------------------------------------------
 void eKempstonMouse::IoRead(word port, byte* v, int tact)
 {
-	if(port & 0x20)
-		return;
-
-    port |= 0xFA00; // A13,A15 not used in decoding
+    port |= 0xfa00; // A13,A15 not used in decoding
     switch(port)
     {
-    case 0xFBDF: *v = x; break;
-    case 0xFFDF: *v = y; break;
-    case 0xFADF: *v = buttons; break;
+    case 0xfbdf: *v = x;		break;
+    case 0xffdf: *v = y;		break;
+    case 0xfadf: *v = buttons;	break;
     }
 }
+//=============================================================================
+//	eKempstonMouse::OnMouseMove
+//-----------------------------------------------------------------------------
 void eKempstonMouse::OnMouseMove(byte _dx, byte _dy)
 {
 	x += _dx;
 	y += _dy;
 }
+//=============================================================================
+//	eKempstonMouse::OnMouseButton
+//-----------------------------------------------------------------------------
 void eKempstonMouse::OnMouseButton(byte index, bool state)
 {
 	byte v = byte(0x01) << index;

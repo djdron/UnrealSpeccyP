@@ -22,10 +22,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //=============================================================================
 //	eBeeper::IoWrite
 //-----------------------------------------------------------------------------
+bool eBeeper::IoWrite(word port) const
+{
+	return !(port&1);
+}
+//=============================================================================
+//	eBeeper::IoWrite
+//-----------------------------------------------------------------------------
 void eBeeper::IoWrite(word port, byte v, int tact)
 {
-	if(port & 1)
-		return;
 	const short spk_vol = 8192;
 	const short mic_vol = 1000;
 	short spk = (v & 0x10) ? spk_vol : 0;

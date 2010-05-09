@@ -179,6 +179,36 @@ void eUla::Write(word addr, byte v, int tact)
 	UpdateRay(tact);
 }
 //=============================================================================
+//	eUla::IoRead
+//-----------------------------------------------------------------------------
+bool eUla::IoRead(word port) const
+{
+	return (port&0xff) == 0xff;
+}
+//=============================================================================
+//	eUla::IoWrite
+//-----------------------------------------------------------------------------
+bool eUla::IoWrite(word port) const
+{
+	return !(port&1) || (!(port & 2) && !(port & 0x8000));
+}
+//=============================================================================
+//	eUla::IoRead
+//-----------------------------------------------------------------------------
+void eUla::IoRead(word port, byte* v, int tact)
+{
+	UpdateRay(tact);
+	if(timing->zone != eTiming::Z_PAPER) // ray is not in paper
+	{
+		*v = 0xff;
+		return;
+	}
+	int t = (tact + border_add) & border_and;
+	int offs = (t - timing->t) / 4;
+	byte* atr = base + timing->attr_offs + offs;
+	*v = *atr;
+}
+//=============================================================================
 //	eUla::IoWrite
 //-----------------------------------------------------------------------------
 void eUla::IoWrite(word port, byte v, int tact)
@@ -195,24 +225,6 @@ void eUla::IoWrite(word port, byte v, int tact)
 	{
 		SwitchScreen(!(v & 0x08), tact);
 	}
-}
-//=============================================================================
-//	eUla::IoRead
-//-----------------------------------------------------------------------------
-void eUla::IoRead(word port, byte* v, int tact)
-{
-	if((port & 0xff) != 0xff)
-		return;
-	UpdateRay(tact);
-	if(timing->zone != eTiming::Z_PAPER) // ray is not in paper
-	{
-		*v = 0xff;
-		return;
-	}
-	int t = (tact + border_add) & border_and;
-	int offs = (t - timing->t) / 4;
-	byte* atr = base + timing->attr_offs + offs;
-	*v = *atr;
 }
 //=============================================================================
 //	eUla::FrameUpdate
@@ -233,8 +245,6 @@ void eUla::FrameUpdate()
 //-----------------------------------------------------------------------------
 void eUla::UpdateRay(int tact)
 {
-	if(!enabled)
-		return;
 	int last_t = (tact + border_add) & border_and;
 	int t = prev_t;
 

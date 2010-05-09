@@ -35,6 +35,8 @@ class eWD1793 : public eDevice
 public:
 	eWD1793(eSpeccy* _speccy, eRom* _rom);
 	virtual void Init();
+	virtual bool IoRead(word port) const;
+	virtual bool IoWrite(word port) const;
 	virtual void IoRead(word port, byte* v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
 	bool Open(const char* image, int drive);

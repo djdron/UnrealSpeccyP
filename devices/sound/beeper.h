@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class eBeeper : public eDeviceSound
 {
 public:
+	virtual bool IoWrite(word port) const;
 	virtual void IoWrite(word port, byte v, int tact);
 	static eDeviceId Id() { return D_BEEPER; }
 	virtual dword IoNeed() const { return ION_WRITE; }

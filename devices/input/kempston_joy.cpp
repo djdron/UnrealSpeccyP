@@ -22,16 +22,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void eKempstonJoy::Init() { Reset(); }
 void eKempstonJoy::Reset() { state = 0; }
 
+//=============================================================================
+//	eKempstonJoy::IoRead
+//-----------------------------------------------------------------------------
+bool eKempstonJoy::IoRead(word port) const
+{
+	if(port&0x20)
+		return false;
+	// skip kempston mouse ports
+	port |= 0xfa00; // A13,A15 not used in decoding
+	if((port == 0xfadf || port == 0xfbdf || port == 0xffdf))
+		return false;
+	return true;
+}
+//=============================================================================
+//	eKempstonJoy::IoRead
+//-----------------------------------------------------------------------------
 void eKempstonJoy::IoRead(word port, byte* v, int tact)
 {
-	if(port & 0x20)
-		return;
-
-	// skip kempston mouse ports
-    port |= 0xFA00; // A13,A15 not used in decoding
-    if((port == 0xFADF || port == 0xFBDF || port == 0xFFDF))
-    	return;
-
 	*v = state;
 }
 
@@ -49,10 +57,16 @@ static const eButton buttons[BUTTONS_COUNT] =
 	{'u',   0x08 },
 	{'f',	0x10 },
 };
+//=============================================================================
+//	eKempstonJoy::OnKey
+//-----------------------------------------------------------------------------
 void eKempstonJoy::OnKey(char _key, bool _down)
 {
 	KeyState(_key, _down);
 }
+//=============================================================================
+//	eKempstonJoy::KeyState
+//-----------------------------------------------------------------------------
 void eKempstonJoy::KeyState(char _key, bool _down)
 {
 	for(int i = 0; i < BUTTONS_COUNT; ++i)

@@ -602,9 +602,29 @@ void eWD1793::Load()
 //=============================================================================
 //	eWD1793::IoRead
 //-----------------------------------------------------------------------------
+bool eWD1793::IoRead(word port) const
+{
+	if(port&0x1f != 0x1f)
+		return false;
+	byte p = (byte)port;
+	return p == 0x1f || p == 0x3f || p == 0x5f || p == 0x7f || p & 0x80;
+}
+//=============================================================================
+//	eWD1793::IoWrite
+//-----------------------------------------------------------------------------
+bool eWD1793::IoWrite(word port) const
+{
+	if(port&0x1f != 0x1f)
+		return false;
+	byte p = (byte)port;
+	return p == 0x1f || p == 0x3f || p == 0x5f || p == 0x7f || p & 0x80;
+}
+//=============================================================================
+//	eWD1793::IoRead
+//-----------------------------------------------------------------------------
 void eWD1793::IoRead(word port, byte* v, int tact)
 {
-	if(!rom->DosSelected() || (port & 0x1f) != 0x1f)
+	if(!rom->DosSelected())
 		return;
 	Process(tact);
 	*v = 0xff;
@@ -629,11 +649,11 @@ void eWD1793::IoRead(word port, byte* v, int tact)
 //-----------------------------------------------------------------------------
 void eWD1793::IoWrite(word port, byte v, int tact)
 {
-	if(!rom->DosSelected() || (port & 0x1F) != 0x1F)
+	if(!rom->DosSelected())
 		return;
 	Process(tact);
 	byte p = (byte)port;
-	if(p == 0x1F) // cmd
+	if(p == 0x1f) // cmd
 	{
 		if((v & 0xf0) == 0xd0) // force interrupt
 		{
@@ -665,9 +685,9 @@ void eWD1793::IoWrite(word port, byte v, int tact)
 		}
 		state = S_TYPE1_CMD; //else seek/step command
 	}
-	else if(p == 0x3F) track = v;
-	else if(p == 0x5F) sector = v;
-	else if(p == 0x7F)
+	else if(p == 0x3f) track = v;
+	else if(p == 0x5f) sector = v;
+	else if(p == 0x7f)
 	{
 		data = v;
 		rqs &= ~R_DRQ;

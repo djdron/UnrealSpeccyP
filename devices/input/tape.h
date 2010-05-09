@@ -33,6 +33,7 @@ public:
 	eTape(eSpeccy* s) : speccy(s) {}
 	virtual void Init();
 	virtual void Reset();
+	virtual bool IoRead(word port) const;
 	virtual void IoRead(word port, byte* v, int tact);
 
 	bool Open(const char* file);

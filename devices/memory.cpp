@@ -95,13 +95,17 @@ void eRom::Reset()
 //=============================================================================
 //	eRom::IoWrite
 //-----------------------------------------------------------------------------
+bool eRom::IoWrite(word port) const
+{
+	return (!(port & 2) && !(port & 0x8000)); // zx128 port
+}
+//=============================================================================
+//	eRom::IoWrite
+//-----------------------------------------------------------------------------
 void eRom::IoWrite(word port, byte v, int tact)
 {
-	if(!(port & 2) && !(port & 0x8000)) // zx128 port
-	{
-		page_selected = (page_selected & ~1) + ((v >> 4) & 1);
-		memory->SetBank(0, page_selected);
-	}
+	page_selected = (page_selected & ~1) + ((v >> 4) & 1);
+	memory->SetBank(0, page_selected);
 }
 //=============================================================================
 //	eRom::Read
@@ -133,11 +137,15 @@ void eRam::Reset()
 //=============================================================================
 //	eRam::IoWrite
 //-----------------------------------------------------------------------------
+bool eRam::IoWrite(word port) const
+{
+	return (!(port & 2) && !(port & 0x8000)); // zx128 port
+}
+//=============================================================================
+//	eRam::IoWrite
+//-----------------------------------------------------------------------------
 void eRam::IoWrite(word port, byte v, int tact)
 {
-	if(!(port & 2) && !(port & 0x8000)) // zx128 port
-	{
-		int page = eMemory::P_RAM0 + (v & 7);
-		memory->SetBank(3, page);
-	}
+	int page = eMemory::P_RAM0 + (v & 7);
+	memory->SetBank(3, page);
 }

@@ -74,8 +74,10 @@ class eAY : public eDeviceSound
 	typedef eDeviceSound eInherited;
 public:
 	eAY();
-	virtual ~eAY();
+	virtual ~eAY() {}
 
+	virtual bool IoRead(word port) const;
+	virtual bool IoWrite(word port) const;
 	virtual void IoRead(word port, byte* v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
 
