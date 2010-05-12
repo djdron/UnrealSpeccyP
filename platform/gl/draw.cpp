@@ -26,7 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #endif//_WINDOWS
 
+#ifndef _MAC
 #include <GL/gl.h>
+#else//_MAC
+#include <OpenGL/gl.h>
+#endif//_MAC
+
 
 DECLARE_PROFILER_SECTION(gl_draw_prepare);
 DECLARE_PROFILER_SECTION(gl_draw);
