@@ -24,7 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #endif//_WINDOWS
 
+#ifndef _MAC
 #include <GL/gl.h>
+#else//_MAC
+#include <OpenGL/gl.h>
+#endif//_MAC
 
 #ifdef _LINUX
 //#define GLX_GLXEXT_PROTOTYPES 1
@@ -76,6 +80,12 @@ void VsyncGL(bool on)
 #endif//WGL_EXT_swap_control
 }
 #endif//_WINDOWS
+	
+#ifdef _MAC
+void VsyncGL(bool on)
+{
+}
+#endif//_MAC
 
 }
 //namespace xPlatform

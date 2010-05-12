@@ -23,14 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#if defined(_WINDOWS) || defined(_LINUX)
+#if defined(_WINDOWS) || defined(_LINUX) || defined(_MAC)
 
 #define USE_OAL
 #define USE_GL
 //#define USE_GLUT
 #define USE_WXWIDGETS
 
-#endif//_WINDOWS || _LINUX
+#endif//_WINDOWS || _LINUX || _MAC
 
 namespace xPlatform
 {
