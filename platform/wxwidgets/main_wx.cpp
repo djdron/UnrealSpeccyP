@@ -44,18 +44,17 @@ class GLCanvas : public wxGLCanvas
 	typedef wxGLCanvas eInherited;
 public:
 	GLCanvas(wxWindow* parent)
-	: eInherited(parent, wxID_ANY, canvas_attr)
-	, key_flags(KF_CURSOR|KF_KEMPSTON)
-	, mouse_pos(0, 0)
+		: eInherited(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, _("GLCanvas"), canvas_attr)
+		, key_flags(KF_CURSOR|KF_KEMPSTON)
+		, mouse_pos(0, 0)
 	{
-		context = new wxGLContext(this);
 	}
 	virtual void OnPaint(wxPaintEvent& event)
 	{
 		wxPaintDC(this);
 		int w, h;
 		GetClientSize(&w, &h);
-		SetCurrent(*context);
+		SetCurrent();
 		static bool vsync = false;
 		bool s = !Handler()->FullSpeed();
 		if(vsync != s)
@@ -156,8 +155,6 @@ public:
 	DECLARE_EVENT_TABLE()
 
 protected:
-
-	wxGLContext* context;
 	wxPoint mouse_pos;
 };
 int GLCanvas::canvas_attr[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, 0 };
