@@ -278,10 +278,11 @@ public:
 		, org_size(320, 240)
 	{
 		wxMenu* menuFile = new wxMenu;
+		menuFile->Append(wxID_ABOUT, _("About"));
 		menuFile->Append(ID_OpenFile, _("&Open...\tF3"));
 		menuFile->Append(ID_Reset, _("&Reset...\tF12"));
 		menuFile->AppendSeparator();
-		menuFile->Append(ID_Quit, _("E&xit"));
+		menuFile->Append(wxID_EXIT, _("E&xit"));
 
 		wxMenu* menuWindow = new wxMenu;
 		menuWindow->Append(ID_Size100, _("Size &100%\tCtrl+1"));
@@ -326,7 +327,6 @@ public:
 		else
 			SetStatusText(_("Reset FAILED"));
 	}
-	void OnQuit(wxCommandEvent& event)	{ Close(true); }
 	void OnOpenFile(wxCommandEvent& event)
 	{
 		wxFileDialog fd(this);
@@ -414,7 +414,7 @@ public:
 	}
 	enum
 	{
-		ID_Quit = 1, ID_OpenFile, ID_Reset, ID_Size100, ID_Size200,
+		ID_OpenFile = 1, ID_Reset, ID_Size100, ID_Size200,
 		ID_TapeToggle, ID_TapeFastToggle, ID_DriveNext,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
 	};
@@ -437,7 +437,6 @@ private:
 BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_OpenFile, Frame::OnOpenFile)
 	EVT_MENU(Frame::ID_Reset,	Frame::OnReset)
-	EVT_MENU(Frame::ID_Quit,	Frame::OnQuit)
 	EVT_MENU(Frame::ID_Size100,	Frame::OnResize)
 	EVT_MENU(Frame::ID_Size200,	Frame::OnResize)
 	EVT_MENU(Frame::ID_TapeToggle,Frame::OnTapeToggle)
