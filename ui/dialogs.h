@@ -33,6 +33,7 @@ namespace xUi
 //-----------------------------------------------------------------------------
 class eFileOpenDialog : public eDialog
 {
+	enum { MAX_ITEMS = 2000 };
 	typedef eDialog eInherited;
 public:
 	eFileOpenDialog(const char* _path) : list(NULL), selected(NULL)
@@ -42,14 +43,13 @@ public:
 	}
 	virtual void Init();
 	const char* Selected() { return selected; }
-	virtual void OnKey(char key, dword flags);
 protected:
+	void OnNotify(byte n, byte from);
 	void OnChangePath();
-	enum { BACKGROUND_COLOR = 0x01202020 };
 protected:
 	char path[256];
 	eList* list;
-	bool folders[2000];
+	bool folders[MAX_ITEMS];
 	const char* selected;
 };
 
@@ -60,7 +60,7 @@ class eKeysDialog : public eDialog
 {
 	typedef eDialog eInherited;
 public:
-	eKeysDialog() : key(0), pressed(false), caps(false), symbol(false) {}
+	eKeysDialog() : key(0), pressed(false), caps(false), symbol(false), flags(0) {}
 	virtual void Init();
 	byte Key() const { return key; }
 	bool Pressed() const { return pressed; }
@@ -71,43 +71,75 @@ public:
 protected:
 	virtual void OnNotify(byte n, byte from);
 	byte AllocateId(const char* key) const;
-	enum { BACKGROUND_COLOR = 0x01202020 };
 protected:
 	byte key;
 	bool pressed;
 	bool caps;
 	bool symbol;
+	dword flags;
+};
+
+//*****************************************************************************
+//	eMenuDialog
+//-----------------------------------------------------------------------------
+class eMenuDialog : public eDialog
+{
+	typedef eDialog eInherited;
+public:
+	eMenuDialog() {}
+	virtual void Init();
+	void ItemState(int idx, int v)
+	{
+		char s[80];
+		GetItemText(idx, v, s);
+		((eButton*)childs[idx])->Text(s);
+	}
+	enum eItemId { I_OPEN, I_JOYSTICK, I_TAPE, I_FAST_TAPE, I_SOUND, I_VOLUME, I_RESET, I_QUIT, I_COUNT };
+protected:
+	virtual void OnNotify(byte n, byte from);
+	void GetItemText(int idx, int state, char* dst) const;
+};
+
+//*****************************************************************************
+//	eMainDialog
+//-----------------------------------------------------------------------------
+class eMainDialog : public eDialog
+{
+	typedef eDialog eInherited;
+public:
+	eMainDialog();
+	bool Focused() const { return *childs; }
+	virtual void Update();
+	virtual void OnKey(char key, dword flags);
+protected:
+	virtual void OnNotify(byte n, byte from);
+	void SetupMenu();
+	enum eDialogId { D_FILE_OPEN, D_KEYS, D_MENU };
+protected:
+	bool clear;
+	bool open_file;
+	char path[256];
 };
 
 
 //*****************************************************************************
 //	eManager
 //-----------------------------------------------------------------------------
-class eManager
+class eManager : public eDialog
 {
+	enum { KEY_REPEAT_DELAY = 10 };
+	typedef eDialog eInherited;
 public:
-	eManager(const char* _path) : fo_dialog(NULL), keys_dialog(NULL), key(0), key_flags(0), keypress_timer(0)
-	{
-		strcpy(path, _path);
-	}
-	~eManager()
-	{
-		SAFE_DELETE(fo_dialog);
-		SAFE_DELETE(keys_dialog);
-	}
-	void Init()
+	eManager() : key(0), key_flags(0), keypress_timer(0)
 	{
 		CreateFont(6, 6, "res/font/spxtrm4f.fnt");
+		Insert(new eMainDialog);
 	}
-	dword* VideoData() const { return (fo_dialog || keys_dialog) ? Screen() : NULL; }
-	bool Focused() const { return fo_dialog || keys_dialog; }
-	void Update();
-	void OnKey(char _key, dword flags);
-	enum { KEY_REPEAT_DELAY = 10 };
+	dword* VideoData() const { return Focused() ? Screen() : NULL; }
+	bool Focused() const { return ((eMainDialog*)*childs)->Focused(); }
+	virtual void Update();
+	virtual void OnKey(char key, dword flags);
 protected:
-	char path[256];
-	eFileOpenDialog* fo_dialog;
-	eKeysDialog* keys_dialog;
 	char key;
 	dword key_flags;
 	int keypress_timer;

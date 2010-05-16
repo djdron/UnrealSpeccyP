@@ -29,6 +29,7 @@ namespace xUi
 //-----------------------------------------------------------------------------
 void eDialog::Insert(eControl* child)
 {
+	changed = true;
 	for(int i = 0; i < MAX_CHILDS; ++i)
 	{
 		if(childs[i])
@@ -51,7 +52,7 @@ void eDialog::Update()
 		changed = false;
 		DrawRect(bound, background);
 		focused = *childs;
-		focused->Focused(true);
+		SAFE_CALL(focused)->Focused(true);
 	}
 	for(int i = 0; childs[i]; ++i)
 	{
@@ -119,6 +120,7 @@ void eButton::Update()
 	{
 		changed = false;
 		eRect sr = ScreenBound();
+		DrawRect(sr, focused ? FOCUS_COLOR : background);
 		ePoint cen = sr.Beg() + ePoint(sr.Width() / 2, sr.Height() / 2);
 		ePoint t_half((strlen(text) * FontSize().x / 2), FontSize().y / 2);
 		eRect r(cen.x - t_half.x, cen.y - t_half.y, cen.x + t_half.x, cen.y + t_half.y);
@@ -127,13 +129,13 @@ void eButton::Update()
 	if(pushed != last_pushed)
 	{
 		last_pushed = pushed;
-		if(pushed)	DrawRect(ScreenBound(), PUSH_COLOR, 0x08ffffff);
-		else		DrawRect(ScreenBound(), focused ? FOCUS_COLOR : background, 0x08ffffff);
-		Notify(pushed ? N_PUSH : N_POP, id);
+		if(triggered && highlight)	DrawRect(ScreenBound(), focused ? PUSH_FOCUS_COLOR : PUSH_COLOR, 0x08ffffff);
+		else			DrawRect(ScreenBound(), focused ? FOCUS_COLOR : background, 0x08ffffff);
+		Notify(pushed ? N_PUSH : N_POP);
 	}
-	if(change_focus && triggered)
+	if(change_focus && triggered && highlight)
 	{
-		DrawRect(ScreenBound(), PUSH_COLOR, 0x08ffffff);
+		DrawRect(ScreenBound(), focused ? PUSH_FOCUS_COLOR : PUSH_COLOR, 0x08ffffff);
 	}
 }
 //=============================================================================
@@ -145,8 +147,7 @@ void eButton::OnKey(char key, dword flags)
 		return;
 	if((!triggered && !key) || key == 'e' || key == 'f')
 	{
-		triggered = false;
-		pushed = key;
+		Push(key);
 	}
 	else if(key == ' ')
 	{
@@ -230,9 +231,12 @@ void eList::OnKey(char key, dword flags)
 	case 'r': selected += page_size;	break;
 	case 'u': --selected;				break;
 	case 'd': ++selected;				break;
+	case 'f':
+	case 'e':
+	case ' ': Notify(N_SELECTED);		break;
 	}
-	if(selected < 0) selected = size - 1;
-	if(selected >= size) selected = 0;
+	if(selected < 0)		selected = 0;
+	if(selected >= size)	selected = size - 1;
 }
 
 }

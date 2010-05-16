@@ -37,6 +37,7 @@ public:
 	eControl() : parent(NULL), changed(true), focused(false), last_focused(false), background(0), id(-1) {}
 	virtual ~eControl() {}
 	virtual void Init() {}
+	byte Id() const { return id; }
 	void Id(byte v) { id = v; }
 	void Parent(eControl* c) { parent = c; }
 	void Focused(bool b) { focused = b; }
@@ -61,13 +62,12 @@ public:
 		}
 	}
 	virtual void OnKey(char key, dword flags) = 0;
+	virtual void Notify(byte n) { OnNotify(n, id); }
 protected:
-	virtual void Notify(byte n, byte from)
+	virtual void OnNotify(byte n, byte from)
 	{
-		OnNotify(n, from);
-		SAFE_CALL(parent)->Notify(n, from);
+		SAFE_CALL(parent)->OnNotify(n, from);
 	}
-	virtual void OnNotify(byte n, byte from) {}
 	enum { FOCUS_COLOR = 0x08008000 };
 protected:
 	eRect bound;
@@ -89,17 +89,23 @@ public:
 	eDialog() : focused(NULL) { *childs = NULL; }
 	virtual ~eDialog()
 	{
+		Clear();
+		DrawRect(bound, 0);
+	}
+	void Insert(eControl* child);
+	void Clear()
+	{
 		for(int i = 0; childs[i]; ++i)
 		{
 			delete childs[i];
 		}
-		DrawRect(bound, 0);
+		*childs = focused = NULL;
 	}
-	void Insert(eControl* child);
 	virtual void Update();
 	virtual void OnKey(char key, dword flags);
 protected:
 	void ChooseFocus(char key);
+	enum { BACKGROUND_COLOR = 0x01202020 };
 protected:
 	eControl* childs[MAX_CHILDS + 1];
 	eControl* focused;
@@ -111,12 +117,13 @@ protected:
 class eButton : public eControl
 {
 	enum { MAX_TEXT_SIZE = 64 };
-	enum { PUSH_COLOR = 0x080000b0 };
+	enum { PUSH_COLOR = 0x080000b0, PUSH_FOCUS_COLOR = 0x08800080 };
 	typedef eControl eInherited;
 public:
-	eButton() : pushed(false), triggered(false), last_pushed(false), last_key(0) { *text = '\0'; }
-	void Text(const char* s) { assert(strlen(s) <= MAX_TEXT_SIZE); strcpy(text, s); }
-	void Push(bool b) { pushed = b; }
+	eButton() : pushed(false), triggered(false), last_pushed(false), last_key(0), highlight(true) { *text = '\0'; }
+	void Highlight(bool on) { highlight = on; }
+	void Text(const char* s) { assert(strlen(s) <= MAX_TEXT_SIZE); strcpy(text, s); changed = true; }
+	void Push(bool b) { pushed = b; triggered = false; }
 	virtual void Update();
 	virtual void OnKey(char key, dword flags);
 	enum eNotify { N_PUSH, N_POP };
@@ -126,6 +133,7 @@ protected:
 	bool triggered;
 	bool last_pushed;
 	char last_key;
+	bool highlight;
 };
 
 //*****************************************************************************
@@ -135,6 +143,7 @@ class eList : public eControl
 {
 	enum { MAX_ITEMS = 2000 };
 	enum { CURSOR_COLOR = 0x08b06000 };
+	enum eNotify { N_SELECTED };
 public:
 	eList() : size(0), last_selected(0), selected(0), page_begin(0), page_size(0) { *items = NULL; }
 	virtual ~eList() { Clear(); }
@@ -143,7 +152,7 @@ public:
 		changed = true;
 		for(int i = 0; items[i]; ++i)
 		{
-			delete items[i];
+			delete[] items[i];
 		}
 		*items = NULL;
 		size = last_selected = selected = page_begin = page_size = 0;

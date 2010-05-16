@@ -171,7 +171,6 @@ void eVideo::Flip()
 	REG_DMAC_DCCSR(0) |= DMAC_DCCSR_NDES;		// No DMA descriptor used
 	REG_DMAC_DCCSR(0) |= DMAC_DCCSR_EN;			// Set enable bit to start DMA
 }
-
 void eVideo::Update()
 {
 	using namespace xPlatform;
@@ -209,9 +208,9 @@ void eVideo::Update()
 class eAudio
 {
 public:
-	eAudio() : source(1)
+	eAudio() : volume(0)
 	{
-		waveout_set_volume(30);
+		SetVolume(volume);
 		struct eWaveoutOpen
 		{
 			dword	frequency;
@@ -223,83 +222,58 @@ public:
 	}
 	~eAudio() { waveout_close(handle); }
 	void Update();
-	void NextSource()
+protected:
+	void SetVolume(int v)
 	{
-		source = source < xPlatform::Handler()->AudioSources() - 1 ? source + 1 : 0;
+		waveout_set_volume(v);
 	}
 protected:
 	void* handle;
 	int source;
+	int volume;
 }audio;
 
 void eAudio::Update()
 {
 	using namespace xPlatform;
+	if(Handler()->Volume() != volume)
+	{
+		volume = Handler()->Volume();
+		SetVolume(volume * 3);
+	}
 	for(int i = Handler()->AudioSources(); --i >= 0;)
 	{
 		dword size = Handler()->AudioDataReady(i);
 		bool ui_enabled = Handler()->VideoDataUI();
-		if(i == source && !ui_enabled)
+		if(i == Handler()->Sound() && !ui_enabled && !Handler()->FullSpeed())
 		{
 			waveout_write(handle, Handler()->AudioData(i), size);
 		}
 		Handler()->AudioDataUse(i, size);
 	}
-	return;
-/*
-	//mix sound sources
-	static word sound_stream[16384*2];
-	dword common_size = 0;
-	for(int i = 0; i < Handler()->AudioSources(); ++i)
-	{
-		dword size = Handler()->AudioDataReady(i);
-		if(size > common_size)
-			common_size = size;
-	}
-	for(int i = 0; i < Handler()->AudioSources(); ++i)
-	{
-		dword size = Handler()->AudioDataReady(i);
-		void* data = Handler()->AudioData(i);
-		if(!i)
-		{
-			memcpy(sound_stream, (byte*)data, size);
-			memset(sound_stream + size, 0, common_size - size);
-		}
-		else
-		{
-			word* src = (word*)data;
-			word* dst = &sound_stream;
-			for(int j = 0; j < size/2; ++j)			{				*dst++ += *src++;			}		}
-		Handler()->AudioDataUse(i, size);
-	}
-	sound.Write(sound_stream, common_size);*/
 }
 
 class eKeys
 {
 public:
-	eKeys() {}
+	eKeys() : status(0) {}
 	void Update();
-	bool Quit() const
-	{
-		return Pressed(K_BUTTON_SELECT) && Pressed(K_BUTTON_START);
-	}
 protected:
 	enum eKeyBit
 	{
-		K_POWER			= 7,
-		K_BUTTON_A		= 31,
-		K_BUTTON_B		= 21,
-		K_BUTTON_X		= 16,
-		K_BUTTON_Y      = 6,
-		K_BUTTON_START	= 11,
-		K_BUTTON_SELECT	= 10,
-		K_TRIGGER_LEFT	= 8,
-		K_TRIGGER_RIGHT	= 29,
-		K_DPAD_UP		= 20,
-		K_DPAD_DOWN		= 27,
-		K_DPAD_LEFT		= 28,
-		K_DPAD_RIGHT	= 18
+		K_POWER			= 1 << 7,
+		K_BUTTON_A		= 1 << 31,
+		K_BUTTON_B		= 1 << 21,
+		K_BUTTON_X		= 1 << 16,
+		K_BUTTON_Y      = 1 << 6,
+		K_BUTTON_START	= 1 << 11,
+		K_BUTTON_SELECT	= 1 << 10,
+		K_TRIGGER_LEFT	= 1 << 8,
+		K_TRIGGER_RIGHT	= 1 << 29,
+		K_DPAD_UP		= 1 << 20,
+		K_DPAD_DOWN		= 1 << 27,
+		K_DPAD_LEFT		= 1 << 28,
+		K_DPAD_RIGHT	= 1 << 18
 	};
 	struct eKeyStatus
 	{
@@ -308,24 +282,34 @@ protected:
 		dword status;
 	};
 protected:
-	bool Pressed(eKeyBit key) const
+	eKeyStatus Status() const
 	{
 		eKeyStatus ks;
 		_kbd_get_status(&ks);
-		bool pressed = ks.status & (1 << key);
-		return pressed;
+		return ks;
 	}
+	bool Pressed(eKeyBit key) const { return Status().status&key; }
 	void UpdateKey(eKeyBit key, char zx_key, dword flags = 0)
 	{
-		flags |= Pressed(key) ? xPlatform::KF_DOWN : 0;
+		bool pressed = Pressed(key);
+		if(pressed == (status&key))
+			return;
+		status = pressed ? status|key : status&~key;
+		flags |= pressed ? xPlatform::KF_DOWN : 0;
 		xPlatform::Handler()->OnKey(zx_key, flags);
 	}
+protected:
+	dword status;
 }keys;
 
 void eKeys::Update()
 {
 	using namespace xPlatform;
-	dword flags = KF_KEMPSTON;
+	if(Pressed(K_BUTTON_SELECT) && Pressed(K_BUTTON_START))
+	{
+		Handler()->OnAction(A_QUIT);
+	}
+	dword flags = KF_KEMPSTON << Handler()->Joystick();
 	bool ui_focused = Handler()->VideoDataUI();
 	if(!ui_focused)
 	{
@@ -339,30 +323,19 @@ void eKeys::Update()
 			if(!audio_next)
 			{
 				audio_next = true;
-				audio.NextSource();
+				Handler()->OnAction(A_SOUND_NEXT);
 			}
+			return;
 		}
-		else
-		{
-			audio_next = false;
-		}
-		UpdateKey(K_DPAD_UP, 'Q');
-		UpdateKey(K_DPAD_DOWN, 'A');
-		UpdateKey(K_DPAD_LEFT, 'O');
-		UpdateKey(K_DPAD_RIGHT, 'P');
-		UpdateKey(K_BUTTON_A, 'M');
+		audio_next = false;
 	}
 	else
 	{
-		flags = Pressed(K_TRIGGER_LEFT) ? KF_SHIFT : 0;
+		flags |= Pressed(K_TRIGGER_LEFT) ? KF_SHIFT : 0;
 		flags |= Pressed(K_TRIGGER_RIGHT) ? KF_ALT : 0;
-		if(flags && !Pressed(K_DPAD_UP) && !Pressed(K_DPAD_DOWN)
-			&& !Pressed(K_DPAD_LEFT) && !Pressed(K_DPAD_RIGHT)
-			&& !Pressed(K_BUTTON_A) && !Pressed(K_BUTTON_B)
-			&& !Pressed(K_BUTTON_X) && !Pressed(K_BUTTON_Y))
+		if(!(Status().status&~(K_TRIGGER_LEFT|K_TRIGGER_RIGHT)))
 		{
-			UpdateKey(flags&KF_SHIFT ? K_TRIGGER_LEFT : K_TRIGGER_RIGHT
-				, flags&KF_SHIFT ? 'c' : 's', flags);
+			xPlatform::Handler()->OnKey(0, flags);
 		}
 	}
 	UpdateKey(K_DPAD_UP, 'u', flags);
@@ -372,25 +345,11 @@ void eKeys::Update()
 	UpdateKey(K_BUTTON_A, 'f', flags);
 
 	UpdateKey(K_BUTTON_B, 'e', flags);
-	UpdateKey(K_BUTTON_X, '0', flags);
+	UpdateKey(K_BUTTON_X, '1', flags);
 	UpdateKey(K_BUTTON_Y, ' ', flags);
 
-	UpdateKey(K_BUTTON_SELECT, '`'); //open dialog
+	UpdateKey(K_BUTTON_SELECT, '`'); //menu dialog
 	UpdateKey(K_BUTTON_START, '\\'); //keys dialog
-
-	static bool tape_toggle = false;
-	if(Pressed(K_POWER))
-	{
-		if(!tape_toggle)
-		{
-			tape_toggle = true;
-			Handler()->OnAction(A_TAPE_TOGGLE);
-		}
-	}
-	else
-	{
-		tape_toggle = false;
-	}
 }
 
 namespace xPlatform
@@ -418,9 +377,10 @@ void Done()
 
 void Loop()
 {
-	while(!keys.Quit() && _sys_judge_event(NULL) >= 0)
+	while(!Handler()->Quit() && _sys_judge_event(NULL) >= 0)
 	{
-		timer.Wait();
+		if(!Handler()->FullSpeed())
+			timer.Wait();
 		video.Flip();
 		audio.Update();
 		keys.Update();

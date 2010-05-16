@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __STDIO_H__
 #define __STDIO_H__
 
+#include "../../std_types.h"
+
 #include <stdlib.h>
 
 #pragma once
@@ -39,6 +41,20 @@ int		fsys_fwrite(const void*, size_t, size_t, FILE*);
 int		fsys_fclose(FILE*);
 int		fsys_fseek(FILE*, long, int);
 long	fsys_ftell(FILE*);
+
+struct eFindData
+{
+   dword	handle;
+   dword	size;
+   dword	attrib;
+   dword	time;
+   word		padding;
+   char		name[544];
+};
+
+int		fsys_findfirst(const char*, int, eFindData*);
+int		fsys_findnext(eFindData*);
+int		fsys_findclose(eFindData*);
 
 int		sprintf(char*, const char*, ...);
 }

@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../std.h"
 #include "dialogs.h"
 #include "../platform/platform.h"
+#include "../platform/io.h"
 
 #ifdef _WINDOWS
 #include <io.h>
@@ -36,9 +37,10 @@ void eFileOpenDialog::Init()
 {
 	background = BACKGROUND_COLOR;
 	eRect r(8, 8, 120, 180);
+	ePoint margin(6, 6);
 	Bound() = r;
 	list = new eList;
-	list->Bound() = eRect(6, 6, r.Width() - 6, r.Height() - 6);
+	list->Bound() = eRect(margin.x, margin.y, r.Width() - margin.x, r.Height() - margin.y);
 	Insert(list);
 	OnChangePath();
 }
@@ -48,6 +50,9 @@ void eFileOpenDialog::Init()
 void eFileOpenDialog::OnChangePath()
 {
 	list->Clear();
+	memset(folders, 0, sizeof(folders));
+	int i = 0;
+
 #ifdef _LINUX
 	list->Insert("FILE 1");
 	list->Insert("FILE 2");
@@ -58,9 +63,7 @@ void eFileOpenDialog::OnChangePath()
 	_finddata_t fd;
 	dword handle = _findfirst(path, &fd);
 	dword res = handle;
-	memset(folders, 0, sizeof(folders));
-	int i = 0;
-	while(res != -1)
+	while(res != -1 && i < MAX_ITEMS)
 	{
 		if(strcmp(fd.name, "."))
 		{
@@ -75,53 +78,72 @@ void eFileOpenDialog::OnChangePath()
 #ifdef _DINGOO
 	eFindData fd;
 	int res = fsys_findfirst(path, -1, &fd);
-	list->Clear();
-	memset(folders, 0, sizeof(folders));
-	int i = 0;
-	while(!res)
+	int levels = 0;
+	for(const char* src = path; *src; ++src)
 	{
-		if(strcmp(fd.name, "."))
-		{
-			folders[i++] = fd.attrib&0x10;
-			list->Insert(fd.name);
-		}
+		if(*src == '\\' || *src == '/')
+			++levels;
+	}
+	if(levels > 1) //isn't root
+	{
+		list->Insert("..");
+		folders[i++] = true;
+	}
+	while(!res && i < MAX_ITEMS)
+	{
+		folders[i++] = fd.attrib&0x10;
+		list->Insert(fd.name);
 		res = fsys_findnext(&fd);
 	}
 	fsys_findclose(&fd);
 #endif//_DINGOO
 }
+
 static void GetUpLevel(char* path, int level = 1)
 {
 	for(int i = strlen(path); --i >= 0; )
 	{
-		if(((path[i] == '\\') || (path[i] == '/')) && !--level)
+		if(((path[i] == '\\') || (path[i] == '/')))
 		{
-			path[i + 1] = '\0';
-			return;
+			while(--i >= 0 && ((path[i] == '\\') || (path[i] == '/')));
+			++i;
+			if(!--level)
+			{
+				path[i + 1] = '\0';
+				return;
+			}
 		}
 	}
 }
+
 //=============================================================================
-//	eFileOpenDialog::OnKey
+//	eFileOpenDialog::OnNotify
 //-----------------------------------------------------------------------------
-void eFileOpenDialog::OnKey(char key, dword flags)
+void eFileOpenDialog::OnNotify(byte n, byte from)
 {
-	if(key == 'e' && list->Selected())
+	if(list->Selected())
 	{
 		if(folders[list->Selector()])
 		{
-			GetUpLevel(path);
-			strcat(path, list->Selected());
-			strcat(path, "\\*.*");
+			if(!strcmp(list->Selected(), ".."))
+			{
+				GetUpLevel(path, 2);
+				strcat(path, "*.*");
+			}
+			else
+			{
+				GetUpLevel(path);
+				strcat(path, list->Selected());
+				strcat(path, "\\*.*");
+			}
 			OnChangePath();
 			return;
 		}
 		GetUpLevel(path);
 		strcat(path, list->Selected());
 		selected = path;
-		return;
+		eInherited::OnNotify(n, id);
 	}
-	eInherited::OnKey(key, flags);
 }
 
 static const char* zx_keys[] =
@@ -150,11 +172,11 @@ byte eKeysDialog::AllocateId(const char* key) const
 void eKeysDialog::Init()
 {
 	background = BACKGROUND_COLOR;
-	eRect r_dlg(ePoint(200, 80));
-	r_dlg.Move(ePoint(112, 8));
+	eRect r_dlg(ePoint(169, 70));
+	r_dlg.Move(ePoint(143, 8));
 	Bound() = r_dlg;
 	eRect r_item(ePoint(13, FontSize().y + 2));
-	ePoint margin(8, 8);
+	ePoint margin(6, 6);
 	ePoint delta;
 	delta.x = (r_dlg.Width() - r_item.Width() - margin.x * 2) / 9;
 	delta.y = (r_dlg.Height() - r_item.Height() - margin.y * 2) / 3;
@@ -178,10 +200,14 @@ void eKeysDialog::Init()
 //=============================================================================
 //	eKeysDialog::OnKey
 //-----------------------------------------------------------------------------
-void eKeysDialog::OnKey(char key, dword flags)
+void eKeysDialog::OnKey(char key, dword _flags)
 {
-// 	((eButton*)childs[30])->Push(flags&xPlatform::KF_SHIFT);
-// 	((eButton*)childs[38])->Push(flags&xPlatform::KF_ALT);
+	using namespace xPlatform;
+	if((_flags&KF_SHIFT) != (flags&KF_SHIFT))
+		((eButton*)childs[30])->Push(_flags&KF_SHIFT);
+	if((_flags&KF_ALT) != (flags&KF_ALT))
+		((eButton*)childs[38])->Push(_flags&KF_ALT);
+	flags = _flags;
 	eInherited::OnKey(key, flags);
 }
 //=============================================================================
@@ -198,7 +224,216 @@ void eKeysDialog::OnNotify(byte n, byte from)
 		key = from;
 		pressed = pushed;
 	}
+	eInherited::OnNotify(n, id);
 }
+
+static const char* menu_open[] = { ">" };
+static const char* menu_joystick[] = { "kempston", "cursor", "qaop", "sinclair2" };
+static const char* menu_tape[] = { "start", "stop", "n/a" };
+static const char* menu_tape_fast[] = { "on", "off" };
+static const char* menu_sound[] = { "beeper", "ay", "tape" };
+static const char* menu_volume[] = { "mute", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%" };
+
+static const char* menu_items[] = { "open image", "joystick", "tape", "fast tape", "sound", "volume", "reset", "quit" };
+static const char** menu_states[] = { menu_open, menu_joystick, menu_tape, menu_tape_fast, menu_sound, menu_volume, NULL, NULL };
+
+//=============================================================================
+//	eMenuDialog::GetItemText
+//-----------------------------------------------------------------------------
+void eMenuDialog::GetItemText(int idx, int state, char* dst) const
+{
+	strcpy(dst, menu_items[idx]);
+	int offs = strlen(dst);
+	int spc_count = childs[idx]->Bound().Width() / FontSize().x - offs;
+	const char** states_text = menu_states[idx];
+	spc_count -= states_text ? strlen(states_text[state]) : 0;
+	for(int i = 0; i < spc_count; ++i)
+	{
+		dst[offs++] = ' ';
+	}
+	dst[offs] = '\0';
+	if(states_text)
+	{
+		strcat(dst, states_text[state]);
+	}
+}
+//=============================================================================
+//	eMenuDialog::Init
+//-----------------------------------------------------------------------------
+void eMenuDialog::Init()
+{
+	background = BACKGROUND_COLOR;
+	eRect r_dlg(ePoint(130, 60));
+	r_dlg.Move(ePoint(8, 8));
+	Bound() = r_dlg;
+	ePoint margin(6, 6);
+	eRect r(ePoint(r_dlg.Width() - margin.x * 2, FontSize().y));
+	r.Move(margin);
+	for(int i = 0; i < I_COUNT; ++i)
+	{
+		eButton* b = new eButton;
+		Insert(b);
+		b->Bound() = r;
+		b->Highlight(false);
+		b->Id(i);
+		ItemState(i, 0);
+		r.Move(ePoint(0, FontSize().y));
+	}
+}
+//=============================================================================
+//	eMenuDialog::OnNotify
+//-----------------------------------------------------------------------------
+void eMenuDialog::OnNotify(byte n, byte from)
+{
+	if(n != eButton::N_PUSH)
+		return;
+	eInherited::OnNotify(from, id);
+}
+
+//=============================================================================
+//	eMainDialog::eMainDialog
+//-----------------------------------------------------------------------------
+eMainDialog::eMainDialog() : clear(false), open_file(false)
+{
+	strcpy(path, xIo::ResourcePath("\\*.*"));
+}
+//=============================================================================
+//	eMainDialog::Update
+//-----------------------------------------------------------------------------
+void eMainDialog::Update()
+{
+	eInherited::Update();
+	if(clear)
+	{
+		clear = false;
+		Clear();
+	}
+	if(open_file)
+	{
+		open_file = false;
+		Clear();
+		eDialog* d = new eFileOpenDialog(path);
+		d->Id(D_FILE_OPEN);
+		Insert(d);
+	}
+}
+//=============================================================================
+//	eMainDialog::SetupMenu
+//-----------------------------------------------------------------------------
+void eMainDialog::SetupMenu()
+{
+	using namespace xPlatform;
+	eMenuDialog* d = (eMenuDialog*)*childs;
+	int v = Handler()->TapeInserted() ? Handler()->TapeStarted() ? 0 : 1 : 2;
+	d->ItemState(eMenuDialog::I_TAPE, v);
+	d->ItemState(eMenuDialog::I_FAST_TAPE, !Handler()->FullSpeed());
+	d->ItemState(eMenuDialog::I_JOYSTICK, Handler()->Joystick());
+	d->ItemState(eMenuDialog::I_SOUND, Handler()->Sound());
+	d->ItemState(eMenuDialog::I_VOLUME, Handler()->Volume());
+}
+//=============================================================================
+//	eMainDialog::OnKey
+//-----------------------------------------------------------------------------
+void eMainDialog::OnKey(char key, dword flags)
+{
+	eInherited::OnKey(key, flags);
+	switch(key)
+	{
+	case '\\':
+		if(!Focused())
+		{
+			eKeysDialog* d = new eKeysDialog;
+			d->Id(D_KEYS);
+			Insert(d);
+			return;
+		}
+		Clear();
+		break;
+	case '`':
+		if(!Focused() || (*childs)->Id() == D_FILE_OPEN)
+		{
+			Clear();
+			using namespace xPlatform;
+			eMenuDialog* d = new eMenuDialog;
+			Insert(d);
+			d->Id(D_MENU);
+			SetupMenu();
+			return;
+		}
+		Clear();
+		break;
+	}
+}
+//=============================================================================
+//	eMainDialog::OnNotify
+//-----------------------------------------------------------------------------
+void eMainDialog::OnNotify(byte n, byte from)
+{
+	using namespace xPlatform;
+	switch(from)
+	{
+	case D_FILE_OPEN:
+		{
+			eFileOpenDialog* d = (eFileOpenDialog*)*childs;
+			Handler()->OnOpenFile(d->Selected());
+			strcpy(path, d->Selected());
+			GetUpLevel(path);
+			strcat(path, "*.*");
+			clear = true;
+		}
+		break;
+	case D_KEYS:
+		{
+			eKeysDialog* d = (eKeysDialog*)*childs;
+			byte key = d->Key();
+			dword flags = d->Pressed() ? KF_DOWN : 0;
+			flags |= d->Caps() ? KF_SHIFT : 0;
+			flags |= d->Symbol() ? KF_ALT : 0;
+			flags |= KF_UI_SENDER;
+			Handler()->OnKey(key, flags);
+		}
+		break;
+	case D_MENU:
+		eMenuDialog* d = (eMenuDialog*)*childs;
+		switch(n)
+		{
+		case eMenuDialog::I_OPEN:
+			open_file = true;
+			break;
+		case eMenuDialog::I_JOYSTICK:
+			Handler()->OnAction(A_JOYSTICK_NEXT);
+			d->ItemState(n, Handler()->Joystick());
+			break;
+		case eMenuDialog::I_TAPE:
+			{
+				Handler()->OnAction(A_TAPE_TOGGLE);
+				int v = Handler()->TapeInserted() ? Handler()->TapeStarted() ? 0 : 1 : 2;
+				d->ItemState(n, v);
+			}
+			break;
+		case eMenuDialog::I_FAST_TAPE:
+			Handler()->OnAction(A_TAPE_FAST_TOGGLE);
+			d->ItemState(eMenuDialog::I_FAST_TAPE, !Handler()->FullSpeed());
+			break;
+		case eMenuDialog::I_SOUND:
+			Handler()->OnAction(A_SOUND_NEXT);
+			d->ItemState(n, Handler()->Sound());
+			break;
+		case eMenuDialog::I_VOLUME:
+			Handler()->OnAction(A_VOLUME_NEXT);
+			d->ItemState(n, Handler()->Volume());
+			break;
+		case eMenuDialog::I_RESET:
+			Handler()->OnAction(A_RESET);
+			break;
+		case eMenuDialog::I_QUIT:
+			Handler()->OnAction(A_QUIT);
+			break;
+		}
+		break;
+	}
+}
+
 
 //=============================================================================
 //	eManager::Update
@@ -209,27 +444,11 @@ void eManager::Update()
 	{
 		if(keypress_timer > KEY_REPEAT_DELAY)
 		{
-			SAFE_CALL(fo_dialog)->OnKey(key, key_flags);
-			SAFE_CALL(keys_dialog)->OnKey(key, key_flags);
+			eInherited::OnKey(key, key_flags);
 		}
 		++keypress_timer;
 	}
-	SAFE_CALL(fo_dialog)->Update();
-	SAFE_CALL(keys_dialog)->Update();
-	if(fo_dialog && fo_dialog->Selected())
-	{
-		xPlatform::Handler()->OnOpenFile(fo_dialog->Selected());
-		SAFE_DELETE(fo_dialog);
-	}
-	if(keys_dialog)
-	{
-		byte key = keys_dialog->Key();
-		dword flags = keys_dialog->Pressed() ? xPlatform::KF_DOWN : 0;
-		flags |= keys_dialog->Caps() ? xPlatform::KF_SHIFT : 0;
-		flags |= keys_dialog->Symbol() ? xPlatform::KF_ALT : 0;
-		flags |= xPlatform::KF_UI_SENDER;
-		xPlatform::Handler()->OnKey(key, flags);
-	}
+	eInherited::Update();
 }
 //=============================================================================
 //	eManager::OnKey
@@ -238,31 +457,12 @@ void eManager::OnKey(char _key, dword flags)
 {
 	key_flags = flags;
 	bool pressed = flags&xPlatform::KF_DOWN;
-	if((pressed && (_key == key)) || (!pressed && (_key != key)))
+	if((pressed && !(flags&(xPlatform::KF_ALT|xPlatform::KF_SHIFT)) && (_key == key)) || (!pressed && (_key != key)))
 		return;
 	key = pressed ? _key : '\0';
 	if(!key)
 		keypress_timer = 0;
-	SAFE_CALL(fo_dialog)->OnKey(key, flags);
-	SAFE_CALL(keys_dialog)->OnKey(key, flags);
-	if(key == '`' || key == '\\')
-	{
-		if(!fo_dialog && !keys_dialog)
-		{
-			switch(key)
-			{
-			case '`': fo_dialog = new eFileOpenDialog(path);	break;
-			case '\\': keys_dialog = new eKeysDialog;			break;
-			}
-			SAFE_CALL(fo_dialog)->Init();
-			SAFE_CALL(keys_dialog)->Init();
-		}
-		else
-		{
-			SAFE_DELETE(fo_dialog);
-			SAFE_DELETE(keys_dialog);
-		}
-	}
+	eInherited::OnKey(key, flags);
 }
 
 }

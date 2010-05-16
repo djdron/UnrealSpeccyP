@@ -35,15 +35,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 static struct eSpeccyHandler : public xPlatform::eHandler
 {
-	eSpeccyHandler() : speccy(NULL), video_paused(false), drive_for_open(0)	{}
+	eSpeccyHandler() : speccy(NULL), video_paused(false), drive_for_open(0), quit(false)
+		, joystick(xPlatform::J_KEMPSTON), sound(xPlatform::S_AY), volume(xPlatform::V_100) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit()
 	{
 		assert(!speccy);
 		speccy = new eSpeccy;
 #ifdef USE_UI
-		ui_manager = new xUi::eManager(xIo::ResourcePath("\\*.*"));
-		ui_manager->Init();
+		ui_manager = new xUi::eManager;
 #endif//USE_UI
 		sound_dev[0] = speccy->Device<eBeeper>();
 		sound_dev[1] = speccy->Device<eAY>();
@@ -205,6 +205,21 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 				}
 				return AR_ERROR;
 			}
+		case A_JOYSTICK_NEXT:
+			if(++joystick >= J_COUNT)
+				joystick = 0;
+			return AR_OK;
+		case A_SOUND_NEXT:
+			if(++sound >= S_COUNT)
+				sound = 0;
+			return AR_OK;
+		case A_VOLUME_NEXT:
+			if(++volume >= V_COUNT)
+				volume = 0;
+			return AR_OK;
+		case A_QUIT:
+			quit = true;
+			return AR_OK;
 		}
 		return AR_ERROR;
 	}
@@ -215,7 +230,14 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	virtual void AudioDataUse(int source, dword size) { sound_dev[source]->AudioDataUse(size); }
 	virtual void VideoPaused(bool paused) {	video_paused = paused; }
 
+	virtual bool TapeInserted() const { return speccy->Device<eTape>()->Inserted(); }
+	virtual bool TapeStarted() const { return speccy->Device<eTape>()->Started(); }
 	virtual bool FullSpeed() const { return speccy->CPU()->FastEmul(); }
+	virtual bool Quit() const { return quit; }
+
+	virtual int Joystick() const { return joystick; }
+	virtual int Sound() const { return sound; }
+	virtual int Volume() const { return volume; }
 
 	eSpeccy* speccy;
 #ifdef USE_UI
@@ -223,6 +245,10 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 #endif//USE_UI
 	bool video_paused;
 	int drive_for_open;
+	int joystick;
+	int sound;
+	int volume;
+	bool quit;
 
 	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];

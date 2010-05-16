@@ -50,15 +50,20 @@ enum eKeyFlags
 	KF_UI_SENDER = 0x100
 };
 enum eMouseAction { MA_MOVE, MA_BUTTON, MA_WHEEL };
-enum eAction { A_RESET, A_TAPE_TOGGLE, A_TAPE_FAST_TOGGLE, A_DRIVE_NEXT };
+enum eAction { A_RESET, A_QUIT, A_TAPE_TOGGLE, A_TAPE_FAST_TOGGLE, A_DRIVE_NEXT, A_JOYSTICK_NEXT, A_SOUND_NEXT, A_VOLUME_NEXT };
 enum eActionResult
 {
 	AR_RESET_OK,
 	AR_TAPE_STARTED, AR_TAPE_STOPPED, AR_TAPE_NOT_INSERTED,
 	AR_TAPE_FAST_SET, AR_TAPE_FAST_RESET,
 	AR_DRIVE_A, AR_DRIVE_B, AR_DRIVE_C, AR_DRIVE_D,
+	AR_OK,
 	AR_ERROR
 };
+
+enum eJoystick { J_KEMPSTON, J_CURSOR, J_QAOP, J_SINCLAIR2, J_COUNT };
+enum eSound { S_BEEPER, S_AY, S_TAPE, S_COUNT };
+enum eVolume { V_MUTE, V_10, _VOL_20, V_30, V_40, V_50, V_60, V_70, V_80, V_90, V_100, V_COUNT };
 
 struct eHandler
 {
@@ -85,7 +90,14 @@ struct eHandler
 	virtual dword AudioDataReady(int source) = 0;
 	virtual void AudioDataUse(int source, dword size) = 0;
 
+	virtual bool TapeInserted() const = 0;
+	virtual bool TapeStarted() const = 0;
 	virtual bool FullSpeed() const = 0;
+	virtual bool Quit() const = 0;
+
+	virtual int Joystick() const = 0;
+	virtual int Sound() const = 0;
+	virtual int Volume() const = 0;
 };
 
 eHandler* Handler();
