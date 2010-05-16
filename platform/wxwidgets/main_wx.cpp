@@ -287,7 +287,7 @@ public:
 		menuFile->AppendSeparator();
 		menuFile->Append(ID_Quit, _("E&xit"));
 #endif//_MAC
-		
+
 		wxMenu* menuWindow = new wxMenu;
 		menuWindow->Append(ID_Size100, _("Size &100%\tCtrl+1"));
 		menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
