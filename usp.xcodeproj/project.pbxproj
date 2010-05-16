@@ -79,6 +79,7 @@
 		5CA77342119DE44A000C0142 /* z80.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77265119DE449000C0142 /* z80.cpp */; };
 		5CA77343119DE44A000C0142 /* z80_op_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7726E119DE449000C0142 /* z80_op_tables.cpp */; };
 		5CA77344119DE44A000C0142 /* z80_opcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77270119DE449000C0142 /* z80_opcodes.cpp */; };
+		5CD2CF2F11A03E39007A7F80 /* unreal_speccy_portable.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5CD2CF2E11A03E39007A7F80 /* unreal_speccy_portable.icns */; };
 		5CE01400119F3181004A61F8 /* mac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C050E71119EFC0D003EE1DB /* mac.cpp */; };
 /* End PBXBuildFile section */
 
@@ -174,6 +175,7 @@
 		5CA7726E119DE449000C0142 /* z80_op_tables.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = z80_op_tables.cpp; sourceTree = "<group>"; };
 		5CA7726F119DE449000C0142 /* z80_op_tables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = z80_op_tables.h; sourceTree = "<group>"; };
 		5CA77270119DE449000C0142 /* z80_opcodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = z80_opcodes.cpp; sourceTree = "<group>"; };
+		5CD2CF2E11A03E39007A7F80 /* unreal_speccy_portable.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = unreal_speccy_portable.icns; path = build/mac/unreal_speccy_portable.icns; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* usp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = usp; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -202,6 +204,7 @@
 				5CA7718A119DE435000C0142 /* Source */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 				5C050F64119F2CDF003EE1DB /* unreal_speccy_portable-Info.plist */,
+				5CD2CF2E11A03E39007A7F80 /* unreal_speccy_portable.icns */,
 			);
 			name = usp;
 			sourceTree = "<group>";
@@ -488,6 +491,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C7E10E3119EF4D800C8A7BC /* res in Resources */,
+				5CD2CF2F11A03E39007A7F80 /* unreal_speccy_portable.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
