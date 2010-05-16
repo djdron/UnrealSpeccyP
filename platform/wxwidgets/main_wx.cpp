@@ -72,6 +72,7 @@ public:
 		Refresh(false);
 		if(!Handler()->FullSpeed())
 			wxMilliSleep(3);
+		event.RequestMore();
 	}
 	virtual void OnEraseBackground(wxEraseEvent& event) {}
 
