@@ -35,8 +35,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 static struct eSpeccyHandler : public xPlatform::eHandler
 {
-	eSpeccyHandler() : speccy(NULL), video_paused(false), drive_for_open(0), quit(false)
-		, joystick(xPlatform::J_KEMPSTON), sound(xPlatform::S_AY), volume(xPlatform::V_100) {}
+	eSpeccyHandler() : speccy(NULL), video_paused(false), drive_for_open(0)
+		, joystick(xPlatform::J_KEMPSTON)
+		, sound(xPlatform::S_AY), volume(xPlatform::V_100)
+		, quit(false)
+		{}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit()
 	{
