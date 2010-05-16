@@ -2,6 +2,54 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>unreal_speccy_portable</string>
+			<key>CFBundleTypeName</key>
+			<string>ZX-Spectrum disk Image</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>trd</string>
+				<string>scl</string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>unreal_speccy_portable</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>scw</string>
+				<string>tzx</string>
+				<string>tap</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>ZX-Spectrum tape file</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>unreal_speccy_portable</string>
+			<key>CFBundleTypeName</key>
+			<string>ZX-Spectrum snapshot</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>sna</string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+		</dict>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
@@ -13,15 +61,35 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>${PRODUCT_NAME}</string>
+	<string>Unreal Speccy Portable</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>0.0.6</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>Version 0.0.6</string>
+	<key>CFBundleDisplayName</key>
+	<string>Portable ZX-Spectrum emulator</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Portable ZX-Spectrum emulator.
+Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
 	<key>NSPrincipalClass</key>

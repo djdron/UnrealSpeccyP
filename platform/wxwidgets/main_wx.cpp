@@ -281,7 +281,7 @@ public:
 		menuFile->Append(ID_OpenFile, _("&Open...\tF3"));
 		menuFile->Append(ID_Reset, _("&Reset...\tF12"));
 #ifdef _MAC
-		menuFile->Append(wxID_ABOUT, _("About"));
+		menuFile->Append(wxID_ABOUT, _("About ") + title);
 		menuFile->Append(wxID_EXIT, _("E&xit"));
 #else//_MAC
 		menuFile->AppendSeparator();
@@ -473,6 +473,10 @@ class App: public wxApp
 		DoneSound();
 		Handler()->OnDone();
 		return wxApp::OnExit();
+	}
+	virtual void MacOpenFile(const wxString& fileName)
+	{
+		Handler()->OnOpenFile(wxConvertWX2MB(fileName.c_str()));
 	}
 };
 
