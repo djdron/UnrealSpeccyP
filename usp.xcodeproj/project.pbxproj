@@ -661,20 +661,22 @@
 		1DEB923708733DC60010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = i386;
+				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = _MAC;
 				GCC_VERSION = 4.0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					"~/Downloads/wxMac-2.8.11/include",
+					"~/Downloads/wxMac-2.8.11/lib/wx/include/mac-unicode-release-static-2.8",
+				);
+				LIBRARY_SEARCH_PATHS = "~/Downloads/wxMac-2.8.11/lib";
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
-					"-I/usr/lib/wx/include/mac-unicode-debug-2.8",
-					"-I/usr/include/wx-2.8",
 					"-D_FILE_OFFSET_BITS=64",
 					"-D_LARGE_FILES",
-					"-D__WXDEBUG__",
 					"-D__WXMAC__",
 				);
 				OTHER_LDFLAGS = (
@@ -692,7 +694,12 @@
 					OpenGL,
 					"-framework",
 					AGL,
-					"-lwx_macud-2.8",
+					"-framework",
+					OpenAL,
+					"-lwx_macu_gl-2.8",
+					"-lwx_macu_core-2.8",
+					"-lwx_base_carbonu-2.8",
+					"-liconv",
 				);
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
@@ -714,28 +721,6 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = "build/mac/unreal_speccy_portable-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"-framework",
-					IOKit,
-					"-framework",
-					Carbon,
-					"-framework",
-					Cocoa,
-					"-framework",
-					System,
-					"-framework",
-					QuickTime,
-					"-framework",
-					OpenGL,
-					"-framework",
-					AGL,
-					"-framework",
-					OpenAL,
-					"-lwx_macud_gl-2.8",
-					"-lwx_macud_core-2.8",
-					"-lwx_base_carbonud-2.8",
-					"-liconv",
-				);
 				PREBINDING = NO;
 				PRODUCT_NAME = unreal_speccy_portable;
 			};
@@ -746,19 +731,15 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEBUG_INFORMATION_FORMAT = "";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				INFOPLIST_FILE = "unreal_speccy_portable-Info.plist";
+				GCC_PREFIX_HEADER = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "build/mac/unreal_speccy_portable-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
 				PREBINDING = NO;
 				PRODUCT_NAME = unreal_speccy_portable;
 				ZERO_LINK = NO;
