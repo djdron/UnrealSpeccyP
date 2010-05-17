@@ -117,6 +117,7 @@ public:
 	virtual void OnMouseKey(wxMouseEvent& event)
 	{
 		event.Skip();
+#ifndef _MAC
 		if(!HasCapture())
 		{
 			if(event.Button(wxMOUSE_BTN_LEFT) && event.ButtonDown())
@@ -133,6 +134,7 @@ public:
 		}
 		else
 			Handler()->OnMouse(MA_BUTTON, event.Button(wxMOUSE_BTN_LEFT) ? 0 : 1, event.ButtonDown());
+#endif//_MAC
 	}
 	virtual void OnKillFocus(wxFocusEvent& event)
 	{
