@@ -16,27 +16,47 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__TICK_H__
-#define	__TICK_H__
+#ifndef	__UI_DESKTOP_H__
+#define	__UI_DESKTOP_H__
 
-#include "time.h"
+#include "dialog.h"
 
 #pragma once
 
-#ifdef _WINDOWS
-#include "../platform/win/tick_qpc.h"
-#endif//_WINDOWS
+#ifdef USE_UI
 
-#ifdef _LINUX
-#include "../platform/linux/tick_gtod.h"
-#endif//_LINUX
+namespace xUi
+{
 
-#ifdef _SYMBIAN
-#include "../platform/symbian/tick.h"
-#endif//_SYMBIAN
+class eDesktop : public eDialog
+{
+	enum { KEY_REPEAT_DELAY = 10 };
+	typedef eDialog eInherited;
+public:
+	eDesktop() : key(0), key_flags(0), keypress_timer(0)
+	{
+		CreateFont(6, 6, "res/font/spxtrm4f.fnt");
+	}
+	dword* VideoData() const { return Focused() ? Screen() : NULL; }
+	bool Focused() const
+	{
+		eDialog* d = (eDialog*)Childs()[0];
+		if(d)
+			return d->Childs()[0] != NULL;
+		return false;
+	}
+	virtual void Update();
+	virtual void OnKey(char key, dword flags);
 
-#ifndef TICK_DECLARED
-#include "tick_clock.h"
-#endif//TICK_DEFINED
+protected:
+	char key;
+	dword key_flags;
+	int keypress_timer;
+};
 
-#endif//__TICK_H__
+}
+//namespace xUi
+
+#endif//USE_UI
+
+#endif//__UI_DESKTOP_H__

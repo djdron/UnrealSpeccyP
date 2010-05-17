@@ -16,27 +16,47 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__TICK_H__
-#define	__TICK_H__
+#ifndef	__UI_FILE_OPEN_H__
+#define	__UI_FILE_OPEN_H__
 
-#include "time.h"
+#include "../../ui/dialog.h"
 
 #pragma once
 
-#ifdef _WINDOWS
-#include "../platform/win/tick_qpc.h"
-#endif//_WINDOWS
+#ifdef USE_UI
 
-#ifdef _LINUX
-#include "../platform/linux/tick_gtod.h"
-#endif//_LINUX
+namespace xUi
+{
 
-#ifdef _SYMBIAN
-#include "../platform/symbian/tick.h"
-#endif//_SYMBIAN
+class eList;
 
-#ifndef TICK_DECLARED
-#include "tick_clock.h"
-#endif//TICK_DEFINED
+class eFileOpenDialog : public eDialog
+{
+	enum { MAX_ITEMS = 2000 };
+	typedef eDialog eInherited;
+public:
+	eFileOpenDialog(const char* _path) : list(NULL), selected(NULL)
+	{
+		strcpy(path, _path);
+		memset(folders, 0, sizeof(folders));
+	}
+	virtual void Init();
+	const char* Selected() { return selected; }
+protected:
+	void OnNotify(byte n, byte from);
+	void OnChangePath();
+protected:
+	char path[256];
+	eList* list;
+	bool folders[MAX_ITEMS];
+	const char* selected;
+};
 
-#endif//__TICK_H__
+void GetUpLevel(char* path, int level = 1);
+
+}
+//namespace xUi
+
+#endif//USE_UI
+
+#endif//__UI_FILE_OPEN_H__

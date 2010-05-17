@@ -28,10 +28,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "devices/sound/beeper.h"
 #include "devices/fdd/wd1793.h"
 #include "z80/z80.h"
-#include "ui/dialogs.h"
 #include "snapshot.h"
 #include "platform/io.h"
 #include "tools/profiler.h"
+
+#include "ui/desktop.h"
+#include "platform/custom_ui/main.h"
 
 static struct eSpeccyHandler : public xPlatform::eHandler
 {
@@ -46,7 +48,8 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		assert(!speccy);
 		speccy = new eSpeccy;
 #ifdef USE_UI
-		ui_manager = new xUi::eManager;
+		ui_desktop = new xUi::eDesktop;
+		ui_desktop->Insert(new xUi::eMainDialog);
 #endif//USE_UI
 		sound_dev[0] = speccy->Device<eBeeper>();
 		sound_dev[1] = speccy->Device<eAY>();
@@ -56,7 +59,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	{
 		SAFE_DELETE(speccy);
 #ifdef USE_UI
-		SAFE_DELETE(ui_manager);
+		SAFE_DELETE(ui_desktop);
 #endif//USE_UI
 		PROFILER_DUMP;
 	}
@@ -65,14 +68,14 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		if(FullSpeed() || !video_paused)
 			speccy->Update();
 #ifdef USE_UI
-		ui_manager->Update();
+		ui_desktop->Update();
 #endif//USE_UI
 	}
 	virtual void* VideoData() { return speccy->Device<eUla>()->Screen(); }
 	virtual void* VideoDataUI()
 	{
 #ifdef USE_UI
-		return ui_manager->VideoData();
+		return ui_desktop->VideoData();
 #else//USE_UI
 		return NULL;
 #endif//USE_UI
@@ -89,8 +92,8 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 #ifdef USE_UI
 		if(!(flags&KF_UI_SENDER))
 		{
-			ui_manager->OnKey(key, flags);
-			if(ui_manager->Focused())
+			ui_desktop->OnKey(key, flags);
+			if(ui_desktop->Focused())
 				return;
 		}
 #endif//USE_UI
@@ -244,7 +247,7 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 
 	eSpeccy* speccy;
 #ifdef USE_UI
-	xUi::eManager* ui_manager;
+	xUi::eDesktop* ui_desktop;
 #endif//USE_UI
 	bool video_paused;
 	int drive_for_open;

@@ -16,27 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__TICK_H__
-#define	__TICK_H__
+#include "../std.h"
+#include "control.h"
 
-#include "time.h"
+#ifdef USE_UI
 
-#pragma once
+namespace xUi
+{
+}
 
-#ifdef _WINDOWS
-#include "../platform/win/tick_qpc.h"
-#endif//_WINDOWS
-
-#ifdef _LINUX
-#include "../platform/linux/tick_gtod.h"
-#endif//_LINUX
-
-#ifdef _SYMBIAN
-#include "../platform/symbian/tick.h"
-#endif//_SYMBIAN
-
-#ifndef TICK_DECLARED
-#include "tick_clock.h"
-#endif//TICK_DEFINED
-
-#endif//__TICK_H__
+#endif//USE_UI

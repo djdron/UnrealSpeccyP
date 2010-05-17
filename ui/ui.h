@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-//#define USE_UI
+#define USE_UI
 
 #ifdef USE_UI
 
