@@ -7,10 +7,53 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5C050E73119EFC0D003EE1DB /* mac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C050E71119EFC0D003EE1DB /* mac.cpp */; };
 		5C1FB1D5119DE5A1003F1D22 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1FB1D4119DE5A1003F1D22 /* main.cpp */; };
 		5C1FB1D6119DE5A1003F1D22 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1FB1D4119DE5A1003F1D22 /* main.cpp */; };
 		5C7E10E3119EF4D800C8A7BC /* res in Resources */ = {isa = PBXBuildFile; fileRef = 5C7E10D7119EF4D800C8A7BC /* res */; };
+		5C87D59011A1F5B500CC595A /* file_open.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56A11A1F5B500CC595A /* file_open.cpp */; };
+		5C87D59111A1F5B500CC595A /* keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56C11A1F5B500CC595A /* keyboard.cpp */; };
+		5C87D59211A1F5B500CC595A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56E11A1F5B500CC595A /* main.cpp */; };
+		5C87D59311A1F5B500CC595A /* menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57011A1F5B500CC595A /* menu.cpp */; };
+		5C87D59411A1F5B500CC595A /* dingoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57311A1F5B500CC595A /* dingoo.cpp */; };
+		5C87D59511A1F5B500CC595A /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57711A1F5B500CC595A /* draw.cpp */; };
+		5C87D59611A1F5B500CC595A /* vsync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57811A1F5B500CC595A /* vsync.cpp */; };
+		5C87D59711A1F5B500CC595A /* main_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57A11A1F5B500CC595A /* main_glut.cpp */; };
+		5C87D59811A1F5B500CC595A /* io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57B11A1F5B500CC595A /* io.cpp */; };
+		5C87D59911A1F5B500CC595A /* mac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58011A1F5B500CC595A /* mac.cpp */; };
+		5C87D59A11A1F5B500CC595A /* oal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58211A1F5B500CC595A /* oal.cpp */; };
+		5C87D59B11A1F5B500CC595A /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58311A1F5B500CC595A /* platform.cpp */; };
+		5C87D59C11A1F5B500CC595A /* division.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58611A1F5B500CC595A /* division.cpp */; };
+		5C87D59D11A1F5B500CC595A /* symbian.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58711A1F5B500CC595A /* symbian.cpp */; };
+		5C87D59E11A1F5B500CC595A /* symbian_gles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58811A1F5B500CC595A /* symbian_gles.cpp */; };
+		5C87D59F11A1F5B500CC595A /* win_mobile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58D11A1F5B500CC595A /* win_mobile.cpp */; };
+		5C87D5A011A1F5B500CC595A /* main_wx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58F11A1F5B500CC595A /* main_wx.cpp */; };
+		5C87D5A111A1F5B500CC595A /* file_open.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56A11A1F5B500CC595A /* file_open.cpp */; };
+		5C87D5A211A1F5B500CC595A /* keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56C11A1F5B500CC595A /* keyboard.cpp */; };
+		5C87D5A311A1F5B500CC595A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56E11A1F5B500CC595A /* main.cpp */; };
+		5C87D5A411A1F5B500CC595A /* menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57011A1F5B500CC595A /* menu.cpp */; };
+		5C87D5A511A1F5B500CC595A /* dingoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57311A1F5B500CC595A /* dingoo.cpp */; };
+		5C87D5A611A1F5B500CC595A /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57711A1F5B500CC595A /* draw.cpp */; };
+		5C87D5A711A1F5B500CC595A /* vsync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57811A1F5B500CC595A /* vsync.cpp */; };
+		5C87D5A811A1F5B500CC595A /* main_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57A11A1F5B500CC595A /* main_glut.cpp */; };
+		5C87D5A911A1F5B500CC595A /* io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57B11A1F5B500CC595A /* io.cpp */; };
+		5C87D5AA11A1F5B500CC595A /* mac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58011A1F5B500CC595A /* mac.cpp */; };
+		5C87D5AB11A1F5B500CC595A /* oal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58211A1F5B500CC595A /* oal.cpp */; };
+		5C87D5AC11A1F5B500CC595A /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58311A1F5B500CC595A /* platform.cpp */; };
+		5C87D5AD11A1F5B500CC595A /* division.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58611A1F5B500CC595A /* division.cpp */; };
+		5C87D5AE11A1F5B500CC595A /* symbian.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58711A1F5B500CC595A /* symbian.cpp */; };
+		5C87D5AF11A1F5B500CC595A /* symbian_gles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58811A1F5B500CC595A /* symbian_gles.cpp */; };
+		5C87D5B011A1F5B500CC595A /* win_mobile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58D11A1F5B500CC595A /* win_mobile.cpp */; };
+		5C87D5B111A1F5B500CC595A /* main_wx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58F11A1F5B500CC595A /* main_wx.cpp */; };
+		5C87D5BC11A1F61800CC595A /* button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D5B211A1F61800CC595A /* button.cpp */; };
+		5C87D5BD11A1F61800CC595A /* control.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D5B411A1F61800CC595A /* control.cpp */; };
+		5C87D5BE11A1F61800CC595A /* desktop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D5B611A1F61800CC595A /* desktop.cpp */; };
+		5C87D5BF11A1F61800CC595A /* dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D5B811A1F61800CC595A /* dialog.cpp */; };
+		5C87D5C011A1F61800CC595A /* list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D5BA11A1F61800CC595A /* list.cpp */; };
+		5C87D5C111A1F61800CC595A /* button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D5B211A1F61800CC595A /* button.cpp */; };
+		5C87D5C211A1F61800CC595A /* control.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D5B411A1F61800CC595A /* control.cpp */; };
+		5C87D5C311A1F61800CC595A /* desktop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D5B611A1F61800CC595A /* desktop.cpp */; };
+		5C87D5C411A1F61800CC595A /* dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D5B811A1F61800CC595A /* dialog.cpp */; };
+		5C87D5C511A1F61800CC595A /* list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D5BA11A1F61800CC595A /* list.cpp */; };
 		5CA77296119DE44A000C0142 /* device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77208119DE448000C0142 /* device.cpp */; };
 		5CA77297119DE44A000C0142 /* fdd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7720B119DE448000C0142 /* fdd.cpp */; };
 		5CA77298119DE44A000C0142 /* wd1793.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7720D119DE448000C0142 /* wd1793.cpp */; };
@@ -23,24 +66,10 @@
 		5CA7729F119DE44A000C0142 /* beeper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7721D119DE448000C0142 /* beeper.cpp */; };
 		5CA772A0119DE44A000C0142 /* device_sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7721F119DE448000C0142 /* device_sound.cpp */; };
 		5CA772A1119DE44A000C0142 /* ula.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77221119DE448000C0142 /* ula.cpp */; };
-		5CA772A3119DE44A000C0142 /* dingoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77227119DE448000C0142 /* dingoo.cpp */; };
-		5CA772A4119DE44A000C0142 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7722B119DE448000C0142 /* draw.cpp */; };
-		5CA772A5119DE44A000C0142 /* vsync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7722C119DE448000C0142 /* vsync.cpp */; };
-		5CA772A6119DE44A000C0142 /* main_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7722E119DE448000C0142 /* main_glut.cpp */; };
-		5CA772A7119DE44A000C0142 /* io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7722F119DE448000C0142 /* io.cpp */; };
-		5CA772A8119DE44A000C0142 /* oal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77232119DE448000C0142 /* oal.cpp */; };
-		5CA772A9119DE44A000C0142 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77233119DE448000C0142 /* platform.cpp */; };
-		5CA772AA119DE44A000C0142 /* division.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77236119DE448000C0142 /* division.cpp */; };
-		5CA772AB119DE44A000C0142 /* symbian.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77237119DE448000C0142 /* symbian.cpp */; };
-		5CA772AC119DE44A000C0142 /* symbian_gles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77238119DE448000C0142 /* symbian_gles.cpp */; };
-		5CA772AD119DE44A000C0142 /* win_mobile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7723B119DE448000C0142 /* win_mobile.cpp */; };
-		5CA772AE119DE44A000C0142 /* main_wx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7723D119DE448000C0142 /* main_wx.cpp */; };
 		5CA772AF119DE44A000C0142 /* snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77248119DE449000C0142 /* snapshot.cpp */; };
 		5CA772B0119DE44A000C0142 /* speccy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7724A119DE449000C0142 /* speccy.cpp */; };
 		5CA772B1119DE44A000C0142 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7724F119DE449000C0142 /* log.cpp */; };
 		5CA772B2119DE44A000C0142 /* profiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77251119DE449000C0142 /* profiler.cpp */; };
-		5CA772B3119DE44A000C0142 /* controls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77259119DE449000C0142 /* controls.cpp */; };
-		5CA772B4119DE44A000C0142 /* dialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7725B119DE449000C0142 /* dialogs.cpp */; };
 		5CA772B5119DE44A000C0142 /* ui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7725D119DE449000C0142 /* ui.cpp */; };
 		5CA772B6119DE44A000C0142 /* z80.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77265119DE449000C0142 /* z80.cpp */; };
 		5CA772B7119DE44A000C0142 /* z80_op_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7726E119DE449000C0142 /* z80_op_tables.cpp */; };
@@ -57,30 +86,15 @@
 		5CA77321119DE44A000C0142 /* beeper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7721D119DE448000C0142 /* beeper.cpp */; };
 		5CA77322119DE44A000C0142 /* device_sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7721F119DE448000C0142 /* device_sound.cpp */; };
 		5CA77323119DE44A000C0142 /* ula.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77221119DE448000C0142 /* ula.cpp */; };
-		5CA77326119DE44A000C0142 /* dingoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77227119DE448000C0142 /* dingoo.cpp */; };
-		5CA77327119DE44A000C0142 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7722B119DE448000C0142 /* draw.cpp */; };
-		5CA77328119DE44A000C0142 /* vsync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7722C119DE448000C0142 /* vsync.cpp */; };
-		5CA77329119DE44A000C0142 /* main_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7722E119DE448000C0142 /* main_glut.cpp */; };
-		5CA7732A119DE44A000C0142 /* io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7722F119DE448000C0142 /* io.cpp */; };
-		5CA7732B119DE44A000C0142 /* oal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77232119DE448000C0142 /* oal.cpp */; };
-		5CA7732C119DE44A000C0142 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77233119DE448000C0142 /* platform.cpp */; };
-		5CA7732D119DE44A000C0142 /* division.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77236119DE448000C0142 /* division.cpp */; };
-		5CA7732E119DE44A000C0142 /* symbian.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77237119DE448000C0142 /* symbian.cpp */; };
-		5CA7732F119DE44A000C0142 /* symbian_gles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77238119DE448000C0142 /* symbian_gles.cpp */; };
-		5CA77330119DE44A000C0142 /* win_mobile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7723B119DE448000C0142 /* win_mobile.cpp */; };
-		5CA77331119DE44A000C0142 /* main_wx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7723D119DE448000C0142 /* main_wx.cpp */; };
 		5CA77339119DE44A000C0142 /* snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77248119DE449000C0142 /* snapshot.cpp */; };
 		5CA7733A119DE44A000C0142 /* speccy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7724A119DE449000C0142 /* speccy.cpp */; };
 		5CA7733B119DE44A000C0142 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7724F119DE449000C0142 /* log.cpp */; };
 		5CA7733C119DE44A000C0142 /* profiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77251119DE449000C0142 /* profiler.cpp */; };
-		5CA7733D119DE44A000C0142 /* controls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77259119DE449000C0142 /* controls.cpp */; };
-		5CA7733E119DE44A000C0142 /* dialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7725B119DE449000C0142 /* dialogs.cpp */; };
 		5CA7733F119DE44A000C0142 /* ui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7725D119DE449000C0142 /* ui.cpp */; };
 		5CA77342119DE44A000C0142 /* z80.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77265119DE449000C0142 /* z80.cpp */; };
 		5CA77343119DE44A000C0142 /* z80_op_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7726E119DE449000C0142 /* z80_op_tables.cpp */; };
 		5CA77344119DE44A000C0142 /* z80_opcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77270119DE449000C0142 /* z80_opcodes.cpp */; };
 		5CD2CF2F11A03E39007A7F80 /* unreal_speccy_portable.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5CD2CF2E11A03E39007A7F80 /* unreal_speccy_portable.icns */; };
-		5CE01400119F3181004A61F8 /* mac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C050E71119EFC0D003EE1DB /* mac.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -96,10 +110,47 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		5C050E71119EFC0D003EE1DB /* mac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mac.cpp; path = mac/mac.cpp; sourceTree = "<group>"; };
 		5C050F64119F2CDF003EE1DB /* unreal_speccy_portable-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "unreal_speccy_portable-Info.plist"; path = "build/mac/unreal_speccy_portable-Info.plist"; sourceTree = "<group>"; };
 		5C1FB1D4119DE5A1003F1D22 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		5C7E10D7119EF4D800C8A7BC /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
+		5C87D56A11A1F5B500CC595A /* file_open.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = file_open.cpp; sourceTree = "<group>"; };
+		5C87D56B11A1F5B500CC595A /* file_open.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file_open.h; sourceTree = "<group>"; };
+		5C87D56C11A1F5B500CC595A /* keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyboard.cpp; sourceTree = "<group>"; };
+		5C87D56D11A1F5B500CC595A /* keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keyboard.h; sourceTree = "<group>"; };
+		5C87D56E11A1F5B500CC595A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		5C87D56F11A1F5B500CC595A /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
+		5C87D57011A1F5B500CC595A /* menu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = menu.cpp; sourceTree = "<group>"; };
+		5C87D57111A1F5B500CC595A /* menu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = menu.h; sourceTree = "<group>"; };
+		5C87D57311A1F5B500CC595A /* dingoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dingoo.cpp; sourceTree = "<group>"; };
+		5C87D57411A1F5B500CC595A /* jz4740.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jz4740.h; sourceTree = "<group>"; };
+		5C87D57511A1F5B500CC595A /* stdio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdio.h; sourceTree = "<group>"; };
+		5C87D57711A1F5B500CC595A /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw.cpp; sourceTree = "<group>"; };
+		5C87D57811A1F5B500CC595A /* vsync.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vsync.cpp; sourceTree = "<group>"; };
+		5C87D57A11A1F5B500CC595A /* main_glut.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_glut.cpp; sourceTree = "<group>"; };
+		5C87D57B11A1F5B500CC595A /* io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = io.cpp; sourceTree = "<group>"; };
+		5C87D57C11A1F5B500CC595A /* io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = io.h; sourceTree = "<group>"; };
+		5C87D57E11A1F5B500CC595A /* tick_gtod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tick_gtod.h; sourceTree = "<group>"; };
+		5C87D58011A1F5B500CC595A /* mac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mac.cpp; sourceTree = "<group>"; };
+		5C87D58211A1F5B500CC595A /* oal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oal.cpp; sourceTree = "<group>"; };
+		5C87D58311A1F5B500CC595A /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
+		5C87D58411A1F5B500CC595A /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		5C87D58611A1F5B500CC595A /* division.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = division.cpp; sourceTree = "<group>"; };
+		5C87D58711A1F5B500CC595A /* symbian.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = symbian.cpp; sourceTree = "<group>"; };
+		5C87D58811A1F5B500CC595A /* symbian_gles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = symbian_gles.cpp; sourceTree = "<group>"; };
+		5C87D58911A1F5B500CC595A /* tick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tick.h; sourceTree = "<group>"; };
+		5C87D58B11A1F5B500CC595A /* tick_qpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tick_qpc.h; sourceTree = "<group>"; };
+		5C87D58D11A1F5B500CC595A /* win_mobile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = win_mobile.cpp; sourceTree = "<group>"; };
+		5C87D58F11A1F5B500CC595A /* main_wx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_wx.cpp; sourceTree = "<group>"; };
+		5C87D5B211A1F61800CC595A /* button.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = button.cpp; sourceTree = "<group>"; };
+		5C87D5B311A1F61800CC595A /* button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = button.h; sourceTree = "<group>"; };
+		5C87D5B411A1F61800CC595A /* control.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = control.cpp; sourceTree = "<group>"; };
+		5C87D5B511A1F61800CC595A /* control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = control.h; sourceTree = "<group>"; };
+		5C87D5B611A1F61800CC595A /* desktop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = desktop.cpp; sourceTree = "<group>"; };
+		5C87D5B711A1F61800CC595A /* desktop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = desktop.h; sourceTree = "<group>"; };
+		5C87D5B811A1F61800CC595A /* dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dialog.cpp; sourceTree = "<group>"; };
+		5C87D5B911A1F61800CC595A /* dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dialog.h; sourceTree = "<group>"; };
+		5C87D5BA11A1F61800CC595A /* list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = list.cpp; sourceTree = "<group>"; };
+		5C87D5BB11A1F61800CC595A /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
 		5CA765F8119DD606000C0142 /* unreal_speccy_portable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = unreal_speccy_portable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CA77208119DE448000C0142 /* device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = device.cpp; sourceTree = "<group>"; };
 		5CA77209119DE448000C0142 /* device.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = device.h; sourceTree = "<group>"; };
@@ -125,23 +176,6 @@
 		5CA77220119DE448000C0142 /* device_sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = device_sound.h; sourceTree = "<group>"; };
 		5CA77221119DE448000C0142 /* ula.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ula.cpp; sourceTree = "<group>"; };
 		5CA77222119DE448000C0142 /* ula.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ula.h; sourceTree = "<group>"; };
-		5CA77227119DE448000C0142 /* dingoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dingoo.cpp; sourceTree = "<group>"; };
-		5CA77228119DE448000C0142 /* jz4740.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jz4740.h; sourceTree = "<group>"; };
-		5CA77229119DE448000C0142 /* stdio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdio.h; sourceTree = "<group>"; };
-		5CA7722B119DE448000C0142 /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw.cpp; sourceTree = "<group>"; };
-		5CA7722C119DE448000C0142 /* vsync.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vsync.cpp; sourceTree = "<group>"; };
-		5CA7722E119DE448000C0142 /* main_glut.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_glut.cpp; sourceTree = "<group>"; };
-		5CA7722F119DE448000C0142 /* io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = io.cpp; sourceTree = "<group>"; };
-		5CA77230119DE448000C0142 /* io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = io.h; sourceTree = "<group>"; };
-		5CA77232119DE448000C0142 /* oal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oal.cpp; sourceTree = "<group>"; };
-		5CA77233119DE448000C0142 /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
-		5CA77234119DE448000C0142 /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
-		5CA77236119DE448000C0142 /* division.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = division.cpp; sourceTree = "<group>"; };
-		5CA77237119DE448000C0142 /* symbian.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = symbian.cpp; sourceTree = "<group>"; };
-		5CA77238119DE448000C0142 /* symbian_gles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = symbian_gles.cpp; sourceTree = "<group>"; };
-		5CA77239119DE448000C0142 /* tick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tick.h; sourceTree = "<group>"; };
-		5CA7723B119DE448000C0142 /* win_mobile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = win_mobile.cpp; sourceTree = "<group>"; };
-		5CA7723D119DE448000C0142 /* main_wx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_wx.cpp; sourceTree = "<group>"; };
 		5CA77248119DE449000C0142 /* snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = snapshot.cpp; sourceTree = "<group>"; };
 		5CA77249119DE449000C0142 /* snapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = snapshot.h; sourceTree = "<group>"; };
 		5CA7724A119DE449000C0142 /* speccy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = speccy.cpp; sourceTree = "<group>"; };
@@ -154,13 +188,7 @@
 		5CA77252119DE449000C0142 /* profiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = profiler.h; sourceTree = "<group>"; };
 		5CA77253119DE449000C0142 /* tick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tick.h; sourceTree = "<group>"; };
 		5CA77254119DE449000C0142 /* tick_clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tick_clock.h; sourceTree = "<group>"; };
-		5CA77255119DE449000C0142 /* tick_gtod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tick_gtod.h; sourceTree = "<group>"; };
-		5CA77256119DE449000C0142 /* tick_qpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tick_qpc.h; sourceTree = "<group>"; };
 		5CA77257119DE449000C0142 /* time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = time.h; sourceTree = "<group>"; };
-		5CA77259119DE449000C0142 /* controls.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = controls.cpp; sourceTree = "<group>"; };
-		5CA7725A119DE449000C0142 /* controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = controls.h; sourceTree = "<group>"; };
-		5CA7725B119DE449000C0142 /* dialogs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dialogs.cpp; sourceTree = "<group>"; };
-		5CA7725C119DE449000C0142 /* dialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dialogs.h; sourceTree = "<group>"; };
 		5CA7725D119DE449000C0142 /* ui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ui.cpp; sourceTree = "<group>"; };
 		5CA7725E119DE449000C0142 /* ui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui.h; sourceTree = "<group>"; };
 		5CA77265119DE449000C0142 /* z80.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = z80.cpp; sourceTree = "<group>"; };
@@ -218,19 +246,134 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5C050E70119EFBE0003EE1DB /* mac */ = {
+		5C87D56811A1F5B500CC595A /* platform */ = {
 			isa = PBXGroup;
 			children = (
-				5C050E71119EFC0D003EE1DB /* mac.cpp */,
+				5C87D56911A1F5B500CC595A /* custom_ui */,
+				5C87D57211A1F5B500CC595A /* dingoo */,
+				5C87D57611A1F5B500CC595A /* gl */,
+				5C87D57911A1F5B500CC595A /* glut */,
+				5C87D57D11A1F5B500CC595A /* linux */,
+				5C87D57F11A1F5B500CC595A /* mac */,
+				5C87D58111A1F5B500CC595A /* oal */,
+				5C87D58511A1F5B500CC595A /* symbian */,
+				5C87D58A11A1F5B500CC595A /* win */,
+				5C87D58C11A1F5B500CC595A /* win_mobile */,
+				5C87D58E11A1F5B500CC595A /* wxwidgets */,
+				5C87D57B11A1F5B500CC595A /* io.cpp */,
+				5C87D57C11A1F5B500CC595A /* io.h */,
+				5C87D58311A1F5B500CC595A /* platform.cpp */,
+				5C87D58411A1F5B500CC595A /* platform.h */,
 			);
-			name = mac;
+			path = platform;
+			sourceTree = "<group>";
+		};
+		5C87D56911A1F5B500CC595A /* custom_ui */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D56A11A1F5B500CC595A /* file_open.cpp */,
+				5C87D56B11A1F5B500CC595A /* file_open.h */,
+				5C87D56C11A1F5B500CC595A /* keyboard.cpp */,
+				5C87D56D11A1F5B500CC595A /* keyboard.h */,
+				5C87D56E11A1F5B500CC595A /* main.cpp */,
+				5C87D56F11A1F5B500CC595A /* main.h */,
+				5C87D57011A1F5B500CC595A /* menu.cpp */,
+				5C87D57111A1F5B500CC595A /* menu.h */,
+			);
+			path = custom_ui;
+			sourceTree = "<group>";
+		};
+		5C87D57211A1F5B500CC595A /* dingoo */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D57311A1F5B500CC595A /* dingoo.cpp */,
+				5C87D57411A1F5B500CC595A /* jz4740.h */,
+				5C87D57511A1F5B500CC595A /* stdio.h */,
+			);
+			path = dingoo;
+			sourceTree = "<group>";
+		};
+		5C87D57611A1F5B500CC595A /* gl */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D57711A1F5B500CC595A /* draw.cpp */,
+				5C87D57811A1F5B500CC595A /* vsync.cpp */,
+			);
+			path = gl;
+			sourceTree = "<group>";
+		};
+		5C87D57911A1F5B500CC595A /* glut */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D57A11A1F5B500CC595A /* main_glut.cpp */,
+			);
+			path = glut;
+			sourceTree = "<group>";
+		};
+		5C87D57D11A1F5B500CC595A /* linux */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D57E11A1F5B500CC595A /* tick_gtod.h */,
+			);
+			path = linux;
+			sourceTree = "<group>";
+		};
+		5C87D57F11A1F5B500CC595A /* mac */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D58011A1F5B500CC595A /* mac.cpp */,
+			);
+			path = mac;
+			sourceTree = "<group>";
+		};
+		5C87D58111A1F5B500CC595A /* oal */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D58211A1F5B500CC595A /* oal.cpp */,
+			);
+			path = oal;
+			sourceTree = "<group>";
+		};
+		5C87D58511A1F5B500CC595A /* symbian */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D58611A1F5B500CC595A /* division.cpp */,
+				5C87D58711A1F5B500CC595A /* symbian.cpp */,
+				5C87D58811A1F5B500CC595A /* symbian_gles.cpp */,
+				5C87D58911A1F5B500CC595A /* tick.h */,
+			);
+			path = symbian;
+			sourceTree = "<group>";
+		};
+		5C87D58A11A1F5B500CC595A /* win */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D58B11A1F5B500CC595A /* tick_qpc.h */,
+			);
+			path = win;
+			sourceTree = "<group>";
+		};
+		5C87D58C11A1F5B500CC595A /* win_mobile */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D58D11A1F5B500CC595A /* win_mobile.cpp */,
+			);
+			path = win_mobile;
+			sourceTree = "<group>";
+		};
+		5C87D58E11A1F5B500CC595A /* wxwidgets */ = {
+			isa = PBXGroup;
+			children = (
+				5C87D58F11A1F5B500CC595A /* main_wx.cpp */,
+			);
+			path = wxwidgets;
 			sourceTree = "<group>";
 		};
 		5CA7718A119DE435000C0142 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				5C87D56811A1F5B500CC595A /* platform */,
 				5CA77207119DE448000C0142 /* devices */,
-				5CA77225119DE448000C0142 /* platform */,
 				5CA7724E119DE449000C0142 /* tools */,
 				5CA77258119DE449000C0142 /* ui */,
 				5CA77264119DE449000C0142 /* z80 */,
@@ -248,13 +391,13 @@
 		5CA77207119DE448000C0142 /* devices */ = {
 			isa = PBXGroup;
 			children = (
-				5CA77208119DE448000C0142 /* device.cpp */,
-				5CA77209119DE448000C0142 /* device.h */,
 				5CA7720A119DE448000C0142 /* fdd */,
 				5CA7720F119DE448000C0142 /* input */,
+				5CA7721A119DE448000C0142 /* sound */,
+				5CA77208119DE448000C0142 /* device.cpp */,
+				5CA77209119DE448000C0142 /* device.h */,
 				5CA77218119DE448000C0142 /* memory.cpp */,
 				5CA77219119DE448000C0142 /* memory.h */,
-				5CA7721A119DE448000C0142 /* sound */,
 				5CA77221119DE448000C0142 /* ula.cpp */,
 				5CA77222119DE448000C0142 /* ula.h */,
 			);
@@ -300,87 +443,6 @@
 			path = sound;
 			sourceTree = "<group>";
 		};
-		5CA77225119DE448000C0142 /* platform */ = {
-			isa = PBXGroup;
-			children = (
-				5C050E70119EFBE0003EE1DB /* mac */,
-				5CA77226119DE448000C0142 /* dingoo */,
-				5CA7722A119DE448000C0142 /* gl */,
-				5CA7722D119DE448000C0142 /* glut */,
-				5CA7722F119DE448000C0142 /* io.cpp */,
-				5CA77230119DE448000C0142 /* io.h */,
-				5CA77231119DE448000C0142 /* oal */,
-				5CA77233119DE448000C0142 /* platform.cpp */,
-				5CA77234119DE448000C0142 /* platform.h */,
-				5CA77235119DE448000C0142 /* symbian */,
-				5CA7723A119DE448000C0142 /* win_mobile */,
-				5CA7723C119DE448000C0142 /* wxwidgets */,
-			);
-			path = platform;
-			sourceTree = "<group>";
-		};
-		5CA77226119DE448000C0142 /* dingoo */ = {
-			isa = PBXGroup;
-			children = (
-				5CA77227119DE448000C0142 /* dingoo.cpp */,
-				5CA77228119DE448000C0142 /* jz4740.h */,
-				5CA77229119DE448000C0142 /* stdio.h */,
-			);
-			path = dingoo;
-			sourceTree = "<group>";
-		};
-		5CA7722A119DE448000C0142 /* gl */ = {
-			isa = PBXGroup;
-			children = (
-				5CA7722B119DE448000C0142 /* draw.cpp */,
-				5CA7722C119DE448000C0142 /* vsync.cpp */,
-			);
-			path = gl;
-			sourceTree = "<group>";
-		};
-		5CA7722D119DE448000C0142 /* glut */ = {
-			isa = PBXGroup;
-			children = (
-				5CA7722E119DE448000C0142 /* main_glut.cpp */,
-			);
-			path = glut;
-			sourceTree = "<group>";
-		};
-		5CA77231119DE448000C0142 /* oal */ = {
-			isa = PBXGroup;
-			children = (
-				5CA77232119DE448000C0142 /* oal.cpp */,
-			);
-			path = oal;
-			sourceTree = "<group>";
-		};
-		5CA77235119DE448000C0142 /* symbian */ = {
-			isa = PBXGroup;
-			children = (
-				5CA77236119DE448000C0142 /* division.cpp */,
-				5CA77237119DE448000C0142 /* symbian.cpp */,
-				5CA77238119DE448000C0142 /* symbian_gles.cpp */,
-				5CA77239119DE448000C0142 /* tick.h */,
-			);
-			path = symbian;
-			sourceTree = "<group>";
-		};
-		5CA7723A119DE448000C0142 /* win_mobile */ = {
-			isa = PBXGroup;
-			children = (
-				5CA7723B119DE448000C0142 /* win_mobile.cpp */,
-			);
-			path = win_mobile;
-			sourceTree = "<group>";
-		};
-		5CA7723C119DE448000C0142 /* wxwidgets */ = {
-			isa = PBXGroup;
-			children = (
-				5CA7723D119DE448000C0142 /* main_wx.cpp */,
-			);
-			path = wxwidgets;
-			sourceTree = "<group>";
-		};
 		5CA7724E119DE449000C0142 /* tools */ = {
 			isa = PBXGroup;
 			children = (
@@ -390,8 +452,6 @@
 				5CA77252119DE449000C0142 /* profiler.h */,
 				5CA77253119DE449000C0142 /* tick.h */,
 				5CA77254119DE449000C0142 /* tick_clock.h */,
-				5CA77255119DE449000C0142 /* tick_gtod.h */,
-				5CA77256119DE449000C0142 /* tick_qpc.h */,
 				5CA77257119DE449000C0142 /* time.h */,
 			);
 			path = tools;
@@ -400,10 +460,16 @@
 		5CA77258119DE449000C0142 /* ui */ = {
 			isa = PBXGroup;
 			children = (
-				5CA77259119DE449000C0142 /* controls.cpp */,
-				5CA7725A119DE449000C0142 /* controls.h */,
-				5CA7725B119DE449000C0142 /* dialogs.cpp */,
-				5CA7725C119DE449000C0142 /* dialogs.h */,
+				5C87D5B211A1F61800CC595A /* button.cpp */,
+				5C87D5B311A1F61800CC595A /* button.h */,
+				5C87D5B411A1F61800CC595A /* control.cpp */,
+				5C87D5B511A1F61800CC595A /* control.h */,
+				5C87D5B611A1F61800CC595A /* desktop.cpp */,
+				5C87D5B711A1F61800CC595A /* desktop.h */,
+				5C87D5B811A1F61800CC595A /* dialog.cpp */,
+				5C87D5B911A1F61800CC595A /* dialog.h */,
+				5C87D5BA11A1F61800CC595A /* list.cpp */,
+				5C87D5BB11A1F61800CC595A /* list.h */,
 				5CA7725D119DE449000C0142 /* ui.cpp */,
 				5CA7725E119DE449000C0142 /* ui.h */,
 			);
@@ -514,30 +580,37 @@
 				5CA77321119DE44A000C0142 /* beeper.cpp in Sources */,
 				5CA77322119DE44A000C0142 /* device_sound.cpp in Sources */,
 				5CA77323119DE44A000C0142 /* ula.cpp in Sources */,
-				5CA77326119DE44A000C0142 /* dingoo.cpp in Sources */,
-				5CA77327119DE44A000C0142 /* draw.cpp in Sources */,
-				5CA77328119DE44A000C0142 /* vsync.cpp in Sources */,
-				5CA77329119DE44A000C0142 /* main_glut.cpp in Sources */,
-				5CA7732A119DE44A000C0142 /* io.cpp in Sources */,
-				5CA7732B119DE44A000C0142 /* oal.cpp in Sources */,
-				5CA7732C119DE44A000C0142 /* platform.cpp in Sources */,
-				5CA7732D119DE44A000C0142 /* division.cpp in Sources */,
-				5CA7732E119DE44A000C0142 /* symbian.cpp in Sources */,
-				5CA7732F119DE44A000C0142 /* symbian_gles.cpp in Sources */,
-				5CA77330119DE44A000C0142 /* win_mobile.cpp in Sources */,
-				5CA77331119DE44A000C0142 /* main_wx.cpp in Sources */,
 				5CA77339119DE44A000C0142 /* snapshot.cpp in Sources */,
 				5CA7733A119DE44A000C0142 /* speccy.cpp in Sources */,
 				5CA7733B119DE44A000C0142 /* log.cpp in Sources */,
 				5CA7733C119DE44A000C0142 /* profiler.cpp in Sources */,
-				5CA7733D119DE44A000C0142 /* controls.cpp in Sources */,
-				5CA7733E119DE44A000C0142 /* dialogs.cpp in Sources */,
 				5CA7733F119DE44A000C0142 /* ui.cpp in Sources */,
 				5CA77342119DE44A000C0142 /* z80.cpp in Sources */,
 				5CA77343119DE44A000C0142 /* z80_op_tables.cpp in Sources */,
 				5CA77344119DE44A000C0142 /* z80_opcodes.cpp in Sources */,
 				5C1FB1D6119DE5A1003F1D22 /* main.cpp in Sources */,
-				5CE01400119F3181004A61F8 /* mac.cpp in Sources */,
+				5C87D59011A1F5B500CC595A /* file_open.cpp in Sources */,
+				5C87D59111A1F5B500CC595A /* keyboard.cpp in Sources */,
+				5C87D59211A1F5B500CC595A /* main.cpp in Sources */,
+				5C87D59311A1F5B500CC595A /* menu.cpp in Sources */,
+				5C87D59411A1F5B500CC595A /* dingoo.cpp in Sources */,
+				5C87D59511A1F5B500CC595A /* draw.cpp in Sources */,
+				5C87D59611A1F5B500CC595A /* vsync.cpp in Sources */,
+				5C87D59711A1F5B500CC595A /* main_glut.cpp in Sources */,
+				5C87D59811A1F5B500CC595A /* io.cpp in Sources */,
+				5C87D59911A1F5B500CC595A /* mac.cpp in Sources */,
+				5C87D59A11A1F5B500CC595A /* oal.cpp in Sources */,
+				5C87D59B11A1F5B500CC595A /* platform.cpp in Sources */,
+				5C87D59C11A1F5B500CC595A /* division.cpp in Sources */,
+				5C87D59D11A1F5B500CC595A /* symbian.cpp in Sources */,
+				5C87D59E11A1F5B500CC595A /* symbian_gles.cpp in Sources */,
+				5C87D59F11A1F5B500CC595A /* win_mobile.cpp in Sources */,
+				5C87D5A011A1F5B500CC595A /* main_wx.cpp in Sources */,
+				5C87D5BC11A1F61800CC595A /* button.cpp in Sources */,
+				5C87D5BD11A1F61800CC595A /* control.cpp in Sources */,
+				5C87D5BE11A1F61800CC595A /* desktop.cpp in Sources */,
+				5C87D5BF11A1F61800CC595A /* dialog.cpp in Sources */,
+				5C87D5C011A1F61800CC595A /* list.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -557,30 +630,37 @@
 				5CA7729F119DE44A000C0142 /* beeper.cpp in Sources */,
 				5CA772A0119DE44A000C0142 /* device_sound.cpp in Sources */,
 				5CA772A1119DE44A000C0142 /* ula.cpp in Sources */,
-				5CA772A3119DE44A000C0142 /* dingoo.cpp in Sources */,
-				5CA772A4119DE44A000C0142 /* draw.cpp in Sources */,
-				5CA772A5119DE44A000C0142 /* vsync.cpp in Sources */,
-				5CA772A6119DE44A000C0142 /* main_glut.cpp in Sources */,
-				5CA772A7119DE44A000C0142 /* io.cpp in Sources */,
-				5CA772A8119DE44A000C0142 /* oal.cpp in Sources */,
-				5CA772A9119DE44A000C0142 /* platform.cpp in Sources */,
-				5CA772AA119DE44A000C0142 /* division.cpp in Sources */,
-				5CA772AB119DE44A000C0142 /* symbian.cpp in Sources */,
-				5CA772AC119DE44A000C0142 /* symbian_gles.cpp in Sources */,
-				5CA772AD119DE44A000C0142 /* win_mobile.cpp in Sources */,
-				5CA772AE119DE44A000C0142 /* main_wx.cpp in Sources */,
 				5CA772AF119DE44A000C0142 /* snapshot.cpp in Sources */,
 				5CA772B0119DE44A000C0142 /* speccy.cpp in Sources */,
 				5CA772B1119DE44A000C0142 /* log.cpp in Sources */,
 				5CA772B2119DE44A000C0142 /* profiler.cpp in Sources */,
-				5CA772B3119DE44A000C0142 /* controls.cpp in Sources */,
-				5CA772B4119DE44A000C0142 /* dialogs.cpp in Sources */,
 				5CA772B5119DE44A000C0142 /* ui.cpp in Sources */,
 				5CA772B6119DE44A000C0142 /* z80.cpp in Sources */,
 				5CA772B7119DE44A000C0142 /* z80_op_tables.cpp in Sources */,
 				5CA772B8119DE44A000C0142 /* z80_opcodes.cpp in Sources */,
 				5C1FB1D5119DE5A1003F1D22 /* main.cpp in Sources */,
-				5C050E73119EFC0D003EE1DB /* mac.cpp in Sources */,
+				5C87D5A111A1F5B500CC595A /* file_open.cpp in Sources */,
+				5C87D5A211A1F5B500CC595A /* keyboard.cpp in Sources */,
+				5C87D5A311A1F5B500CC595A /* main.cpp in Sources */,
+				5C87D5A411A1F5B500CC595A /* menu.cpp in Sources */,
+				5C87D5A511A1F5B500CC595A /* dingoo.cpp in Sources */,
+				5C87D5A611A1F5B500CC595A /* draw.cpp in Sources */,
+				5C87D5A711A1F5B500CC595A /* vsync.cpp in Sources */,
+				5C87D5A811A1F5B500CC595A /* main_glut.cpp in Sources */,
+				5C87D5A911A1F5B500CC595A /* io.cpp in Sources */,
+				5C87D5AA11A1F5B500CC595A /* mac.cpp in Sources */,
+				5C87D5AB11A1F5B500CC595A /* oal.cpp in Sources */,
+				5C87D5AC11A1F5B500CC595A /* platform.cpp in Sources */,
+				5C87D5AD11A1F5B500CC595A /* division.cpp in Sources */,
+				5C87D5AE11A1F5B500CC595A /* symbian.cpp in Sources */,
+				5C87D5AF11A1F5B500CC595A /* symbian_gles.cpp in Sources */,
+				5C87D5B011A1F5B500CC595A /* win_mobile.cpp in Sources */,
+				5C87D5B111A1F5B500CC595A /* main_wx.cpp in Sources */,
+				5C87D5C111A1F61800CC595A /* button.cpp in Sources */,
+				5C87D5C211A1F61800CC595A /* control.cpp in Sources */,
+				5C87D5C311A1F61800CC595A /* desktop.cpp in Sources */,
+				5C87D5C411A1F61800CC595A /* dialog.cpp in Sources */,
+				5C87D5C511A1F61800CC595A /* list.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
