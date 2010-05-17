@@ -599,6 +599,22 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="linux"
+				>
+				<File
+					RelativePath=".\platform\linux\tick_gtod.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="win"
+				>
+				<File
+					RelativePath=".\platform\win\tick_qpc.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="storage"
@@ -616,19 +632,43 @@
 			Name="ui"
 			>
 			<File
-				RelativePath=".\ui\controls.cpp"
+				RelativePath=".\ui\button.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ui\controls.h"
+				RelativePath=".\ui\button.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ui\dialogs.cpp"
+				RelativePath=".\ui\control.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ui\dialogs.h"
+				RelativePath=".\ui\control.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\desktop.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\desktop.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\dialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\dialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\list.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\list.h"
 				>
 			</File>
 			<File
@@ -665,10 +705,6 @@
 			</File>
 			<File
 				RelativePath=".\tools\tick_clock.h"
-				>
-			</File>
-			<File
-				RelativePath=".\tools\tick_qpc.h"
 				>
 			</File>
 			<File
