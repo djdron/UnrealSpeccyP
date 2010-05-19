@@ -30,6 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
+void OnLoopSound();
+
 BOOL InitInstance(HINSTANCE, int);
 
 static wchar_t resource_path[1024];
@@ -334,6 +336,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(handler_inited)
 		{
 			Handler()->OnLoop();
+			OnLoopSound();
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hWnd, &ps);
 			if(!hdc_mem)

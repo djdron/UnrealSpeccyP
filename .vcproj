@@ -582,6 +582,10 @@
 					RelativePath=".\platform\win_mobile\win_mobile.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\platform\win_mobile\win_mobile_sound.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="symbian"
