@@ -156,7 +156,8 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 			{
 				return speccy->Device<eWD1793>()->Open(name, drive_for_open);
 			}
-			else if(!strcmp(n, ".sna") || !strcmp(n, ".SNA"))
+			else if(!strcmp(n, ".sna") || !strcmp(n, ".SNA") ||
+					!strcmp(n, ".z80") || !strcmp(n, ".Z80"))
 			{
 				return xSnapshot::Load(speccy, name);
 			}

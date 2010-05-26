@@ -311,7 +311,7 @@ bool eTape::Open(const char* file)
 	fclose(f);
 	if(r != size)
 	{
-		delete buf;
+		delete[] buf;
 		return false;
 	}
 	bool ok = false;
@@ -322,7 +322,7 @@ bool eTape::Open(const char* file)
 		ok = ParseCSW(buf, size);
 	else if(!strcmp(ext, ".tzx") || !strcmp(ext, ".TZX"))
 		ok = ParseTZX(buf, size);
-	delete buf;
+	delete[] buf;
 	return ok;
 }
 //=============================================================================

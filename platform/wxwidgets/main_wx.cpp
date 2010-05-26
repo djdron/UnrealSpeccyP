@@ -338,10 +338,10 @@ public:
 	{
 		wxFileDialog fd(this);
 		fd.SetWildcard(
-				L"Supported files|*.sna;*.trd;*.scl;*.tap;*.csw;*.tzx;"
-								L"*.SNA;*.TRD;*.SCL;*.TAP;*.CSW;*.TZX|"
+				L"Supported files|*.sna;*.z80;*.trd;*.scl;*.tap;*.csw;*.tzx;"
+								L"*.SNA;*.Z80;*.TRD;*.SCL;*.TAP;*.CSW;*.TZX|"
 				L"All files|*.*|"
-				L"Snapshot files (*.sna)|*.sna;*.SNA|"
+				L"Snapshot files (*.sna;*.z80)|*.sna;*.z80;*.SNA;*.Z80|"
 				L"Disk images (*.trd;*.scl)|*.trd;*.scl;*.TRD;*.SCL|"
 				L"Tape files (*.tap;*.csw;*.tzx)|*.tap;*.csw;*.tzx;*.TAP;*.CSW;*.TZX"
 			);
