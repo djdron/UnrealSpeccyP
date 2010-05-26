@@ -191,7 +191,7 @@ struct eZ80Snap : public xZ80::eZ80
 		byte pFE = (flags >> 1) & 7;
 		devices->IoWrite(0xfe, pFE, t);
 		iff1 = s->iff1, iff2 = s->iff2; im = s->im & 3;
-		devices->IoWrite(0x7ffd, s->p7FFD, t);
+		devices->IoWrite(0x7ffd, model48k ? 0x30 : s->p7FFD, t);
 		memory->SetBank(0, (model48k || (s->p7FFD & 0x10)) ? eMemory::P_ROM1 : eMemory::P_ROM0);
 		return true;
 	}
