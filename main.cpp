@@ -35,13 +35,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui/desktop.h"
 #include "platform/custom_ui/main.h"
 
-static struct eSpeccyHandler : public xPlatform::eHandler
+namespace xPlatform
+{
+
+static struct eSpeccyHandler : public eHandler
 {
 	eSpeccyHandler() : speccy(NULL), video_paused(false), drive_for_open(0)
-		, joystick(xPlatform::J_KEMPSTON)
-		, sound(xPlatform::S_AY), volume(xPlatform::V_100)
-		, quit(false)
-		{}
+		, joystick(J_KEMPSTON), sound(S_AY), volume(V_100), quit(false) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit()
 	{
@@ -83,7 +83,6 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	virtual const char* WindowCaption() { return "Unreal Speccy Portable"; }
 	virtual void OnKey(char key, dword flags)
 	{
-		using namespace xPlatform;
 		bool down = (flags&KF_DOWN) != 0;
 		bool shift = (flags&KF_SHIFT) != 0;
 		bool ctrl = (flags&KF_CTRL) != 0;
@@ -135,9 +134,8 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		}
 		speccy->Device<eKeyboard>()->OnKey(key, down, shift, ctrl, alt);
 	}
-	virtual void OnMouse(xPlatform::eMouseAction action, byte a, byte b)
+	virtual void OnMouse(eMouseAction action, byte a, byte b)
 	{
-		using namespace xPlatform;
 		switch(action)
 		{
 		case MA_MOVE: 	speccy->Device<eKempstonMouse>()->OnMouseMove(a, b); 	break;
@@ -171,9 +169,8 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 		}
 		return false;
 	}
-	virtual xPlatform::eActionResult OnAction(xPlatform::eAction action)
+	virtual eActionResult OnAction(eAction action)
 	{
-		using namespace xPlatform;
 		switch(action)
 		{
 		case A_RESET:
@@ -213,16 +210,16 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 				return AR_ERROR;
 			}
 		case A_JOYSTICK_NEXT:
-			if(++joystick >= J_COUNT)
-				joystick = 0;
+			if(++joystick == J_LAST)
+				joystick = J_FIRST;
 			return AR_OK;
 		case A_SOUND_NEXT:
-			if(++sound >= S_COUNT)
-				sound = 0;
+			if(++sound == S_LAST)
+				sound = S_FIRST;
 			return AR_OK;
 		case A_VOLUME_NEXT:
-			if(++volume >= V_COUNT)
-				volume = 0;
+			if(++volume == V_LAST)
+				volume = V_FIRST;
 			return AR_OK;
 		case A_QUIT:
 			quit = true;
@@ -242,9 +239,9 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	virtual bool FullSpeed() const { return speccy->CPU()->FastEmul(); }
 	virtual bool Quit() const { return quit; }
 
-	virtual int Joystick() const { return joystick; }
-	virtual int Sound() const { return sound; }
-	virtual int Volume() const { return volume; }
+	virtual eJoystick Joystick() const { return (eJoystick)joystick; }
+	virtual eSound Sound() const { return (eSound)sound; }
+	virtual eVolume Volume() const { return (eVolume)volume; }
 
 	eSpeccy* speccy;
 #ifdef USE_UI
@@ -260,5 +257,8 @@ static struct eSpeccyHandler : public xPlatform::eHandler
 	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];
 } sh;
+
+}
+//namespace xPlatform
 
 // see platform-specific files for main() function
