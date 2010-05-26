@@ -132,11 +132,11 @@ struct eZ80_Z80 : public xZ80::eZ80
 		bool model48k = (s->model < 3);
 //		reset((model48k|(s->p7FFD & 0x10)) ? RM_SOS : RM_128);
 		byte flags = s->flags;
-		word reg_pc = s->pc;
 		if(flags == 0xFF)
 		   flags = 1;
 		byte* ptr = (byte*)s + 30;
-		if(pc == 0)
+		word reg_pc = s->pc;
+		if(reg_pc == 0)
 		{ // 2.01
 			ptr += 2 + s->len;
 			reg_pc = s->newpc;
