@@ -136,7 +136,6 @@ struct eZ80Snap : public xZ80::eZ80
 		{ // 2.01
 			ptr += 2 + s->len;
 			reg_pc = s->newpc;
-			memset(memory->Get(eMemory::P_RAM0), 0, eMemory::PAGE_SIZE*8); // clear 128k - first 8 pages
 			while(ptr < (byte*)s + buf_size)
 			{
 				byte* p48[] =
