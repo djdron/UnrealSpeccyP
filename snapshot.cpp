@@ -45,9 +45,27 @@ struct eSnapshot_SNA
 	byte trdos;
 	byte pages[5 * eMemory::PAGE_SIZE]; // all other pages
 };
+
+struct eSnapshot_Z80
+{
+	byte a,f;
+	word bc,hl,pc,sp;
+	byte i,r,flags;
+	word de,bc1,de1,hl1;
+	byte a1,f1;
+	word iy,ix;
+	byte iff1, iff2, im;
+	/* 2.01 extension */
+	word len, newpc;
+	byte model, p7FFD;
+	byte r1,r2, p7FFD_1;
+	byte AY[16];
+	/* 3.0 extension */
+};
 #pragma pack(pop)
 
-struct eZ80_SNA : public xZ80::eZ80
+
+struct eZ80Snap : public xZ80::eZ80
 {
 	bool SetState(const eSnapshot_SNA* s, size_t buf_size)
 	{
@@ -86,9 +104,11 @@ struct eZ80_SNA : public xZ80::eZ80
 		{
 			pc = memory->Read(sp) + 0x100 * memory->Read(sp+1);
 			sp += 2;
+			memory->SetBank(0, eMemory::P_ROM1);
 			return true;
 		}
 		devices->IoWrite(0x7ffd, s->p7FFD, t);
+		memory->SetBank(0, (s->p7FFD & 0x10) ? eMemory::P_ROM1 : eMemory::P_ROM0);
 		const byte* page = s->pages;
 		byte mapped = 0x24 | (1 << (s->p7FFD & 7));
 		for(int i = 0; i < 8; ++i)
@@ -101,39 +121,15 @@ struct eZ80_SNA : public xZ80::eZ80
 		}
 		return true;
 	}
-};
-
-#pragma pack(push, 1)
-struct eSnapshot_Z80
-{
-   byte a,f;
-   word bc,hl,pc,sp;
-   byte i,r,flags;
-   word de,bc1,de1,hl1;
-   byte a1,f1;
-   word iy,ix;
-   byte iff1, iff2, im;
-   /* 2.01 extension */
-   word len, newpc;
-   byte model, p7FFD;
-   byte r1,r2, p7FFD_1;
-   byte AY[16];
-   /* 3.0 extension */
-};
-#pragma pack(pop)
-
-struct eZ80_Z80 : public xZ80::eZ80
-{
 	bool SetState(const eSnapshot_Z80* s, size_t buf_size)
 	{
 		Reset();
 		devices->Reset();
 
 		bool model48k = (s->model < 3);
-//		reset((model48k|(s->p7FFD & 0x10)) ? RM_SOS : RM_128);
 		byte flags = s->flags;
 		if(flags == 0xFF)
-		   flags = 1;
+			flags = 1;
 		byte* ptr = (byte*)s + 30;
 		word reg_pc = s->pc;
 		if(reg_pc == 0)
@@ -196,8 +192,8 @@ struct eZ80_Z80 : public xZ80::eZ80
 		byte pFE = (flags >> 1) & 7;
 		devices->IoWrite(0xfe, pFE, t);
 		iff1 = s->iff1, iff2 = s->iff2; im = s->im & 3;
-		if(!model48k)
-			devices->IoWrite(0x7ffd, s->p7FFD, t);
+		devices->IoWrite(0x7ffd, s->p7FFD, t);
+		memory->SetBank(0, (model48k || (s->p7FFD & 0x10)) ? eMemory::P_ROM1 : eMemory::P_ROM0);
 		return true;
 	}
 	void UnpackPage(byte* dst, int dstlen, byte* src, int srclen)
@@ -243,11 +239,11 @@ bool Load(eSpeccy* speccy, const char* file)
 	}
 	bool ok = false;
 	const char* ext = file + l - 4;
-	xZ80::eZ80* z80 = speccy->CPU();
+	eZ80Snap* z80 = (eZ80Snap*)speccy->CPU();
 	if(!strcmp(ext, ".sna") || !strcmp(ext, ".SNA"))
-		ok = ((eZ80_SNA*)z80)->SetState((const eSnapshot_SNA*)buf, size);
+		ok = z80->SetState((const eSnapshot_SNA*)buf, size);
 	else if(!strcmp(ext, ".z80") || !strcmp(ext, ".Z80"))
-		ok = ((eZ80_Z80*)z80)->SetState((const eSnapshot_Z80*)buf, size);
+		ok = z80->SetState((const eSnapshot_Z80*)buf, size);
 	delete[] buf;
 	return ok;
 }
