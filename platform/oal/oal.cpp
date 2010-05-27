@@ -34,12 +34,16 @@ namespace xPlatform
 
 struct eSource
 {
-	eSource() : source(0), free_buf(0), first_fill(true)
+	void Clear()
 	{
+		source = 0;
+		free_buf = 0;
+		first_fill = true;
 		memset(buffers, 0, sizeof(buffers));
 	}
 	void Init()
 	{
+		Clear();
 		alGetError();
 		alGenBuffers(BUFFER_COUNT, buffers);
 		alGetError();
@@ -50,6 +54,7 @@ struct eSource
 		alSourceStop(source);
 		alDeleteSources(1, &source);
 		alDeleteBuffers(BUFFER_COUNT, buffers);
+		Clear();
 	}
 	enum eUpdateResult { U_OK, U_SKIP, U_MUCH, U_LESS  };
 	eUpdateResult Update(dword data_ready, void* data);

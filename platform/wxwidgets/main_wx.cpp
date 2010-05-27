@@ -441,6 +441,8 @@ public:
 	{
 		Handler()->OnAction(A_TRUE_SPEED_TOGGLE);
 		menu_true_speed->Check(Handler()->TrueSpeed());
+		DoneSound();
+		InitSound();
 		if(Handler()->TrueSpeed())
 			SetStatusText(_("True speed (50Hz mode) on"));
 		else
