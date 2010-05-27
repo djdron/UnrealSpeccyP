@@ -44,6 +44,9 @@ public:
 	void	Write(word addr, byte v, int tact);
 	void*	Screen() const { return screen; }
 
+	byte	BorderColor() const { return border_color; }
+	bool	FirstScreen() const { return first_screen; }
+
 	static eDeviceId Id() { return D_ULA; }
 	virtual dword IoNeed() const { return ION_WRITE|ION_READ; }
 protected:

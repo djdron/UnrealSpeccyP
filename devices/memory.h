@@ -42,7 +42,8 @@ public:
 		P_RAM4, P_RAM5, P_RAM6, P_RAM7,
 		P_AMOUNT
 	};
-	void SetBank(int idx, int page);
+	void SetPage(int idx, int page);
+	int	Page(int idx);
 
 	enum { BANKS_AMOUNT = 4, PAGE_SIZE = 0x4000, SIZE = P_AMOUNT * PAGE_SIZE };
 protected:

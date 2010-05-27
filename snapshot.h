@@ -26,6 +26,7 @@ class eSpeccy;
 namespace xSnapshot
 {
 bool Load(eSpeccy* speccy, const char* file);
+bool Store(eSpeccy* speccy, const char* file);
 }
 //namespace xSnapshot
 

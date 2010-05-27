@@ -169,6 +169,19 @@ static struct eSpeccyHandler : public eHandler
 		}
 		return false;
 	}
+	virtual bool OnSaveFile(const char* name)
+	{
+		int l = strlen(name);
+		if(l > 3)
+		{
+			const char* n = name + l - 4;
+			if(!strcmp(n, ".sna") || !strcmp(n, ".SNA"))
+			{
+				return xSnapshot::Store(speccy, name);
+			}
+		}
+		return false;
+	}
 	virtual eActionResult OnAction(eAction action)
 	{
 		switch(action)

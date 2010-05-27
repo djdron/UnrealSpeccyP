@@ -77,6 +77,7 @@ struct eHandler
 	virtual void OnMouse(eMouseAction action, byte a, byte b) = 0;
 
 	virtual bool OnOpenFile(const char* name) = 0;
+	virtual bool OnSaveFile(const char* name) = 0;
 	virtual eActionResult OnAction(eAction action) = 0;
 
 	// data to draw

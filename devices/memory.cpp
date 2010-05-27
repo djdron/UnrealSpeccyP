@@ -54,13 +54,24 @@ void eMemory::Write(word addr, byte v)
 	*a = v;
 }
 //=============================================================================
-//	eMemory::SetBank
+//	eMemory::SetPage
 //-----------------------------------------------------------------------------
-void eMemory::SetBank(int idx, int page)
+void eMemory::SetPage(int idx, int page)
 {
-	byte* addr = memory + page * PAGE_SIZE;
+	byte* addr = Get(page);
 	bank_read[idx] = addr;
 	bank_write[idx] = idx ? addr : NULL;
+}
+int	eMemory::Page(int idx)
+{
+	byte* addr = bank_read[idx];
+	for(int p = 0; p < P_AMOUNT; ++p)
+	{
+		if(Get(p) == addr)
+			return p;
+	}
+	assert(false);
+	return -1;
 }
 
 //=============================================================================
@@ -90,7 +101,7 @@ void eRom::Init()
 void eRom::Reset()
 {
 	page_selected = ROM_SYS;
-	memory->SetBank(0, page_selected);
+	memory->SetPage(0, page_selected);
 }
 //=============================================================================
 //	eRom::IoWrite
@@ -105,7 +116,7 @@ bool eRom::IoWrite(word port) const
 void eRom::IoWrite(word port, byte v, int tact)
 {
 	page_selected = (page_selected & ~1) + ((v >> 4) & 1);
-	memory->SetBank(0, page_selected);
+	memory->SetPage(0, page_selected);
 }
 //=============================================================================
 //	eRom::Read
@@ -116,12 +127,12 @@ void eRom::Read(word addr)
 	if(page_selected == ROM_SOS && (pc_h == 0x3d))
 	{
 		page_selected = ROM_DOS;
-		memory->SetBank(0, page_selected);
+		memory->SetPage(0, page_selected);
 	}
 	else if(DosSelected() && (pc_h & 0xc0)) // pc > 0x3fff closes tr-dos
 	{
 		page_selected = ROM_SOS;
-		memory->SetBank(0, page_selected);
+		memory->SetPage(0, page_selected);
 	}
 }
 
@@ -130,9 +141,9 @@ void eRom::Read(word addr)
 //-----------------------------------------------------------------------------
 void eRam::Reset()
 {
-	memory->SetBank(1, eMemory::P_RAM5);
-	memory->SetBank(2, eMemory::P_RAM2);
-	memory->SetBank(3, eMemory::P_RAM0);
+	memory->SetPage(1, eMemory::P_RAM5);
+	memory->SetPage(2, eMemory::P_RAM2);
+	memory->SetPage(3, eMemory::P_RAM0);
 }
 //=============================================================================
 //	eRam::IoWrite
@@ -147,5 +158,5 @@ bool eRam::IoWrite(word port) const
 void eRam::IoWrite(word port, byte v, int tact)
 {
 	int page = eMemory::P_RAM0 + (v & 7);
-	memory->SetBank(3, page);
+	memory->SetPage(3, page);
 }
