@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
+#include <wx/aboutdlg.h>
 
 namespace xPlatform
 {
@@ -283,20 +284,14 @@ public:
 		SetIcon(wxICON(unreal_speccy_portable));
 #endif//_WINDOWS
 		wxMenu* menuFile = new wxMenu;
-		menuFile->Append(ID_OpenFile, _("&Open...\tF3"));
-		menuFile->Append(ID_SaveFile, _("&Save snapshot...\tF2"));
-		menuFile->Append(ID_Reset, _("&Reset...\tF12"));
+		menuFile->Append(wxID_OPEN, _("&Open...\tF3"));
+		menuFile->Append(wxID_SAVE, _("&Save...\tF2"));
 #ifdef _MAC
 		menuFile->Append(wxID_ABOUT, _("About ") + title);
-		menuFile->Append(wxID_EXIT, _("E&xit"));
 #else//_MAC
 		menuFile->AppendSeparator();
-		menuFile->Append(ID_Quit, _("E&xit"));
 #endif//_MAC
-
-		wxMenu* menuWindow = new wxMenu;
-		menuWindow->Append(ID_Size100, _("Size &100%\tCtrl+1"));
-		menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
+		menuFile->Append(wxID_EXIT, _("E&xit"));
 
 		wxMenu* menuDevice = new wxMenu;
 		menuDevice->Append(ID_TapeToggle, _("Start/Stop tape\tF5"));
@@ -304,6 +299,7 @@ public:
 		menuDevice->Append(ID_DriveNext, _("Select next drive\tF6"));
 		menu_pause = menuDevice->Append(ID_PauseToggle, _("Pause\tF7"), _(""), wxITEM_CHECK);
 		menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, _("True speed\tF8"), _(""), wxITEM_CHECK);
+		menuDevice->Append(ID_Reset, _("&Reset...\tF12"));
 
 		wxMenu* menuJoy = new wxMenu;
 		menu_joy.cursor = menuJoy->Append(ID_JoyCursor, _("Cursor"), _(""), wxITEM_CHECK);
@@ -312,10 +308,20 @@ public:
 		menu_joy.sinclair2 = menuJoy->Append(ID_JoySinclair2, _("Sinclair 2"), _(""), wxITEM_CHECK);
 		menuDevice->Append(-1, _("Joystick"), menuJoy);
 
+		wxMenu* menuWindow = new wxMenu;
+		menuWindow->Append(ID_Size100, _("Size &100%\tCtrl+1"));
+		menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
+
 		wxMenuBar* menuBar = new wxMenuBar;
 		menuBar->Append(menuFile, _("File"));
-		menuBar->Append(menuWindow, _("Window"));
 		menuBar->Append(menuDevice, _("Device"));
+		menuBar->Append(menuWindow, _("Window"));
+
+#ifndef _MAC
+		wxMenu* menuHelp = new wxMenu;
+		menuHelp->Append(wxID_ABOUT, _("About ") + title);
+		menuBar->Append(menuHelp, _("Help"));
+#endif//_MAC
 
 		SetMenuBar(menuBar);
 
@@ -340,6 +346,15 @@ public:
 			SetStatusText(_("Reset FAILED"));
 	}
 	void OnQuit(wxCommandEvent& event)	{ Close(true); }
+	void OnAbout(wxCommandEvent& event)
+	{
+		wxAboutDialogInfo info;
+		info.SetName(GetTitle());
+		info.SetVersion(_("0.0.9"));
+		info.SetDescription(_("Portable ZX-Spectrum emulator."));
+		info.SetCopyright(_("Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor."));
+		wxAboutBox(info);
+	}
 	void OnOpenFile(wxCommandEvent& event)
 	{
 		wxFileDialog fd(this);
@@ -472,7 +487,7 @@ public:
 	}
 	enum
 	{
-		ID_Quit = 1, ID_OpenFile, ID_SaveFile, ID_Reset, ID_Size100, ID_Size200,
+		ID_Reset = 1, ID_Size100, ID_Size200,
 		ID_TapeToggle, ID_TapeFastToggle, ID_DriveNext,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
 		ID_PauseToggle, ID_TrueSpeedToggle
@@ -496,9 +511,10 @@ private:
 };
 
 BEGIN_EVENT_TABLE(Frame, wxFrame)
-	EVT_MENU(Frame::ID_Quit,		Frame::OnQuit)
-	EVT_MENU(Frame::ID_OpenFile,	Frame::OnOpenFile)
-	EVT_MENU(Frame::ID_SaveFile,	Frame::OnSaveFile)
+	EVT_MENU(wxID_EXIT,				Frame::OnQuit)
+	EVT_MENU(wxID_ABOUT,			Frame::OnAbout)
+	EVT_MENU(wxID_OPEN,				Frame::OnOpenFile)
+	EVT_MENU(wxID_SAVE,				Frame::OnSaveFile)
 	EVT_MENU(Frame::ID_Reset,		Frame::OnReset)
 	EVT_MENU(Frame::ID_Size100,		Frame::OnResize)
 	EVT_MENU(Frame::ID_Size200,		Frame::OnResize)
