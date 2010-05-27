@@ -279,6 +279,9 @@ public:
 		: wxFrame((wxFrame*)NULL, -1, title, pos)
 		, org_size(320, 240)
 	{
+#ifdef _WINDOWS
+		SetIcon(wxICON(unreal_speccy_portable));
+#endif//_WINDOWS
 		wxMenu* menuFile = new wxMenu;
 		menuFile->Append(ID_OpenFile, _("&Open...\tF3"));
 		menuFile->Append(ID_SaveFile, _("&Save snapshot...\tF2"));

@@ -716,6 +716,22 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="build"
+			>
+			<Filter
+				Name="win"
+				>
+				<File
+					RelativePath=".\build\win\unreal_speccy_portable.ico"
+					>
+				</File>
+				<File
+					RelativePath=".\build\win\unreal_speccy_portable.rc"
+					>
+				</File>
+			</Filter>
+		</Filter>
 		<File
 			RelativePath=".\main.cpp"
 			>
