@@ -50,10 +50,14 @@ enum eKeyFlags
 	KF_UI_SENDER = 0x100
 };
 enum eMouseAction { MA_MOVE, MA_BUTTON, MA_WHEEL };
-enum eAction { A_RESET, A_QUIT, A_TAPE_TOGGLE, A_TAPE_FAST_TOGGLE, A_DRIVE_NEXT, A_JOYSTICK_NEXT, A_SOUND_NEXT, A_VOLUME_NEXT };
+enum eAction
+{
+	A_RESET, A_QUIT, A_TAPE_TOGGLE, A_TAPE_FAST_TOGGLE, A_DRIVE_NEXT,
+	A_JOYSTICK_NEXT, A_SOUND_NEXT, A_VOLUME_NEXT,
+	A_TRUE_SPEED_TOGGLE
+};
 enum eActionResult
 {
-	AR_RESET_OK,
 	AR_TAPE_STARTED, AR_TAPE_STOPPED, AR_TAPE_NOT_INSERTED,
 	AR_TAPE_FAST_SET, AR_TAPE_FAST_RESET,
 	AR_DRIVE_A, AR_DRIVE_B, AR_DRIVE_C, AR_DRIVE_D,
@@ -94,6 +98,7 @@ struct eHandler
 	virtual bool TapeInserted() const = 0;
 	virtual bool TapeStarted() const = 0;
 	virtual bool FullSpeed() const = 0;
+	virtual bool TrueSpeed() const = 0;
 	virtual bool Quit() const = 0;
 
 	virtual eJoystick	Joystick() const = 0;

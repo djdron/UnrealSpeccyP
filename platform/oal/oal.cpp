@@ -61,7 +61,8 @@ struct eSource
 };
 eSource::eUpdateResult eSource::Update(dword data_ready, void* data)
 {
-	const float fps = 60, fps_org = 50;
+	const float fps = Handler()->TrueSpeed() ? 50.0f : 60.0f;
+	const float fps_org = 50.0f;
 	dword frame_data = 44100*2*2/fps_org;
 	if(data_ready < frame_data*2)
 		return U_LESS;
@@ -111,7 +112,11 @@ static ALCcontext* context = NULL;
 void InitSound()
 {
 	device = alcOpenDevice(NULL);
+	if(!device)
+		return;
 	context = alcCreateContext(device, NULL);
+	if(!context)
+		return;
 	alcMakeContextCurrent(context);
 	alcProcessContext(context);
 
@@ -125,19 +130,30 @@ void InitSound()
 
 void DoneSound()
 {
-	for(int i = Handler()->AudioSources(); --i >= 0;)
+	if(device && context)
 	{
-		sources[i].Done();
+		for(int i = Handler()->AudioSources(); --i >= 0;)
+		{
+			sources[i].Done();
+		}
 	}
-	alcMakeContextCurrent(NULL);
-	alcDestroyContext(context);
-	context = NULL;
-	alcCloseDevice(device);
-	device = NULL;
+	if(context)
+	{
+		alcMakeContextCurrent(NULL);
+		alcDestroyContext(context);
+		context = NULL;
+	}
+	if(device)
+	{
+		alcCloseDevice(device);
+		device = NULL;
+	}
 }
 
 void OnLoopSound()
 {
+	if(!device || !context)
+		return;
 	static bool video_paused = false;
 	bool video_paused_new = false;
 	for(int i = Handler()->AudioSources(); --i >= 0;)

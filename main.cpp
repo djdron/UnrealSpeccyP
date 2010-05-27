@@ -41,7 +41,7 @@ namespace xPlatform
 static struct eSpeccyHandler : public eHandler
 {
 	eSpeccyHandler() : speccy(NULL), video_paused(0), drive_for_open(0)
-		, joystick(J_KEMPSTON), sound(S_AY), volume(V_100), quit(false) {}
+		, joystick(J_KEMPSTON), sound(S_AY), volume(V_100), quit(false), true_speed(false) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit()
 	{
@@ -188,7 +188,7 @@ static struct eSpeccyHandler : public eHandler
 		{
 		case A_RESET:
 			speccy->Reset();
-			return AR_RESET_OK;
+			return AR_OK;
 		case A_TAPE_TOGGLE:
 			{
 				eTape* tape = speccy->Device<eTape>();
@@ -237,6 +237,9 @@ static struct eSpeccyHandler : public eHandler
 		case A_QUIT:
 			quit = true;
 			return AR_OK;
+		case A_TRUE_SPEED_TOGGLE:
+			true_speed = !true_speed;
+			return AR_OK;
 		}
 		return AR_ERROR;
 	}
@@ -250,6 +253,7 @@ static struct eSpeccyHandler : public eHandler
 	virtual bool TapeInserted() const { return speccy->Device<eTape>()->Inserted(); }
 	virtual bool TapeStarted() const { return speccy->Device<eTape>()->Started(); }
 	virtual bool FullSpeed() const { return speccy->CPU()->FastEmul(); }
+	virtual bool TrueSpeed() const { return true_speed; }
 	virtual bool Quit() const { return quit; }
 
 	virtual eJoystick Joystick() const { return (eJoystick)joystick; }
@@ -266,6 +270,7 @@ static struct eSpeccyHandler : public eHandler
 	int sound;
 	int volume;
 	bool quit;
+	bool true_speed;
 
 	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];

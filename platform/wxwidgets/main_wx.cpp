@@ -300,6 +300,7 @@ public:
 		menuDevice->Append(ID_TapeFastToggle, _("Tape fast"));
 		menuDevice->Append(ID_DriveNext, _("Select next drive\tF6"));
 		menu_pause = menuDevice->Append(ID_PauseToggle, _("Pause\tF7"), _(""), wxITEM_CHECK);
+		menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, _("True speed\tF8"), _(""), wxITEM_CHECK);
 
 		wxMenu* menuJoy = new wxMenu;
 		menu_joy.cursor = menuJoy->Append(ID_JoyCursor, _("Cursor"), _(""), wxITEM_CHECK);
@@ -330,7 +331,7 @@ public:
 
 	void OnReset(wxCommandEvent& event)
 	{
-		if(Handler()->OnAction(A_RESET) == AR_RESET_OK)
+		if(Handler()->OnAction(A_RESET) == AR_OK)
 			SetStatusText(_("Reset OK"));
 		else
 			SetStatusText(_("Reset FAILED"));
@@ -436,6 +437,15 @@ public:
 			SetStatusText(_("Ready..."));
 		}
 	}
+	void OnTrueSpeedToggle(wxCommandEvent& event)
+	{
+		Handler()->OnAction(A_TRUE_SPEED_TOGGLE);
+		menu_true_speed->Check(Handler()->TrueSpeed());
+		if(Handler()->TrueSpeed())
+			SetStatusText(_("True speed (50Hz mode) on"));
+		else
+			SetStatusText(_("True speed off"));
+	}
 	void OnMouseCapture(wxCommandEvent& event)
 	{
 		switch(event.GetId())
@@ -456,7 +466,7 @@ public:
 		ID_Quit = 1, ID_OpenFile, ID_SaveFile, ID_Reset, ID_Size100, ID_Size200,
 		ID_TapeToggle, ID_TapeFastToggle, ID_DriveNext,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
-		ID_PauseToggle,
+		ID_PauseToggle, ID_TrueSpeedToggle
 	};
 	struct eJoyMenuItems
 	{
@@ -467,6 +477,7 @@ public:
 	};
 	eJoyMenuItems menu_joy;
 	wxMenuItem* menu_pause;
+	wxMenuItem* menu_true_speed;
 
 private:
 	DECLARE_EVENT_TABLE()
@@ -490,6 +501,7 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_JoyQAOP,		Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoySinclair2,Frame::OnJoy)
 	EVT_MENU(Frame::ID_PauseToggle,	Frame::OnPauseToggle)
+	EVT_MENU(Frame::ID_TrueSpeedToggle,	Frame::OnTrueSpeedToggle)
 	EVT_COMMAND(wxID_ANY, evtMouseCapture, Frame::OnMouseCapture)
 END_EVENT_TABLE()
 
