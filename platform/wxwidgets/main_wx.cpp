@@ -346,6 +346,7 @@ public:
 			SetStatusText(_("Reset FAILED"));
 	}
 	void OnQuit(wxCommandEvent& event)	{ Close(true); }
+#ifndef _MAC
 	void OnAbout(wxCommandEvent& event)
 	{
 		wxAboutDialogInfo info;
@@ -355,6 +356,7 @@ public:
 		info.SetCopyright(_("Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor."));
 		wxAboutBox(info);
 	}
+#endif//_MAC
 	void OnOpenFile(wxCommandEvent& event)
 	{
 		wxFileDialog fd(this);
@@ -380,7 +382,7 @@ public:
 		wxFileDialog fd(this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, wxFileSelectorDefaultWildcardStr, wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
 		fd.SetWildcard(
 				L"Snapshot files (*.sna)|*.sna;*.SNA|"
-				L"All files|*.*|"
+				L"All files|*.*"
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{
@@ -512,7 +514,9 @@ private:
 
 BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(wxID_EXIT,				Frame::OnQuit)
+#ifndef _MAC
 	EVT_MENU(wxID_ABOUT,			Frame::OnAbout)
+#endif//_MAC
 	EVT_MENU(wxID_OPEN,				Frame::OnOpenFile)
 	EVT_MENU(wxID_SAVE,				Frame::OnSaveFile)
 	EVT_MENU(Frame::ID_Reset,		Frame::OnReset)
