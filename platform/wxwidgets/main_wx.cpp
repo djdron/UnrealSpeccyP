@@ -299,12 +299,13 @@ public:
 		menuDevice->Append(ID_TapeToggle, _("Start/Stop tape\tF5"));
 		menuDevice->Append(ID_TapeFastToggle, _("Tape fast"));
 		menuDevice->Append(ID_DriveNext, _("Select next drive\tF6"));
+		menu_pause = menuDevice->Append(ID_PauseToggle, _("Pause\tF7"), _(""), wxITEM_CHECK);
 
 		wxMenu* menuJoy = new wxMenu;
-		joy_menu.cursor = menuJoy->Append(ID_JoyCursor, _("Cursor"), _(""), wxITEM_CHECK);
-		joy_menu.kempston = menuJoy->Append(ID_JoyKempston, _("Kempston"), _(""), wxITEM_CHECK);
-		joy_menu.qaop = menuJoy->Append(ID_JoyQAOP, _("QAOP"), _(""), wxITEM_CHECK);
-		joy_menu.sinclair2 = menuJoy->Append(ID_JoySinclair2, _("Sinclair 2"), _(""), wxITEM_CHECK);
+		menu_joy.cursor = menuJoy->Append(ID_JoyCursor, _("Cursor"), _(""), wxITEM_CHECK);
+		menu_joy.kempston = menuJoy->Append(ID_JoyKempston, _("Kempston"), _(""), wxITEM_CHECK);
+		menu_joy.qaop = menuJoy->Append(ID_JoyQAOP, _("QAOP"), _(""), wxITEM_CHECK);
+		menu_joy.sinclair2 = menuJoy->Append(ID_JoySinclair2, _("Sinclair 2"), _(""), wxITEM_CHECK);
 		menuDevice->Append(-1, _("Joystick"), menuJoy);
 
 		wxMenuBar* menuBar = new wxMenuBar;
@@ -356,6 +357,7 @@ public:
 	}
 	void OnSaveFile(wxCommandEvent& event)
 	{
+		Handler()->VideoPaused(true);
 		wxFileDialog fd(this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, wxFileSelectorDefaultWildcardStr, wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
 		fd.SetWildcard(
 				L"Snapshot files (*.sna)|*.sna;*.SNA|"
@@ -368,6 +370,7 @@ public:
 			else
 				SetStatusText(_("File save FAILED"));
 		}
+		Handler()->VideoPaused(false);
 	}
 	void OnResize(wxCommandEvent& event)
 	{
@@ -411,14 +414,27 @@ public:
 	void OnJoy(wxCommandEvent& event)
 	{
 		gl_canvas->key_flags = 0;
-		if(joy_menu.kempston->IsChecked())
+		if(menu_joy.kempston->IsChecked())
 			gl_canvas->key_flags |= KF_KEMPSTON;
-		if(joy_menu.cursor->IsChecked())
+		if(menu_joy.cursor->IsChecked())
 			gl_canvas->key_flags |= KF_CURSOR;
-		if(joy_menu.qaop->IsChecked())
+		if(menu_joy.qaop->IsChecked())
 			gl_canvas->key_flags |= KF_QAOP;
-		if(joy_menu.sinclair2->IsChecked())
+		if(menu_joy.sinclair2->IsChecked())
 			gl_canvas->key_flags |= KF_SINCLAIR2;
+	}
+	void OnPauseToggle(wxCommandEvent& event)
+	{
+		if(menu_pause->IsChecked())
+		{
+			Handler()->VideoPaused(true);
+			SetStatusText(_("Paused..."));
+		}
+		else
+		{
+			Handler()->VideoPaused(false);
+			SetStatusText(_("Ready..."));
+		}
 	}
 	void OnMouseCapture(wxCommandEvent& event)
 	{
@@ -430,16 +446,17 @@ public:
 	}
 	void UpdateJoyMenu()
 	{
-		joy_menu.kempston->Check(gl_canvas->key_flags&KF_KEMPSTON);
-		joy_menu.cursor->Check(gl_canvas->key_flags&KF_CURSOR);
-		joy_menu.qaop->Check(gl_canvas->key_flags&KF_QAOP);
-		joy_menu.sinclair2->Check(gl_canvas->key_flags&KF_SINCLAIR2);
+		menu_joy.kempston->Check(gl_canvas->key_flags&KF_KEMPSTON);
+		menu_joy.cursor->Check(gl_canvas->key_flags&KF_CURSOR);
+		menu_joy.qaop->Check(gl_canvas->key_flags&KF_QAOP);
+		menu_joy.sinclair2->Check(gl_canvas->key_flags&KF_SINCLAIR2);
 	}
 	enum
 	{
 		ID_Quit = 1, ID_OpenFile, ID_SaveFile, ID_Reset, ID_Size100, ID_Size200,
 		ID_TapeToggle, ID_TapeFastToggle, ID_DriveNext,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
+		ID_PauseToggle,
 	};
 	struct eJoyMenuItems
 	{
@@ -448,7 +465,8 @@ public:
 		wxMenuItem* qaop;
 		wxMenuItem* sinclair2;
 	};
-	eJoyMenuItems joy_menu;
+	eJoyMenuItems menu_joy;
+	wxMenuItem* menu_pause;
 
 private:
 	DECLARE_EVENT_TABLE()
@@ -471,6 +489,7 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_JoyCursor,	Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoyQAOP,		Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoySinclair2,Frame::OnJoy)
+	EVT_MENU(Frame::ID_PauseToggle,	Frame::OnPauseToggle)
 	EVT_COMMAND(wxID_ANY, evtMouseCapture, Frame::OnMouseCapture)
 END_EVENT_TABLE()
 

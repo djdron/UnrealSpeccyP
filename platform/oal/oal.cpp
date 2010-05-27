@@ -138,6 +138,8 @@ void DoneSound()
 
 void OnLoopSound()
 {
+	static bool video_paused = false;
+	bool video_paused_new = false;
 	for(int i = Handler()->AudioSources(); --i >= 0;)
 	{
 		dword data_ready = Handler()->AudioDataReady(i);
@@ -149,14 +151,18 @@ void OnLoopSound()
 			Handler()->AudioDataUse(i, data_ready);
 			//no break;
 		case eSource::U_LESS:
-			Handler()->VideoPaused(false);
 			break;
 		case eSource::U_MUCH:
-			Handler()->VideoPaused(true);
+			video_paused_new = true;
 			break;
 		default:
 			break;
 		}
+	}
+	if(video_paused_new != video_paused)
+	{
+		video_paused = video_paused_new;
+		Handler()->VideoPaused(video_paused);
 	}
 }
 

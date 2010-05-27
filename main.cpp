@@ -40,7 +40,7 @@ namespace xPlatform
 
 static struct eSpeccyHandler : public eHandler
 {
-	eSpeccyHandler() : speccy(NULL), video_paused(false), drive_for_open(0)
+	eSpeccyHandler() : speccy(NULL), video_paused(0), drive_for_open(0)
 		, joystick(J_KEMPSTON), sound(S_AY), volume(V_100), quit(false) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit()
@@ -245,7 +245,7 @@ static struct eSpeccyHandler : public eHandler
 	virtual void* AudioData(int source) { return sound_dev[source]->AudioData(); }
 	virtual dword AudioDataReady(int source) { return sound_dev[source]->AudioDataReady(); }
 	virtual void AudioDataUse(int source, dword size) { sound_dev[source]->AudioDataUse(size); }
-	virtual void VideoPaused(bool paused) {	video_paused = paused; }
+	virtual void VideoPaused(bool paused) {	paused ? ++video_paused : --video_paused; }
 
 	virtual bool TapeInserted() const { return speccy->Device<eTape>()->Inserted(); }
 	virtual bool TapeStarted() const { return speccy->Device<eTape>()->Started(); }
@@ -260,7 +260,7 @@ static struct eSpeccyHandler : public eHandler
 #ifdef USE_UI
 	xUi::eDesktop* ui_desktop;
 #endif//USE_UI
-	bool video_paused;
+	int video_paused;
 	int drive_for_open;
 	int joystick;
 	int sound;
