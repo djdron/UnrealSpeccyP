@@ -366,7 +366,11 @@ public:
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{
-			if(Handler()->OnSaveFile(wxConvertWX2MB(fd.GetPath().c_str())))
+			wxString path = fd.GetPath();
+			size_t p = path.length() - 4;
+			if(path.length() < 4 || (path.rfind(L".sna") != p && path.rfind(L".SNA") != p))
+				path += L".sna";
+			if(Handler()->OnSaveFile(wxConvertWX2MB(path.c_str())))
 				SetStatusText(_("File save OK"));
 			else
 				SetStatusText(_("File save FAILED"));
