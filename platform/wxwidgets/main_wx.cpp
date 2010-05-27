@@ -358,15 +358,15 @@ public:
 	{
 		wxFileDialog fd(this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, wxFileSelectorDefaultWildcardStr, wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
 		fd.SetWildcard(
-				L"Snapshot files (*.sna;*.z80)|*.sna;*.z80;*.SNA;*.Z80|"
+				L"Snapshot files (*.sna)|*.sna;*.SNA|"
 				L"All files|*.*|"
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{
 			if(Handler()->OnSaveFile(wxConvertWX2MB(fd.GetPath().c_str())))
-				SetStatusText(_("File open OK"));
+				SetStatusText(_("File save OK"));
 			else
-				SetStatusText(_("File open FAILED"));
+				SetStatusText(_("File save FAILED"));
 		}
 	}
 	void OnResize(wxCommandEvent& event)
