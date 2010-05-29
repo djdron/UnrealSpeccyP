@@ -272,11 +272,19 @@ void GLCanvas::TranslateKey(int& key, dword& flags)
 		key = 0;
 }
 
+#ifndef _MAC
+struct DropFilesTarget : public wxFileDropTarget
+{
+	virtual bool OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
+	{
+		if(filenames.empty())
+			return false;
+		return Handler()->OnOpenFile(wxConvertWX2MB(filenames[0].c_str()));
+	}
+};
+#endif//_MAC
 
 class Frame: public wxFrame
-#ifndef _MAC
-	, public wxFileDropTarget
-#endif//_MAC
 {
 public:
 	Frame(const wxString& title, const wxPoint& pos)
@@ -292,7 +300,7 @@ public:
 #ifdef _MAC
 		menuFile->Append(wxID_ABOUT, _("About ") + title);
 #else//_MAC
-		SetDropTarget(this);
+		SetDropTarget(new DropFilesTarget);
 		menuFile->AppendSeparator();
 #endif//_MAC
 		menuFile->Append(wxID_EXIT, _("E&xit"));
@@ -374,12 +382,6 @@ You should have received a copy of the GNU General Public License\n\
 along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 				));
 		wxAboutBox(info);
-	}
-	virtual bool OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
-	{
-		if(filenames.empty())
-			return false;
-		return Handler()->OnOpenFile(wxConvertWX2MB(filenames[0].c_str()));
 	}
 #endif//_MAC
 	void OnOpenFile(wxCommandEvent& event)
