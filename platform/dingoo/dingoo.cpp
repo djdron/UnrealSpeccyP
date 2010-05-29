@@ -96,7 +96,7 @@ public:
 	eVideo() : frame(NULL), frame_back(NULL)
 	{
 		Set(0x03, 0x0030);	//entry mode default
-//		Set(0x2b, 0x0008);	//refresh 51hz
+		Set(0x2b, 0x000d);	//max refresh rate
 		Set(0x20, 0x0000);
 		Set(0x21, 0x0000);
 		Set(0x22);			//write to GRAM
@@ -114,8 +114,12 @@ public:
 	}
 	~eVideo() 
 	{
+#ifdef _LCD_ILI9325
+		Set(0x03, 0x1098);	//entry mode restore
+#else
 		Set(0x03, 0x1048);	//entry mode restore
-		Set(0x2b, 0x000d);	//refresh 93hz
+#endif
+		Set(0x2b, 0x000d);	//default refresh rate
 		Set(0x20, 0x0000);
 		Set(0x21, 0x0000);
 		Set(0x22);			//write to GRAM
@@ -179,9 +183,13 @@ void eVideo::Update()
 	word* dst = video.FrameBack();
 	if(src2)
 	{
+#ifdef _LCD_ILI9325
+		for(int offs_base = 320; --offs_base >= 0; )
+			for(int offs = offs_base; offs < 320*240; offs += 320)
+#else
 		for(int offs_base = 320*240; --offs_base >= 320*239; )
-		{
 			for(int offs = offs_base; offs >= 0; offs -= 320)
+#endif
 			{
 				byte c = src[offs];
 				byte i = c&8 ? BRIGHTNESS + BRIGHT_INTENSITY : BRIGHTNESS;
@@ -191,17 +199,17 @@ void eVideo::Update()
 				xUi::eRGBAColor c2 = src2[offs];
 				*dst++ = RGB565((r >> c2.a) + c2.r, (g >> c2.a) + c2.g, (b >> c2.a) + c2.b);
 			}
-		}
 	}
 	else
 	{
+#ifdef _LCD_ILI9325
+		for(int offs_base = 320; --offs_base >= 0; )
+			for(int offs = offs_base; offs < 320*240; offs += 320)
+#else
 		for(int offs_base = 320*240; --offs_base >= 320*239; )
-		{
 			for(int offs = offs_base; offs >= 0; offs -= 320)
-			{
-				*dst++ = colors[src[offs]];
-			}
-		}
+#endif
+			*dst++ = colors[src[offs]];
 	}
 }
 
@@ -292,7 +300,7 @@ protected:
 	void UpdateKey(eKeyBit key, char zx_key, dword flags = 0)
 	{
 		bool pressed = Pressed(key);
-		if(pressed == (status&key))
+		if(pressed == (bool)(status&key))
 			return;
 		status = pressed ? status|key : status&~key;
 		flags |= pressed ? xPlatform::KF_DOWN : 0;
