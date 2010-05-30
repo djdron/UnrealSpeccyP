@@ -26,7 +26,7 @@
 			<string>unreal_speccy_portable</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>scw</string>
+				<string>csw</string>
 				<string>tzx</string>
 				<string>tap</string>
 			</array>
