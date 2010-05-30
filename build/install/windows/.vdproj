@@ -67,6 +67,12 @@
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
+        "Entry"
+        {
+        "MsmKey" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
     }
     "Configurations"
     {
@@ -302,9 +308,98 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EF9AE5BED3E0438896A49127AA819AC4"
+            {
+            "SourcePath" = "8:..\\..\\win\\unreal_speccy_portable.ico"
+            "TargetName" = "8:unreal_speccy_portable.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
+            "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_45AC933AE9A34E17B79D7A9F530D45D3"
+            {
+            "Name" = "8:ZX-Spectrum tape file"
+            "Description" = "8:ZX-Spectrum tape file"
+            "Extensions" = "8:.tap;.tzx;.scw"
+            "MIME" = "8:"
+            "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
+            "IconIndex" = "3:0"
+                "Command"
+                {
+                "Command" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
+                }
+                "Verbs"
+                {
+                    "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_42062EF391DE4749A8B816064446ADE5"
+                    {
+                    "Command" = "8:&Open"
+                    "Verb" = "8:open"
+                    "Arguments" = "8:\"%1\""
+                    "Order" = "3:0"
+                    }
+                }
+            }
+            "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_872F38B7626D4C05B3EACFD8AEC14221"
+            {
+            "Name" = "8:ZX-Spectrum snapshot"
+            "Description" = "8:ZX-Spectrum Snapshot"
+            "Extensions" = "8:.z80;.sna"
+            "MIME" = "8:"
+            "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
+            "IconIndex" = "3:0"
+                "Command"
+                {
+                "Command" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
+                }
+                "Verbs"
+                {
+                    "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_2CC828A20E224DFC84A4F1FBD579C99A"
+                    {
+                    "Command" = "8:&Open"
+                    "Verb" = "8:open"
+                    "Arguments" = "8:\"%1\""
+                    "Order" = "3:0"
+                    }
+                }
+            }
+            "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_D1C65A9B50994B8DA42A75228D09F722"
+            {
+            "Name" = "8:ZX-Spectrum disk image"
+            "Description" = "8:ZX-Spectrum disk image"
+            "Extensions" = "8:.trd;.scl"
+            "MIME" = "8:"
+            "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
+            "IconIndex" = "3:0"
+                "Command"
+                {
+                "Command" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
+                }
+                "Verbs"
+                {
+                    "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_2C760CA61C81464DBAF0CD9CADD39FAF"
+                    {
+                    "Command" = "8:&Open"
+                    "Verb" = "8:open"
+                    "Arguments" = "8:\"%1\""
+                    "Order" = "3:0"
+                    }
+                }
+            }
         }
         "Folder"
         {
@@ -343,7 +438,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_F2D7314D1BAE45E6AAA46314D9DDDE77"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[ProgramFilesFolder][ProductName]"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
@@ -391,14 +486,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Unreal Speccy Portable"
-        "ProductCode" = "8:{13CAB6F7-8C83-4B36-839B-D590F399A331}"
-        "PackageCode" = "8:{32207A91-7446-4888-99F3-CC6E68EB71EA}"
+        "ProductCode" = "8:{D8BDA83F-8E1E-4F96-8A76-48DCF4073494}"
+        "PackageCode" = "8:{CE1818B3-7D55-4784-A449-3B12CC600A97}"
         "UpgradeCode" = "8:{1C6A5F89-A251-4B7D-908B-4142CDC8A49D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.0.4"
+        "ProductVersion" = "8:0.0.9"
         "Manufacturer" = "8:ZX-Spectrum"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/unrealspeccyp/issues/list"
@@ -408,7 +503,7 @@
         "Keywords" = "8:zx-spectrum, emulator, portable, pentagon, speccy, unreal, zx, sinclair"
         "ARPCOMMENTS" = "8:ZX-Spectrum 128K emulator"
         "ARPURLINFOABOUT" = "8:http://code.google.com/p/unrealspeccyp/"
-        "ARPPRODUCTICON" = "8:"
+        "ARPPRODUCTICON" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -522,7 +617,7 @@
             "Target" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
             "Folder" = "8:_D3579BA6F42D40698DEC71E0CB3AF421"
             "WorkingFolder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
-            "Icon" = "8:"
+            "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C047C1EDF2D94B8385B29131F0AA538B"
@@ -536,7 +631,7 @@
             "Target" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
             "Folder" = "8:_C14BA0CBBF1F431997E4594802928026"
             "WorkingFolder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
-            "Icon" = "8:"
+            "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
             "Feature" = "8:"
             }
         }
