@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <wx/glcanvas.h>
 #include <wx/aboutdlg.h>
 #include <wx/dnd.h>
+#include <wx/cmdline.h>
 
 namespace xPlatform
 {
@@ -284,6 +285,15 @@ struct DropFilesTarget : public wxFileDropTarget
 };
 #endif//_MAC
 
+struct eOptions
+{
+	eOptions() : true_speed(false), size_percent(200) {}
+	wxString file_to_open;
+	bool true_speed;
+	int size_percent;
+};
+static eOptions options;
+
 class Frame: public wxFrame
 {
 public:
@@ -342,12 +352,19 @@ public:
 
 		SetClientSize(org_size);
 		SetMinSize(GetSize());
-		SetClientSize(org_size*2);
+		SetClientSize(org_size*options.size_percent/100);
 
 		gl_canvas = new GLCanvas(this);
 		gl_canvas->SetFocus();
 
 		UpdateJoyMenu();
+		if(!options.file_to_open.empty())
+			Handler()->OnOpenFile(wxConvertWX2MB(options.file_to_open));
+		if(options.true_speed)
+		{
+			Handler()->OnAction(A_TRUE_SPEED_TOGGLE);
+			menu_true_speed->Check(Handler()->TrueSpeed());
+		}
 	}
 
 	void OnReset(wxCommandEvent& event)
@@ -565,7 +582,8 @@ class App: public wxApp
 {
 	virtual bool OnInit()
 	{
-		wxApp::OnInit();
+		if(!wxApp::OnInit())
+			return false;
 		Handler()->OnInit();
 		const char* c = Handler()->WindowCaption();
 		Frame *frame = new Frame(wxConvertMB2WX(c), wxPoint(100, 100));
@@ -583,6 +601,34 @@ class App: public wxApp
 	virtual void MacOpenFile(const wxString& fileName)
 	{
 		Handler()->OnOpenFile(wxConvertWX2MB(fileName.c_str()));
+	}
+	virtual void OnInitCmdLine(wxCmdLineParser& parser)
+	{
+		static const wxCmdLineEntryDesc g_cmdLineDesc[] =
+		{
+			{ wxCMD_LINE_SWITCH, wxT("h"), wxT("help"), wxT("displays help on the command line parameters"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
+			{ wxCMD_LINE_PARAM, NULL, NULL, wxT("input file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_SWITCH, wxT("t"), wxT("true_speed"), wxT("true speed (50Hz) mode"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_OPTION, wxT("s"), wxT("size"), wxT("window size (in percent)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_NONE }
+		};
+		parser.SetDesc(g_cmdLineDesc);
+		parser.SetSwitchChars(wxT("-"));
+	}
+	virtual bool OnCmdLineParsed(wxCmdLineParser& parser)
+	{
+		if(parser.GetParamCount())
+		{
+			options.file_to_open = parser.GetParam(0);
+		}
+		options.true_speed = parser.Found(wxT("t"));
+		long size = 0;
+		if(parser.Found(wxT("s"), &size))
+		{
+			if(size > 10 && size < 500)
+				options.size_percent = size;
+		}
+		return true;
 	}
 };
 
