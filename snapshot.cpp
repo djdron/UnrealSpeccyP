@@ -44,7 +44,8 @@ struct eSnapshot_SNA
 	word pc;
 	byte p7FFD;
 	byte trdos;
-	byte pages[5 * eMemory::PAGE_SIZE]; // all other pages
+	byte pages[6 * eMemory::PAGE_SIZE]; // all other pages (can contain duplicated page 5 or 2)
+	enum { S_48 = 49179, S_128_5 = 131103, S_128_6 = 147487 };
 };
 
 struct eSnapshot_Z80
@@ -69,14 +70,15 @@ struct eSnapshot_Z80
 struct eZ80Accessor : public xZ80::eZ80
 {
 	bool SetState(const eSnapshot_SNA* s, size_t buf_size);
-	bool StoreState(eSnapshot_SNA* s);
+	size_t StoreState(eSnapshot_SNA* s);
 	bool SetState(const eSnapshot_Z80* s, size_t buf_size);
 	void UnpackPage(byte* dst, int dstlen, byte* src, int srclen);
 };
 bool eZ80Accessor::SetState(const eSnapshot_SNA* s, size_t buf_size)
 {
-	bool sna48 = buf_size == 49179;
-	if(!sna48 && buf_size != sizeof(eSnapshot_SNA))
+	bool sna48 = (buf_size == eSnapshot_SNA::S_48);
+	bool sna128 = (buf_size == eSnapshot_SNA::S_128_5) || (buf_size == eSnapshot_SNA::S_128_6);
+	if(!sna48 && !sna128)
 		return false;
 
 	alt.af = s->alt_af;
@@ -125,7 +127,7 @@ bool eZ80Accessor::SetState(const eSnapshot_SNA* s, size_t buf_size)
 	}
 	return true;
 }
-bool eZ80Accessor::StoreState(eSnapshot_SNA* s)
+size_t eZ80Accessor::StoreState(eSnapshot_SNA* s)
 {
 	s->trdos = devices->Get<eRom>()->DosSelected();
 	s->alt_af = alt.af; s->alt_bc = alt.bc;
@@ -145,15 +147,17 @@ bool eZ80Accessor::StoreState(eSnapshot_SNA* s)
 	memcpy(s->page2, memory->Get(eMemory::P_RAM2), eMemory::PAGE_SIZE);
 	memcpy(s->page,  memory->Get(eMemory::P_RAM0 + (p7FFD & 7)), eMemory::PAGE_SIZE);
 	byte* page = s->pages;
+	int stored_128_pages = 0;
 	for(byte i = 0; i < 8; i++)
 	{
 		if(!(mapped & (1 << i)))
 		{
 			memcpy(page, memory->Get(eMemory::P_RAM0 + i), eMemory::PAGE_SIZE);
 			page += eMemory::PAGE_SIZE;
+			++stored_128_pages;
 		}
 	}
-	return true;
+	return stored_128_pages == 5 ? eSnapshot_SNA::S_128_5 : eSnapshot_SNA::S_128_6;
 }
 bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 {
@@ -285,9 +289,10 @@ bool Store(eSpeccy* speccy, const char* file)
 		return false;
 	eSnapshot_SNA* s = new eSnapshot_SNA;
 	eZ80Accessor* z80 = (eZ80Accessor*)speccy->CPU();
-	bool ok = z80->StoreState(s);
-	if(ok)
-		ok = fwrite(s, 1, sizeof(*s), f) == sizeof(*s);
+	size_t size = z80->StoreState(s);
+	bool ok = false;
+	if(size)
+		ok = fwrite(s, 1, size, f) == size;
 	delete[] s;
 	fclose(f);
 	return ok;
