@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_WXWIDGETS
 
+#include "../io.h"
+
 #undef self
 
 #include <wx/wx.h>
@@ -582,6 +584,21 @@ class App: public wxApp
 {
 	virtual bool OnInit()
 	{
+#ifdef _WINDOWS
+		if(access("res", 0) == -1)
+		{
+			wchar_t resource_path[xIo::MAX_PATH_LEN];
+			int l = GetModuleFileName(NULL, resource_path, xIo::MAX_PATH_LEN);
+			for(; --l >= 0 && resource_path[l] != '\\'; )
+			{
+			}
+			resource_path[++l] = '\0';
+			char buf[xIo::MAX_PATH_LEN];
+			l = WideCharToMultiByte(CP_ACP, 0, resource_path, -1, buf, xIo::MAX_PATH_LEN, NULL, NULL);
+			buf[l] = '\0';
+			xIo::SetResourcePath(buf);
+		}
+#endif//_WINDOWS
 		if(!wxApp::OnInit())
 			return false;
 		Handler()->OnInit();
