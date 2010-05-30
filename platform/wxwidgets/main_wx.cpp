@@ -625,7 +625,7 @@ class App: public wxApp
 		long size = 0;
 		if(parser.Found(wxT("s"), &size))
 		{
-			if(size > 10 && size < 500)
+			if(size >= 100 && size < 500)
 				options.size_percent = size;
 		}
 		return true;
