@@ -306,6 +306,9 @@ public:
 #ifdef _WINDOWS
 		SetIcon(wxICON(unreal_speccy_portable));
 #endif//_WINDOWS
+#ifdef _LINUX
+		SetIcon(wxIcon(wxT("unreal_speccy_portable.xpm")));
+#endif//_LINUX
 		wxMenu* menuFile = new wxMenu;
 		menuFile->Append(wxID_OPEN, _("&Open...\tF3"));
 		menuFile->Append(wxID_SAVE, _("&Save...\tF2"));

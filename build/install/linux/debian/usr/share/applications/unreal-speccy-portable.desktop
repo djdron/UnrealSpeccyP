@@ -2,13 +2,13 @@
 Version=1.0
 Encoding=UTF-8
 Name=Unreal Speccy Portable
-Comment=portable ZX-Spectrum emulator
-Exec=unreal-speccy-portable
-Icon=unreal-speccy-portable
+Comment=Portable ZX-Spectrum emulator
+Exec=unreal-speccy-portable %U
+Icon=unreal_speccy_portable
 Terminal=false
 X-MultipleArgs=false
 Type=Application
 Categories=Application;Game;
 StartupNotify=true
-MimeType=
+MimeType=application/usp-zx-snapshot;application/usp-zx-disk;application/usp-zx-tape
 GenericName[en_GR]=
