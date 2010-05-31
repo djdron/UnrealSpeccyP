@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../std.h"
 #include "../platform.h"
 #include "../io.h"
-#include "main.h"
+#include "ui_main.h"
 #include "menu.h"
-#include "keyboard.h"
+#include "ui_keyboard.h"
 #include "file_open.h"
 
 #ifdef USE_UI

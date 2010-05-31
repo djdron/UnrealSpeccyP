@@ -128,7 +128,7 @@ void DrawText(const eRect& r, const char* s)
 	}
 }
 
-void CreateFont(int _w, int _h, const char* fname) { font.Create(_w, _h, fname); }
+void _CreateFont(int _w, int _h, const char* fname) { font.Create(_w, _h, fname); }
 ePoint FontSize() { return ePoint(font.w, font.h); }
 
 }

@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools/profiler.h"
 
 #include "ui/desktop.h"
-#include "platform/custom_ui/main.h"
+#include "platform/custom_ui/ui_main.h"
 
 namespace xPlatform
 {

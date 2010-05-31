@@ -619,6 +619,42 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="custom_ui"
+				>
+				<File
+					RelativePath=".\platform\custom_ui\file_open.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\custom_ui\file_open.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\custom_ui\menu.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\custom_ui\menu.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\custom_ui\ui_keyboard.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\custom_ui\ui_keyboard.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\custom_ui\ui_main.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\custom_ui\ui_main.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="storage"
