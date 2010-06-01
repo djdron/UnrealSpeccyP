@@ -11,8 +11,6 @@
 		5C1FB1D6119DE5A1003F1D22 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1FB1D4119DE5A1003F1D22 /* main.cpp */; };
 		5C7E10E3119EF4D800C8A7BC /* res in Resources */ = {isa = PBXBuildFile; fileRef = 5C7E10D7119EF4D800C8A7BC /* res */; };
 		5C87D59011A1F5B500CC595A /* file_open.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56A11A1F5B500CC595A /* file_open.cpp */; };
-		5C87D59111A1F5B500CC595A /* keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56C11A1F5B500CC595A /* keyboard.cpp */; };
-		5C87D59211A1F5B500CC595A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56E11A1F5B500CC595A /* main.cpp */; };
 		5C87D59311A1F5B500CC595A /* menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57011A1F5B500CC595A /* menu.cpp */; };
 		5C87D59411A1F5B500CC595A /* dingoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57311A1F5B500CC595A /* dingoo.cpp */; };
 		5C87D59511A1F5B500CC595A /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57711A1F5B500CC595A /* draw.cpp */; };
@@ -28,8 +26,6 @@
 		5C87D59F11A1F5B500CC595A /* win_mobile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58D11A1F5B500CC595A /* win_mobile.cpp */; };
 		5C87D5A011A1F5B500CC595A /* main_wx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58F11A1F5B500CC595A /* main_wx.cpp */; };
 		5C87D5A111A1F5B500CC595A /* file_open.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56A11A1F5B500CC595A /* file_open.cpp */; };
-		5C87D5A211A1F5B500CC595A /* keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56C11A1F5B500CC595A /* keyboard.cpp */; };
-		5C87D5A311A1F5B500CC595A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D56E11A1F5B500CC595A /* main.cpp */; };
 		5C87D5A411A1F5B500CC595A /* menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57011A1F5B500CC595A /* menu.cpp */; };
 		5C87D5A511A1F5B500CC595A /* dingoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57311A1F5B500CC595A /* dingoo.cpp */; };
 		5C87D5A611A1F5B500CC595A /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57711A1F5B500CC595A /* draw.cpp */; };
@@ -94,6 +90,10 @@
 		5CA77342119DE44A000C0142 /* z80.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77265119DE449000C0142 /* z80.cpp */; };
 		5CA77343119DE44A000C0142 /* z80_op_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7726E119DE449000C0142 /* z80_op_tables.cpp */; };
 		5CA77344119DE44A000C0142 /* z80_opcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77270119DE449000C0142 /* z80_opcodes.cpp */; };
+		5CC8DB9A11B57EAD005B28CF /* ui_keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CC8DB9611B57EAD005B28CF /* ui_keyboard.cpp */; };
+		5CC8DB9B11B57EAD005B28CF /* ui_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CC8DB9811B57EAD005B28CF /* ui_main.cpp */; };
+		5CC8DB9C11B57EAD005B28CF /* ui_keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CC8DB9611B57EAD005B28CF /* ui_keyboard.cpp */; };
+		5CC8DB9D11B57EAD005B28CF /* ui_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CC8DB9811B57EAD005B28CF /* ui_main.cpp */; };
 		5CD2CF2F11A03E39007A7F80 /* unreal_speccy_portable.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5CD2CF2E11A03E39007A7F80 /* unreal_speccy_portable.icns */; };
 /* End PBXBuildFile section */
 
@@ -115,10 +115,6 @@
 		5C7E10D7119EF4D800C8A7BC /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		5C87D56A11A1F5B500CC595A /* file_open.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = file_open.cpp; sourceTree = "<group>"; };
 		5C87D56B11A1F5B500CC595A /* file_open.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file_open.h; sourceTree = "<group>"; };
-		5C87D56C11A1F5B500CC595A /* keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyboard.cpp; sourceTree = "<group>"; };
-		5C87D56D11A1F5B500CC595A /* keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keyboard.h; sourceTree = "<group>"; };
-		5C87D56E11A1F5B500CC595A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		5C87D56F11A1F5B500CC595A /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
 		5C87D57011A1F5B500CC595A /* menu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = menu.cpp; sourceTree = "<group>"; };
 		5C87D57111A1F5B500CC595A /* menu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = menu.h; sourceTree = "<group>"; };
 		5C87D57311A1F5B500CC595A /* dingoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dingoo.cpp; sourceTree = "<group>"; };
@@ -203,6 +199,10 @@
 		5CA7726E119DE449000C0142 /* z80_op_tables.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = z80_op_tables.cpp; sourceTree = "<group>"; };
 		5CA7726F119DE449000C0142 /* z80_op_tables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = z80_op_tables.h; sourceTree = "<group>"; };
 		5CA77270119DE449000C0142 /* z80_opcodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = z80_opcodes.cpp; sourceTree = "<group>"; };
+		5CC8DB9611B57EAD005B28CF /* ui_keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ui_keyboard.cpp; sourceTree = "<group>"; };
+		5CC8DB9711B57EAD005B28CF /* ui_keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_keyboard.h; sourceTree = "<group>"; };
+		5CC8DB9811B57EAD005B28CF /* ui_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ui_main.cpp; sourceTree = "<group>"; };
+		5CC8DB9911B57EAD005B28CF /* ui_main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_main.h; sourceTree = "<group>"; };
 		5CD2CF2E11A03E39007A7F80 /* unreal_speccy_portable.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = unreal_speccy_portable.icns; path = build/mac/unreal_speccy_portable.icns; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* usp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = usp; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -271,12 +271,12 @@
 		5C87D56911A1F5B500CC595A /* custom_ui */ = {
 			isa = PBXGroup;
 			children = (
+				5CC8DB9611B57EAD005B28CF /* ui_keyboard.cpp */,
+				5CC8DB9711B57EAD005B28CF /* ui_keyboard.h */,
+				5CC8DB9811B57EAD005B28CF /* ui_main.cpp */,
+				5CC8DB9911B57EAD005B28CF /* ui_main.h */,
 				5C87D56A11A1F5B500CC595A /* file_open.cpp */,
 				5C87D56B11A1F5B500CC595A /* file_open.h */,
-				5C87D56C11A1F5B500CC595A /* keyboard.cpp */,
-				5C87D56D11A1F5B500CC595A /* keyboard.h */,
-				5C87D56E11A1F5B500CC595A /* main.cpp */,
-				5C87D56F11A1F5B500CC595A /* main.h */,
 				5C87D57011A1F5B500CC595A /* menu.cpp */,
 				5C87D57111A1F5B500CC595A /* menu.h */,
 			);
@@ -590,8 +590,6 @@
 				5CA77344119DE44A000C0142 /* z80_opcodes.cpp in Sources */,
 				5C1FB1D6119DE5A1003F1D22 /* main.cpp in Sources */,
 				5C87D59011A1F5B500CC595A /* file_open.cpp in Sources */,
-				5C87D59111A1F5B500CC595A /* keyboard.cpp in Sources */,
-				5C87D59211A1F5B500CC595A /* main.cpp in Sources */,
 				5C87D59311A1F5B500CC595A /* menu.cpp in Sources */,
 				5C87D59411A1F5B500CC595A /* dingoo.cpp in Sources */,
 				5C87D59511A1F5B500CC595A /* draw.cpp in Sources */,
@@ -611,6 +609,8 @@
 				5C87D5BE11A1F61800CC595A /* desktop.cpp in Sources */,
 				5C87D5BF11A1F61800CC595A /* dialog.cpp in Sources */,
 				5C87D5C011A1F61800CC595A /* list.cpp in Sources */,
+				5CC8DB9A11B57EAD005B28CF /* ui_keyboard.cpp in Sources */,
+				5CC8DB9B11B57EAD005B28CF /* ui_main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -640,8 +640,6 @@
 				5CA772B8119DE44A000C0142 /* z80_opcodes.cpp in Sources */,
 				5C1FB1D5119DE5A1003F1D22 /* main.cpp in Sources */,
 				5C87D5A111A1F5B500CC595A /* file_open.cpp in Sources */,
-				5C87D5A211A1F5B500CC595A /* keyboard.cpp in Sources */,
-				5C87D5A311A1F5B500CC595A /* main.cpp in Sources */,
 				5C87D5A411A1F5B500CC595A /* menu.cpp in Sources */,
 				5C87D5A511A1F5B500CC595A /* dingoo.cpp in Sources */,
 				5C87D5A611A1F5B500CC595A /* draw.cpp in Sources */,
@@ -661,6 +659,8 @@
 				5C87D5C311A1F61800CC595A /* desktop.cpp in Sources */,
 				5C87D5C411A1F61800CC595A /* dialog.cpp in Sources */,
 				5C87D5C511A1F61800CC595A /* list.cpp in Sources */,
+				5CC8DB9C11B57EAD005B28CF /* ui_keyboard.cpp in Sources */,
+				5CC8DB9D11B57EAD005B28CF /* ui_main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
