@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "std.h"
 #include "platform/platform.h"
 #include "speccy.h"
+#include "devices/memory.h"
 #include "devices/ula.h"
 #include "devices/input/keyboard.h"
 #include "devices/input/kempston_joy.h"
@@ -41,7 +42,7 @@ namespace xPlatform
 static struct eSpeccyHandler : public eHandler
 {
 	eSpeccyHandler() : speccy(NULL), video_paused(0), drive_for_open(0)
-		, joystick(J_KEMPSTON), sound(S_AY), volume(V_100), quit(false), true_speed(false) {}
+		, joystick(J_KEMPSTON), sound(S_AY), volume(V_100), quit(false), true_speed(false), mode_48k(false) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit()
 	{
@@ -240,6 +241,13 @@ static struct eSpeccyHandler : public eHandler
 		case A_TRUE_SPEED_TOGGLE:
 			true_speed = !true_speed;
 			return AR_OK;
+		case A_MODE_48K_TOGGLE:
+			mode_48k = !mode_48k;
+			speccy->Device<eRom>()->Mode48k(mode_48k);
+			speccy->Device<eRam>()->Mode48k(mode_48k);
+			speccy->Device<eUla>()->Mode48k(mode_48k);
+			speccy->Devices().Init();
+			return AR_OK;
 		}
 		return AR_ERROR;
 	}
@@ -254,6 +262,7 @@ static struct eSpeccyHandler : public eHandler
 	virtual bool TapeStarted() const { return speccy->Device<eTape>()->Started(); }
 	virtual bool FullSpeed() const { return speccy->CPU()->FastEmul(); }
 	virtual bool TrueSpeed() const { return true_speed; }
+	virtual bool Mode48k() const { return mode_48k; }
 	virtual bool Quit() const { return quit; }
 
 	virtual eJoystick Joystick() const { return (eJoystick)joystick; }
@@ -271,6 +280,7 @@ static struct eSpeccyHandler : public eHandler
 	int volume;
 	bool quit;
 	bool true_speed;
+	bool mode_48k;
 
 	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];

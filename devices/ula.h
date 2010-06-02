@@ -46,6 +46,7 @@ public:
 
 	byte	BorderColor() const { return border_color; }
 	bool	FirstScreen() const { return first_screen; }
+	void	Mode48k(bool on)	{ mode_48k = on; }
 
 	static eDeviceId Id() { return D_ULA; }
 	virtual dword IoNeed() const { return ION_WRITE|ION_READ; }
@@ -97,6 +98,7 @@ protected:
 	eTiming* timing;
 	int		prev_t;			// last drawn pixel's tact
 	int		frame;
+	bool	mode_48k;
 };
 
 #endif//__ULA_H__

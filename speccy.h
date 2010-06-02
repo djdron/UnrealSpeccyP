@@ -40,6 +40,7 @@ public:
 
 	xZ80::eZ80* CPU() const { return cpu; }
 
+	eDevices& Devices() { return devices; }
 	template<class D> D* Device() const { return devices.Get<D>(); }
 
 	qword T() const { return t_states; }

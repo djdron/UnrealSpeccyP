@@ -54,7 +54,7 @@ enum eAction
 {
 	A_RESET, A_QUIT, A_TAPE_TOGGLE, A_TAPE_FAST_TOGGLE, A_DRIVE_NEXT,
 	A_JOYSTICK_NEXT, A_SOUND_NEXT, A_VOLUME_NEXT,
-	A_TRUE_SPEED_TOGGLE
+	A_TRUE_SPEED_TOGGLE, A_MODE_48K_TOGGLE
 };
 enum eActionResult
 {
@@ -99,6 +99,7 @@ struct eHandler
 	virtual bool TapeStarted() const = 0;
 	virtual bool FullSpeed() const = 0;
 	virtual bool TrueSpeed() const = 0;
+	virtual bool Mode48k() const = 0;
 	virtual bool Quit() const = 0;
 
 	virtual eJoystick	Joystick() const = 0;

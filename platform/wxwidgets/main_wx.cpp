@@ -326,6 +326,7 @@ public:
 		menuDevice->Append(ID_DriveNext, _("Select next drive\tF6"));
 		menu_pause = menuDevice->Append(ID_PauseToggle, _("Pause\tF7"), _(""), wxITEM_CHECK);
 		menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, _("True speed\tF8"), _(""), wxITEM_CHECK);
+		menu_mode_48k = menuDevice->Append(ID_Mode48kToggle, _("Mode 48k\tF9"), _(""), wxITEM_CHECK);
 		menuDevice->Append(ID_Reset, _("&Reset...\tF12"));
 
 		wxMenu* menuJoy = new wxMenu;
@@ -521,6 +522,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		else
 			SetStatusText(_("True speed off"));
 	}
+	void OnMode48kToggle(wxCommandEvent& event)
+	{
+		Handler()->OnAction(A_MODE_48K_TOGGLE);
+		menu_mode_48k->Check(Handler()->Mode48k());
+		SetStatusText(Handler()->Mode48k() ? _("Mode 48k on") : _("Mode 48k off"));
+	}
 	void OnMouseCapture(wxCommandEvent& event)
 	{
 		switch(event.GetId())
@@ -541,7 +548,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		ID_Reset = 1, ID_Size100, ID_Size200,
 		ID_TapeToggle, ID_TapeFastToggle, ID_DriveNext,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
-		ID_PauseToggle, ID_TrueSpeedToggle
+		ID_PauseToggle, ID_TrueSpeedToggle, ID_Mode48kToggle
 	};
 	struct eJoyMenuItems
 	{
@@ -553,6 +560,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	eJoyMenuItems menu_joy;
 	wxMenuItem* menu_pause;
 	wxMenuItem* menu_true_speed;
+	wxMenuItem* menu_mode_48k;
 
 private:
 	DECLARE_EVENT_TABLE()
@@ -580,6 +588,7 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_JoySinclair2,Frame::OnJoy)
 	EVT_MENU(Frame::ID_PauseToggle,	Frame::OnPauseToggle)
 	EVT_MENU(Frame::ID_TrueSpeedToggle,	Frame::OnTrueSpeedToggle)
+	EVT_MENU(Frame::ID_Mode48kToggle,	Frame::OnMode48kToggle)
 	EVT_COMMAND(wxID_ANY, evtMouseCapture, Frame::OnMouseCapture)
 END_EVENT_TABLE()
 

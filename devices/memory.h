@@ -58,13 +58,14 @@ protected:
 class eRom : public eDevice
 {
 public:
-	eRom(eMemory* m) : memory(m), page_selected(0) {}
+	eRom(eMemory* m) : memory(m), page_selected(0), mode_48k(false) {}
 	virtual void Init();
 	virtual void Reset();
 	virtual bool IoWrite(word port) const;
 	virtual void IoWrite(word port, byte v, int tact);
 	void Read(word addr);
 	bool DosSelected() const { return page_selected == ROM_DOS; }
+	void Mode48k(bool on) { mode_48k = on; }
 
 	static eDeviceId Id() { return D_ROM; }
 	virtual dword IoNeed() const { return ION_WRITE; }
@@ -78,6 +79,7 @@ protected:
 protected:
 	eMemory* memory;
 	int page_selected;
+	bool mode_48k;
 };
 
 //*****************************************************************************
@@ -86,14 +88,16 @@ protected:
 class eRam : public eDevice
 {
 public:
-	eRam(eMemory* m) : memory(m) {}
+	eRam(eMemory* m) : memory(m), mode_48k(false) {}
 	virtual void Reset();
 	virtual bool IoWrite(word port) const;
 	virtual void IoWrite(word port, byte v, int tact);
+	void Mode48k(bool on) { mode_48k = on; }
 	static eDeviceId Id() { return D_RAM; }
 	virtual dword IoNeed() const { return ION_WRITE; }
 protected:
 	eMemory* memory;
+	bool mode_48k;
 };
 
 #endif//__MEMORY_H__

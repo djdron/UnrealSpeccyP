@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	eUla::eUla
 //-----------------------------------------------------------------------------
 eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true), base(NULL)
-	, colortab(NULL), timing(NULL), prev_t(0), frame(0)
+	, colortab(NULL), timing(NULL), prev_t(0), frame(0), mode_48k(false)
 {
 	screen = new byte[S_WIDTH * S_HEIGHT];
 }
@@ -190,7 +190,7 @@ bool eUla::IoRead(word port) const
 //-----------------------------------------------------------------------------
 bool eUla::IoWrite(word port) const
 {
-	return !(port&1) || (!(port & 2) && !(port & 0x8000));
+	return !(port&1) || (!mode_48k && !(port & 2) && !(port & 0x8000));
 }
 //=============================================================================
 //	eUla::IoRead
