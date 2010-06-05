@@ -13,7 +13,7 @@ CXX_DEPS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.d,$(CXXSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
 CXXFLAGS = -D_LINUX -O3 -Wall -c -fmessage-length=0 `wx-config --cxxflags`
-LDFLAGS = -s -lGL -lopenal `wx-config --libs core,base,gl,adv` $^ -o"$(BIN_TARGET)"
+LDFLAGS = -s -lGL -lopenal `wx-config --libs core,base,gl,adv`
 
 all: build
 
@@ -25,7 +25,7 @@ $(CXX_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 $(BIN_TARGET): $(CXX_OBJS)
-	$(CXX) $(LDFLAGS)
+	$(CXX) $(LDFLAGS) $^ -o$(BIN_TARGET)
 
 clean:
 	rm -rf $(CXX_OBJS)
