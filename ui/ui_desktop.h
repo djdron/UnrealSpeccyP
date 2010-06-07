@@ -16,10 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__UI_LIST_H__
-#define	__UI_LIST_H__
+#ifndef	__UI_DESKTOP_H__
+#define	__UI_DESKTOP_H__
 
-#include "control.h"
+#include "ui_dialog.h"
 
 #pragma once
 
@@ -28,36 +28,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xUi
 {
 
-class eList : public eControl
+class eDesktop : public eDialog
 {
-	enum { MAX_ITEMS = 2000 };
-	enum { CURSOR_COLOR = 0x08b06000 };
-	enum eNotify { N_SELECTED };
+	enum { KEY_REPEAT_DELAY = 10 };
+	typedef eDialog eInherited;
 public:
-	eList() : size(0), last_selected(0), selected(0), page_begin(0), page_size(0) { *items = NULL; }
-	virtual ~eList() { Clear(); }
-	void Clear()
+	eDesktop() : key(0), key_flags(0), keypress_timer(0)
 	{
-		changed = true;
-		for(int i = 0; items[i]; ++i)
-		{
-			delete[] items[i];
-		}
-		*items = NULL;
-		size = last_selected = selected = page_begin = page_size = 0;
+		_CreateFont(6, 6, "res/font/spxtrm4f.fnt");
 	}
-	void Insert(const char* item);
-	const char* Selected() const { return size ? items[selected] : NULL; }
-	int Selector() const { return size ? selected : -1; }
+	dword* VideoData() const { return Focused() ? Screen() : NULL; }
+	bool Focused() const
+	{
+		eDialog* d = (eDialog*)Childs()[0];
+		if(d)
+			return d->Childs()[0] != NULL;
+		return false;
+	}
 	virtual void Update();
 	virtual void OnKey(char key, dword flags);
+
 protected:
-	const char* items[MAX_ITEMS + 1];
-	int size;
-	int last_selected;
-	int selected;
-	int page_begin;
-	int page_size;
+	char key;
+	dword key_flags;
+	int keypress_timer;
 };
 
 }
@@ -65,4 +59,4 @@ protected:
 
 #endif//USE_UI
 
-#endif//__UI_LIST_H__
+#endif//__UI_DESKTOP_H__

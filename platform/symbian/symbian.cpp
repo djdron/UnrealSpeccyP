@@ -16,11 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../std.h"
+#include "../platform.h"
 
 #ifdef _SYMBIAN
 
-#include "../platform.h"
 #include "../io.h"
 #include "../../tools/log.h"
 #include "../../ui/ui.h"

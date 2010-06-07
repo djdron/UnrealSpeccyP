@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "desktop.h"
+#include "ui_desktop.h"
 #include "../platform/platform.h"
 
 #ifdef USE_UI

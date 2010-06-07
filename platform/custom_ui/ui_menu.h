@@ -16,13 +16,34 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../std.h"
-#include "control.h"
+#ifndef	__UI_MENU_H__
+#define	__UI_MENU_H__
+
+#include "../../ui/ui_dialog.h"
+
+#pragma once
 
 #ifdef USE_UI
 
 namespace xUi
 {
+
+class eMenuDialog : public eDialog
+{
+	typedef eDialog eInherited;
+public:
+	eMenuDialog() {}
+	virtual void Init();
+	void ItemState(int idx, int v);
+	enum eItemId { I_OPEN, I_JOYSTICK, I_TAPE, I_FAST_TAPE, I_SOUND, I_VOLUME, I_RESET, I_QUIT, I_COUNT };
+protected:
+	virtual void OnNotify(byte n, byte from);
+	void GetItemText(int idx, int state, char* dst) const;
+};
+
 }
+//namespace xUi
 
 #endif//USE_UI
+
+#endif//__UI_MENU_H__

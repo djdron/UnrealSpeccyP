@@ -16,10 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__UI_FILE_OPEN_H__
-#define	__UI_FILE_OPEN_H__
+#ifndef	__UI_LIST_H__
+#define	__UI_LIST_H__
 
-#include "../../ui/dialog.h"
+#include "ui_control.h"
 
 #pragma once
 
@@ -28,35 +28,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xUi
 {
 
-class eList;
-
-class eFileOpenDialog : public eDialog
+class eList : public eControl
 {
 	enum { MAX_ITEMS = 2000 };
-	typedef eDialog eInherited;
+	enum { CURSOR_COLOR = 0x08b06000 };
+	enum eNotify { N_SELECTED };
 public:
-	eFileOpenDialog(const char* _path) : list(NULL), selected(NULL)
+	eList() : size(0), last_selected(0), selected(0), page_begin(0), page_size(0) { *items = NULL; }
+	virtual ~eList() { Clear(); }
+	void Clear()
 	{
-		strcpy(path, _path);
-		memset(folders, 0, sizeof(folders));
+		changed = true;
+		for(int i = 0; items[i]; ++i)
+		{
+			delete[] items[i];
+		}
+		*items = NULL;
+		size = last_selected = selected = page_begin = page_size = 0;
 	}
-	virtual void Init();
-	const char* Selected() { return selected; }
+	void Insert(const char* item);
+	const char* Selected() const { return size ? items[selected] : NULL; }
+	int Selector() const { return size ? selected : -1; }
+	virtual void Update();
+	virtual void OnKey(char key, dword flags);
 protected:
-	void OnNotify(byte n, byte from);
-	void OnChangePath();
-protected:
-	char path[256];
-	eList* list;
-	bool folders[MAX_ITEMS];
-	const char* selected;
+	const char* items[MAX_ITEMS + 1];
+	int size;
+	int last_selected;
+	int selected;
+	int page_begin;
+	int page_size;
 };
-
-void GetUpLevel(char* path, int level = 1);
 
 }
 //namespace xUi
 
 #endif//USE_UI
 
-#endif//__UI_FILE_OPEN_H__
+#endif//__UI_LIST_H__

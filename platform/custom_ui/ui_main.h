@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef	__UI_MAIN_H__
 #define	__UI_MAIN_H__
 
-#include "../../ui/dialog.h"
+#include "../../ui/ui_dialog.h"
 
 #pragma once
 

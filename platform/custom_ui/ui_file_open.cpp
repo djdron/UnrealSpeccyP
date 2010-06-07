@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../../std.h"
-#include "file_open.h"
-#include "../../ui/list.h"
+#include "ui_file_open.h"
+#include "../../ui/ui_list.h"
 #include "../io.h"
 
 #ifdef _WINDOWS

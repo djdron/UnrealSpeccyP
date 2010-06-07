@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../std.h"
+#include "../platform.h"
 
 #ifdef _WIN_MOBILE
 
@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <aygshell.h>
 #pragma comment(lib, "aygshell.lib") 
 
-#include "../platform.h"
 #include "../io.h"
 
 namespace xPlatform

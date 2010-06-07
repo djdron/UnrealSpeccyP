@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __PROFILER_H__
 
 #include "../std.h"
+#include "list.h"
 #include "tick.h"
 
 #pragma once
@@ -31,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xProfiler
 {
 
-class eSection
+class eSection : public eList<eSection>
 {
 public:
 	eSection(const char* _name);
@@ -42,9 +43,6 @@ public:
 	void	End();
 	void	Dump();
 
-	static eSection*& First() { static eSection* first = NULL; return first; }
-	eSection* Next() { return next; }
-
 	static void	DumpAll();
 
 protected:
@@ -54,8 +52,6 @@ protected:
 	eTime	time_max;
 	eTick	start_tick;
 	int		entry_count;
-
-	eSection* next;
 };
 
 class eSectionAuto

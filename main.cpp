@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "std.h"
 #include "platform/platform.h"
 #include "speccy.h"
 #include "devices/memory.h"
@@ -29,15 +28,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "devices/sound/beeper.h"
 #include "devices/fdd/wd1793.h"
 #include "z80/z80.h"
-#include "snapshot.h"
+#include "snapshot/snapshot.h"
 #include "platform/io.h"
 #include "tools/profiler.h"
 
-#include "ui/desktop.h"
+#include "ui/ui_desktop.h"
 #include "platform/custom_ui/ui_main.h"
+#include "tools/list.h"
+#include "tools/zlib/unzip.h"
 
 namespace xPlatform
 {
+
+struct eFileType : public eList<eFileType>
+{
+	virtual bool Open(const void* data, size_t data_size) = 0;
+	virtual bool Store(const char* name) { return false; }
+	virtual const char* Type() = 0;
+	static eFileType* Find(const char* type)
+	{
+		eFileType* t = First();
+		for(; t && strcmp(t->Type(), type) != 0; t = t->Next())
+		{}
+		return t;
+	}
+};
 
 static struct eSpeccyHandler : public eHandler
 {
@@ -144,44 +159,103 @@ static struct eSpeccyHandler : public eHandler
 		default: break;
 		}
 	}
-
+	void GetFileType(char* type, const char* src)
+	{
+		int l = strlen(src);
+		if(!l)
+		{
+			*type = '\0';
+			return;
+		}
+		const char* ext = src + l;
+		while(ext >= src && *ext != '.')
+			--ext;
+		++ext;
+		while(*ext)
+		{
+			char c = *ext++;
+			if(c >= 'A' && c <= 'Z')
+				c += 'a' - 'A';
+			*type++ = c;
+		}
+		*type = '\0';
+	}
+	bool OnOpenZip(const char* name)
+	{
+		unzFile h = unzOpen(name);
+		if(!h)
+			return false;
+		if(unzGoToFirstFile(h) != UNZ_OK)
+			return false;
+		bool ok = false;
+		for(;;)
+		{
+			unz_file_info fi;
+			char n[xIo::MAX_PATH_LEN];
+			if(unzGetCurrentFileInfo(h, &fi, n, xIo::MAX_PATH_LEN, NULL, 0, NULL, 0) == UNZ_OK)
+			{
+				char type[xIo::MAX_PATH_LEN];
+				GetFileType(type, n);
+				eFileType* t = eFileType::Find(type);
+				if(t)
+				{
+					if(unzOpenCurrentFile(h) == UNZ_OK)
+					{
+						byte* buf = new byte[fi.uncompressed_size];
+						if(unzReadCurrentFile(h, buf, fi.uncompressed_size) == int(fi.uncompressed_size))
+						{
+							ok = t->Open(buf, fi.uncompressed_size);
+						}
+						delete[] buf;
+						unzCloseCurrentFile(h);
+					}
+				}
+			}
+			if(ok)
+				break;
+			if(unzGoToNextFile(h) == UNZ_END_OF_LIST_OF_FILE)
+				break;
+		}
+		unzClose(h);
+		return ok;
+	}
 	virtual bool OnOpenFile(const char* name)
 	{
-		int l = strlen(name);
-		if(l > 3)
+		char type[xIo::MAX_PATH_LEN];
+		GetFileType(type, name);
+		if(!strcmp(type, "zip"))
 		{
-			const char* n = name + l - 4;
-			if(!strcmp(n, ".trd") || !strcmp(n, ".TRD") || !strcmp(n, ".scl") || !strcmp(n, ".SCL"))
-			{
-				return speccy->Device<eWD1793>()->Open(name, drive_for_open);
-			}
-			else if(!strcmp(n, ".sna") || !strcmp(n, ".SNA") ||
-					!strcmp(n, ".z80") || !strcmp(n, ".Z80"))
-			{
-				return xSnapshot::Load(speccy, name);
-			}
-			else if(!strcmp(n, ".tap") || !strcmp(n, ".TAP") ||
-					!strcmp(n, ".csw") || !strcmp(n, ".CSW") ||
-					!strcmp(n, ".tzx") || !strcmp(n, ".TZX")
-				)
-			{
-				return speccy->Device<eTape>()->Open(name);
-			}
+			return OnOpenZip(name);
 		}
-		return false;
+		eFileType* t = eFileType::Find(type);
+		if(!t)
+			return false;
+		FILE* f = fopen(name, "rb");
+		if(!f)
+			return false;
+		fseek(f, 0, SEEK_END);
+		size_t size = ftell(f);
+		fseek(f, 0, SEEK_SET);
+		byte* buf = new byte[size];
+		size_t r = fread(buf, 1, size, f);
+		fclose(f);
+		if(r != size)
+		{
+			delete[] buf;
+			return false;
+		}
+		bool ok = t->Open(buf, size);
+		delete[] buf;
+		return ok;
 	}
 	virtual bool OnSaveFile(const char* name)
 	{
-		int l = strlen(name);
-		if(l > 3)
-		{
-			const char* n = name + l - 4;
-			if(!strcmp(n, ".sna") || !strcmp(n, ".SNA"))
-			{
-				return xSnapshot::Store(speccy, name);
-			}
-		}
-		return false;
+		char type[xIo::MAX_PATH_LEN];
+		GetFileType(type, name);
+		eFileType* t = eFileType::Find(type);
+		if(!t)
+			return false;
+		return t->Store(name);
 	}
 	virtual eActionResult OnAction(eAction action)
 	{
@@ -285,6 +359,52 @@ static struct eSpeccyHandler : public eHandler
 	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];
 } sh;
+
+static struct eFileTypeZ80 : public eFileType
+{
+	virtual bool Open(const void* data, size_t data_size)
+	{
+		return xSnapshot::Load(sh.speccy, Type(), data, data_size);
+	}
+	virtual const char* Type() { return "z80"; }
+} ft_z80;
+static struct eFileTypeSNA : public eFileTypeZ80
+{
+	virtual bool Store(const char* name)
+	{
+		return xSnapshot::Store(sh.speccy, name);
+	}
+	virtual const char* Type() { return "sna"; }
+} ft_sna;
+static struct eFileTypeTRD : public eFileType
+{
+	virtual bool Open(const void* data, size_t data_size)
+	{
+		return sh.speccy->Device<eWD1793>()->Open(Type(), sh.drive_for_open, data, data_size);
+	}
+	virtual const char* Type() { return "trd"; }
+} ft_trd;
+static struct eFileTypeSCL : public eFileTypeTRD
+{
+	virtual const char* Type() { return "scl"; }
+} ft_scl;
+
+static struct eFileTypeTAP : public eFileType
+{
+	virtual bool Open(const void* data, size_t data_size)
+	{
+		return sh.speccy->Device<eTape>()->Open(Type(), data, data_size);
+	}
+	virtual const char* Type() { return "tap"; }
+} ft_tap;
+static struct eFileTypeCSW : public eFileTypeTAP
+{
+	virtual const char* Type() { return "csw"; }
+} ft_csw;
+static struct eFileTypeTZX : public eFileTypeTAP
+{
+	virtual const char* Type() { return "tzx"; }
+} ft_tzx;
 
 }
 //namespace xPlatform

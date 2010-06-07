@@ -36,7 +36,7 @@ public:
 	virtual bool IoRead(word port) const;
 	virtual void IoRead(word port, byte* v, int tact);
 
-	bool Open(const char* file);
+	bool Open(const char* type, const void* data, size_t data_size);
 	void Start();
 	void Stop();
 	bool Started() const;
@@ -47,9 +47,9 @@ public:
 
 	byte TapeBit(int tact);
 protected:
-	bool ParseTAP(byte* buf, size_t buf_size);
-	bool ParseCSW(byte* buf, size_t buf_size);
-	bool ParseTZX(byte* buf, size_t buf_size);
+	bool ParseTAP(const void* data, size_t data_size);
+	bool ParseCSW(const void* data, size_t data_size);
+	bool ParseTZX(const void* data, size_t data_size);
 
 	dword FindPulse(dword t);
 	void FindTapeIndex();
@@ -59,14 +59,14 @@ protected:
 	void StartTape();
 	void CloseTape();
 	void Reserve(dword datasize);
-	void MakeBlock(byte* data, dword size, dword pilot_t,
+	void MakeBlock(const byte* data, dword size, dword pilot_t,
 	      dword s1_t, dword s2_t, dword zero_t, dword one_t,
 	      dword pilot_len, dword pause, byte last = 8);
-	void Desc(byte*data, dword size, char *dst);
+	void Desc(const byte* data, dword size, char* dst);
 	void AllocInfocell();
 	void NamedCell(const void *nm, dword sz = 0);
 	void CreateAppendableBlock();
-	void ParseHardware(byte*ptr);
+	void ParseHardware(const byte* ptr);
 
 protected:
 	eSpeccy* speccy;

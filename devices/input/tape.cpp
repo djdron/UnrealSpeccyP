@@ -21,11 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../z80/z80.h"
 #include "tape.h"
 
-static inline word Word(byte* ptr)
+static inline word Word(const byte* ptr)
 {
 	return ptr[0] | word(ptr[1]) << 8;
 }
-static inline dword Dword(byte* ptr)
+static inline dword Dword(const byte* ptr)
 {
 	return ptr[0] | dword(ptr[1]) << 8 | dword(ptr[2]) << 16 | dword(ptr[3]) << 24;
 }
@@ -219,7 +219,7 @@ void eTape::Reserve(dword datasize)
 //=============================================================================
 //	eTape::MakeBlock
 //-----------------------------------------------------------------------------
-void eTape::MakeBlock(byte*data, dword size, dword pilot_t, dword s1_t,
+void eTape::MakeBlock(const byte* data, dword size, dword pilot_t, dword s1_t,
 		dword s2_t, dword zero_t, dword one_t, dword pilot_len, dword pause,
 		byte last)
 {
@@ -246,7 +246,7 @@ void eTape::MakeBlock(byte*data, dword size, dword pilot_t, dword s1_t,
 //=============================================================================
 //	eTape::Desc
 //-----------------------------------------------------------------------------
-void eTape::Desc(byte*data, dword size, char *dst)
+void eTape::Desc(const byte* data, dword size, char* dst)
 {
 	byte crc = 0;
 	char prg[10];
@@ -282,7 +282,7 @@ void eTape::AllocInfocell()
 //=============================================================================
 //	eTape::NamedCell
 //-----------------------------------------------------------------------------
-void eTape::NamedCell(const void *nm, dword sz)
+void eTape::NamedCell(const void* nm, dword sz)
 {
 	AllocInfocell();
 	if(sz)
@@ -295,44 +295,24 @@ void eTape::NamedCell(const void *nm, dword sz)
 //=============================================================================
 //	eTape::Open
 //-----------------------------------------------------------------------------
-bool eTape::Open(const char* file)
+bool eTape::Open(const char* type, const void* data, size_t data_size)
 {
-	int l = strlen(file);
-	if(l < 4)
-		return false;
-	FILE* f = fopen(file, "rb");
-	if(!f)
-		return false;
-	fseek(f, 0, SEEK_END);
-	size_t size = ftell(f);
-	fseek(f, 0, SEEK_SET);
-	byte* buf = new byte[size];
-	size_t r = fread(buf, 1, size, f);
-	fclose(f);
-	if(r != size)
-	{
-		delete[] buf;
-		return false;
-	}
-	bool ok = false;
-	const char* ext = file + l - 4;
-	if(!strcmp(ext, ".tap") || !strcmp(ext, ".TAP"))
-		ok = ParseTAP(buf, size);
-	else if(!strcmp(ext, ".csw") || !strcmp(ext, ".CSW"))
-		ok = ParseCSW(buf, size);
-	else if(!strcmp(ext, ".tzx") || !strcmp(ext, ".TZX"))
-		ok = ParseTZX(buf, size);
-	delete[] buf;
-	return ok;
+	if(!strcmp(type, "tap"))
+		return ParseTAP(data, data_size);
+	else if(!strcmp(type, "csw"))
+		return ParseCSW(data, data_size);
+	else if(!strcmp(type, "tzx"))
+		return ParseTZX(data, data_size);
+	return false;
 }
 //=============================================================================
 //	eTape::ParseTAP
 //-----------------------------------------------------------------------------
-bool eTape::ParseTAP(byte* buf, size_t buf_size)
+bool eTape::ParseTAP(const void* data, size_t data_size)
 {
-	byte* ptr = buf;
+	const byte* ptr = (const byte*)data;
 	CloseTape();
-	while(ptr < buf + buf_size)
+	while(ptr < (const byte*)data + data_size)
 	{
 		dword size = Word(ptr);
 		ptr += 2;
@@ -346,13 +326,14 @@ bool eTape::ParseTAP(byte* buf, size_t buf_size)
 		ptr += size;
 	}
 	FindTapeSizes();
-	return (ptr == buf + buf_size);
+	return (ptr == (const byte*)data + data_size);
 }
 //=============================================================================
 //	eTape::ParseCSW
 //-----------------------------------------------------------------------------
-bool eTape::ParseCSW(byte* buf, size_t buf_size)
+bool eTape::ParseCSW(const void* data, size_t data_size)
 {
+	const byte* buf = (const byte*)data;
 	const dword Z80FQ = 3500000;
 	CloseTape();
 	NamedCell("CSW tape image");
@@ -361,10 +342,10 @@ bool eTape::ParseCSW(byte* buf, size_t buf_size)
 	dword rate = Z80FQ / Word(buf + 0x19); // usually 3.5mhz / 44khz
 	if(!rate)
 		return false;
-	Reserve(buf_size - 0x18);
+	Reserve(data_size - 0x18);
 	if(!(buf[0x1C] & 1))
 		tape_image[tape_imagesize++] = FindPulse(1);
-	for(byte* ptr = buf + 0x20; ptr < buf + buf_size;)
+	for(const byte* ptr = (const byte*)data + 0x20; ptr < (const byte*)data + data_size;)
 	{
 		dword len = *ptr++ * rate;
 		if(!len)
@@ -391,7 +372,7 @@ void eTape::CreateAppendableBlock()
 //=============================================================================
 //	eTape::ParseHardware
 //-----------------------------------------------------------------------------
-void eTape::ParseHardware(byte* ptr)
+void eTape::ParseHardware(const byte* ptr)
 {
 	dword n = *ptr++;
 	if(!n)
@@ -582,16 +563,16 @@ void eTape::ParseHardware(byte* ptr)
 //=============================================================================
 //	eTape::ParseTZX
 //-----------------------------------------------------------------------------
-bool eTape::ParseTZX(byte* buf, size_t buf_size)
+bool eTape::ParseTZX(const void* data, size_t data_size)
 {
-	byte* ptr = buf;
+	byte* ptr = (byte*)data;
 	CloseTape();
 	dword size, pause, i, j, n, t, t0;
 	byte pl, last, *end;
 	byte* p;
 	dword loop_n = 0, loop_p = 0;
 	char nm[512];
-	while(ptr < buf + buf_size)
+	while(ptr < (const byte*)data + data_size)
 	{
 		switch(*ptr++)
 		{
@@ -878,7 +859,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 			ptr += 9;
 			break;
 		default:
-			ptr += buf_size;
+			ptr += data_size;
 		}
 	}
 	for(i = 0; i < tape_infosize; i++)
@@ -892,7 +873,7 @@ bool eTape::ParseTZX(byte* buf, size_t buf_size)
 	if(tape_imagesize && tape_pulse[tape_image[tape_imagesize - 1]] < 350000)
 		Reserve(1), tape_image[tape_imagesize++] = FindPulse(350000); // small pause [rqd for 3ddeathchase]
 	FindTapeSizes();
-	return (ptr == buf + buf_size);
+	return (ptr == (const byte*)data + data_size);
 }
 //=============================================================================
 //	eTape::TapeBit

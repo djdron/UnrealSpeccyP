@@ -16,13 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../std.h"
+#include "../platform.h"
 
 #ifdef _SYMBIAN
 
 #ifdef USE_GL
 
-#include "../platform.h"
 #include <GLES/egl.h>
 
 namespace xPlatform

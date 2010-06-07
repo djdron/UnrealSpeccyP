@@ -16,10 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__UI_MENU_H__
-#define	__UI_MENU_H__
+#ifndef	__UI_FILE_OPEN_H__
+#define	__UI_FILE_OPEN_H__
 
-#include "../../ui/dialog.h"
+#include "../../ui/ui_dialog.h"
 
 #pragma once
 
@@ -28,22 +28,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xUi
 {
 
-class eMenuDialog : public eDialog
+class eList;
+
+class eFileOpenDialog : public eDialog
 {
+	enum { MAX_ITEMS = 2000 };
 	typedef eDialog eInherited;
 public:
-	eMenuDialog() {}
+	eFileOpenDialog(const char* _path) : list(NULL), selected(NULL)
+	{
+		strcpy(path, _path);
+		memset(folders, 0, sizeof(folders));
+	}
 	virtual void Init();
-	void ItemState(int idx, int v);
-	enum eItemId { I_OPEN, I_JOYSTICK, I_TAPE, I_FAST_TAPE, I_SOUND, I_VOLUME, I_RESET, I_QUIT, I_COUNT };
+	const char* Selected() { return selected; }
 protected:
-	virtual void OnNotify(byte n, byte from);
-	void GetItemText(int idx, int state, char* dst) const;
+	void OnNotify(byte n, byte from);
+	void OnChangePath();
+protected:
+	char path[256];
+	eList* list;
+	bool folders[MAX_ITEMS];
+	const char* selected;
 };
+
+void GetUpLevel(char* path, int level = 1);
 
 }
 //namespace xUi
 
 #endif//USE_UI
 
-#endif//__UI_MENU_H__
+#endif//__UI_FILE_OPEN_H__

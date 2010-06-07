@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../std.h"
-#include "button.h"
+#include "ui_button.h"
 
 #ifdef USE_UI
 

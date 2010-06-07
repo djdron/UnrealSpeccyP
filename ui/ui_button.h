@@ -16,10 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__UI_DESKTOP_H__
-#define	__UI_DESKTOP_H__
+#ifndef	__UI_BUTTON_H__
+#define	__UI_BUTTON_H__
 
-#include "dialog.h"
+#include "ui_control.h"
 
 #pragma once
 
@@ -28,30 +28,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xUi
 {
 
-class eDesktop : public eDialog
+class eButton : public eControl
 {
-	enum { KEY_REPEAT_DELAY = 10 };
-	typedef eDialog eInherited;
+	enum { MAX_TEXT_SIZE = 64 };
+	enum { PUSH_COLOR = 0x080000b0, PUSH_FOCUS_COLOR = 0x08800080 };
+	typedef eControl eInherited;
 public:
-	eDesktop() : key(0), key_flags(0), keypress_timer(0)
-	{
-		_CreateFont(6, 6, "res/font/spxtrm4f.fnt");
-	}
-	dword* VideoData() const { return Focused() ? Screen() : NULL; }
-	bool Focused() const
-	{
-		eDialog* d = (eDialog*)Childs()[0];
-		if(d)
-			return d->Childs()[0] != NULL;
-		return false;
-	}
+	eButton() : pushed(false), triggered(false), last_pushed(false), last_key(0), highlight(true) { *text = '\0'; }
+	void Highlight(bool on) { highlight = on; }
+	void Text(const char* s);
+	void Push(bool b) { pushed = b; triggered = false; }
 	virtual void Update();
 	virtual void OnKey(char key, dword flags);
-
+	enum eNotify { N_PUSH, N_POP };
 protected:
-	char key;
-	dword key_flags;
-	int keypress_timer;
+	char text[MAX_TEXT_SIZE + 1];
+	bool pushed;
+	bool triggered;
+	bool last_pushed;
+	char last_key;
+	bool highlight;
 };
 
 }
@@ -59,4 +55,4 @@ protected:
 
 #endif//USE_UI
 
-#endif//__UI_DESKTOP_H__
+#endif//__UI_BUTTON_H__

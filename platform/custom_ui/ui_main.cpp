@@ -16,13 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../std.h"
 #include "../platform.h"
 #include "../io.h"
 #include "ui_main.h"
-#include "menu.h"
+#include "ui_menu.h"
 #include "ui_keyboard.h"
-#include "file_open.h"
+#include "ui_file_open.h"
 
 #ifdef USE_UI
 

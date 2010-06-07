@@ -19,13 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef	__SNAPSHOT_H__
 #define	__SNAPSHOT_H__
 
+#include "../std.h"
+
 #pragma once
 
 class eSpeccy;
 
 namespace xSnapshot
 {
-bool Load(eSpeccy* speccy, const char* file);
+bool Load(eSpeccy* speccy, const char* type, const void* data, size_t data_size);
 bool Store(eSpeccy* speccy, const char* file);
 }
 //namespace xSnapshot

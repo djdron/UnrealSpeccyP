@@ -122,19 +122,12 @@ eFdd::eFdd() : motor(0), cyl(0), side(0), ts_byte(0), write_protect(false), disk
 //=============================================================================
 //	eFdd::Open
 //-----------------------------------------------------------------------------
-bool eFdd::Open(const char* image)
+bool eFdd::Open(const char* type, const void* data, size_t data_size)
 {
-	FILE* f = fopen(image, "rb");
-	if(!f)
-		return false;
-	byte* snbuf = new byte[TRD_SIZE]; // large temporary buffer (for reading snapshots)
-	size_t r = fread(snbuf, 1, TRD_SIZE, f);
-	fclose(f);
-	if(r == TRD_SIZE)
-		ReadTrd(snbuf);
-	if(!memcmp(snbuf, "SINCLAIR", 8) && (int)r >= 9+(0x100+14)*snbuf[8])
-		ReadScl(snbuf);
-	delete[] snbuf;
+	if(!strcmp(type, "trd"))
+		return ReadTrd(data, data_size);
+	if(!strcmp(type, "scl"))
+		return ReadScl(data, data_size);
 	return true;
 }
 //=============================================================================
@@ -251,7 +244,7 @@ void eFdd::FormatTrd()
 //=============================================================================
 //	eFdd::WriteSector
 //-----------------------------------------------------------------------------
-bool eFdd::WriteSector(int cyl, int side, int sec, byte* data)
+bool eFdd::WriteSector(int cyl, int side, int sec, const byte* data)
 {
 	eUdi::eTrack::eSector* s = GetSector(cyl, side, sec);
 	if(!s || !s->data)
@@ -295,7 +288,7 @@ void eFdd::CreateTrd()
 //=============================================================================
 //	eFdd::AddFile
 //-----------------------------------------------------------------------------
-bool eFdd::AddFile(byte* hdr, byte* data)
+bool eFdd::AddFile(const byte* hdr, const byte* data)
 {
 	eUdi::eTrack::eSector* s = GetSector(0, 0, 9);
 	if(!s)
@@ -330,13 +323,19 @@ bool eFdd::AddFile(byte* hdr, byte* data)
 //=============================================================================
 //	eFdd::ReadScl
 //-----------------------------------------------------------------------------
-bool eFdd::ReadScl(byte* snbuf)
+bool eFdd::ReadScl(const void* data, size_t data_size)
 {
+	if(data_size < 9)
+		return false;
+	const byte* buf = (const byte*)data;
+	if(memcmp(data, "SINCLAIR", 8) || int(data_size) < 9 + (0x100 + 14)*buf[8])
+		return false;
+
 	CreateTrd();
 	int size = 0;
-	for(int i = 0; i < snbuf[8]; ++i)
+	for(int i = 0; i < buf[8]; ++i)
 	{
-		size += snbuf[9 + 14 * i + 13];
+		size += buf[9 + 14 * i + 13];
 	}
 	if(size > 2544)
 	{
@@ -344,24 +343,24 @@ bool eFdd::ReadScl(byte* snbuf)
 		SectorDataW(s, 0xe5, size);			// free sec
 		WriteSector(0, 0, 9, s->data);		// update sector CRC
 	}
-	byte* data = snbuf + 9 + 14 * snbuf[8];
-	for(int i = 0; i < snbuf[8]; ++i)
+	const byte* d = buf + 9 + 14 * buf[8];
+	for(int i = 0; i < buf[8]; ++i)
 	{
-		if(!AddFile(snbuf + 9 + 14*i, data))
+		if(!AddFile(buf + 9 + 14*i, d))
 			return false;
-		data += snbuf[9 + 14*i + 13]*0x100;
+		d += buf[9 + 14*i + 13]*0x100;
 	}
 	return true;
 }
 //=============================================================================
 //	eFdd::ReadTrd
 //-----------------------------------------------------------------------------
-bool eFdd::ReadTrd(byte* snbuf)
+bool eFdd::ReadTrd(const void* data, size_t data_size)
 {
 	CreateTrd();
 	for(int i = 0; i < TRD_SIZE; i += 0x100)
 	{
-		WriteSector(i >> 13, (i >> 12) & 1, ((i >> 8) & 0x0f) + 1, snbuf + i);
+		WriteSector(i >> 13, (i >> 12) & 1, ((i >> 8) & 0x0f) + 1, (const byte*)data + i);
 	}
 	return true;
 }

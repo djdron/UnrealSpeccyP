@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __PLATFORM_H__
 #define __PLATFORM_H__
 
-#include "../std_types.h"
+#include "../std.h"
 
 #pragma once
 

@@ -16,43 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__UI_BUTTON_H__
-#define	__UI_BUTTON_H__
-
-#include "control.h"
-
-#pragma once
+#include "../std.h"
+#include "ui_control.h"
 
 #ifdef USE_UI
 
 namespace xUi
 {
-
-class eButton : public eControl
-{
-	enum { MAX_TEXT_SIZE = 64 };
-	enum { PUSH_COLOR = 0x080000b0, PUSH_FOCUS_COLOR = 0x08800080 };
-	typedef eControl eInherited;
-public:
-	eButton() : pushed(false), triggered(false), last_pushed(false), last_key(0), highlight(true) { *text = '\0'; }
-	void Highlight(bool on) { highlight = on; }
-	void Text(const char* s);
-	void Push(bool b) { pushed = b; triggered = false; }
-	virtual void Update();
-	virtual void OnKey(char key, dword flags);
-	enum eNotify { N_PUSH, N_POP };
-protected:
-	char text[MAX_TEXT_SIZE + 1];
-	bool pushed;
-	bool triggered;
-	bool last_pushed;
-	char last_key;
-	bool highlight;
-};
-
 }
-//namespace xUi
 
 #endif//USE_UI
-
-#endif//__UI_BUTTON_H__

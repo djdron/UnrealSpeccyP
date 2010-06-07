@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "std.h"
-#include "z80/z80.h"
-#include "devices/memory.h"
-#include "devices/ula.h"
+#include "../std.h"
+#include "../z80/z80.h"
+#include "../devices/memory.h"
+#include "../devices/ula.h"
+#include "../speccy.h"
 
 #include "snapshot.h"
-#include "speccy.h"
 
 namespace xSnapshot
 {
@@ -251,35 +251,15 @@ void eZ80Accessor::UnpackPage(byte* dst, int dstlen, byte* src, int srclen)
 	}
 }
 
-bool Load(eSpeccy* speccy, const char* file)
+bool Load(eSpeccy* speccy, const char* type, const void* data, size_t data_size)
 {
 	speccy->Reset();
-	int l = strlen(file);
-	if(l < 4)
-		return false;
-	FILE* f = fopen(file, "rb");
-	if(!f)
-		return false;
-	fseek(f, 0, SEEK_END);
-	size_t size = ftell(f);
-	fseek(f, 0, SEEK_SET);
-	byte* buf = new byte[size];
-	size_t r = fread(buf, 1, size, f);
-	fclose(f);
-	if(r != size)
-	{
-		delete[] buf;
-		return false;
-	}
-	bool ok = false;
-	const char* ext = file + l - 4;
 	eZ80Accessor* z80 = (eZ80Accessor*)speccy->CPU();
-	if(!strcmp(ext, ".sna") || !strcmp(ext, ".SNA"))
-		ok = z80->SetState((const eSnapshot_SNA*)buf, size);
-	else if(!strcmp(ext, ".z80") || !strcmp(ext, ".Z80"))
-		ok = z80->SetState((const eSnapshot_Z80*)buf, size);
-	delete[] buf;
-	return ok;
+	if(!strcmp(type, "sna"))
+		return z80->SetState((const eSnapshot_SNA*)data, data_size);
+	else if(!strcmp(type, "z80"))
+		return z80->SetState((const eSnapshot_Z80*)data, data_size);
+	return false;
 }
 
 bool Store(eSpeccy* speccy, const char* file)

@@ -27,17 +27,8 @@ namespace xProfiler
 //=============================================================================
 //	eSection::eSection
 //-----------------------------------------------------------------------------
-eSection::eSection(const char* _name) : name(_name), entry_count(0), next(NULL)
+eSection::eSection(const char* _name) : name(_name), entry_count(0)
 {
-	if(!First())
-		First() = this;
-	else
-	{
-		eSection* i = First();
-		while(i->Next())
-			i = i->Next();
-		i->next = this;
-	}
 }
 //=============================================================================
 //	eSection::End

@@ -16,10 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../std.h"
 #include "../platform.h"
 #include "ui_keyboard.h"
-#include "../../ui/button.h"
+#include "../../ui/ui_button.h"
 
 #ifdef USE_UI
 

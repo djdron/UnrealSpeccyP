@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../std.h"
-#include "list.h"
+#include "ui_list.h"
 
 #ifdef USE_UI
 

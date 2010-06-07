@@ -16,44 +16,31 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__UI_KEYBOARD_H__
-#define	__UI_KEYBOARD_H__
-
-#include "../../ui/ui_dialog.h"
+#ifndef	__LIST_H__
+#define	__LIST_H__
 
 #pragma once
 
-#ifdef USE_UI
-
-namespace xUi
+template<class T> class eList
 {
-
-class eKeyboard : public eDialog
-{
-	typedef eDialog eInherited;
 public:
-	eKeyboard() : key(0), pressed(false), caps(false), symbol(false), flags(0) {}
-	virtual void Init();
-	byte Key() const { return key; }
-	bool Pressed() const { return pressed; }
-	bool Caps() const { return caps; }
-	bool Symbol() const { return symbol; }
-	virtual void OnKey(char key, dword flags);
-	enum eId { ID_CAPS = 0, ID_SYMBOL };
-protected:
-	virtual void OnNotify(byte n, byte from);
-	byte AllocateId(const char* key) const;
-protected:
-	byte key;
-	bool pressed;
-	bool caps;
-	bool symbol;
-	dword flags;
+	eList() : next(NULL)
+	{
+		if(!First())
+			_First() = (T*)this;
+		else
+		{
+			T* i = First();
+			while(i->Next())
+				i = i->Next();
+			i->next = (T*)this;
+		}
+	}
+	static T* First() { return _First(); }
+	T* Next() { return next; }
+private:
+	static T*& _First() { static T* first = NULL; return first; }
+	T* next;
 };
 
-}
-//namespace xUi
-
-#endif//USE_UI
-
-#endif//__UI_KEYBOARD_H__
+#endif//__LIST_H__

@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../std.h"
 #include "../platform.h"
 
 #ifdef USE_WXWIDGETS
@@ -411,12 +410,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	{
 		wxFileDialog fd(this);
 		fd.SetWildcard(
-				L"Supported files|*.sna;*.z80;*.trd;*.scl;*.tap;*.csw;*.tzx;"
-								L"*.SNA;*.Z80;*.TRD;*.SCL;*.TAP;*.CSW;*.TZX|"
+				L"Supported files|*.sna;*.z80;*.trd;*.scl;*.tap;*.csw;*.tzx;*.zip;"
+								L"*.SNA;*.Z80;*.TRD;*.SCL;*.TAP;*.CSW;*.TZX;*.ZIP|"
 				L"All files|*.*|"
 				L"Snapshot files (*.sna;*.z80)|*.sna;*.z80;*.SNA;*.Z80|"
 				L"Disk images (*.trd;*.scl)|*.trd;*.scl;*.TRD;*.SCL|"
-				L"Tape files (*.tap;*.csw;*.tzx)|*.tap;*.csw;*.tzx;*.TAP;*.CSW;*.TZX"
+				L"Tape files (*.tap;*.csw;*.tzx)|*.tap;*.csw;*.tzx;*.TAP;*.CSW;*.TZX|"
+				L"ZIP archives (*.zip)|*.zip;*.ZIP"
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{

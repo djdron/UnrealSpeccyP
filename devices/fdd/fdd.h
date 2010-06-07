@@ -93,12 +93,12 @@ public:
 
 	bool DiskPresent() const	{ return disk != NULL; }
 	bool WriteProtect() const	{ return write_protect; }
-	bool Open(const char* image);
+	bool Open(const char* type, const void* data, size_t data_size);
 
 protected:
 	word Crc(byte* src, int size) const;
 	eUdi::eTrack::eSector* GetSector(int cyl, int side, int sec);
-	bool WriteSector(int cyl, int side, int sec, byte* data);
+	bool WriteSector(int cyl, int side, int sec, const byte* data);
 	void WriteBlock(int& pos, byte v, int amount, bool marker = false)
 	{
 		for(int i = 0; i < amount; ++i)
@@ -109,9 +109,9 @@ protected:
 	void Format();
 	void FormatTrd();
 	void CreateTrd();
-	bool AddFile(byte* hdr, byte* data);
-	bool ReadScl(byte* snbuf);
-	bool ReadTrd(byte* snbuf);
+	bool AddFile(const byte* hdr, const byte* data);
+	bool ReadScl(const void* data, size_t data_size);
+	bool ReadTrd(const void* data, size_t data_size);
 
 	enum { TRD_SIZE = 655360 };
 
