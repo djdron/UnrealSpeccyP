@@ -623,19 +623,11 @@
 				Name="custom_ui"
 				>
 				<File
-					RelativePath=".\platform\custom_ui\file_open.cpp"
+					RelativePath=".\platform\custom_ui\ui_file_open.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\platform\custom_ui\file_open.h"
-					>
-				</File>
-				<File
-					RelativePath=".\platform\custom_ui\menu.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\platform\custom_ui\menu.h"
+					RelativePath=".\platform\custom_ui\ui_file_open.h"
 					>
 				</File>
 				<File
@@ -654,63 +646,31 @@
 					RelativePath=".\platform\custom_ui\ui_main.h"
 					>
 				</File>
+				<File
+					RelativePath=".\platform\custom_ui\ui_menu.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\custom_ui\ui_menu.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
-			Name="storage"
+			Name="snapshot"
 			>
 			<File
-				RelativePath=".\snapshot.cpp"
+				RelativePath=".\snapshot\snapshot.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\snapshot.h"
+				RelativePath=".\snapshot\snapshot.h"
 				>
 			</File>
 		</Filter>
 		<Filter
 			Name="ui"
 			>
-			<File
-				RelativePath=".\ui\button.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ui\button.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ui\control.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ui\control.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ui\desktop.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ui\desktop.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ui\dialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ui\dialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ui\list.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ui\list.h"
-				>
-			</File>
 			<File
 				RelativePath=".\ui\ui.cpp"
 				>
@@ -719,10 +679,54 @@
 				RelativePath=".\ui\ui.h"
 				>
 			</File>
+			<File
+				RelativePath=".\ui\ui_button.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\ui_button.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\ui_control.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\ui_control.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\ui_desktop.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\ui_desktop.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\ui_dialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\ui_dialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\ui_list.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\ui_list.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="tools"
 			>
+			<File
+				RelativePath=".\tools\list.h"
+				>
+			</File>
 			<File
 				RelativePath=".\tools\log.cpp"
 				>
@@ -751,6 +755,110 @@
 				RelativePath=".\tools\time.h"
 				>
 			</File>
+			<Filter
+				Name="zlib"
+				>
+				<File
+					RelativePath=".\tools\zlib\adler32.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\crc32.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\crc32.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\crypt.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\deflate.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\deflate.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\infback.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\inffast.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\inffast.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\inffixed.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\inflate.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\inflate.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\inftrees.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\inftrees.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\ioapi.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\ioapi.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\trees.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\trees.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\uncompr.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\unzip.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\unzip.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\zconf.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\zlib.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\zutil.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\zlib\zutil.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="build"
