@@ -133,6 +133,27 @@ static struct eOptionVolume : public xOptions::eOption
 	}
 } op_volume;
 
+static struct eOptionPause : public xOptions::eOptionBool
+{
+	eOptionPause() { storeable = false; }
+	virtual const char* Name() const { return "pause"; }
+	virtual void Change(bool next = true)
+	{
+		ValueBool(!ValueBool());
+		Handler()->VideoPaused(ValueBool());
+	}
+} op_pause;
+
+static struct eOption48K : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "mode 48k"; }
+	virtual void Change(bool next = true)
+	{
+		Handler()->OnAction(A_MODE_48K_TOGGLE);
+		ValueBool(Handler()->Mode48k());
+	}
+} op_48k;
+
 static struct eOptionReset : public xOptions::eOption
 {
 	virtual const char* Name() const { return "reset"; }

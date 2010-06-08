@@ -77,7 +77,7 @@ void eMenu::ChangeItem(byte id)
 void eMenu::Init()
 {
 	background = BACKGROUND_COLOR;
-	eRect r_dlg(ePoint(130, 60));
+	eRect r_dlg(ePoint(130, 70));
 	r_dlg.Move(ePoint(8, 8));
 	Bound() = r_dlg;
 	ePoint margin(6, 6);

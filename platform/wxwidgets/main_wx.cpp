@@ -71,6 +71,11 @@ public:
 	}
 	virtual void OnIdle(wxIdleEvent& event)
 	{
+		if(Handler()->Quit())
+		{
+			GetParent()->Close(true);
+			return;
+		}
 		Handler()->OnLoop();
 		OnLoopSound();
 		Refresh(false);
