@@ -30,12 +30,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "z80/z80.h"
 #include "snapshot/snapshot.h"
 #include "platform/io.h"
-#include "tools/profiler.h"
-
 #include "ui/ui_desktop.h"
 #include "platform/custom_ui/ui_main.h"
-#include "tools/list.h"
 #include "tools/zlib/unzip.h"
+#include "tools/profiler.h"
 
 namespace xPlatform
 {
@@ -350,9 +348,11 @@ static struct eSpeccyHandler : public eHandler
 #endif//USE_UI
 	int video_paused;
 	int drive_for_open;
+
 	int joystick;
 	int sound;
 	int volume;
+
 	bool quit;
 	bool true_speed;
 	bool mode_48k;

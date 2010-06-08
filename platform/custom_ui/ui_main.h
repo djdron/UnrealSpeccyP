@@ -37,12 +37,10 @@ public:
 	virtual void OnKey(char key, dword flags);
 protected:
 	virtual void OnNotify(byte n, byte from);
-	void SetupMenu();
 	enum eDialogId { D_FILE_OPEN, D_KEYS, D_MENU };
 	bool Focused() const { return childs[0] != NULL; }
 protected:
 	bool clear;
-	bool open_file;
 	char path[256];
 };
 

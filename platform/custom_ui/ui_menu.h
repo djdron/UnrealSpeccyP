@@ -25,20 +25,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_UI
 
+namespace xOptions
+{
+class eOption;
+}
+
 namespace xUi
 {
 
-class eMenuDialog : public eDialog
+class eButton;
+
+class eMenu : public eDialog
 {
 	typedef eDialog eInherited;
 public:
-	eMenuDialog() {}
+	eMenu() {}
 	virtual void Init();
-	void ItemState(int idx, int v);
-	enum eItemId { I_OPEN, I_JOYSTICK, I_TAPE, I_FAST_TAPE, I_SOUND, I_VOLUME, I_RESET, I_QUIT, I_COUNT };
+	void ChangeItem(byte id);
 protected:
+	void UpdateItem(eButton* b, xOptions::eOption* o);
 	virtual void OnNotify(byte n, byte from);
-	void GetItemText(int idx, int state, char* dst) const;
 };
 
 }

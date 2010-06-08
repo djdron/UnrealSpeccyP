@@ -19,46 +19,62 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../std.h"
 #include "ui_menu.h"
 #include "../../ui/ui_button.h"
+#include "../../tools/option.h"
+
 
 #ifdef USE_UI
 
 namespace xUi
 {
 
-static const char* menu_open[] = { ">" };
-static const char* menu_joystick[] = { "kempston", "cursor", "qaop", "sinclair2" };
-static const char* menu_tape[] = { "start", "stop", "n/a" };
-static const char* menu_tape_fast[] = { "on", "off" };
-static const char* menu_sound[] = { "beeper", "ay", "tape" };
-static const char* menu_volume[] = { "mute", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%" };
-
-static const char* menu_items[] = { "open image", "joystick", "tape", "fast tape", "sound", "volume", "reset", "quit" };
-static const char** menu_states[] = { menu_open, menu_joystick, menu_tape, menu_tape_fast, menu_sound, menu_volume, NULL, NULL };
+using namespace xOptions;
 
 //=============================================================================
-//	eMenuDialog::GetItemText
+//	eMenu::UpdateItem
 //-----------------------------------------------------------------------------
-void eMenuDialog::GetItemText(int idx, int state, char* dst) const
+void eMenu::UpdateItem(eButton* b, eOption* o)
 {
-	strcpy(dst, menu_items[idx]);
-	int offs = strlen(dst);
-	int spc_count = childs[idx]->Bound().Width() / FontSize().x - offs;
-	const char** states_text = menu_states[idx];
-	spc_count -= states_text ? strlen(states_text[state]) : 0;
+	char text[128];
+	strcpy(text, o->Name());
+	int offs = strlen(text);
+	int spc_count = b->Bound().Width() / FontSize().x - offs;
+	const char* state = o->Value();
+	spc_count -= state ? strlen(state) : 0;
 	for(int i = 0; i < spc_count; ++i)
 	{
-		dst[offs++] = ' ';
+		text[offs++] = ' ';
 	}
-	dst[offs] = '\0';
-	if(states_text)
+	text[offs] = '\0';
+	if(state)
 	{
-		strcat(dst, states_text[state]);
+		strcat(text, state);
 	}
+	b->Text(text);
 }
 //=============================================================================
-//	eMenuDialog::Init
+//	eMenu::ChangeItem
 //-----------------------------------------------------------------------------
-void eMenuDialog::Init()
+void eMenu::ChangeItem(byte id)
+{
+	eOption* o = eOption::First();
+	byte i = 0;
+	for(; o; o = o->Next())
+	{
+		if(!o->Customizable())
+			continue;
+		if(id == i)
+			break;
+		++i;
+	}
+	assert(o);
+	o->Change();
+	eButton* b = (eButton*)childs[id];
+	UpdateItem(b, o);
+}
+//=============================================================================
+//	eMenu::Init
+//-----------------------------------------------------------------------------
+void eMenu::Init()
 {
 	background = BACKGROUND_COLOR;
 	eRect r_dlg(ePoint(130, 60));
@@ -67,34 +83,29 @@ void eMenuDialog::Init()
 	ePoint margin(6, 6);
 	eRect r(ePoint(r_dlg.Width() - margin.x * 2, FontSize().y));
 	r.Move(margin);
-	for(int i = 0; i < I_COUNT; ++i)
+	byte i = 0;
+	for(eOption* o = eOption::First(); o; o = o->Next())
 	{
+		if(!o->Customizable())
+			continue;
 		eButton* b = new eButton;
 		Insert(b);
 		b->Bound() = r;
 		b->Highlight(false);
 		b->Id(i);
-		ItemState(i, 0);
 		r.Move(ePoint(0, FontSize().y));
+		UpdateItem(b, o);
+		++i;
 	}
 }
 //=============================================================================
-//	eMenuDialog::OnNotify
+//	eMenu::OnNotify
 //-----------------------------------------------------------------------------
-void eMenuDialog::OnNotify(byte n, byte from)
+void eMenu::OnNotify(byte n, byte from)
 {
 	if(n != eButton::N_PUSH)
 		return;
 	eInherited::OnNotify(from, id);
-}
-//=============================================================================
-//	eMenuDialog::ItemState
-//-----------------------------------------------------------------------------
-void eMenuDialog::ItemState(int idx, int v)
-{
-	char s[80];
-	GetItemText(idx, v, s);
-	((eButton*)childs[idx])->Text(s);
 }
 
 }
