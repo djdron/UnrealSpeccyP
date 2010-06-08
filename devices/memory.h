@@ -93,6 +93,7 @@ public:
 	virtual bool IoWrite(word port) const;
 	virtual void IoWrite(word port, byte v, int tact);
 	void Mode48k(bool on) { mode_48k = on; }
+	bool Mode48k() const { return mode_48k; }
 	static eDeviceId Id() { return D_RAM; }
 	virtual dword IoNeed() const { return ION_WRITE; }
 protected:

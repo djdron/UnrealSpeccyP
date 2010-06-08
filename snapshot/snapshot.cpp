@@ -143,6 +143,13 @@ size_t eZ80Accessor::StoreState(eSnapshot_SNA* s)
 	s->p7FFD = p7FFD;
 	s->pFE = pFE;
 	byte mapped = 0x24 | (1 << (p7FFD & 7));
+	if(devices->Get<eRam>()->Mode48k())
+	{
+		mapped = 0xff;
+		s->sp -= 2;
+		memory->Write(s->sp, pc_l);
+		memory->Write(s->sp + 1, pc_h);
+	}
 	memcpy(s->page5, memory->Get(eMemory::P_RAM5), eMemory::PAGE_SIZE);
 	memcpy(s->page2, memory->Get(eMemory::P_RAM2), eMemory::PAGE_SIZE);
 	memcpy(s->page,  memory->Get(eMemory::P_RAM0 + (p7FFD & 7)), eMemory::PAGE_SIZE);
@@ -157,7 +164,14 @@ size_t eZ80Accessor::StoreState(eSnapshot_SNA* s)
 			++stored_128_pages;
 		}
 	}
-	return stored_128_pages == 5 ? eSnapshot_SNA::S_128_5 : eSnapshot_SNA::S_128_6;
+	switch(stored_128_pages)
+	{
+	case 0:
+		return eSnapshot_SNA::S_48;
+	case 6:
+		return eSnapshot_SNA::S_128_6;
+	}
+	return eSnapshot_SNA::S_128_5;
 }
 bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 {
