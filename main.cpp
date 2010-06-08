@@ -185,36 +185,37 @@ static struct eSpeccyHandler : public eHandler
 		unzFile h = unzOpen(name);
 		if(!h)
 			return false;
-		if(unzGoToFirstFile(h) != UNZ_OK)
-			return false;
 		bool ok = false;
-		for(;;)
+		if(unzGoToFirstFile(h) == UNZ_OK)
 		{
-			unz_file_info fi;
-			char n[xIo::MAX_PATH_LEN];
-			if(unzGetCurrentFileInfo(h, &fi, n, xIo::MAX_PATH_LEN, NULL, 0, NULL, 0) == UNZ_OK)
+			for(;;)
 			{
-				char type[xIo::MAX_PATH_LEN];
-				GetFileType(type, n);
-				eFileType* t = eFileType::Find(type);
-				if(t)
+				unz_file_info fi;
+				char n[xIo::MAX_PATH_LEN];
+				if(unzGetCurrentFileInfo(h, &fi, n, xIo::MAX_PATH_LEN, NULL, 0, NULL, 0) == UNZ_OK)
 				{
-					if(unzOpenCurrentFile(h) == UNZ_OK)
+					char type[xIo::MAX_PATH_LEN];
+					GetFileType(type, n);
+					eFileType* t = eFileType::Find(type);
+					if(t)
 					{
-						byte* buf = new byte[fi.uncompressed_size];
-						if(unzReadCurrentFile(h, buf, fi.uncompressed_size) == int(fi.uncompressed_size))
+						if(unzOpenCurrentFile(h) == UNZ_OK)
 						{
-							ok = t->Open(buf, fi.uncompressed_size);
+							byte* buf = new byte[fi.uncompressed_size];
+							if(unzReadCurrentFile(h, buf, fi.uncompressed_size) == int(fi.uncompressed_size))
+							{
+								ok = t->Open(buf, fi.uncompressed_size);
+							}
+							delete[] buf;
+							unzCloseCurrentFile(h);
 						}
-						delete[] buf;
-						unzCloseCurrentFile(h);
 					}
 				}
+				if(ok)
+					break;
+				if(unzGoToNextFile(h) == UNZ_END_OF_LIST_OF_FILE)
+					break;
 			}
-			if(ok)
-				break;
-			if(unzGoToNextFile(h) == UNZ_END_OF_LIST_OF_FILE)
-				break;
 		}
 		unzClose(h);
 		return ok;
