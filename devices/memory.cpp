@@ -100,7 +100,7 @@ void eRom::Init()
 //-----------------------------------------------------------------------------
 void eRom::Reset()
 {
-	page_selected = ROM_SYS;
+	page_selected = !mode_48k ? ROM_SYS : ROM_SOS;
 	memory->SetPage(0, page_selected);
 }
 //=============================================================================
