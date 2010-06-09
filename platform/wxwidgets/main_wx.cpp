@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <wx/aboutdlg.h>
 #include <wx/dnd.h>
 #include <wx/cmdline.h>
+#include <wx/stdpaths.h>
 
 namespace xPlatform
 {
@@ -661,6 +662,10 @@ class App: public wxApp
 #endif//_WINDOWS
 		if(!wxApp::OnInit())
 			return false;
+		wxString cfg_dir = wxStandardPaths::Get().GetUserDataDir() + L"/";
+		if(!wxDirExists(cfg_dir))
+			wxMkdir(cfg_dir);
+		xIo::SetProfilePath(wxConvertWX2MB(cfg_dir));
 		Handler()->OnInit();
 		const char* c = Handler()->WindowCaption();
 		Frame *frame = new Frame(wxConvertMB2WX(c), wxPoint(100, 100));
