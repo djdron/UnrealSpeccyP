@@ -41,6 +41,43 @@ void OnLoopSound();
 void VsyncGL(bool on);
 void DrawGL(int w, int h);
 
+struct eOptions
+{
+	eOptions() : true_speed(false), mode_48k(false), size_percent(-1) {}
+	wxString file_to_open;
+	bool true_speed;
+	bool mode_48k;
+	int size_percent;
+};
+static eOptions options;
+
+static struct eOptionTrueSpeed : public xOptions::eOptionBool
+{
+	eOptionTrueSpeed() { customizable = false; }
+	virtual const char* Name() const { return "true speed"; }
+	virtual void Change(bool next = true)
+	{
+		ValueBool(!ValueBool());
+		Apply();
+	}
+	virtual void Apply()
+	{
+		while(ValueBool() != Handler()->TrueSpeed())
+			Handler()->OnAction(A_TRUE_SPEED_TOGGLE);
+	}
+} op_true_speed;
+
+static struct eOptionWindowSize : public xOptions::eOption
+{
+	eOptionWindowSize() { customizable = false; ValueInt(1); }
+	virtual const char* Name() const { return "window size"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "100%", "200%", NULL };
+		return values;
+	}
+} op_window_size;
+
 const wxEventType evtMouseCapture = wxNewEventType();
 enum wxEventMouseCaptureId { evID_MOUSE_CAPTURED = 1, evID_MOUSE_RELEASED };
 
@@ -292,15 +329,6 @@ struct DropFilesTarget : public wxFileDropTarget
 };
 #endif//_MAC
 
-struct eOptions
-{
-	eOptions() : true_speed(false), size_percent(200) {}
-	wxString file_to_open;
-	bool true_speed;
-	int size_percent;
-};
-static eOptions options;
-
 class Frame: public wxFrame
 {
 public:
@@ -363,7 +391,13 @@ public:
 
 		SetClientSize(org_size);
 		SetMinSize(GetSize());
-		SetClientSize(org_size*options.size_percent/100);
+
+		if(options.size_percent >= 0)
+			SetClientSize(org_size*options.size_percent/100);
+		else
+		{
+			SetClientSize(org_size*(op_window_size.ValueInt() + 1));
+		}
 
 		gl_canvas = new GLCanvas(this);
 		gl_canvas->SetFocus();
@@ -373,8 +407,14 @@ public:
 			Handler()->OnOpenFile(wxConvertWX2MB(options.file_to_open));
 		if(options.true_speed)
 		{
-			Handler()->OnAction(A_TRUE_SPEED_TOGGLE);
-			menu_true_speed->Check(Handler()->TrueSpeed());
+			op_true_speed.ValueBool(options.true_speed);
+			op_true_speed.Apply();
+		}
+		menu_true_speed->Check(Handler()->TrueSpeed());
+		menu_mode_48k->Check(Handler()->Mode48k());
+		if(Handler()->Mode48k())
+		{
+			Handler()->OnAction(A_RESET);
 		}
 	}
 
@@ -457,8 +497,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	{
 		switch(event.GetId())
 		{
-		case ID_Size100: SetClientSize(org_size); break;
-		case ID_Size200: SetClientSize(org_size*2); break;
+		case ID_Size100: SetClientSize(org_size); op_window_size.ValueInt(0); break;
+		case ID_Size200: SetClientSize(org_size*2); op_window_size.ValueInt(1); break;
 		}
 	}
 	void OnTapeToggle(wxCommandEvent& event)
@@ -519,7 +559,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	}
 	void OnTrueSpeedToggle(wxCommandEvent& event)
 	{
-		Handler()->OnAction(A_TRUE_SPEED_TOGGLE);
+		op_true_speed.Change();
 		menu_true_speed->Check(Handler()->TrueSpeed());
 		DoneSound();
 		InitSound();
@@ -530,7 +570,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	}
 	void OnMode48kToggle(wxCommandEvent& event)
 	{
-		Handler()->OnAction(A_MODE_48K_TOGGLE);
+		using namespace xOptions;
+		eOption* op_mode_48k = eOption::Find("mode 48k");
+		op_mode_48k->Change();
 		menu_mode_48k->Check(Handler()->Mode48k());
 		SetStatusText(Handler()->Mode48k() ? _("Mode 48k on") : _("Mode 48k off"));
 	}
@@ -644,6 +686,7 @@ class App: public wxApp
 			{ wxCMD_LINE_SWITCH, wxT("h"), wxT("help"), wxT("displays help on the command line parameters"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
 			{ wxCMD_LINE_PARAM, NULL, NULL, wxT("input file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_SWITCH, wxT("t"), wxT("true_speed"), wxT("true speed (50Hz) mode"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_SWITCH, wxT("m"), wxT("mode_48k"), wxT("mode 48k"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_OPTION, wxT("s"), wxT("size"), wxT("window size (in percent)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_NONE }
 		};
@@ -657,6 +700,7 @@ class App: public wxApp
 			options.file_to_open = parser.GetParam(0);
 		}
 		options.true_speed = parser.Found(wxT("t"));
+		options.mode_48k = parser.Found(wxT("m"));
 		long size = 0;
 		if(parser.Found(wxT("s"), &size))
 		{
@@ -666,22 +710,6 @@ class App: public wxApp
 		return true;
 	}
 };
-
-static struct eOptionTrueSpeed : public xOptions::eOptionBool
-{
-	eOptionTrueSpeed() { customizable = false; }
-	virtual const char* Name() const { return "true speed"; }
-	virtual void Change(bool next = true)
-	{
-		ValueBool(!ValueBool());
-		Apply();
-	}
-	virtual void Apply()
-	{
-		while(ValueBool() != Handler()->TrueSpeed())
-			Handler()->OnAction(A_TRUE_SPEED_TOGGLE);
-	}
-} op_true_speed;
 
 }
 //namespace xPlatform

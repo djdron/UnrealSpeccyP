@@ -18,9 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "platform/platform.h"
 #include "tools/options.h"
+#include "ui/ui.h"
 
 namespace xPlatform
 {
+
+#ifdef USE_UI
 
 static struct eOptionJoy : public xOptions::eOption
 {
@@ -144,6 +147,8 @@ static struct eOptionPause : public xOptions::eOptionBool
 	}
 } op_pause;
 
+#endif//USE_UI
+
 static struct eOption48K : public xOptions::eOptionBool
 {
 	virtual const char* Name() const { return "mode 48k"; }
@@ -159,6 +164,8 @@ static struct eOption48K : public xOptions::eOptionBool
 	}
 } op_48k;
 
+#ifdef USE_UI
+
 static struct eOptionReset : public xOptions::eOption
 {
 	eOptionReset() { storeable = false; }
@@ -172,6 +179,8 @@ static struct eOptionQuit : public xOptions::eOption
 	virtual const char* Name() const { return "quit"; }
 	virtual void Change(bool next = true) { Handler()->OnAction(A_QUIT); }
 } op_quit;
+
+#endif//USE_UI
 
 }
 //namespace xPlatform
