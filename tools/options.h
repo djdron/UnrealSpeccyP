@@ -37,6 +37,16 @@ public:
 	bool	Customizable() const { return customizable; }
 	bool	Storeable() const { return storeable; }
 
+	static eOption* Find(const char* name)
+	{
+		for(eOption* o = First(); o; o = o->Next())
+		{
+			if(!strcmp(name, o->Name()))
+				return o;
+		}
+		return NULL;
+	}
+
 	int			ValueInt() const	{ assert(type == OT_INT); return value_int; }
 	bool		ValueBool() const	{ assert(type == OT_BOOL); return value_bool; }
 	const char*	ValueStr() const	{ assert(type == OT_STRING); return value_str; }
@@ -52,10 +62,37 @@ public:
 		{
 		case OT_INT:	return vals[ValueInt()];
 		case OT_BOOL:	return vals[ValueBool() ? 1 : 0];
-		default:
-			assert(true);
+		default:		assert(true);
 		}
 		return NULL;
+	}
+	void Value(const char* v)
+	{
+		if(type == OT_STRING)
+		{
+			//@todo : copy string data ???
+			ValueStr(v);
+			return;
+		}
+		const char** vals = Values();
+		if(!vals)
+			return;
+		int i = -1;
+		for(; *vals; ++vals)
+		{
+			++i;
+			if(!strcmp(*vals, v))
+				break;
+		}
+		if(i >= 0)
+		{
+			switch(type)
+			{
+			case OT_INT:	ValueInt(i);		break;
+			case OT_BOOL:	ValueBool(i != 0);	break;
+			default:		assert(true);		break;
+			}
+		}
 	}
 
 	void ValueInt(int v)		{ type = OT_INT; value_int = v; }

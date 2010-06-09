@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_WXWIDGETS
 
 #include "../io.h"
+#include "../../tools/options.h"
 
 #undef self
 
@@ -665,6 +666,22 @@ class App: public wxApp
 		return true;
 	}
 };
+
+static struct eOptionTrueSpeed : public xOptions::eOptionBool
+{
+	eOptionTrueSpeed() { customizable = false; }
+	virtual const char* Name() const { return "true speed"; }
+	virtual void Change(bool next = true)
+	{
+		ValueBool(!ValueBool());
+		Apply();
+	}
+	virtual void Apply()
+	{
+		while(ValueBool() != Handler()->TrueSpeed())
+			Handler()->OnAction(A_TRUE_SPEED_TOGGLE);
+	}
+} op_true_speed;
 
 }
 //namespace xPlatform

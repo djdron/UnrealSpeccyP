@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "platform/platform.h"
-#include "tools/option.h"
+#include "tools/options.h"
 
 namespace xPlatform
 {
@@ -149,23 +149,28 @@ static struct eOption48K : public xOptions::eOptionBool
 	virtual const char* Name() const { return "mode 48k"; }
 	virtual void Change(bool next = true)
 	{
-		Handler()->OnAction(A_MODE_48K_TOGGLE);
-		ValueBool(Handler()->Mode48k());
+		ValueBool(!ValueBool());
+		Apply();
+	}
+	virtual void Apply()
+	{
+		while(ValueBool() != Handler()->Mode48k())
+			Handler()->OnAction(A_MODE_48K_TOGGLE);
 	}
 } op_48k;
 
 static struct eOptionReset : public xOptions::eOption
 {
+	eOptionReset() { storeable = false; }
 	virtual const char* Name() const { return "reset"; }
-	virtual void Change(bool next = true) { Apply(); }
-	virtual void Apply() { Handler()->OnAction(A_RESET); }
+	virtual void Change(bool next = true) { Handler()->OnAction(A_RESET); }
 } op_reset;
 
 static struct eOptionQuit : public xOptions::eOption
 {
+	eOptionQuit() { storeable = false; }
 	virtual const char* Name() const { return "quit"; }
-	virtual void Change(bool next = true) { Apply(); }
-	virtual void Apply() { Handler()->OnAction(A_QUIT); }
+	virtual void Change(bool next = true) { Handler()->OnAction(A_QUIT); }
 } op_quit;
 
 }

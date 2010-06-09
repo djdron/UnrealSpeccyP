@@ -736,6 +736,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\tools\options.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\tools\options.h"
+				>
+			</File>
+			<File
 				RelativePath=".\tools\profiler.cpp"
 				>
 			</File>
@@ -859,6 +867,34 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="tinyxml"
+				>
+				<File
+					RelativePath=".\tools\tinyxml\tinystr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\tinyxml\tinystr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\tinyxml\tinyxml.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\tinyxml\tinyxml.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\tinyxml\tinyxmlerror.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\tinyxml\tinyxmlparser.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="build"
@@ -878,6 +914,10 @@
 		</Filter>
 		<File
 			RelativePath=".\main.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\options_common.cpp"
 			>
 		</File>
 		<File

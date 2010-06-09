@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../std.h"
 #include "ui_menu.h"
 #include "../../ui/ui_button.h"
-#include "../../tools/option.h"
+#include "../../tools/options.h"
 
 
 #ifdef USE_UI

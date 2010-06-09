@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "platform/custom_ui/ui_main.h"
 #include "tools/zlib/unzip.h"
 #include "tools/profiler.h"
+#include "tools/options.h"
 
 namespace xPlatform
 {
@@ -68,9 +69,11 @@ static struct eSpeccyHandler : public eHandler
 		sound_dev[0] = speccy->Device<eBeeper>();
 		sound_dev[1] = speccy->Device<eAY>();
 		sound_dev[2] = speccy->Device<eTape>();
+		xOptions::Load();
 	}
 	virtual void OnDone()
 	{
+		xOptions::Store();
 		SAFE_DELETE(speccy);
 #ifdef USE_UI
 		SAFE_DELETE(ui_desktop);

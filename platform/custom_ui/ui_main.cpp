@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_menu.h"
 #include "ui_keyboard.h"
 #include "ui_file_open.h"
-#include "../../tools/option.h"
+#include "../../tools/options.h"
 
 #ifdef USE_UI
 
@@ -31,6 +31,7 @@ namespace xUi
 
 static struct eOptionOpenFile : public xOptions::eOptionBool
 {
+	eOptionOpenFile() { storeable = false; }
 	virtual const char* Name() const { return "open file"; }
 	virtual const char** Values() const
 	{

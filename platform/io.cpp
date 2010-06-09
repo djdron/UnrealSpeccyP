@@ -41,5 +41,23 @@ const char* ResourcePath(const char* _path)
 	return buf;
 }
 
+static char profile_path[MAX_PATH_LEN] = { 0 };
+//=============================================================================
+//	SetProfilePath
+//-----------------------------------------------------------------------------
+void SetProfilePath(const char* _path)
+{
+	strcpy(profile_path, _path);
+}
+//=============================================================================
+//	ProfilePath
+//-----------------------------------------------------------------------------
+const char* ProfilePath(const char* _path)
+{
+	strcpy(buf, profile_path);
+	strcat(buf, _path);
+	return buf;
+}
+
 }
 //namespace xIo
