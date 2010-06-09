@@ -403,8 +403,6 @@ public:
 		gl_canvas->SetFocus();
 
 		UpdateJoyMenu();
-		if(!options.file_to_open.empty())
-			Handler()->OnOpenFile(wxConvertWX2MB(options.file_to_open));
 		if(options.true_speed)
 		{
 			op_true_speed.ValueBool(options.true_speed);
@@ -416,6 +414,8 @@ public:
 		{
 			Handler()->OnAction(A_RESET);
 		}
+		if(!options.file_to_open.empty())
+			Handler()->OnOpenFile(wxConvertWX2MB(options.file_to_open));
 	}
 
 	void OnReset(wxCommandEvent& event)

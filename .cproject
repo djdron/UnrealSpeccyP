@@ -19,7 +19,7 @@
 <folderInfo id="cdt.managedbuild.config.gnu.exe.debug.792196211." name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.base.791714948" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
 <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.718302342" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
-<builder buildPath="${workspace_loc:/unreal_speccy_portable/Debug}" id="cdt.managedbuild.target.gnu.builder.base.983529234" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+<builder buildPath="${workspace_loc:/unreal_speccy_portable/Debug}" id="cdt.managedbuild.target.gnu.builder.base.983529234" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.772462929" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 <tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.323391444" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 <option id="gnu.cpp.compiler.option.include.paths.767517083" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
@@ -829,7 +829,7 @@
 <folderInfo id="cdt.managedbuild.config.gnu.exe.release.322568608." name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.base.1850917539" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
 <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.1442484983" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
-<builder buildPath="${workspace_loc:/unreal_speccy_portable/Release}" id="cdt.managedbuild.target.gnu.builder.base.2008662535" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+<builder buildPath="${workspace_loc:/unreal_speccy_portable/Release}" id="cdt.managedbuild.target.gnu.builder.base.2008662535" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.2072673640" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 <tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.315714686" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 <option id="gnu.cpp.compiler.option.include.paths.1327472212" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
@@ -855,6 +855,7 @@
 <listOptionValue builtIn="false" value="openal"/>
 </option>
 <option id="gnu.cpp.link.option.flags.142958059" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="`wx-config --libs core,base,gl,adv`" valueType="string"/>
+<option id="gnu.cpp.link.option.strip.29404680" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1011746149" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 <additionalInput kind="additionalinput" paths="$(LIBS)"/>
