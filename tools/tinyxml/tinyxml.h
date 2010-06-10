@@ -57,7 +57,10 @@ distribution.
 // new safe versions. This probably doesn't fully address the problem,
 // but it gets closer. There are too many compilers for me to fully
 // test. If you get compilation troubles, undefine TIXML_SAFE
+
+#if !defined(_SYMBIAN) && !defined(_DINGOO)
 #define TIXML_SAFE
+#endif//_SYMBIAN
 
 #ifdef TIXML_SAFE
 	#if defined(_MSC_VER) && (_MSC_VER >= 1400 )
@@ -78,6 +81,8 @@ distribution.
 		#define TIXML_SNPRINTF snprintf
 		#define TIXML_SSCANF   sscanf
 	#endif
+#else
+	#define TIXML_SSCANF scanf
 #endif	
 
 class TiXmlDocument;

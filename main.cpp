@@ -70,6 +70,8 @@ static struct eSpeccyHandler : public eHandler
 		sound_dev[1] = speccy->Device<eAY>();
 		sound_dev[2] = speccy->Device<eTape>();
 		xOptions::Load();
+		if(Mode48k())
+			speccy->Reset();
 	}
 	virtual void OnDone()
 	{

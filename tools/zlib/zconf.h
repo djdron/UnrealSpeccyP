@@ -364,6 +364,8 @@ typedef uLong FAR uLongf;
 #  include <sys/types.h>    /* for off_t */
 #endif
 
+#define USE_FILE32API
+
 /* a little trick to accommodate both "#define _LARGEFILE64_SOURCE" and
  * "#define _LARGEFILE64_SOURCE 1" as requesting 64-bit operations, (even
  * though the former does not conform to the LFS document), but considering

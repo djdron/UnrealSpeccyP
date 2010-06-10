@@ -54,12 +54,14 @@ preALL:
   CXXFLAGS = $(CFLAGS) -Wno-ctor-dtor-privacy -x c++ $(CPP_MACRO)
   CXX_OBJS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$(CXXSRCS))
   CXX_DEPS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.d,$(CXXSRCS))
+  C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
+  C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
   BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME).$(TARGET_TYPE)
 
 mkdirs:
 	mkdir -p $(DIST_PATH)
 	mkdir -p $(SIS_PATH)
-	mkdir -p $(foreach DIR, $(CXXFOLDERS), $(OBJ_PATH)/$(DIR))
+	mkdir -p $(foreach DIR, $(SRCFOLDERS), $(OBJ_PATH)/$(DIR))
 
 $(IMG_TARGETS): $(IMG_SRCS)
 	mifconv $@ $(subst /,//,$(IMG_ARGS)) $^
@@ -74,7 +76,10 @@ $(RSS_TARGETS): $(DIST_PATH)/%.rsc : $(RSS_PATH)/%.rss
 $(CXX_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-$(BIN_TARGET): $(CXX_OBJS)
+$(C_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BIN_TARGET): $(CXX_OBJS) $(C_OBJS) 
 	$(LD) $(LD_EXE_FLAGS)
 	elf2e32 --sid=0x$(SECUREID) --stack=$(EPOCSTACKSIZE) --heap=$(EPOCHEAPSIZE) \
 	--vid=0x$(VENDORID) --uid1=0x1000007a --uid2=0x$(UID2) --uid3=0x$(UID3)\
@@ -93,6 +98,8 @@ clean: preGCCE preALL
 	rm -rf $(RSS_TARGETS)
 	rm -rf $(CXX_OBJS)
 	rm -rf $(CXX_DEPS)
+	rm -rf $(C_OBJS)
+	rm -rf $(C_DEPS)
 	rm -rf $(BIN_TARGET)
 	rm -rf $(BIN_TARGET).map
 

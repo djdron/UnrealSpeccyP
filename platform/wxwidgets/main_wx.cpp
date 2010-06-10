@@ -409,12 +409,15 @@ public:
 			op_true_speed.ValueBool(options.true_speed);
 			op_true_speed.Apply();
 		}
+		if(options.mode_48k)
+		{
+			using namespace xOptions;
+			eOption* op_mode_48k = eOption::Find("mode 48k");
+			op_mode_48k->ValueBool(options.mode_48k);
+			op_mode_48k->Apply();
+		}
 		menu_true_speed->Check(Handler()->TrueSpeed());
 		menu_mode_48k->Check(Handler()->Mode48k());
-		if(Handler()->Mode48k())
-		{
-			Handler()->OnAction(A_RESET);
-		}
 		if(!options.file_to_open.empty())
 			Handler()->OnOpenFile(wxConvertWX2MB(options.file_to_open));
 	}
