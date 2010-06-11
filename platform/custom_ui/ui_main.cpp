@@ -38,7 +38,7 @@ static struct eOptionOpenFile : public xOptions::eOptionBool
 		static const char* values[] = { ">", ">", NULL };
 		return values;
 	}
-	virtual void Change(bool next = true) { ValueBool(true); }
+	virtual void Change(bool next = true) { Set(true); }
 } op_open_file;
 
 //=============================================================================
@@ -59,9 +59,9 @@ void eMainDialog::Update()
 		clear = false;
 		Clear();
 	}
-	if(op_open_file.ValueBool())
+	if(op_open_file)
 	{
-		op_open_file.ValueBool(false);
+		op_open_file.Set(false);
 		Clear();
 		eDialog* d = new eFileOpenDialog(path);
 		d->Id(D_FILE_OPEN);

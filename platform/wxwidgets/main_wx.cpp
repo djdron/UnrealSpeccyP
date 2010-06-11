@@ -58,19 +58,19 @@ static struct eOptionTrueSpeed : public xOptions::eOptionBool
 	virtual const char* Name() const { return "true speed"; }
 	virtual void Change(bool next = true)
 	{
-		ValueBool(!ValueBool());
+		Set(!*this);
 		Apply();
 	}
 	virtual void Apply()
 	{
-		while(ValueBool() != Handler()->TrueSpeed())
+		while(*this != Handler()->TrueSpeed())
 			Handler()->OnAction(A_TRUE_SPEED_TOGGLE);
 	}
 } op_true_speed;
 
-static struct eOptionWindowSize : public xOptions::eOption
+static struct eOptionWindowSize : public xOptions::eOptionInt
 {
-	eOptionWindowSize() { customizable = false; ValueInt(1); }
+	eOptionWindowSize() { customizable = false; Set(1); }
 	virtual const char* Name() const { return "window size"; }
 	virtual const char** Values() const
 	{
@@ -397,7 +397,7 @@ public:
 			SetClientSize(org_size*options.size_percent/100);
 		else
 		{
-			SetClientSize(org_size*(op_window_size.ValueInt() + 1));
+			SetClientSize(org_size*(op_window_size + 1));
 		}
 
 		gl_canvas = new GLCanvas(this);
@@ -406,15 +406,18 @@ public:
 		UpdateJoyMenu();
 		if(options.true_speed)
 		{
-			op_true_speed.ValueBool(options.true_speed);
+			op_true_speed.Set(options.true_speed);
 			op_true_speed.Apply();
 		}
 		if(options.mode_48k)
 		{
 			using namespace xOptions;
-			eOption* op_mode_48k = eOption::Find("mode 48k");
-			op_mode_48k->ValueBool(options.mode_48k);
-			op_mode_48k->Apply();
+			eOption<bool>* op_mode_48k = eOption<bool>::Find("mode 48k");
+			if(op_mode_48k)
+			{
+				op_mode_48k->Set(options.mode_48k);
+				op_mode_48k->Apply();
+			}
 		}
 		menu_true_speed->Check(Handler()->TrueSpeed());
 		menu_mode_48k->Check(Handler()->Mode48k());
@@ -501,8 +504,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	{
 		switch(event.GetId())
 		{
-		case ID_Size100: SetClientSize(org_size); op_window_size.ValueInt(0); break;
-		case ID_Size200: SetClientSize(org_size*2); op_window_size.ValueInt(1); break;
+		case ID_Size100: SetClientSize(org_size); op_window_size.Set(0); break;
+		case ID_Size200: SetClientSize(org_size*2); op_window_size.Set(1); break;
 		}
 	}
 	void OnTapeToggle(wxCommandEvent& event)
@@ -575,8 +578,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	void OnMode48kToggle(wxCommandEvent& event)
 	{
 		using namespace xOptions;
-		eOption* op_mode_48k = eOption::Find("mode 48k");
-		op_mode_48k->Change();
+		eOption<bool>* op_mode_48k = eOption<bool>::Find("mode 48k");
+		SAFE_CALL(op_mode_48k)->Change();
 		menu_mode_48k->Check(Handler()->Mode48k());
 		SetStatusText(Handler()->Mode48k() ? _("Mode 48k on") : _("Mode 48k off"));
 	}

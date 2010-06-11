@@ -32,7 +32,7 @@ using namespace xOptions;
 //=============================================================================
 //	eMenu::UpdateItem
 //-----------------------------------------------------------------------------
-void eMenu::UpdateItem(eButton* b, eOption* o)
+void eMenu::UpdateItem(eButton* b, eOptionB* o)
 {
 	char text[128];
 	strcpy(text, o->Name());
@@ -56,7 +56,7 @@ void eMenu::UpdateItem(eButton* b, eOption* o)
 //-----------------------------------------------------------------------------
 void eMenu::ChangeItem(byte id)
 {
-	eOption* o = eOption::First();
+	eOptionB* o = eOptionB::First();
 	byte i = 0;
 	for(; o; o = o->Next())
 	{
@@ -84,7 +84,7 @@ void eMenu::Init()
 	eRect r(ePoint(r_dlg.Width() - margin.x * 2, FontSize().y));
 	r.Move(margin);
 	byte i = 0;
-	for(eOption* o = eOption::First(); o; o = o->Next())
+	for(eOptionB* o = eOptionB::First(); o; o = o->Next())
 	{
 		if(!o->Customizable())
 			continue;

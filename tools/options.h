@@ -27,19 +27,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xOptions
 {
 
-class eOption : public eList<eOption>
+class eOptionB : public eList<eOptionB>
 {
 public:
-	enum eType { OT_INT, OT_BOOL, OT_STRING,  };
-	eOption() : type(OT_INT), customizable(true), storeable(true), value_int(0) {}
+	eOptionB() : customizable(true), storeable(true) {}
+	virtual ~eOptionB() {}
 
-	eType	Type() const { return type; }
 	bool	Customizable() const { return customizable; }
 	bool	Storeable() const { return storeable; }
 
-	static eOption* Find(const char* name)
+	virtual const char* Name() const = 0;
+	virtual const char*	Value() const { return NULL; }
+	virtual void Value(const char* v) {}
+	virtual const char** Values() const { return NULL; }
+	virtual void Change(bool next = true) {}
+	virtual void Apply() {}
+
+	static eOptionB* Find(const char* name)
 	{
-		for(eOption* o = First(); o; o = o->Next())
+		for(eOptionB* o = First(); o; o = o->Next())
 		{
 			if(!strcmp(name, o->Name()))
 				return o;
@@ -47,33 +53,33 @@ public:
 		return NULL;
 	}
 
-	int			ValueInt() const	{ assert(type == OT_INT); return value_int; }
-	bool		ValueBool() const	{ assert(type == OT_BOOL); return value_bool; }
-	const char*	ValueStr() const	{ assert(type == OT_STRING); return value_str; }
+protected:
+	bool 	customizable;
+	bool	storeable;
+};
 
+template<class T> class eOption : public eOptionB
+{
+public:
+	operator const T&() const { return value; }
+	virtual void Set(const T& v) { value = v; }
+	static eOption* Find(const char* name) { return (eOption*)eOptionB::Find(name); }
+
+protected:
+	T	value;
+};
+
+class eOptionInt : public eOption<int>
+{
 	const char*	Value() const
 	{
-		if(type == OT_STRING)
-			return ValueStr();
 		const char** vals = Values();
 		if(!vals)
 			return NULL;
-		switch(type)
-		{
-		case OT_INT:	return vals[ValueInt()];
-		case OT_BOOL:	return vals[ValueBool() ? 1 : 0];
-		default:		assert(true);
-		}
-		return NULL;
+		return vals[value];
 	}
 	void Value(const char* v)
 	{
-		if(type == OT_STRING)
-		{
-			//@todo : copy string data ???
-			ValueStr(v);
-			return;
-		}
 		const char** vals = Values();
 		if(!vals)
 			return;
@@ -84,46 +90,56 @@ public:
 			if(!strcmp(*vals, v))
 				break;
 		}
-		if(i >= 0)
-		{
-			switch(type)
-			{
-			case OT_INT:	ValueInt(i);		break;
-			case OT_BOOL:	ValueBool(i != 0);	break;
-			default:		assert(true);		break;
-			}
-		}
+		value = i;
 	}
-
-	void ValueInt(int v)		{ type = OT_INT; value_int = v; }
-	void ValueBool(bool v)		{ type = OT_BOOL; value_bool = v; }
-	void ValueStr(const char* v){ type = OT_STRING; value_str = v; }
-
-	virtual const char* Name() const = 0;
-	virtual const char** Values() const { return NULL; }
-	virtual void Change(bool next = true) {}
-	virtual void Apply() {}
-
-protected:
-	eType	type;
-	bool 	customizable;
-	bool	storeable;
-	union
-	{
-		int			value_int;
-		bool		value_bool;
-		const char* value_str;
-	};
 };
 
-struct eOptionBool : public eOption
+struct eOptionBool : public eOption<bool>
 {
-	eOptionBool() { ValueBool(false); }
+	const char*	Value() const
+	{
+		const char** vals = Values();
+		if(!vals)
+			return NULL;
+		return vals[value ? 1 : 0];
+	}
+	void Value(const char* v)
+	{
+		const char** vals = Values();
+		if(!vals)
+			return;
+		if(!strcmp(v, vals[0]))
+			value = false;
+		else if(!strcmp(v, vals[1]))
+			value = true;
+	}
 	virtual const char** Values() const
 	{
 		static const char* values[] = { "off", "on", NULL };
 		return values;
 	}
+};
+
+struct eOptionString : public eOption<const char*>
+{
+	eOptionString() : alloc_size(0) {}
+	virtual ~eOptionString() { SAFE_DELETE_ARRAY(value); }
+	const char*	Value() const
+	{
+		return value ? value : "";
+	}
+	virtual void Set(const char*& v)
+	{
+		int s = strlen(v) + 1;
+		if(!value || alloc_size < s)
+		{
+			SAFE_DELETE_ARRAY(value);
+			value = new char[s];
+			alloc_size = s;
+		}
+		strcpy(const_cast<char*>(value), v);
+	}
+	int alloc_size;
 };
 
 void Load();

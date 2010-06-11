@@ -25,9 +25,9 @@ namespace xPlatform
 
 #ifdef USE_UI
 
-static struct eOptionJoy : public xOptions::eOption
+static struct eOptionJoy : public xOptions::eOptionInt
 {
-	eOptionJoy() { ValueInt(J_KEMPSTON); }
+	eOptionJoy() { Set(J_KEMPSTON); }
 	virtual const char* Name() const { return "joystick"; }
 	virtual const char** Values() const
 	{
@@ -36,19 +36,19 @@ static struct eOptionJoy : public xOptions::eOption
 	}
 	virtual void Change(bool next = true)
 	{
-		ValueInt(ValueInt() + 1);
-		if(ValueInt() == J_LAST)
-			ValueInt(J_FIRST);
+		Set(self + 1);
+		if(self == J_LAST)
+			Set(J_FIRST);
 		Apply();
 	}
 	virtual void Apply()
 	{
-		while(Handler()->Joystick() != ValueInt())
+		while(self != Handler()->Joystick())
 			Handler()->OnAction(A_JOYSTICK_NEXT);
 	}
 } op_joy;
 
-static struct eOptionTape : public xOptions::eOption
+static struct eOptionTape : public xOptions::eOptionInt
 {
 	eOptionTape() { storeable = false; }
 	virtual const char* Name() const { return "tape"; }
@@ -61,9 +61,9 @@ static struct eOptionTape : public xOptions::eOption
 	{
 		switch(Handler()->OnAction(A_TAPE_TOGGLE))
 		{
-		case AR_TAPE_NOT_INSERTED:	ValueInt(0);	break;
-		case AR_TAPE_STOPPED:		ValueInt(1);	break;
-		case AR_TAPE_STARTED:		ValueInt(2);	break;
+		case AR_TAPE_NOT_INSERTED:	Set(0);	break;
+		case AR_TAPE_STOPPED:		Set(1);	break;
+		case AR_TAPE_STARTED:		Set(2);	break;
 		default: break;
 		}
 	}
@@ -78,11 +78,11 @@ static struct eOptionTapeFast : public xOptions::eOptionBool
 		switch(Handler()->OnAction(A_TAPE_FAST_TOGGLE))
 		{
 		case AR_TAPE_FAST_SET:
-			ValueBool(true);
+			Set(true);
 			break;
 		case AR_TAPE_FAST_RESET:
 		case AR_TAPE_NOT_INSERTED:
-			ValueBool(false);
+			Set(false);
 			break;
 		default:
 			break;
@@ -90,9 +90,9 @@ static struct eOptionTapeFast : public xOptions::eOptionBool
 	}
 } op_tape_fast;
 
-static struct eOptionSound : public xOptions::eOption
+static struct eOptionSound : public xOptions::eOptionInt
 {
-	eOptionSound() { ValueInt(S_AY); }
+	eOptionSound() { Set(S_AY); }
 	virtual const char* Name() const { return "sound"; }
 	virtual const char** Values() const
 	{
@@ -101,21 +101,21 @@ static struct eOptionSound : public xOptions::eOption
 	}
 	virtual void Change(bool next = true)
 	{
-		ValueInt(ValueInt() + 1);
-		if(ValueInt() == S_LAST)
-			ValueInt(S_FIRST);
+		Set(self + 1);
+		if(self == S_LAST)
+			Set(S_FIRST);
 		Apply();
 	}
 	virtual void Apply()
 	{
-		while(Handler()->Sound() != ValueInt())
+		while(self != Handler()->Sound())
 			Handler()->OnAction(A_SOUND_NEXT);
 	}
 } op_sound;
 
-static struct eOptionVolume : public xOptions::eOption
+static struct eOptionVolume : public xOptions::eOptionInt
 {
-	eOptionVolume() { ValueInt(V_100); }
+	eOptionVolume() { Set(V_100); }
 	virtual const char* Name() const { return "volume"; }
 	virtual const char** Values() const
 	{
@@ -124,14 +124,14 @@ static struct eOptionVolume : public xOptions::eOption
 	}
 	virtual void Change(bool next = true)
 	{
-		ValueInt(ValueInt() + 1);
-		if(ValueInt() == V_LAST)
-			ValueInt(V_FIRST);
+		Set(self + 1);
+		if(self == V_LAST)
+			Set(V_FIRST);
 		Apply();
 	}
 	virtual void Apply()
 	{
-		while(Handler()->Volume() != ValueInt())
+		while(self != Handler()->Volume())
 			Handler()->OnAction(A_VOLUME_NEXT);
 	}
 } op_volume;
@@ -142,8 +142,8 @@ static struct eOptionPause : public xOptions::eOptionBool
 	virtual const char* Name() const { return "pause"; }
 	virtual void Change(bool next = true)
 	{
-		ValueBool(!ValueBool());
-		Handler()->VideoPaused(ValueBool());
+		Set(!self);
+		Handler()->VideoPaused(self);
 	}
 } op_pause;
 
@@ -154,26 +154,26 @@ static struct eOption48K : public xOptions::eOptionBool
 	virtual const char* Name() const { return "mode 48k"; }
 	virtual void Change(bool next = true)
 	{
-		ValueBool(!ValueBool());
+		Set(!self);
 		Apply();
 	}
 	virtual void Apply()
 	{
-		while(ValueBool() != Handler()->Mode48k())
+		while(self != Handler()->Mode48k())
 			Handler()->OnAction(A_MODE_48K_TOGGLE);
 	}
 } op_48k;
 
 #ifdef USE_UI
 
-static struct eOptionReset : public xOptions::eOption
+static struct eOptionReset : public xOptions::eOptionB
 {
 	eOptionReset() { storeable = false; }
 	virtual const char* Name() const { return "reset"; }
 	virtual void Change(bool next = true) { Handler()->OnAction(A_RESET); }
 } op_reset;
 
-static struct eOptionQuit : public xOptions::eOption
+static struct eOptionQuit : public xOptions::eOptionB
 {
 	eOptionQuit() { storeable = false; }
 	virtual const char* Name() const { return "quit"; }

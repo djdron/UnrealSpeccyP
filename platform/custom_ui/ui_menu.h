@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace xOptions
 {
-class eOption;
+class eOptionB;
 }
 
 namespace xUi
@@ -43,7 +43,7 @@ public:
 	virtual void Init();
 	void ChangeItem(byte id);
 protected:
-	void UpdateItem(eButton* b, xOptions::eOption* o);
+	void UpdateItem(eButton* b, xOptions::eOptionB* o);
 	virtual void OnNotify(byte n, byte from);
 };
 

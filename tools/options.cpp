@@ -64,13 +64,13 @@ void Load()
 
 	for(; opts; opts = opts->NextSiblingElement())
 	{
-		eOption* o = eOption::Find(XmlNameToOptName(opts->Value()));
+		eOptionB* o = eOptionB::Find(XmlNameToOptName(opts->Value()));
 		if(!o)
 			continue;
 		o->Value(opts->GetText());
 	}
 
-	for(eOption* o = eOption::First(); o; o = o->Next())
+	for(eOptionB* o = eOptionB::First(); o; o = o->Next())
 	{
 		o->Apply();
 	}
@@ -89,7 +89,7 @@ void Store()
 	TiXmlElement* opts = new TiXmlElement("Options");
 	root->LinkEndChild(opts);
 
-	for(eOption* o = eOption::First(); o; o = o->Next())
+	for(eOptionB* o = eOptionB::First(); o; o = o->Next())
 	{
 		if(!o->Storeable())
 			continue;
