@@ -70,6 +70,7 @@
 		<Unit filename="devices/ula.cpp" />
 		<Unit filename="devices/ula.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="options_common.cpp" />
 		<Unit filename="platform/custom_ui/ui_file_open.cpp" />
 		<Unit filename="platform/custom_ui/ui_file_open.h" />
 		<Unit filename="platform/custom_ui/ui_keyboard.cpp" />
