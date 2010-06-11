@@ -128,7 +128,7 @@ struct eOptionString : public eOption<const char*>
 	{
 		return value ? value : "";
 	}
-	virtual void Set(const char*& v)
+	virtual void Value(const char* v)
 	{
 		int s = strlen(v) + 1;
 		if(!value || alloc_size < s)
@@ -139,6 +139,7 @@ struct eOptionString : public eOption<const char*>
 		}
 		strcpy(const_cast<char*>(value), v);
 	}
+	virtual void Set(const char*& v) { Value(v); }
 	int alloc_size;
 };
 

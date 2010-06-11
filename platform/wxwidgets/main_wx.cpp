@@ -479,14 +479,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{
-			SetDefaultPath(wxConvertWX2MB(fd.GetDirectory().c_str()));
+			SetLastFolder(wxConvertWX2MB(fd.GetDirectory().c_str()));
 			if(Handler()->OnOpenFile(wxConvertWX2MB(fd.GetPath().c_str())))
 				SetStatusText(_("File open OK"));
 			else
 				SetStatusText(_("File open FAILED"));
 		}
 	}
-	void SetDefaultPath(const char* path)
+	void SetLastFolder(const char* path)
 	{
 		op_last_folder.Set(path);
 	}
@@ -500,7 +500,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{
-			SetDefaultPath(wxConvertWX2MB(fd.GetDirectory().c_str()));
+			SetLastFolder(wxConvertWX2MB(fd.GetDirectory().c_str()));
 			wxString path = fd.GetPath();
 			size_t p = path.length() - 4;
 			if(path.length() < 4 || (path.rfind(L".sna") != p && path.rfind(L".SNA") != p))
