@@ -67,6 +67,8 @@
 		5C75A07611C2BBFC0011E0F7 /* uncompr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A05011C2BBFC0011E0F7 /* uncompr.c */; };
 		5C75A07711C2BBFC0011E0F7 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A05111C2BBFC0011E0F7 /* unzip.c */; };
 		5C75A07811C2BBFC0011E0F7 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A05511C2BBFC0011E0F7 /* zutil.c */; };
+		5C75A0AD11C2BF190011E0F7 /* options_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A0AC11C2BF190011E0F7 /* options_common.cpp */; };
+		5C75A0AE11C2BF190011E0F7 /* options_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A0AC11C2BF190011E0F7 /* options_common.cpp */; };
 		5C7E10E3119EF4D800C8A7BC /* res in Resources */ = {isa = PBXBuildFile; fileRef = 5C7E10D7119EF4D800C8A7BC /* res */; };
 		5C87D59411A1F5B500CC595A /* dingoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57311A1F5B500CC595A /* dingoo.cpp */; };
 		5C87D59511A1F5B500CC595A /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57711A1F5B500CC595A /* draw.cpp */; };
@@ -205,6 +207,7 @@
 		5C75A05411C2BBFC0011E0F7 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
 		5C75A05511C2BBFC0011E0F7 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zutil.c; sourceTree = "<group>"; };
 		5C75A05611C2BBFC0011E0F7 /* zutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zutil.h; sourceTree = "<group>"; };
+		5C75A0AC11C2BF190011E0F7 /* options_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = options_common.cpp; sourceTree = "<group>"; };
 		5C7E10D7119EF4D800C8A7BC /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		5C87D57311A1F5B500CC595A /* dingoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dingoo.cpp; sourceTree = "<group>"; };
 		5C87D57411A1F5B500CC595A /* jz4740.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jz4740.h; sourceTree = "<group>"; };
@@ -523,6 +526,7 @@
 				5CA77207119DE448000C0142 /* devices */,
 				5CA7724E119DE449000C0142 /* tools */,
 				5CA77264119DE449000C0142 /* z80 */,
+				5C75A0AC11C2BF190011E0F7 /* options_common.cpp */,
 				5C1FB1D4119DE5A1003F1D22 /* main.cpp */,
 				5CA7724A119DE449000C0142 /* speccy.cpp */,
 				5CA7724B119DE449000C0142 /* speccy.h */,
@@ -759,6 +763,7 @@
 				5C75A06511C2BBFC0011E0F7 /* uncompr.c in Sources */,
 				5C75A06611C2BBFC0011E0F7 /* unzip.c in Sources */,
 				5C75A06711C2BBFC0011E0F7 /* zutil.c in Sources */,
+				5C75A0AD11C2BF190011E0F7 /* options_common.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -827,6 +832,7 @@
 				5C75A07611C2BBFC0011E0F7 /* uncompr.c in Sources */,
 				5C75A07711C2BBFC0011E0F7 /* unzip.c in Sources */,
 				5C75A07811C2BBFC0011E0F7 /* zutil.c in Sources */,
+				5C75A0AE11C2BF190011E0F7 /* options_common.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
