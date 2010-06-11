@@ -19,7 +19,7 @@
 					<Add option="-D_LINUX" />
 				</Compiler>
 				<Linker>
-					<Add option="`wx-config --libs core,base,gl`" />
+					<Add option="`wx-config --libs core,base,gl,adv`" />
 					<Add library="GL" />
 					<Add library="openal" />
 					<Add library="glut" />
@@ -38,7 +38,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add option="`wx-config --libs core,base,gl`" />
+					<Add option="`wx-config --libs core,base,gl,adv`" />
 					<Add library="GL" />
 					<Add library="openal" />
 					<Add library="glut" />
@@ -70,14 +70,14 @@
 		<Unit filename="devices/ula.cpp" />
 		<Unit filename="devices/ula.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="platform/custom_ui/file_open.cpp" />
-		<Unit filename="platform/custom_ui/file_open.h" />
-		<Unit filename="platform/custom_ui/keyboard.cpp" />
-		<Unit filename="platform/custom_ui/keyboard.h" />
-		<Unit filename="platform/custom_ui/main.cpp" />
-		<Unit filename="platform/custom_ui/main.h" />
-		<Unit filename="platform/custom_ui/menu.cpp" />
-		<Unit filename="platform/custom_ui/menu.h" />
+		<Unit filename="platform/custom_ui/ui_file_open.cpp" />
+		<Unit filename="platform/custom_ui/ui_file_open.h" />
+		<Unit filename="platform/custom_ui/ui_keyboard.cpp" />
+		<Unit filename="platform/custom_ui/ui_keyboard.h" />
+		<Unit filename="platform/custom_ui/ui_main.cpp" />
+		<Unit filename="platform/custom_ui/ui_main.h" />
+		<Unit filename="platform/custom_ui/ui_menu.cpp" />
+		<Unit filename="platform/custom_ui/ui_menu.h" />
 		<Unit filename="platform/dingoo/dingoo.cpp" />
 		<Unit filename="platform/dingoo/jz4740.h" />
 		<Unit filename="platform/dingoo/stdio.h" />
@@ -97,25 +97,91 @@
 		<Unit filename="platform/symbian/tick.h" />
 		<Unit filename="platform/win/tick_qpc.h" />
 		<Unit filename="platform/win_mobile/win_mobile.cpp" />
+		<Unit filename="platform/win_mobile/win_mobile_sound.cpp" />
 		<Unit filename="platform/wxwidgets/main_wx.cpp" />
-		<Unit filename="snapshot.cpp" />
-		<Unit filename="snapshot.h" />
+		<Unit filename="snapshot/snapshot.cpp" />
+		<Unit filename="snapshot/snapshot.h" />
 		<Unit filename="speccy.cpp" />
 		<Unit filename="speccy.h" />
 		<Unit filename="std.h" />
 		<Unit filename="std_types.h" />
-		<Unit filename="ui/button.cpp" />
-		<Unit filename="ui/button.h" />
-		<Unit filename="ui/control.cpp" />
-		<Unit filename="ui/control.h" />
-		<Unit filename="ui/desktop.cpp" />
-		<Unit filename="ui/desktop.h" />
-		<Unit filename="ui/dialog.cpp" />
-		<Unit filename="ui/dialog.h" />
-		<Unit filename="ui/list.cpp" />
-		<Unit filename="ui/list.h" />
+		<Unit filename="tools/list.h" />
+		<Unit filename="tools/log.cpp" />
+		<Unit filename="tools/log.h" />
+		<Unit filename="tools/options.cpp" />
+		<Unit filename="tools/options.h" />
+		<Unit filename="tools/profiler.cpp" />
+		<Unit filename="tools/profiler.h" />
+		<Unit filename="tools/tick.h" />
+		<Unit filename="tools/tick_clock.h" />
+		<Unit filename="tools/time.h" />
+		<Unit filename="tools/tinyxml/tinystr.cpp" />
+		<Unit filename="tools/tinyxml/tinystr.h" />
+		<Unit filename="tools/tinyxml/tinyxml.cpp" />
+		<Unit filename="tools/tinyxml/tinyxml.h" />
+		<Unit filename="tools/tinyxml/tinyxmlerror.cpp" />
+		<Unit filename="tools/tinyxml/tinyxmlparser.cpp" />
+		<Unit filename="tools/zlib/adler32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/crc32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/crc32.h" />
+		<Unit filename="tools/zlib/crypt.h" />
+		<Unit filename="tools/zlib/deflate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/deflate.h" />
+		<Unit filename="tools/zlib/infback.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/inffast.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/inffast.h" />
+		<Unit filename="tools/zlib/inffixed.h" />
+		<Unit filename="tools/zlib/inflate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/inflate.h" />
+		<Unit filename="tools/zlib/inftrees.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/inftrees.h" />
+		<Unit filename="tools/zlib/ioapi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/ioapi.h" />
+		<Unit filename="tools/zlib/trees.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/trees.h" />
+		<Unit filename="tools/zlib/uncompr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/unzip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/unzip.h" />
+		<Unit filename="tools/zlib/zconf.h" />
+		<Unit filename="tools/zlib/zlib.h" />
+		<Unit filename="tools/zlib/zutil.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/zlib/zutil.h" />
 		<Unit filename="ui/ui.cpp" />
 		<Unit filename="ui/ui.h" />
+		<Unit filename="ui/ui_button.cpp" />
+		<Unit filename="ui/ui_button.h" />
+		<Unit filename="ui/ui_control.cpp" />
+		<Unit filename="ui/ui_control.h" />
+		<Unit filename="ui/ui_desktop.cpp" />
+		<Unit filename="ui/ui_desktop.h" />
+		<Unit filename="ui/ui_dialog.cpp" />
+		<Unit filename="ui/ui_dialog.h" />
+		<Unit filename="ui/ui_list.cpp" />
+		<Unit filename="ui/ui_list.h" />
 		<Unit filename="z80/z80.cpp" />
 		<Unit filename="z80/z80.h" />
 		<Unit filename="z80/z80_op.h" />
