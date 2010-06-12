@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/log.h"
 #include "../../ui/ui.h"
 #include "../../tools/profiler.h"
+#include "../../tools/options.h"
 
 #include <eikstart.h>
 #include <eikedwin.h>
@@ -43,6 +44,27 @@ DECLARE_PROFILER_SECTION(dc_draw_symbian);
 namespace xPlatform
 {
 
+static struct eOptionSkipFrames : public xOptions::eOptionInt
+{
+	virtual const char* Name() const { return "skip frames"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "off", "1", "2", "3", "4", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		int sf = self + 1;
+		if(sf > 4)
+			sf = 0;
+		Set(sf);
+	}
+} op_skip_frames;
+
+void InitSound();
+void DoneSound();
+void OnLoopSound();
+
 static const char* FileNameToCStr(const TFileName& n)
 {
 	static char buf[xIo::MAX_PATH_LEN];
@@ -60,9 +82,11 @@ void Init()
     xIo::SetResourcePath(FileNameToCStr(appPath));
     xLog::SetLogPath("e:\\usp\\");
     Handler()->OnInit();
+    InitSound();
 }
 void Done()
 {
+    DoneSound();
     Handler()->OnDone();
 }
 
@@ -84,7 +108,7 @@ public:
 
 private:
 	void OnTimer();
-	void Update() const;
+	void Draw() const;
 	void HandleResourceChange(TInt aType);
 	TInt CountComponentControls() const { return 0; }
 	CCoeControl* ComponentControl(TInt aIndex) const { return NULL; }
@@ -94,7 +118,7 @@ private:
 protected:
 	CPeriodic* iPeriodic;
 	CFbsBitmap* bitmap;
-	int frame;
+	mutable int frame;
 
 	struct eMouse
 	{
@@ -164,28 +188,12 @@ void TDCControl::Draw(const TRect& /*aRect*/) const
 	gc.Clear(Rect());
 	if(bitmap)
 	{
-		Update();
+		Draw();
 		gc.BitBlt(TPoint(0, 0), bitmap);
 	}
 }
-void TDCControl::HandleResourceChange(TInt aType)
+void TDCControl::Draw() const
 {
-	switch(aType)
-	{
-	case KEikDynamicLayoutVariantSwitch:
-		SetExtentToWholeScreen();
-		break;
-	}
-}
-
-void TDCControl::Update() const
-{
-	if(mouse.enable && mouse.Update())
-	{
-		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
-	}
-	Handler()->OnLoop();
-
 	PROFILER_BEGIN(dc_draw_symbian);
 	byte* data = (byte*)Handler()->VideoData();
 	dword* data_ui = (dword*)Handler()->VideoDataUI();
@@ -213,13 +221,30 @@ void TDCControl::Update() const
 }
 void TDCControl::OnTimer()
 {
-	++frame;
-	DrawDeferred();
+	if(mouse.enable && mouse.Update())
+	{
+		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
+	}
+	Handler()->OnLoop();
+	OnLoopSound();
 
+	++frame;
 	if(!(frame%100))
 		User::ResetInactivityTime();
 	if(!(frame%50))
 		User::After(0);
+
+	if(!op_skip_frames || frame % (op_skip_frames + 1) == 0)
+		DrawDeferred();
+}
+void TDCControl::HandleResourceChange(TInt aType)
+{
+	switch(aType)
+	{
+	case KEikDynamicLayoutVariantSwitch:
+		SetExtentToWholeScreen();
+		break;
+	}
 }
 TInt TDCControl::TimerCallBack( TAny* aInstance )
 {
