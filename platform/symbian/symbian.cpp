@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../ui/ui.h"
 #include "../../tools/profiler.h"
 #include "../../tools/options.h"
+#include "../../tools/tick.h"
 
 #include <eikstart.h>
 #include <eikedwin.h>
@@ -116,7 +117,7 @@ private:
 	void HandleControlEventL(CCoeControl* aControl,TCoeEvent aEventType) {}
 	TKeyResponse OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType);
 protected:
-	CPeriodic* iPeriodic;
+	CIdle* iPeriodic;
 	CFbsBitmap* bitmap;
 	mutable int frame;
 
@@ -133,6 +134,7 @@ protected:
 	dword key_flags;
 
 	dword color_cache[16];
+	eTick tick;
 };
 bool TDCControl::eMouse::Update()
 {
@@ -171,14 +173,18 @@ void TDCControl::ConstructL(const TRect& /*aRect*/)
 
 	bitmap = new CFbsBitmap;//(iEikonEnv->WsSession());
 	bitmap->Create(TSize(320, 240), EColor16MU);
-	iPeriodic = CPeriodic::NewL( CActive::EPriorityStandard );
+//	iPeriodic = CPeriodic::NewL( CActive::EPriorityStandard );
 	// 50 fps 20000 mks interval
-	iPeriodic->Start(20000, 20000, TCallBack( TDCControl::TimerCallBack, this));
+//	iPeriodic->Start(20000, 20000, TCallBack( TDCControl::TimerCallBack, this));
+	iPeriodic = CIdle::NewL( CActive::EPriorityIdle );
+	iPeriodic->Start(TCallBack( TDCControl::TimerCallBack, this));
+	tick.SetCurrent();
 }
 TDCControl::~TDCControl()
 {
-	delete iPeriodic;
-	delete bitmap;
+	SAFE_CALL(iPeriodic)->Cancel();
+	SAFE_DELETE(iPeriodic);
+	SAFE_DELETE(bitmap);
 	Done();
 }
 void TDCControl::Draw(const TRect& /*aRect*/) const
@@ -226,6 +232,12 @@ void TDCControl::OnTimer()
 		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
 	}
 	Handler()->OnLoop();
+	float ms = tick.Passed().Mks();
+	if(ms < 20000)
+	{
+		User::AfterHighRes(20000 - ms);
+	}
+	tick.SetCurrent();
 	OnLoopSound();
 
 	++frame;
@@ -249,7 +261,7 @@ void TDCControl::HandleResourceChange(TInt aType)
 TInt TDCControl::TimerCallBack( TAny* aInstance )
 {
 	((TDCControl*)aInstance)->OnTimer();
-	return 0;
+	return 1;
 }
 static char TranslateKey(const TKeyEvent& aKeyEvent)
 {
