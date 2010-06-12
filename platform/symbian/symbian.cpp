@@ -96,7 +96,7 @@ class TDCControl : public CCoeControl, MCoeControlObserver
 public:
 	void ConstructL(const TRect& aRect);
 	TDCControl()
-		: iPeriodic(NULL), bitmap(NULL), frame(0), key_flags(KF_CURSOR|KF_KEMPSTON)
+		: iTimer(NULL), bitmap(NULL), frame(0), key_flags(KF_CURSOR|KF_KEMPSTON)
 		{}
 	virtual ~TDCControl();
 
@@ -117,7 +117,7 @@ private:
 	void HandleControlEventL(CCoeControl* aControl,TCoeEvent aEventType) {}
 	TKeyResponse OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType);
 protected:
-	CIdle* iPeriodic;
+	CIdle* iTimer;
 	CFbsBitmap* bitmap;
 	mutable int frame;
 
@@ -171,19 +171,16 @@ void TDCControl::ConstructL(const TRect& /*aRect*/)
 		color_cache[c] = BGRX(r, g ,b);
 	}
 
-	bitmap = new CFbsBitmap;//(iEikonEnv->WsSession());
+	bitmap = new CFbsBitmap;
 	bitmap->Create(TSize(320, 240), EColor16MU);
-//	iPeriodic = CPeriodic::NewL( CActive::EPriorityStandard );
-	// 50 fps 20000 mks interval
-//	iPeriodic->Start(20000, 20000, TCallBack( TDCControl::TimerCallBack, this));
-	iPeriodic = CIdle::NewL( CActive::EPriorityIdle );
-	iPeriodic->Start(TCallBack( TDCControl::TimerCallBack, this));
+	iTimer = CIdle::NewL(CActive::EPriorityIdle);
+	iTimer->Start(TCallBack(TDCControl::TimerCallBack, this));
 	tick.SetCurrent();
 }
 TDCControl::~TDCControl()
 {
-	SAFE_CALL(iPeriodic)->Cancel();
-	SAFE_DELETE(iPeriodic);
+	SAFE_CALL(iTimer)->Cancel();
+	SAFE_DELETE(iTimer);
 	SAFE_DELETE(bitmap);
 	Done();
 }
@@ -231,23 +228,22 @@ void TDCControl::OnTimer()
 	{
 		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
 	}
-	Handler()->OnLoop();
-	float ms = tick.Passed().Mks();
-	if(ms < 20000)
+	for(int i = 0; i <= op_skip_frames; ++i)
 	{
-		User::AfterHighRes(20000 - ms);
+		Handler()->OnLoop();
+		OnLoopSound();
 	}
-	tick.SetCurrent();
-	OnLoopSound();
-
 	++frame;
 	if(!(frame%100))
 		User::ResetInactivityTime();
-	if(!(frame%50))
-		User::After(0);
-
-	if(!op_skip_frames || frame % (op_skip_frames + 1) == 0)
-		DrawDeferred();
+	DrawDeferred();
+	qword mks_org = 20000*(op_skip_frames + 1);
+	qword mks = tick.Passed().Mks();
+	if(mks < mks_org)
+	{
+		User::AfterHighRes(mks_org - mks);
+	}
+	tick.SetCurrent();
 }
 void TDCControl::HandleResourceChange(TInt aType)
 {
