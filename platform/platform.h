@@ -53,7 +53,7 @@ enum eMouseAction { MA_MOVE, MA_BUTTON, MA_WHEEL };
 enum eAction
 {
 	A_RESET, A_QUIT, A_TAPE_TOGGLE, A_TAPE_FAST_TOGGLE, A_DRIVE_NEXT,
-	A_JOYSTICK_NEXT, A_SOUND_NEXT, A_VOLUME_NEXT,
+	A_JOYSTICK_NEXT, A_SOUND_NEXT, A_VOLUME_NEXT, A_RAY_NEXT,
 	A_TRUE_SPEED_TOGGLE, A_MODE_48K_TOGGLE
 };
 enum eActionResult
@@ -68,6 +68,7 @@ enum eActionResult
 enum eJoystick { J_FIRST, J_KEMPSTON = J_FIRST, J_CURSOR, J_QAOP, J_SINCLAIR2, J_LAST };
 enum eSound { S_FIRST, S_BEEPER = S_FIRST, S_AY, S_TAPE, S_LAST };
 enum eVolume { V_FIRST, V_MUTE = V_FIRST, V_10, V_20, V_30, V_40, V_50, V_60, V_70, V_80, V_90, V_100, V_LAST };
+enum eRay { R_FIRST, R_OFF = R_FIRST, R_ON, R_MIRROR_H, R_MIRROR_V, R_MIRROR_HV, R_LAST };
 
 struct eHandler
 {
@@ -102,9 +103,10 @@ struct eHandler
 	virtual bool Mode48k() const = 0;
 	virtual bool Quit() const = 0;
 
-	virtual eJoystick	Joystick() const = 0;
-	virtual eSound		Sound() const = 0;
-	virtual eVolume		Volume() const = 0;
+	virtual eJoystick Joystick() const = 0;
+	virtual eSound Sound() const = 0;
+	virtual eVolume Volume() const = 0;
+	virtual eRay RaySync() const = 0;
 };
 
 eHandler* Handler();

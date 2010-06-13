@@ -56,7 +56,8 @@ struct eFileType : public eList<eFileType>
 static struct eSpeccyHandler : public eHandler
 {
 	eSpeccyHandler() : speccy(NULL), video_paused(0), drive_for_open(0)
-		, joystick(J_KEMPSTON), sound(S_AY), volume(V_100), quit(false), true_speed(false), mode_48k(false) {}
+		, joystick(J_KEMPSTON), sound(S_AY), volume(V_100), ray_sync(R_OFF)
+		, quit(false), true_speed(false), mode_48k(false) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit()
 	{
@@ -313,6 +314,10 @@ static struct eSpeccyHandler : public eHandler
 			if(++volume == V_LAST)
 				volume = V_FIRST;
 			return AR_OK;
+		case A_RAY_NEXT:
+			if(++ray_sync == R_LAST)
+				ray_sync = R_FIRST;
+			return AR_OK;
 		case A_QUIT:
 			quit = true;
 			return AR_OK;
@@ -346,6 +351,7 @@ static struct eSpeccyHandler : public eHandler
 	virtual eJoystick Joystick() const { return (eJoystick)joystick; }
 	virtual eSound Sound() const { return (eSound)sound; }
 	virtual eVolume Volume() const { return (eVolume)volume; }
+	virtual eRay RaySync() const { return (eRay)ray_sync; }
 
 	eSpeccy* speccy;
 #ifdef USE_UI
@@ -357,6 +363,7 @@ static struct eSpeccyHandler : public eHandler
 	int joystick;
 	int sound;
 	int volume;
+	int ray_sync;
 
 	bool quit;
 	bool true_speed;

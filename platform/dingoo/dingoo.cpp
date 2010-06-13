@@ -56,7 +56,7 @@ void* g_pGameDecodeBuf = NULL;
 
 class eTimer
 {
-	enum { CHANNEL = 3, REFRESH_LATENCY = CFG_EXTAL / 4 / 50 }; //in tcu ticks 0xdf7c
+	enum { CHANNEL = 3, REFRESH_LATENCY = CFG_EXTAL / 4 / 50 };
 public:
 	eTimer()
 	{
@@ -87,17 +87,14 @@ protected:
 	bool IsFuture() { return __tcu_full_match_flag(CHANNEL); }
 }timer;
 
-#define RGB565(r, g, b)	(((b&~7) << 8)|((g&~3) << 3)|(r >> 3))
+#define BGR565(r, g, b)	(((r&~7) << 8)|((g&~3) << 3)|(b >> 3))
 
 class eVideo
 {
 public:
-	eVideo() : frame(NULL), frame_back(NULL)
+	eVideo() : frame(NULL), frame_back(NULL), ray_sync(false)
 	{
-		Set(0x03, 0x0030);	//entry mode default
 		Set(0x2b, 0x000d);	//max refresh rate
-		Set(0x20, 0x0000);
-		Set(0x21, 0x0000);
 		Set(0x22);			//write to GRAM
 		frame = (word*)_lcd_get_frame();
 		frame_back = (word*)g_pGameDecodeBuf;
@@ -108,19 +105,19 @@ public:
 			byte b = c&1 ? i : 0;
 			byte r = c&2 ? i : 0;
 			byte g = c&4 ? i : 0;
-			colors[c] = RGB565(r, g, b);
+			colors888[c] = xUi::eRGBAColor(r, g, b).rgba;
+			colors565[c] = BGR565(r, g, b);
 		}
 	}
 	~eVideo() 
 	{
-#ifdef _LCD_ILI9325
-		Set(0x03, 0x1098);	//entry mode restore
-#else
-		Set(0x03, 0x1048);	//entry mode restore
-#endif
+		if(ray_sync)
+		{
+			int mirr = xPlatform::Handler()->RaySync();
+			mirr = mirr ? mirr - 1 : 0;
+			Set(0x03, 0x1048|(~mirr&3 << 4)); //entry mode restore
+		}
 		Set(0x2b, 0x000d);	//default refresh rate
-		Set(0x20, 0x0000);
-		Set(0x21, 0x0000);
 		Set(0x22);			//write to GRAM
 	}
 	void Flip();
@@ -132,7 +129,9 @@ protected:
 protected:
 	word*	frame;
 	word*	frame_back;
-	word	colors[16];
+	word	colors565[16];
+	dword	colors888[16];
+	bool	ray_sync;
 }video;
 
 void eVideo::Set(dword cmd, int data)
@@ -178,37 +177,47 @@ void eVideo::Update()
 {
 	using namespace xPlatform;
 	byte* src = (byte*)Handler()->VideoData();
-	dword* src2 = (dword*)Handler()->VideoDataUI();
+	dword* src_ui = (dword*)Handler()->VideoDataUI();
 	word* dst = video.FrameBack();
-	if(src2)
+	int mirr = Handler()->RaySync();
+	if(mirr && !ray_sync)
 	{
-#ifdef _LCD_ILI9325
-		for(int offs_base = 320; --offs_base >= 0; )
-			for(int offs = offs_base; offs < 320*240; offs += 320)
-#else
-		for(int offs_base = 320*240; --offs_base >= 320*239; )
-			for(int offs = offs_base; offs >= 0; offs -= 320)
-#endif
+		ray_sync = true;
+		Set(0x03, 0x1070);	//entry mode default
+		Set(0x22);			//write to GRAM
+	}
+	mirr = mirr ? mirr - 1 : 0;
+	bool mirr_h = mirr & 1;
+	bool mirr_v = mirr & 2;
+	int offs_base = !ray_sync ? 0 : mirr_h ? 319 : 0;
+	int ext_step = !ray_sync ? 320 : mirr_h ? -1 : 1;
+	int int_step = !ray_sync ? 1 : mirr_v ? -320 : 320;
+	int ext_end = !ray_sync ? 320*240 : mirr_h ? -1 : 320;
+	int int_end = !ray_sync ? 320 : mirr_v ? -320 : 320*240;
+	offs_base += mirr_v ? 320*239 : 0;
+	ext_end += mirr_v ? 320*239 : 0;
+	int_end += mirr_h ? 319 : 0;
+	if(src_ui)
+	{
+		for(; offs_base != ext_end; offs_base += ext_step, int_end += ext_step)
+		{
+			for(int offs = offs_base; offs != int_end; offs += int_step)
 			{
-				byte c = src[offs];
-				byte i = c&8 ? BRIGHTNESS + BRIGHT_INTENSITY : BRIGHTNESS;
-				byte b = c&1 ? i : 0;
-				byte r = c&2 ? i : 0;
-				byte g = c&4 ? i : 0;
-				xUi::eRGBAColor c2 = src2[offs];
-				*dst++ = RGB565((r >> c2.a) + c2.r, (g >> c2.a) + c2.g, (b >> c2.a) + c2.b);
+				xUi::eRGBAColor c_ui = src_ui[offs];
+				xUi::eRGBAColor c = colors888[src[offs]];
+				*dst++ = BGR565((c.r >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.b >> c_ui.a) + c_ui.b);
 			}
+		}
 	}
 	else
 	{
-#ifdef _LCD_ILI9325
-		for(int offs_base = 320; --offs_base >= 0; )
-			for(int offs = offs_base; offs < 320*240; offs += 320)
-#else
-		for(int offs_base = 320*240; --offs_base >= 320*239; )
-			for(int offs = offs_base; offs >= 0; offs -= 320)
-#endif
-			*dst++ = colors[src[offs]];
+		for(; offs_base != ext_end; offs_base += ext_step, int_end += ext_step)
+		{
+			for(int offs = offs_base; offs != int_end; offs += int_step)
+			{
+				*dst++ = colors565[src[offs]];
+			}
+		}
 	}
 }
 
