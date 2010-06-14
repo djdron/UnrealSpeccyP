@@ -63,8 +63,9 @@ mkdirs:
 	mkdir -p $(SIS_PATH)
 	mkdir -p $(foreach DIR, $(SRCFOLDERS), $(OBJ_PATH)/$(DIR))
 
-$(IMG_TARGETS): $(IMG_SRCS)
-	mifconv $@ $(subst /,//,$(IMG_ARGS)) $^
+icon:
+	bmconv $(ICON_TARGET) $(IMG_ARGS)$(ICON_SRC).bmp $(ICON_SRC)_mask.bmp
+#	mifconv $@ $(subst /,//,$(IMG_ARGS)) $^
 
 $(RSS_TARGETS): $(DIST_PATH)/%.rsc : $(RSS_PATH)/%.rss
 	$(ACTIVE_PERL) -S $(EPOCROOT)/epoc32/tools/epocrc.pl -m045,046,047 \
@@ -103,6 +104,6 @@ clean: preGCCE preALL
 	rm -rf $(BIN_TARGET)
 	rm -rf $(BIN_TARGET).map
 
-build: preGCCE preALL mkdirs $(IMG_TARGETS) $(RSS_TARGETS) $(BIN_TARGET)
+build: preGCCE preALL mkdirs icon $(RSS_TARGETS) $(BIN_TARGET)
 
-.PHONY: build clean pack check mkdirs preALL preGCCE
+.PHONY: build clean pack check icon mkdirs preALL preGCCE

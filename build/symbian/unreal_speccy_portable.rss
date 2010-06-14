@@ -120,6 +120,6 @@ RESOURCE LOCALISABLE_APP_INFO r_localisable_app_info
     {
         caption         = STRING_app_caption_string;
         number_of_icons = 1;
-        icon_file       = "\\resource\\apps\\unreal_speccy_portable.mif";
+        icon_file       = "\\resource\\apps\\unreal_speccy_portable.mbm";
     };
 }

@@ -1,6 +1,6 @@
 // LOCALISATION STRINGS
 
-rls_string STRING_app_caption_string       "UnrealSpeccyPortable"
+rls_string STRING_app_caption_string       "Unreal Speccy Portable"
 rls_string STRING_app_short_caption_string "USP"
 
 rls_string STRING_exit          "Exit"
