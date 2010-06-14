@@ -67,7 +67,8 @@ void Load()
 		eOptionB* o = eOptionB::Find(XmlNameToOptName(opts->Value()));
 		if(!o)
 			continue;
-		o->Value(opts->GetText());
+		const char* v = opts->GetText();
+		o->Value(v ? v : "");
 	}
 
 	for(eOptionB* o = eOptionB::First(); o; o = o->Next())

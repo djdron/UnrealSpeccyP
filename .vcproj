@@ -602,6 +602,14 @@
 					RelativePath=".\platform\symbian\symbian_gles.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\platform\symbian\symbian_sound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\symbian\tick.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="linux"
