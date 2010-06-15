@@ -50,7 +50,7 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 	virtual const char* Name() const { return "skip frames"; }
 	virtual const char** Values() const
 	{
-		static const char* values[] = { "off", "1", "2", "3", "4", NULL };
+		static const char* values[] = { "off", "2", "4", "8", "16", NULL };
 		return values;
 	}
 	virtual void Change(bool next = true)
@@ -60,6 +60,7 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 			sf = 0;
 		Set(sf);
 	}
+	int Values(int id) const { static const int vals[] = { 0, 2, 4, 8, 16 }; return vals[id]; }
 } op_skip_frames;
 
 void InitSound();
@@ -228,22 +229,24 @@ void TDCControl::OnTimer()
 	{
 		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
 	}
-	for(int i = 0; i <= op_skip_frames; ++i)
-	{
-		Handler()->OnLoop();
-		OnLoopSound();
-	}
+	Handler()->OnLoop();
+
 	++frame;
 	if(!(frame%100))
 		User::ResetInactivityTime();
-	DrawDeferred();
-	qword mks_org = 20000*(op_skip_frames + 1);
-	qword mks = tick.Passed().Mks();
-	if(mks < mks_org)
+	int sf = op_skip_frames.Values(op_skip_frames) + 1;
+	if(frame % sf == 0)
 	{
-		User::AfterHighRes(mks_org - mks);
+		DrawDeferred();
+		qword mks_org = 20000*sf;
+		qword mks = tick.Passed().Mks();
+		if(mks < mks_org)
+		{
+			User::AfterHighRes(mks_org - mks);
+		}
+		tick.SetCurrent();
 	}
-	tick.SetCurrent();
+	OnLoopSound();
 }
 void TDCControl::HandleResourceChange(TInt aType)
 {

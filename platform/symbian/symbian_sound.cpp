@@ -53,16 +53,11 @@ public:
 	void WriteSound(unsigned char* aBuffer, int bytes)
 	{
 		TPtrC8 ptr(aBuffer, bytes);
-		TPtr8 des((unsigned char*) iSound[iCurrentBuf].Ptr()+bytes*iCurrentSeg, bytes);
+		TPtr8 des((byte*)iSound[iCurrentBuf].Ptr(), bytes);
 		des.Copy(ptr);
-		iCurrentSeg++;
-		if(iCurrentSeg == eSegsCount)
-		{
-			iSound[iCurrentBuf].SetLength(bytes*eSegsCount);
-			iSndStream->WriteL(iSound[iCurrentBuf]);
-			iCurrentBuf = 1 - iCurrentBuf;
-			iCurrentSeg = 0;
-		}
+		iSound[iCurrentBuf].SetLength(bytes);
+		iSndStream->WriteL(iSound[iCurrentBuf]);
+		iCurrentBuf = 1 - iCurrentBuf;
 	}
 
 	virtual void MaoscOpenComplete(TInt aError)
@@ -70,7 +65,7 @@ public:
 		if(aError == KErrNone)
 		{
 			iSndStream->SetPriority(EPriorityMuchMore, EMdaPriorityPreferenceNone);
-			iSndStream->SetVolume((iSndStream->MaxVolume()*Handler()->Volume())/10);
+			iSndStream->SetVolume(iSndStream->MaxVolume()*Handler()->Volume()/10);
 			iVolume = Handler()->Volume();
 			if(!UpdatePSndRate())
 			{
@@ -85,7 +80,7 @@ public:
 	{
 		if(iVolume != Handler()->Volume() || aError != KErrNone)
 		{
-			iSndStream->SetVolume((iSndStream->MaxVolume()*Handler()->Volume())/10);
+			iSndStream->SetVolume(iSndStream->MaxVolume()*Handler()->Volume()/10);
 			iVolume = Handler()->Volume();
 		}
 	}
@@ -94,7 +89,7 @@ public:
 	{
 		if(aError != KErrNone)
 		{
-			iSndStream->SetVolume((iSndStream->MaxVolume()*Handler()->Volume())/10);
+			iSndStream->SetVolume(iSndStream->MaxVolume()*Handler()->Volume()/10);
 			iVolume = Handler()->Volume();
 			UpdatePSndRate();
 		}
@@ -103,7 +98,6 @@ public:
 	void ConstructL()
 	{
 		iCurrentBuf = 0;
-		iCurrentSeg = 0;
 		iVolume = 0;
 		iSampleRate = 44100;
 		iStereo = true;
@@ -126,19 +120,24 @@ public:
 			bool ui_enabled = Handler()->VideoDataUI() != NULL;
 			if(i == Handler()->Sound() && !ui_enabled && !Handler()->FullSpeed())
 			{
-				WriteSound((byte*)Handler()->AudioData(i), size);
+				if(size > 44100*2*2/50*3)
+				{
+					WriteSound((byte*)Handler()->AudioData(i), size);
+					Handler()->AudioDataUse(i, size);
+				}
 			}
-			Handler()->AudioDataUse(i, size);
+			else
+			{
+				Handler()->AudioDataUse(i, size);
+			}
 		}
 	}
 
 protected:
-	enum { eSegsCount = 5 };
 	CMdaAudioOutputStream*	iSndStream;
 	TMdaAudioDataSettings	iAudioSettings;
-	TBuf8<16384 * eSegsCount> iSound[2];
+	TBuf8<65536>			iSound[2];
 	TInt					iCurrentBuf;
-	TInt					iCurrentSeg;
 	TInt					iVolume;
 	TInt					iSampleRate;
 	TInt					iStereo;
