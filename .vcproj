@@ -929,6 +929,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\options_common.h"
+			>
+		</File>
+		<File
 			RelativePath=".\speccy.cpp"
 			>
 		</File>
