@@ -2,17 +2,20 @@
 &EN
 
 ;Header
-#{"Unreal Speccy Portable"}, (0xA000821A), 1, 0, 0,TYPE=SA
+#{"Unreal Speccy Portable"}, (0xA000821A), 0, 0, 13,TYPE=SA
 
 ;Localised Vendor name
-%{"Vendor-EN"}
+%{"Vendor"}
 
 ;Unique Vendor name
 :"Vendor"
 
 ;Supports Series 60 v 3.0
-[0x101F7961], 0, 0, 0, {"Series60ProductID"}
+[0x101F7961], 0, 0, 0, {"S60ProductID"}
 
+="dist\gcce\unreal_speccy_portable.mbm", "image/x-mbm", ""
+"..\..\README"-"", FT, TC
+"..\..\LICENSE"-"", FT, TA
 ;Files to install
 "dist\gcce\unreal_speccy_portable.exe"	-"!:\sys\bin\unreal_speccy_portable.exe"
 "dist\gcce\unreal_speccy_portable.rsc"	-"!:\resource\apps\unreal_speccy_portable.rsc"
