@@ -287,7 +287,7 @@ bool Store(eSpeccy* speccy, const char* file)
 	bool ok = false;
 	if(size)
 		ok = fwrite(s, 1, size, f) == size;
-	delete[] s;
+	delete s;
 	fclose(f);
 	return ok;
 }

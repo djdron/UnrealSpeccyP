@@ -55,9 +55,7 @@ struct eFileType : public eList<eFileType>
 
 static struct eSpeccyHandler : public eHandler
 {
-	eSpeccyHandler() : speccy(NULL), video_paused(0), drive_for_open(0)
-		, joystick(J_KEMPSTON), sound(S_AY), volume(V_100), ray_sync(R_OFF)
-		, quit(false), true_speed(false), mode_48k(false) {}
+	eSpeccyHandler() : speccy(NULL), video_paused(0), drive_for_open(0) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit()
 	{
@@ -71,7 +69,8 @@ static struct eSpeccyHandler : public eHandler
 		sound_dev[1] = speccy->Device<eAY>();
 		sound_dev[2] = speccy->Device<eTape>();
 		xOptions::Load();
-		if(Mode48k())
+		xOptions::eOption<bool>* op_mode_48k = xOptions::eOption<bool>::Find("mode 48k");
+		if(op_mode_48k && *op_mode_48k)
 			speccy->Reset();
 	}
 	virtual void OnDone()
@@ -291,46 +290,6 @@ static struct eSpeccyHandler : public eHandler
 					speccy->CPU()->FastEmul(NULL);
 				return speccy->CPU()->FastEmul() ? AR_TAPE_FAST_SET : AR_TAPE_FAST_RESET;
 			}
-		case A_DRIVE_NEXT:
-			{
-				switch(++drive_for_open)
-				{
-				case 4:	drive_for_open = 0; return AR_DRIVE_A;
-				case 1:	return AR_DRIVE_B;
-				case 2:	return AR_DRIVE_C;
-				case 3:	return AR_DRIVE_D;
-				}
-				return AR_ERROR;
-			}
-		case A_JOYSTICK_NEXT:
-			if(++joystick == J_LAST)
-				joystick = J_FIRST;
-			return AR_OK;
-		case A_SOUND_NEXT:
-			if(++sound == S_LAST)
-				sound = S_FIRST;
-			return AR_OK;
-		case A_VOLUME_NEXT:
-			if(++volume == V_LAST)
-				volume = V_FIRST;
-			return AR_OK;
-		case A_RAY_NEXT:
-			if(++ray_sync == R_LAST)
-				ray_sync = R_FIRST;
-			return AR_OK;
-		case A_QUIT:
-			quit = true;
-			return AR_OK;
-		case A_TRUE_SPEED_TOGGLE:
-			true_speed = !true_speed;
-			return AR_OK;
-		case A_MODE_48K_TOGGLE:
-			mode_48k = !mode_48k;
-			speccy->Device<eRom>()->Mode48k(mode_48k);
-			speccy->Device<eRam>()->Mode48k(mode_48k);
-			speccy->Device<eUla>()->Mode48k(mode_48k);
-			speccy->Devices().Init();
-			return AR_OK;
 		}
 		return AR_ERROR;
 	}
@@ -341,18 +300,7 @@ static struct eSpeccyHandler : public eHandler
 	virtual void AudioDataUse(int source, dword size) { sound_dev[source]->AudioDataUse(size); }
 	virtual void VideoPaused(bool paused) {	paused ? ++video_paused : --video_paused; }
 
-	virtual bool TapeInserted() const { return speccy->Device<eTape>()->Inserted(); }
-	virtual bool TapeStarted() const { return speccy->Device<eTape>()->Started(); }
 	virtual bool FullSpeed() const { return speccy->CPU()->FastEmul(); }
-	virtual bool TrueSpeed() const { return true_speed; }
-	virtual bool Mode48k() const { return mode_48k; }
-	virtual bool Quit() const { return quit; }
-
-	virtual eJoystick Joystick() const { return (eJoystick)joystick; }
-	virtual eSound Sound() const { return (eSound)sound; }
-	virtual eVolume Volume() const { return (eVolume)volume; }
-	virtual eRay RaySync() const { return (eRay)ray_sync; }
-
 	eSpeccy* speccy;
 #ifdef USE_UI
 	xUi::eDesktop* ui_desktop;
@@ -360,18 +308,29 @@ static struct eSpeccyHandler : public eHandler
 	int video_paused;
 	int drive_for_open;
 
-	int joystick;
-	int sound;
-	int volume;
-	int ray_sync;
-
-	bool quit;
-	bool true_speed;
-	bool mode_48k;
-
 	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];
 } sh;
+
+static struct eOption48K : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "mode 48k"; }
+	virtual void Change(bool next = true)
+	{
+		eOptionBool::Change();
+		Apply();
+	}
+	virtual void Apply()
+	{
+		if(sh.speccy->Device<eRam>()->Mode48k() != self)
+		{
+			sh.speccy->Device<eRom>()->Mode48k(self);
+			sh.speccy->Device<eRam>()->Mode48k(self);
+			sh.speccy->Device<eUla>()->Mode48k(self);
+			sh.speccy->Devices().Init();
+		}
+	}
+} op_48k;
 
 static struct eFileTypeZ80 : public eFileType
 {

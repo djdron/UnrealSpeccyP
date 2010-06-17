@@ -71,14 +71,30 @@ protected:
 
 class eOptionInt : public eOption<int>
 {
-	const char*	Value() const
+protected:
+	void Change(int f, int l, bool next = true)
+	{
+		if(next)
+		{
+			Set(self + 1);
+			if(self >= l)
+				Set(f);
+		}
+		else
+		{
+			Set(self - 1);
+			if(self < f)
+				Set(l - 1);
+		}
+	}
+	virtual const char*	Value() const
 	{
 		const char** vals = Values();
 		if(!vals)
 			return NULL;
 		return vals[value];
 	}
-	void Value(const char* v)
+	virtual void Value(const char* v)
 	{
 		const char** vals = Values();
 		if(!vals)
@@ -96,14 +112,15 @@ class eOptionInt : public eOption<int>
 
 struct eOptionBool : public eOption<bool>
 {
-	const char*	Value() const
+	virtual void Change(bool next = true) { Set(!value); }
+	virtual const char*	Value() const
 	{
 		const char** vals = Values();
 		if(!vals)
 			return NULL;
 		return vals[value ? 1 : 0];
 	}
-	void Value(const char* v)
+	virtual void Value(const char* v)
 	{
 		const char** vals = Values();
 		if(!vals)
@@ -124,7 +141,7 @@ struct eOptionString : public eOption<const char*>
 {
 	eOptionString() : alloc_size(0) {}
 	virtual ~eOptionString() { SAFE_DELETE_ARRAY(value); }
-	const char*	Value() const
+	virtual const char*	Value() const
 	{
 		return value ? value : "";
 	}

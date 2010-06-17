@@ -55,10 +55,7 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 	}
 	virtual void Change(bool next = true)
 	{
-		int sf = self + 1;
-		if(sf > 4)
-			sf = 0;
-		Set(sf);
+		eOptionInt::Change(0, 5, next);
 	}
 	int Values(int id) const { static const int vals[] = { 0, 2, 4, 8, 16 }; return vals[id]; }
 } op_skip_frames;

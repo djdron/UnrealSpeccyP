@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../io.h"
 #include "../../tools/options.h"
+#include "../../options_common.h"
 
 #undef self
 
@@ -58,13 +59,9 @@ static struct eOptionTrueSpeed : public xOptions::eOptionBool
 	virtual const char* Name() const { return "true speed"; }
 	virtual void Change(bool next = true)
 	{
-		Set(!*this);
-		Apply();
-	}
-	virtual void Apply()
-	{
-		while(*this != Handler()->TrueSpeed())
-			Handler()->OnAction(A_TRUE_SPEED_TOGGLE);
+		eOptionBool::Change();
+		DoneSound();
+		InitSound();
 	}
 } op_true_speed;
 
@@ -97,6 +94,7 @@ public:
 		, key_flags(KF_CURSOR|KF_KEMPSTON)
 		, mouse_pos(0, 0)
 	{
+		op_quit = xOptions::eOption<bool>::Find("quit");
 	}
 	virtual void OnPaint(wxPaintEvent& event)
 	{
@@ -116,12 +114,11 @@ public:
 	}
 	virtual void OnIdle(wxIdleEvent& event)
 	{
-		if(Handler()->Quit())
+		if(op_quit && *op_quit)
 		{
 			GetParent()->Close(true);
 			return;
-		}
-		Handler()->OnLoop();
+		}		Handler()->OnLoop();
 		OnLoopSound();
 		Refresh(false);
 		if(!Handler()->FullSpeed())
@@ -206,6 +203,7 @@ public:
 	void TranslateKey(int& key, dword& flags);
 
 	dword key_flags;
+	xOptions::eOption<bool>* op_quit;
 
 	static int canvas_attr[];
 	DECLARE_EVENT_TABLE()
@@ -415,18 +413,15 @@ public:
 			op_true_speed.Set(options.true_speed);
 			op_true_speed.Apply();
 		}
-		if(options.mode_48k)
+		xOptions::eOption<bool>* op_mode_48k = xOptions::eOption<bool>::Find("mode 48k");
+		if(options.mode_48k && op_mode_48k)
 		{
-			using namespace xOptions;
-			eOption<bool>* op_mode_48k = eOption<bool>::Find("mode 48k");
-			if(op_mode_48k)
-			{
-				op_mode_48k->Set(options.mode_48k);
-				op_mode_48k->Apply();
-			}
+			op_mode_48k->Set(options.mode_48k);
+			op_mode_48k->Apply();
+			Handler()->OnAction(A_RESET);
 		}
-		menu_true_speed->Check(Handler()->TrueSpeed());
-		menu_mode_48k->Check(Handler()->Mode48k());
+		menu_true_speed->Check(op_true_speed);
+		menu_mode_48k->Check(op_mode_48k && *op_mode_48k);
 		if(!options.file_to_open.empty())
 			Handler()->OnOpenFile(wxConvertWX2MB(options.file_to_open));
 	}
@@ -542,13 +537,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	}
 	void OnDriveNext(wxCommandEvent& event)
 	{
-		switch(Handler()->OnAction(A_DRIVE_NEXT))
+		xOptions::eOption<int>* op_drive = xOptions::eOption<int>::Find("drive");
+		if(op_drive)
 		{
-		case AR_DRIVE_A:	SetStatusText(_("Selected drive A"));	break;
-		case AR_DRIVE_B:	SetStatusText(_("Selected drive B"));	break;
-		case AR_DRIVE_C:	SetStatusText(_("Selected drive C"));	break;
-		case AR_DRIVE_D:	SetStatusText(_("Selected drive D"));	break;
-		default: break;
+			op_drive->Change();
+			switch(*op_drive)
+			{
+			case D_A:	SetStatusText(_("Selected drive A"));	break;
+			case D_B:	SetStatusText(_("Selected drive B"));	break;
+			case D_C:	SetStatusText(_("Selected drive C"));	break;
+			case D_D:	SetStatusText(_("Selected drive D"));	break;
+			default: break;
+			}
 		}
 	}
 	void OnJoy(wxCommandEvent& event)
@@ -579,10 +579,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	void OnTrueSpeedToggle(wxCommandEvent& event)
 	{
 		op_true_speed.Change();
-		menu_true_speed->Check(Handler()->TrueSpeed());
-		DoneSound();
-		InitSound();
-		if(Handler()->TrueSpeed())
+		menu_true_speed->Check(op_true_speed);
+		if(op_true_speed)
 			SetStatusText(_("True speed (50Hz mode) on"));
 		else
 			SetStatusText(_("True speed off"));
@@ -592,8 +590,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		using namespace xOptions;
 		eOption<bool>* op_mode_48k = eOption<bool>::Find("mode 48k");
 		SAFE_CALL(op_mode_48k)->Change();
-		menu_mode_48k->Check(Handler()->Mode48k());
-		SetStatusText(Handler()->Mode48k() ? _("Mode 48k on") : _("Mode 48k off"));
+		bool mode48k = op_mode_48k && *op_mode_48k;
+		menu_mode_48k->Check(mode48k);
+		SetStatusText(mode48k ? _("Mode 48k on") : _("Mode 48k off"));
 	}
 	void OnMouseCapture(wxCommandEvent& event)
 	{

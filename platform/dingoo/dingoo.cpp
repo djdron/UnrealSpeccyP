@@ -54,6 +54,25 @@ size_t strlen(const char* src)
 
 void* g_pGameDecodeBuf = NULL;
 
+namespace xPlatform
+{
+
+enum eRaySync { RS_FIRST, RS_OFF = RS_FIRST, RS_ON, RS_MIRROR_H, RS_MIRROR_V, RS_MIRROR_HV, RS_LAST };
+
+static struct eOptionRaySync : public xOptions::eOptionInt
+{
+	virtual const char* Name() const { return "ray sync"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "off", "on", "mirror_h", "mirror_v", "mirror_hv", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		eOptionInt::Change(RS_FIRST, RS_LAST, next);
+	}
+} op_ray_sync;
+
 class eTimer
 {
 	enum { CHANNEL = 3, REFRESH_LATENCY = CFG_EXTAL / 4 / 50 };
@@ -113,7 +132,7 @@ public:
 	{
 		if(ray_sync)
 		{
-			int mirr = xPlatform::Handler()->RaySync();
+			int mirr = op_ray_sync;
 			mirr = mirr ? mirr - 1 : 0;
 			Set(0x03, 0x1048|(~mirr&3 << 4)); //entry mode restore
 		}
@@ -175,11 +194,10 @@ void eVideo::Flip()
 }
 void eVideo::Update()
 {
-	using namespace xPlatform;
 	byte* src = (byte*)Handler()->VideoData();
 	dword* src_ui = (dword*)Handler()->VideoDataUI();
 	word* dst = video.FrameBack();
-	int mirr = Handler()->RaySync();
+	int mirr = op_ray_sync;
 	if(mirr && !ray_sync)
 	{
 		ray_sync = true;
@@ -251,7 +269,6 @@ protected:
 
 void eAudio::Update()
 {
-	using namespace xPlatform;
 	if(Handler()->Volume() != volume)
 	{
 		volume = Handler()->Volume();
@@ -311,8 +328,8 @@ protected:
 		if(pressed == (bool)(status&key))
 			return;
 		status = pressed ? status|key : status&~key;
-		flags |= pressed ? xPlatform::KF_DOWN : 0;
-		xPlatform::Handler()->OnKey(zx_key, flags);
+		flags |= pressed ? KF_DOWN : 0;
+		Handler()->OnKey(zx_key, flags);
 	}
 protected:
 	dword status;
@@ -320,7 +337,6 @@ protected:
 
 void eKeys::Update()
 {
-	using namespace xPlatform;
 	if(Pressed(K_BUTTON_SELECT) && Pressed(K_BUTTON_START))
 	{
 		Handler()->OnAction(A_QUIT);
@@ -351,7 +367,7 @@ void eKeys::Update()
 		flags |= Pressed(K_TRIGGER_RIGHT) ? KF_ALT : 0;
 		if(!(Status().status&~(K_TRIGGER_LEFT|K_TRIGGER_RIGHT)))
 		{
-			xPlatform::Handler()->OnKey(0, flags);
+			Handler()->OnKey(0, flags);
 		}
 	}
 	UpdateKey(K_DPAD_UP, 'u', flags);
@@ -368,8 +384,6 @@ void eKeys::Update()
 	UpdateKey(K_BUTTON_START, '\\'); //keys dialog
 }
 
-namespace xPlatform
-{
 
 bool Init(const char* res_path)
 {

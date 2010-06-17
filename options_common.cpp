@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "platform/platform.h"
 #include "tools/options.h"
 #include "ui/ui.h"
+#include "options_common.h"
 
 namespace xPlatform
 {
@@ -36,15 +37,7 @@ static struct eOptionJoy : public xOptions::eOptionInt
 	}
 	virtual void Change(bool next = true)
 	{
-		Set(self + 1);
-		if(self == J_LAST)
-			Set(J_FIRST);
-		Apply();
-	}
-	virtual void Apply()
-	{
-		while(self != Handler()->Joystick())
-			Handler()->OnAction(A_JOYSTICK_NEXT);
+		eOptionInt::Change(J_FIRST, J_LAST, next);
 	}
 } op_joy;
 
@@ -101,21 +94,13 @@ static struct eOptionSound : public xOptions::eOptionInt
 	}
 	virtual void Change(bool next = true)
 	{
-		Set(self + 1);
-		if(self == S_LAST)
-			Set(S_FIRST);
-		Apply();
-	}
-	virtual void Apply()
-	{
-		while(self != Handler()->Sound())
-			Handler()->OnAction(A_SOUND_NEXT);
+		eOptionInt::Change(S_FIRST, S_LAST, next);
 	}
 } op_sound;
 
 static struct eOptionVolume : public xOptions::eOptionInt
 {
-	eOptionVolume() { Set(V_100); }
+	eOptionVolume() { Set(V_50); }
 	virtual const char* Name() const { return "volume"; }
 	virtual const char** Values() const
 	{
@@ -124,15 +109,7 @@ static struct eOptionVolume : public xOptions::eOptionInt
 	}
 	virtual void Change(bool next = true)
 	{
-		Set(self + 1);
-		if(self == V_LAST)
-			Set(V_FIRST);
-		Apply();
-	}
-	virtual void Apply()
-	{
-		while(self != Handler()->Volume())
-			Handler()->OnAction(A_VOLUME_NEXT);
+		eOptionInt::Change(V_FIRST, V_LAST, next);
 	}
 } op_volume;
 
@@ -142,29 +119,27 @@ static struct eOptionPause : public xOptions::eOptionBool
 	virtual const char* Name() const { return "pause"; }
 	virtual void Change(bool next = true)
 	{
-		Set(!self);
+		eOptionBool::Change();
 		Handler()->VideoPaused(self);
 	}
 } op_pause;
 
 #endif//USE_UI
 
-static struct eOption48K : public xOptions::eOptionBool
+static struct eOptionDrive : public xOptions::eOptionInt
 {
-	virtual const char* Name() const { return "mode 48k"; }
+	eOptionDrive() { storeable = false; }
+	virtual const char* Name() const { return "drive"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "A", "B", "C", "D", NULL };
+		return values;
+	}
 	virtual void Change(bool next = true)
 	{
-		Set(!self);
-		Apply();
+		eOptionInt::Change(D_FIRST, D_LAST, next);
 	}
-	virtual void Apply()
-	{
-		while(self != Handler()->Mode48k())
-			Handler()->OnAction(A_MODE_48K_TOGGLE);
-	}
-} op_48k;
-
-#ifdef USE_UI
+} op_drive;
 
 static struct eOptionReset : public xOptions::eOptionB
 {
@@ -177,10 +152,7 @@ static struct eOptionQuit : public xOptions::eOptionB
 {
 	eOptionQuit() { storeable = false; }
 	virtual const char* Name() const { return "quit"; }
-	virtual void Change(bool next = true) { Handler()->OnAction(A_QUIT); }
 } op_quit;
-
-#endif//USE_UI
 
 }
 //namespace xPlatform
