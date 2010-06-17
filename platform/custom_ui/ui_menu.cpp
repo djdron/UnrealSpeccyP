@@ -77,11 +77,10 @@ void eMenu::ChangeItem(byte id)
 void eMenu::Init()
 {
 	background = BACKGROUND_COLOR;
-	eRect r_dlg(ePoint(130, 70));
-	r_dlg.Move(ePoint(8, 8));
-	Bound() = r_dlg;
 	ePoint margin(6, 6);
-	eRect r(ePoint(r_dlg.Width() - margin.x * 2, FontSize().y));
+	eRect r_dlg(ePoint(130, 2*margin.y));
+	r_dlg.Move(ePoint(8, 8));
+	eRect r(ePoint(r_dlg.Width() - margin.x * 2, margin.y));
 	r.Move(margin);
 	byte i = 0;
 	for(eOptionB* o = eOptionB::First(); o; o = o->Next())
@@ -94,9 +93,11 @@ void eMenu::Init()
 		b->Highlight(false);
 		b->Id(i);
 		r.Move(ePoint(0, FontSize().y));
+		r_dlg.bottom += FontSize().y;
 		UpdateItem(b, o);
 		++i;
 	}
+	Bound() = r_dlg;
 }
 //=============================================================================
 //	eMenu::OnNotify
