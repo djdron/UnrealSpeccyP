@@ -24,8 +24,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <mdaaudiooutputstream.h>
 #include <e32std.h>
 
+#include "../../tools/options.h"
+#include "../../options_common.h"
+
 namespace xPlatform
 {
+
+static xOptions::eOption<int>* op_sound = NULL;
+static xOptions::eOption<int>* op_volume = NULL;
+
+static int OpVolume() { return op_volume ? *op_volume : (int)V_100; }
+static int OpSound() { return op_sound ? *op_sound : (int)S_AY; }
 
 class eAudio : public CBase, public MMdaAudioOutputStreamCallback
 {
@@ -65,8 +74,8 @@ public:
 		if(aError == KErrNone)
 		{
 			iSndStream->SetPriority(EPriorityMuchMore, EMdaPriorityPreferenceNone);
-			iSndStream->SetVolume(iSndStream->MaxVolume()*Handler()->Volume()/10);
-			iVolume = Handler()->Volume();
+			iSndStream->SetVolume(iSndStream->MaxVolume()*OpVolume()/10);
+			iVolume = OpVolume();
 			if(!UpdatePSndRate())
 			{
 				iSampleRate = 8000;
@@ -78,10 +87,10 @@ public:
 
 	virtual void MaoscBufferCopied(TInt aError, const TDesC8& aBuffer)
 	{
-		if(iVolume != Handler()->Volume() || aError != KErrNone)
+		if(iVolume != OpVolume() || aError != KErrNone)
 		{
-			iSndStream->SetVolume(iSndStream->MaxVolume()*Handler()->Volume()/10);
-			iVolume = Handler()->Volume();
+			iSndStream->SetVolume(iSndStream->MaxVolume()*OpVolume()/10);
+			iVolume = OpVolume();
 		}
 	}
 
@@ -89,8 +98,8 @@ public:
 	{
 		if(aError != KErrNone)
 		{
-			iSndStream->SetVolume(iSndStream->MaxVolume()*Handler()->Volume()/10);
-			iVolume = Handler()->Volume();
+			iSndStream->SetVolume(iSndStream->MaxVolume()*OpVolume()/10);
+			iVolume = OpVolume();
 			UpdatePSndRate();
 		}
 	}
@@ -118,7 +127,7 @@ public:
 		{
 			dword size = Handler()->AudioDataReady(i);
 			bool ui_enabled = Handler()->VideoDataUI() != NULL;
-			if(i == Handler()->Sound() && !ui_enabled && !Handler()->FullSpeed())
+			if(i == OpSound() && !ui_enabled && !Handler()->FullSpeed())
 			{
 				if(size > 44100*2*2/50*3)
 				{
@@ -147,6 +156,8 @@ static eAudio* audio = NULL;
 
 void InitSound()
 {
+	op_sound = xOptions::eOption<int>::Find("sound");
+	op_volume = xOptions::eOption<int>::Find("volume");
 	audio = new (ELeave) eAudio;
 	audio->ConstructL();
 }
