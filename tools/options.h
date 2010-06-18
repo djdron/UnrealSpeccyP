@@ -52,6 +52,7 @@ public:
 		}
 		return NULL;
 	}
+	virtual int Order() const { return 0; }
 
 protected:
 	bool 	customizable;

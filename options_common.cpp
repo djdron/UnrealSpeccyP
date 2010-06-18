@@ -39,6 +39,7 @@ static struct eOptionJoy : public xOptions::eOptionInt
 	{
 		eOptionInt::Change(J_FIRST, J_LAST, next);
 	}
+	virtual int Order() const { return 10; }
 } op_joy;
 
 static struct eOptionTape : public xOptions::eOptionInt
@@ -60,6 +61,7 @@ static struct eOptionTape : public xOptions::eOptionInt
 		default: break;
 		}
 	}
+	virtual int Order() const { return 40; }
 } op_tape;
 
 static struct eOptionTapeFast : public xOptions::eOptionBool
@@ -81,6 +83,7 @@ static struct eOptionTapeFast : public xOptions::eOptionBool
 			break;
 		}
 	}
+	virtual int Order() const { return 50; }
 } op_tape_fast;
 
 static struct eOptionSound : public xOptions::eOptionInt
@@ -96,6 +99,7 @@ static struct eOptionSound : public xOptions::eOptionInt
 	{
 		eOptionInt::Change(S_FIRST, S_LAST, next);
 	}
+	virtual int Order() const { return 20; }
 } op_sound;
 
 static struct eOptionVolume : public xOptions::eOptionInt
@@ -111,6 +115,7 @@ static struct eOptionVolume : public xOptions::eOptionInt
 	{
 		eOptionInt::Change(V_FIRST, V_LAST, next);
 	}
+	virtual int Order() const { return 30; }
 } op_volume;
 
 static struct eOptionPause : public xOptions::eOptionBool
@@ -122,6 +127,7 @@ static struct eOptionPause : public xOptions::eOptionBool
 		eOptionBool::Change();
 		Handler()->VideoPaused(self);
 	}
+	virtual int Order() const { return 70; }
 } op_pause;
 
 #endif//USE_UI
@@ -139,6 +145,7 @@ static struct eOptionDrive : public xOptions::eOptionInt
 	{
 		eOptionInt::Change(D_FIRST, D_LAST, next);
 	}
+	virtual int Order() const { return 60; }
 } op_drive;
 
 static struct eOptionReset : public xOptions::eOptionB
@@ -146,12 +153,14 @@ static struct eOptionReset : public xOptions::eOptionB
 	eOptionReset() { storeable = false; }
 	virtual const char* Name() const { return "reset"; }
 	virtual void Change(bool next = true) { Handler()->OnAction(A_RESET); }
+	virtual int Order() const { return 80; }
 } op_reset;
 
 static struct eOptionQuit : public xOptions::eOptionB
 {
 	eOptionQuit() { storeable = false; }
 	virtual const char* Name() const { return "quit"; }
+	virtual int Order() const { return 100; }
 } op_quit;
 
 }

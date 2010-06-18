@@ -45,11 +45,53 @@ static const char* XmlNameToOptName(const char* name)
 	}
 	return buf;
 }
+
+struct eOA : public eOptionB // access to protected members hack
+{
+	static void SortByOrder()
+	{
+		bool swapped;
+		do
+		{
+			swapped = false;
+			for(eOptionB* a = First(), *pa = NULL; a; pa = a, a = a->Next())
+			{
+				for(eOptionB* b = a->Next(), *pb = a; b; pb = b, b = b->Next())
+				{
+					if(b->Order() < a->Order())
+					{
+						Swap((eOA*)pa, (eOA*)a, (eOA*)pb, (eOA*)b);
+						swapped = true;
+						break;
+					}
+				}
+				if(swapped)
+					break;
+			}
+		} while(swapped);
+	}
+	static void Swap(eOA* pa, eOA* a, eOA* pb, eOA* b)
+	{
+		eOptionB* n = a->next;
+		a->next = b->next;
+		if(a != pb)
+			b->next = n;
+		else
+			b->next = a;
+		if(pa)
+			pa->next = b;
+		else
+			_First() = b;
+		if(a != pb)
+			pb->next = a;
+	}
+};
 //=============================================================================
 //	Load
 //-----------------------------------------------------------------------------
 void Load()
 {
+	eOA::SortByOrder();
 	TiXmlDocument doc;
 	if(!doc.LoadFile(FileName()))
 		return;

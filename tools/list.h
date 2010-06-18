@@ -26,19 +26,13 @@ template<class T> class eList
 public:
 	eList() : next(NULL)
 	{
-		if(!First())
-			_First() = (T*)this;
-		else
-		{
-			T* i = First();
-			while(i->Next())
-				i = i->Next();
-			i->next = (T*)this;
-		}
+		T* n = _First();
+		_First() = (T*)this;
+		next = n;
 	}
 	static T* First() { return _First(); }
 	T* Next() { return next; }
-private:
+protected:
 	static T*& _First() { static T* first = NULL; return first; }
 	T* next;
 };

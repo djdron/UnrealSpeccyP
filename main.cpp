@@ -330,6 +330,7 @@ static struct eOption48K : public xOptions::eOptionBool
 			sh.speccy->Devices().Init();
 		}
 	}
+	virtual int Order() const { return 65; }
 } op_48k;
 
 static struct eFileTypeZ80 : public eFileType
