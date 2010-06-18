@@ -34,7 +34,7 @@ class eList : public eControl
 	enum { CURSOR_COLOR = 0x08b06000 };
 	enum eNotify { N_SELECTED };
 public:
-	eList() : size(0), last_selected(0), selected(0), page_begin(0), page_size(0) { *items = NULL; }
+	eList() : size(0), last_selected(-1), selected(-1), page_begin(0), page_size(0) { *items = NULL; }
 	virtual ~eList() { Clear(); }
 	void Clear()
 	{
@@ -44,13 +44,15 @@ public:
 			delete[] items[i];
 		}
 		*items = NULL;
-		size = last_selected = selected = page_begin = page_size = 0;
+		size = page_begin = page_size = 0;
+		last_selected = selected = -1;
 	}
 	void Insert(const char* item);
-	const char* Selected() const { return size ? items[selected] : NULL; }
-	int Selector() const { return size ? selected : -1; }
+	const char* Item() const { return selected >= 0 ? items[selected] : NULL; }
+	int	Selected() const { return selected; }
+	void Selected(int s);
 	virtual void Update();
-	virtual void OnKey(char key, dword flags);
+	virtual bool OnKey(char key, dword flags);
 protected:
 	const char* items[MAX_ITEMS + 1];
 	int size;

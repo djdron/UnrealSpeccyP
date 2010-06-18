@@ -50,7 +50,7 @@ public:
 	eControl** Childs() { return childs; }
 	eControl* const* Childs() const { return childs; }
 	virtual void Update();
-	virtual void OnKey(char key, dword flags);
+	virtual bool OnKey(char key, dword flags);
 protected:
 	void ChooseFocus(char key);
 	enum { BACKGROUND_COLOR = 0x01202020 };

@@ -79,7 +79,7 @@ void eKeyboard::Init()
 //=============================================================================
 //	eKeyboard::OnKey
 //-----------------------------------------------------------------------------
-void eKeyboard::OnKey(char key, dword _flags)
+bool eKeyboard::OnKey(char key, dword _flags)
 {
 	using namespace xPlatform;
 	if((_flags&KF_SHIFT) != (flags&KF_SHIFT))
@@ -87,7 +87,7 @@ void eKeyboard::OnKey(char key, dword _flags)
 	if((_flags&KF_ALT) != (flags&KF_ALT))
 		((eButton*)childs[38])->Push(_flags&KF_ALT);
 	flags = _flags;
-	eInherited::OnKey(key, flags);
+	return eInherited::OnKey(key, flags);
 }
 //=============================================================================
 //	eKeyboard::OnNotify

@@ -39,7 +39,7 @@ public:
 	void Text(const char* s);
 	void Push(bool b) { pushed = b; triggered = false; }
 	virtual void Update();
-	virtual void OnKey(char key, dword flags);
+	virtual bool OnKey(char key, dword flags);
 	enum eNotify { N_PUSH, N_POP };
 protected:
 	char text[MAX_TEXT_SIZE + 1];

@@ -121,29 +121,28 @@ void GetUpLevel(char* path, int level)
 //-----------------------------------------------------------------------------
 void eFileOpenDialog::OnNotify(byte n, byte from)
 {
-	if(list->Selected())
+	if(!list->Item())
+		return;
+	if(folders[list->Selected()])
 	{
-		if(folders[list->Selector()])
+		if(!strcmp(list->Item(), ".."))
 		{
-			if(!strcmp(list->Selected(), ".."))
-			{
-				GetUpLevel(path, 2);
-				strcat(path, "*.*");
-			}
-			else
-			{
-				GetUpLevel(path);
-				strcat(path, list->Selected());
-				strcat(path, "\\*.*");
-			}
-			OnChangePath();
-			return;
+			GetUpLevel(path, 2);
+			strcat(path, "*.*");
 		}
-		GetUpLevel(path);
-		strcat(path, list->Selected());
-		selected = path;
-		eInherited::OnNotify(n, id);
+		else
+		{
+			GetUpLevel(path);
+			strcat(path, list->Item());
+			strcat(path, "\\*.*");
+		}
+		OnChangePath();
+		return;
 	}
+	GetUpLevel(path);
+	strcat(path, list->Item());
+	selected = path;
+	eInherited::OnNotify(n, id);
 }
 
 }

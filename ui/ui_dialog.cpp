@@ -96,8 +96,10 @@ void eDialog::ChooseFocus(char key)
 //=============================================================================
 //	eDialog::OnKey
 //-----------------------------------------------------------------------------
-void eDialog::OnKey(char key, dword flags)
+bool eDialog::OnKey(char key, dword flags)
 {
+	if(focused && focused->OnKey(key, flags))
+			return true;
 	switch(key)
 	{
 	case 'l':
@@ -105,8 +107,9 @@ void eDialog::OnKey(char key, dword flags)
 	case 'u':
 	case 'd':
 		ChooseFocus(key);
+		return true;
 	}
-	SAFE_CALL(focused)->OnKey(key, flags);
+	return false;
 }
 
 }

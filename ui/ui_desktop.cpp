@@ -42,16 +42,16 @@ void eDesktop::Update()
 //=============================================================================
 //	eDesktop::OnKey
 //-----------------------------------------------------------------------------
-void eDesktop::OnKey(char _key, dword flags)
+bool eDesktop::OnKey(char _key, dword flags)
 {
 	key_flags = flags;
 	bool pressed = flags&xPlatform::KF_DOWN;
 	if((pressed && !(flags&(xPlatform::KF_ALT|xPlatform::KF_SHIFT)) && (_key == key)) || (!pressed && (_key != key)))
-		return;
+		return false;
 	key = pressed ? _key : '\0';
 	if(!key)
 		keypress_timer = 0;
-	eInherited::OnKey(key, flags);
+	return eInherited::OnKey(key, flags);
 }
 
 }

@@ -34,7 +34,7 @@ class eMainDialog : public eDialog
 public:
 	eMainDialog();
 	virtual void Update();
-	virtual void OnKey(char key, dword flags);
+	virtual bool OnKey(char key, dword flags);
 protected:
 	virtual void OnNotify(byte n, byte from);
 	enum eDialogId { D_FILE_OPEN, D_KEYS, D_MENU };

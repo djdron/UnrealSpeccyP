@@ -38,7 +38,7 @@ public:
 	bool Pressed() const { return pressed; }
 	bool Caps() const { return caps; }
 	bool Symbol() const { return symbol; }
-	virtual void OnKey(char key, dword flags);
+	virtual bool OnKey(char key, dword flags);
 	enum eId { ID_CAPS = 0, ID_SYMBOL };
 protected:
 	virtual void OnNotify(byte n, byte from);

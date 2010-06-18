@@ -55,7 +55,6 @@ static eOptions options;
 
 static struct eOptionTrueSpeed : public xOptions::eOptionBool
 {
-	eOptionTrueSpeed() { customizable = false; }
 	virtual const char* Name() const { return "true speed"; }
 	virtual void Change(bool next = true)
 	{
@@ -63,6 +62,7 @@ static struct eOptionTrueSpeed : public xOptions::eOptionBool
 		DoneSound();
 		InitSound();
 	}
+	virtual int Order() const { return 75; }
 } op_true_speed;
 
 static struct eOptionWindowSize : public xOptions::eOptionInt

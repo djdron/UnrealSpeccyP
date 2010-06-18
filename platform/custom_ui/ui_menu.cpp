@@ -29,48 +29,49 @@ namespace xUi
 
 using namespace xOptions;
 
-//=============================================================================
-//	eMenu::UpdateItem
-//-----------------------------------------------------------------------------
-void eMenu::UpdateItem(eButton* b, eOptionB* o)
+class eOptionButton : public eButton
 {
-	char text[128];
-	strcpy(text, o->Name());
-	int offs = strlen(text);
-	int spc_count = b->Bound().Width() / FontSize().x - offs;
-	const char* state = o->Value();
-	spc_count -= state ? strlen(state) : 0;
-	for(int i = 0; i < spc_count; ++i)
+	typedef eButton eInherited;
+public:
+	eOptionButton(eOptionB* o) { option = o; }
+	virtual bool OnKey(char key, dword flags)
 	{
-		text[offs++] = ' ';
+		if(eInherited::OnKey(key, flags))
+			return true;
+		switch(key)
+		{
+		case 'l':	Change(false);	return true;
+		case 'r':	Change(true);	return true;
+		}
+		return false;
 	}
-	text[offs] = '\0';
-	if(state)
+	void Change(bool next = true)
 	{
-		strcat(text, state);
+		option->Change(next);
+		UpdateText();
 	}
-	b->Text(text);
-}
-//=============================================================================
-//	eMenu::ChangeItem
-//-----------------------------------------------------------------------------
-void eMenu::ChangeItem(byte id)
-{
-	eOptionB* o = eOptionB::First();
-	byte i = 0;
-	for(; o; o = o->Next())
+	void UpdateText()
 	{
-		if(!o->Customizable())
-			continue;
-		if(id == i)
-			break;
-		++i;
+		char text[128];
+		strcpy(text, option->Name());
+		int offs = strlen(text);
+		int spc_count = Bound().Width() / FontSize().x - offs;
+		const char* state = option->Value();
+		spc_count -= state ? strlen(state) : 0;
+		for(int i = 0; i < spc_count; ++i)
+		{
+			text[offs++] = ' ';
+		}
+		text[offs] = '\0';
+		if(state)
+		{
+			strcat(text, state);
+		}
+		Text(text);
 	}
-	assert(o);
-	o->Change();
-	eButton* b = (eButton*)childs[id];
-	UpdateItem(b, o);
-}
+	eOptionB* option;
+};
+
 //=============================================================================
 //	eMenu::Init
 //-----------------------------------------------------------------------------
@@ -87,14 +88,14 @@ void eMenu::Init()
 	{
 		if(!o->Customizable())
 			continue;
-		eButton* b = new eButton;
+		eOptionButton* b = new eOptionButton(o);
 		Insert(b);
 		b->Bound() = r;
 		b->Highlight(false);
 		b->Id(i);
 		r.Move(ePoint(0, FontSize().y));
 		r_dlg.bottom += FontSize().y;
-		UpdateItem(b, o);
+		b->UpdateText();
 		++i;
 	}
 	Bound() = r_dlg;
@@ -104,9 +105,11 @@ void eMenu::Init()
 //-----------------------------------------------------------------------------
 void eMenu::OnNotify(byte n, byte from)
 {
-	if(n != eButton::N_PUSH)
-		return;
-	eInherited::OnNotify(from, id);
+	if(n == eButton::N_PUSH)
+	{
+		eOptionButton* b = (eOptionButton*)childs[from];
+		b->Change();
+	}
 }
 
 }

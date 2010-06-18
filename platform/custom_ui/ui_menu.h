@@ -41,8 +41,8 @@ class eMenu : public eDialog
 public:
 	eMenu() {}
 	virtual void Init();
-	void ChangeItem(byte id);
 protected:
+	void ChangeItem(byte id);
 	void UpdateItem(eButton* b, xOptions::eOptionB* o);
 	virtual void OnNotify(byte n, byte from);
 };

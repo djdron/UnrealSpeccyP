@@ -61,7 +61,7 @@ public:
 			else		DrawRect(ScreenBound(), background, 0x08ffffff);
 		}
 	}
-	virtual void OnKey(char key, dword flags) = 0;
+	virtual bool OnKey(char key, dword flags) = 0;
 	virtual void Notify(byte n) { OnNotify(n, id); }
 protected:
 	virtual void OnNotify(byte n, byte from)

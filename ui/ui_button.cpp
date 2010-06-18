@@ -65,20 +65,24 @@ void eButton::Update()
 //=============================================================================
 //	eButton::OnKey
 //-----------------------------------------------------------------------------
-void eButton::OnKey(char key, dword flags)
+bool eButton::OnKey(char key, dword flags)
 {
-	if(key == last_key)
-		return;
-	if((!triggered && !key) || key == 'e' || key == 'f')
+	if(last_key != key)
 	{
-		Push(key);
+		last_key = key;
+		if((!triggered && !key) || key == 'e' || key == 'f')
+		{
+			Push(key);
+			return true;
+		}
+		else if(key == ' ')
+		{
+			triggered = !triggered;
+			pushed = triggered;
+			return true;
+		}
 	}
-	else if(key == ' ')
-	{
-		triggered = !triggered;
-		pushed = triggered;
-	}
-	last_key = key;
+	return false;
 }
 
 }

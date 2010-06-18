@@ -41,6 +41,8 @@ void eList::Insert(const char* item)
 		size = i + 1;
 		break;
 	}
+	if(Selected() < 0)
+		Selected(0);
 }
 //=============================================================================
 //	eList::Update
@@ -88,22 +90,38 @@ void eList::Update()
 	changed = false;
 }
 //=============================================================================
+//	eList::Selected
+//-----------------------------------------------------------------------------
+void eList::Selected(int s)
+{
+	if(s >= size)
+		selected = size - 1;
+	else if(s <= 0)
+	{
+		if(size)
+			selected = 0;
+		else
+			selected = -1;
+	}
+	else
+		selected = s;
+}
+//=============================================================================
 //	eList::OnKey
 //-----------------------------------------------------------------------------
-void eList::OnKey(char key, dword flags)
+bool eList::OnKey(char key, dword flags)
 {
 	switch(key)
 	{
-	case 'l': selected -= page_size;	break;
-	case 'r': selected += page_size;	break;
-	case 'u': --selected;				break;
-	case 'd': ++selected;				break;
+	case 'l': Selected(selected - page_size);	return true;
+	case 'r': Selected(selected + page_size);	return true;
+	case 'u': Selected(selected - 1);			return true;
+	case 'd': Selected(selected + 1);			return true;
 	case 'f':
 	case 'e':
-	case ' ': Notify(N_SELECTED);		break;
+	case ' ': Notify(N_SELECTED);				return true;
 	}
-	if(selected < 0)		selected = 0;
-	if(selected >= size)	selected = size - 1;
+	return false;
 }
 
 }

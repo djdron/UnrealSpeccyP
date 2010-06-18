@@ -46,7 +46,7 @@ public:
 		return false;
 	}
 	virtual void Update();
-	virtual void OnKey(char key, dword flags);
+	virtual bool OnKey(char key, dword flags);
 
 protected:
 	char key;

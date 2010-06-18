@@ -71,9 +71,8 @@ void eMainDialog::Update()
 //=============================================================================
 //	eMainDialog::OnKey
 //-----------------------------------------------------------------------------
-void eMainDialog::OnKey(char key, dword flags)
+bool eMainDialog::OnKey(char key, dword flags)
 {
-	eInherited::OnKey(key, flags);
 	switch(key)
 	{
 	case '\\':
@@ -82,10 +81,10 @@ void eMainDialog::OnKey(char key, dword flags)
 			eKeyboard* d = new eKeyboard;
 			d->Id(D_KEYS);
 			Insert(d);
-			return;
+			return true;
 		}
 		Clear();
-		break;
+		return true;
 	case '`':
 		if(!Focused() || (*childs)->Id() == D_FILE_OPEN)
 		{
@@ -94,11 +93,12 @@ void eMainDialog::OnKey(char key, dword flags)
 			eMenu* d = new eMenu;
 			d->Id(D_MENU);
 			Insert(d);
-			return;
+			return true;
 		}
 		Clear();
-		break;
+		return true;
 	}
+	return eInherited::OnKey(key, flags);
 }
 //=============================================================================
 //	eMainDialog::OnNotify
@@ -128,10 +128,6 @@ void eMainDialog::OnNotify(byte n, byte from)
 			flags |= KF_UI_SENDER;
 			Handler()->OnKey(key, flags);
 		}
-		break;
-	case D_MENU:
-		eMenu* d = (eMenu*)*childs;
-		d->ChangeItem(n);
 		break;
 	}
 }
