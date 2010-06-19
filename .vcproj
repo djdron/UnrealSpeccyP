@@ -662,6 +662,10 @@
 					RelativePath=".\platform\custom_ui\ui_menu.h"
 					>
 				</File>
+				<File
+					RelativePath=".\platform\custom_ui\ui_profiler.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

@@ -118,7 +118,8 @@ public:
 		{
 			GetParent()->Close(true);
 			return;
-		}		Handler()->OnLoop();
+		}
+		Handler()->OnLoop();
 		OnLoopSound();
 		Refresh(false);
 		if(!Handler()->FullSpeed())
@@ -258,6 +259,7 @@ void GLCanvas::TranslateKey(int& key, dword& flags)
 	case '*':	key = '8';		break;
 	case '(':	key = '9';		break;
 	case ')':	key = '0';		break;
+	case '~':
 	case '`':	key = 'm';		break;
 	case '\\':	key = 'k';		break;
 	case ']':	key = 'p';		break;

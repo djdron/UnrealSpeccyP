@@ -156,11 +156,12 @@ static struct eOptionReset : public xOptions::eOptionB
 	virtual int Order() const { return 80; }
 } op_reset;
 
-static struct eOptionQuit : public xOptions::eOptionB
+static struct eOptionQuit : public xOptions::eOptionBool
 {
 	eOptionQuit() { storeable = false; }
 	virtual const char* Name() const { return "quit"; }
 	virtual int Order() const { return 100; }
+	virtual const char** Values() const { return NULL; }
 } op_quit;
 
 }
