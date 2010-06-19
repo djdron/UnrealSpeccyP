@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../devices/memory.h"
 #include "../devices/ula.h"
 #include "../devices/device.h"
-#include "../speccy.h"
 
 #include "z80.h"
 
@@ -100,35 +99,6 @@ void eZ80::Update(int int_len, int* nmi_pending)
 	}
 	t -= frame_tacts;
 	eipos -= frame_tacts;
-}
-//=============================================================================
-//	eZ80::IoWrite
-//-----------------------------------------------------------------------------
-void eZ80::IoWrite(word port, byte v)
-{
-	devices->IoWrite(port, v, t);
-}
-//=============================================================================
-//	eZ80::IoRead
-//-----------------------------------------------------------------------------
-byte eZ80::IoRead(word port) const
-{
-	return devices->IoRead(port, t);
-}
-//=============================================================================
-//	eZ80::Write
-//-----------------------------------------------------------------------------
-void eZ80::Write(word addr, byte v)
-{
-	ula->Write(addr, v, t);
-	memory->Write(addr, v);
-}
-//=============================================================================
-//	eZ80::Read
-//-----------------------------------------------------------------------------
-byte eZ80::Read(word addr) const
-{
-	return memory->Read(addr);
 }
 //=============================================================================
 //	eZ80::Int

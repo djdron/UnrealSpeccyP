@@ -40,8 +40,8 @@ public:
 	virtual bool IoWrite(word port) const;
 	virtual void IoRead(word port, byte* v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
+	void	Write(int tact) { UpdateRay(tact); }
 
-	void	Write(word addr, byte v, int tact);
 	void*	Screen() const { return screen; }
 
 	byte	BorderColor() const { return border_color; }

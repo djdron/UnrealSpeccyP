@@ -31,8 +31,19 @@ class eMemory
 public:
 	eMemory();
 	virtual ~eMemory();
-	byte Read(word addr) const;
-	void Write(word addr, byte v);
+	byte Read(word addr) const
+	{
+		byte* a = bank_read[(addr >> 14) & 3] + (addr & (PAGE_SIZE - 1));
+		return *a;
+	}
+	void Write(word addr, byte v)
+	{
+		byte* a = bank_write[(addr >> 14) & 3];
+		if(!a) //rom write prevent
+			return;
+		a += (addr & (PAGE_SIZE - 1));
+		*a = v;
+	}
 	byte* Get(int page) { return memory + page * PAGE_SIZE; }
 
 	enum ePage
