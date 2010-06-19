@@ -23,11 +23,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_keyboard.h"
 #include "ui_file_open.h"
 #include "../../tools/options.h"
+#include "../../tools/profiler.h"
 
 #ifdef USE_UI
 
 namespace xUi
 {
+
+#ifdef USE_PROFILER
+eDialog* CreateProfiler();
+#endif//USE_PROFILER
 
 static struct eOptionOpenFile : public xOptions::eOptionB
 {
@@ -70,30 +75,39 @@ void eMainDialog::Update()
 //-----------------------------------------------------------------------------
 bool eMainDialog::OnKey(char key, dword flags)
 {
+	bool f = Focused();
+	byte id = f ? (*childs)->Id() : -1;
 	switch(key)
 	{
 	case 'k':
-		if(!Focused())
+		Clear();
+		if(!f || id != D_KEYS)
 		{
 			eKeyboard* d = new eKeyboard;
 			d->Id(D_KEYS);
 			Insert(d);
-			return true;
 		}
-		Clear();
 		return true;
 	case 'm':
-		if(!Focused() || (*childs)->Id() == D_FILE_OPEN)
+		Clear();
+		if(!f || id != D_MENU)
 		{
-			Clear();
-			using namespace xPlatform;
 			eMenu* d = new eMenu;
 			d->Id(D_MENU);
 			Insert(d);
-			return true;
 		}
-		Clear();
 		return true;
+#ifdef USE_PROFILER
+	case 'p':
+		Clear();
+		if(!f || id != D_PROFILER)
+		{
+			eDialog* d = CreateProfiler();
+			d->Id(D_PROFILER);
+			Insert(d);
+		}
+		return true;
+#endif//USE_PROFILER
 	}
 	return eInherited::OnKey(key, flags);
 }

@@ -32,10 +32,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "devices/fdd/wd1793.h"
 #include "tools/profiler.h"
 
-DECLARE_PROFILER_SECTION(speccy_update_frame);
-DECLARE_PROFILER_SECTION(speccy_update_devices_start);
-DECLARE_PROFILER_SECTION(speccy_update_devices);
-DECLARE_PROFILER_SECTION(speccy_update_devices_end);
+DECLARE_PROFILER_SECTION(frame);
+DECLARE_PROFILER_SECTION(dev_s);
+DECLARE_PROFILER_SECTION(dev);
+DECLARE_PROFILER_SECTION(dev_e);
 
 //=============================================================================
 //	eSpeccy::eSpeccy
@@ -85,20 +85,20 @@ void eSpeccy::Reset()
 void eSpeccy::Update()
 {
 	{
-		PROFILER_SECTION(speccy_update_devices_start);
+		PROFILER_SECTION(dev_s);
 		devices.FrameStart();
 	}
 	{
-		PROFILER_SECTION(speccy_update_frame);
+		PROFILER_SECTION(frame);
 		cpu->Update(int_len, &nmi_pending);
 	}
 	dword t = cpu->FrameTacts() + cpu->T();
 	{
-		PROFILER_SECTION(speccy_update_devices);
+		PROFILER_SECTION(dev);
 		devices.FrameUpdate();
 	}
 	{
-		PROFILER_SECTION(speccy_update_devices_end);
+		PROFILER_SECTION(dev_e);
 		devices.FrameEnd(t);
 	}
 	t_states += cpu->FrameTacts();

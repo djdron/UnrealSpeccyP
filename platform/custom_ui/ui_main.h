@@ -37,7 +37,7 @@ public:
 	virtual bool OnKey(char key, dword flags);
 protected:
 	virtual void OnNotify(byte n, byte from);
-	enum eDialogId { D_FILE_OPEN, D_KEYS, D_MENU };
+	enum eDialogId { D_FILE_OPEN, D_KEYS, D_MENU, D_PROFILER };
 	bool Focused() const { return childs[0] != NULL; }
 protected:
 	bool clear;

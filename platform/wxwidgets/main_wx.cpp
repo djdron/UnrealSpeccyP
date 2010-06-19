@@ -260,6 +260,7 @@ void GLCanvas::TranslateKey(int& key, dword& flags)
 	case ')':	key = '0';		break;
 	case '`':	key = 'm';		break;
 	case '\\':	key = 'k';		break;
+	case ']':	key = 'p';		break;
 	case '\'':
 		if(flags&KF_SHIFT)
 		{
@@ -270,12 +271,23 @@ void GLCanvas::TranslateKey(int& key, dword& flags)
 			key = '7';
 		flags |= KF_ALT;
 		break;
+	case '<':
+		key = 'R';
+		flags &= ~KF_SHIFT;
+		flags |= KF_ALT;
+		break;
 	case ',':
 		key = 'N';
 		flags |= KF_ALT;
 		break;
 	case '.':
-		key = 'M';
+		if(flags&KF_SHIFT)
+		{
+			key = 'T';
+			flags &= ~KF_SHIFT;
+		}
+		else
+			key = 'M';
 		flags |= KF_ALT;
 		break;
 	case ';':

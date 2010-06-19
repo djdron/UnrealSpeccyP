@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <unreal_speccy_portable.rsg>
 #include "../../build/symbian/unreal_speccy_portable.hrh"
 
-DECLARE_PROFILER_SECTION(dc_draw_symbian);
+DECLARE_PROFILER_SECTION(draw);
 
 namespace xPlatform
 {

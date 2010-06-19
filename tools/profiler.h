@@ -41,9 +41,11 @@ public:
 		start_tick.SetCurrent();
 	}
 	void	End();
-	void	Dump();
+	const char* Dump();
+	void	Reset();
 
 	static void	DumpAll();
+	static void	ResetAll();
 
 protected:
 	const char* name;

@@ -33,8 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif//_MAC
 
 
-DECLARE_PROFILER_SECTION(gl_draw_prepare);
-DECLARE_PROFILER_SECTION(gl_draw);
+DECLARE_PROFILER_SECTION(draw_p);
+DECLARE_PROFILER_SECTION(draw);
 
 namespace xPlatform
 {
@@ -80,7 +80,7 @@ color_cache;
 
 void DrawGL(int _w, int _h)
 {
-	PROFILER_BEGIN(gl_draw_prepare);
+	PROFILER_BEGIN(draw_p);
 	byte* data = (byte*)Handler()->VideoData();
 	dword* p = tex;
 #ifdef USE_UI
@@ -110,9 +110,9 @@ void DrawGL(int _w, int _h)
 			p += 512 - 320;
 		}
 	}
-	PROFILER_END(gl_draw_prepare);
+	PROFILER_END(draw_p);
 
-	PROFILER_SECTION(gl_draw);
+	PROFILER_SECTION(draw);
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
     glScalef(320.0f/512.0f, 240.0f/256.0f, 1.0f);

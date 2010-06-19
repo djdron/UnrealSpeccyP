@@ -51,22 +51,42 @@ void eSection::End()
 	++entry_count;
 }
 //=============================================================================
+//	eSection::Reset
+//-----------------------------------------------------------------------------
+void eSection::Reset()
+{
+	time_total = time_min = time_max = 0;
+	entry_count = 0;
+}
+//=============================================================================
 //	eSection::Dump
 //-----------------------------------------------------------------------------
-void eSection::Dump()
+const char* eSection::Dump()
 {
-	char dump[1024];
-	sprintf(dump, "section(%s): %.2f/%.2f/%.2f (%u)\n", name, time_total.Ms()/entry_count, time_min.Ms(), time_max.Ms(), entry_count);
-	_LOG(dump);
+	static char dump[1024];
+	sprintf(dump, "%8s: %.2f/%.2f/%.2f (%u)", name, time_total.Ms()/entry_count, time_min.Ms(), time_max.Ms(), entry_count);
+	return dump;
 }
 //=============================================================================
 //	eSection::DumpAll
 //-----------------------------------------------------------------------------
 void eSection::DumpAll()
 {
+	_LOG("Profiler dump:\n")
 	for(eSection* i = First(); i; i = i->Next())
 	{
-		i->Dump();
+		_LOG(i->Dump());
+		_LOG("\n");
+	}
+}
+//=============================================================================
+//	eSection::ResetAll
+//-----------------------------------------------------------------------------
+void eSection::ResetAll()
+{
+	for(eSection* i = First(); i; i = i->Next())
+	{
+		i->Reset();
 	}
 }
 
