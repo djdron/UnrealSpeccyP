@@ -63,7 +63,6 @@ void Ope45() { // retn
 	iff1 = iff2;
 	unsigned addr = Read(sp++);
 	addr += 0x100*Read(sp++);
-	last_branch = pc-2;
 	pc = addr;
 	memptr = addr;
 	t += 6;
@@ -111,7 +110,6 @@ void Ope4D() { // reti
 	iff1 = iff2;
 	unsigned addr = Read(sp++);
 	addr += 0x100*Read(sp++);
-	last_branch = pc-2;
 	pc = addr;
 	memptr = addr;
 	t += 6;

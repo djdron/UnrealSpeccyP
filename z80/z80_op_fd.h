@@ -370,7 +370,6 @@ void OpyE5() { // push iy
 	t += 7;
 }
 void OpyE9() { // jp (iy)
-	last_branch = pc-2;
 	pc = iy;
 }
 void OpyF9() { // ld sp,iy

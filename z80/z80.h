@@ -122,7 +122,6 @@ protected:
 	int		eipos;
 	int		haltpos;
 	int		frame_tacts;  // t-states per frame
-	word	last_branch;	//? dbg
 
 	DECLARE_REG16(pc, pc_l, pc_h)
 	DECLARE_REG16(sp, sp_l, sp_h)

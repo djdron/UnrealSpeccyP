@@ -370,7 +370,6 @@ void OpxE5() { // push ix
 	t += 7;
 }
 void OpxE9() { // jp (ix)
-	last_branch = pc-2;
 	pc = ix;
 }
 void OpxF9() { // ld sp,ix

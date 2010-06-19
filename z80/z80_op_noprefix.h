@@ -94,7 +94,6 @@ void Op0F() { // rrca
 void Op10() { // djnz rr
 	if (--b) {
 		signed char offs = (char)Read(pc);
-		last_branch = pc-1;
 		memptr = pc += offs+1, t += 9;
 	} else pc++, t += 4;
 }
@@ -129,7 +128,6 @@ void Op17() { // rla
 }
 void Op18() { // jr rr
 	signed char offs = (char)Read(pc);
-	last_branch = pc-1;
 	pc += offs+1;
 	memptr = pc;
 	t += 8;
@@ -170,7 +168,6 @@ void Op1F() { // rra
 void Op20() { // jr nz, rr
 	if (!(f & ZF)) {
 		signed char offs = (char)Read(pc);
-		last_branch = pc-1;
 		memptr = pc += offs+1, t += 8;
 	} else pc++, t += 3;
 }
@@ -209,7 +206,6 @@ void Op27() { // daa
 void Op28() { // jr z,rr
 	if ((f & ZF)) {
 		signed char offs = (char)Read(pc);
-		last_branch = pc-1;
 		memptr = pc += offs+1, t += 8;
 	} else pc++, t += 3;
 }
@@ -251,7 +247,6 @@ void Op2F() { // cpl
 void Op30() { // jr nc, rr
 	if (!(f & CF)) {
 		signed char offs = (char)Read(pc);
-		last_branch = pc-1;
 		memptr = pc += offs+1, t += 8;
 	} else pc++, t += 3;
 }
@@ -294,7 +289,6 @@ void Op37() { // scf
 void Op38() { // jr c,rr
 	if ((f & CF)) {
 		signed char offs = (char)Read(pc);
-		last_branch = pc-1;
 		memptr = pc += offs+1, t += 8;
 	} else pc++, t += 3;
 }
@@ -731,7 +725,6 @@ void OpC0() { // ret nz
 	if (!(f & ZF)) {
 		unsigned addr = Read(sp++);
 		addr += 0x100*Read(sp++);
-		last_branch = pc-1;
 		pc = addr;
 		memptr = addr;
 		t += 7;
@@ -748,12 +741,10 @@ void OpC2() { // jp nz,nnnn
 	addr += 0x100*Read(pc+1);
 	memptr = addr;
 	if (!(f & ZF)) {
-		last_branch = pc-1;
 		pc = addr;
 	} else pc += 2;
 }
 void OpC3() { // jp nnnn
-	last_branch = pc-1;
 	unsigned lo = Read(pc++);
 	pc = lo + 0x100*Read(pc);
 	memptr = pc;
@@ -767,7 +758,6 @@ void OpC4() { // call nz,nnnn
 	if (!(f & ZF)) {
 		Write(--sp, pc_h);
 		Write(--sp, pc_l);
-		last_branch = pc-1;
 		pc = addr;
 		t += 13;
 	} else t += 6;
@@ -784,7 +774,6 @@ void OpC6() { // add a,nn
 void OpC7() { // rst 00
 	Write(--sp, pc_h);
 	Write(--sp, pc_l);
-	last_branch = pc-1;
 	pc = 0x00;
 	memptr = 0x00;
 	t += 7;
@@ -793,7 +782,6 @@ void OpC8() { // ret z
 	if (f & ZF) {
 		unsigned addr = Read(sp++);
 		addr += 0x100*Read(sp++);
-		last_branch = pc-1;
 		pc = addr;
 		memptr = addr;
 		t += 7;
@@ -802,7 +790,6 @@ void OpC8() { // ret z
 void OpC9() { // ret
 	unsigned addr = Read(sp++);
 	addr += 0x100*Read(sp++);
-	last_branch = pc-1;
 	pc = addr;
 	memptr = addr;
 	t += 6;
@@ -812,10 +799,12 @@ void OpCA() { // jp z,nnnn
 	unsigned addr = Read(pc);
 	addr += 0x100*Read(pc+1);
 	memptr = addr;
-	if (f & ZF) {
-		last_branch = pc-1;
+	if(f & ZF)
+	{
 		pc = addr;
-	} else pc += 2;
+	}
+	else
+		pc += 2;
 }
 void OpCC() { // call z,nnnn
 	pc += 2;
@@ -825,13 +814,11 @@ void OpCC() { // call z,nnnn
 	if (f & ZF) {
 		Write(--sp, pc_h);
 		Write(--sp, pc_l);
-		last_branch = pc-1;
 		pc = addr;
 		t += 13;
 	} else t += 6;
 }
 void OpCD() { // call
-	last_branch = pc-1;
 	unsigned addr = Read(pc++);
 	addr += 0x100*Read(pc++);
 	Write(--sp, pc_h);
@@ -847,7 +834,6 @@ void OpCE() { // adc a,nn
 void OpCF() { // rst 08
 	Write(--sp, pc_h);
 	Write(--sp, pc_l);
-	last_branch = pc-1;
 	pc = 0x08;
 	memptr = 0x08;
 	mem_h = 0;
@@ -857,7 +843,6 @@ void OpD0() { // ret nc
 	if (!(f & CF)) {
 		unsigned addr = Read(sp++);
 		addr += 0x100*Read(sp++);
-		last_branch = pc-1;
 		pc = addr;
 		memptr = addr;
 		t += 7;
@@ -874,7 +859,6 @@ void OpD2() { // jp nc,nnnn
 	addr += 0x100*Read(pc+1);
 	memptr = addr;
 	if (!(f & CF)) {
-		last_branch = pc-1;
 		pc = addr;
 	} else pc += 2;
 }
@@ -892,7 +876,6 @@ void OpD4() { // call nc,nnnn
 	if (!(f & CF)) {
 		Write(--sp, pc_h);
 		Write(--sp, pc_l);
-		last_branch = pc-1;
 		pc = addr;
 		t += 13;
 	} else t += 6;
@@ -909,7 +892,6 @@ void OpD6() { // sub nn
 void OpD7() { // rst 10
 	Write(--sp, pc_h);
 	Write(--sp, pc_l);
-	last_branch = pc-1;
 	pc = 0x10;
 	memptr = 0x10;
 	t += 7;
@@ -918,7 +900,6 @@ void OpD8() { // ret c
 	if (f & CF) {
 		unsigned addr = Read(sp++);
 		addr += 0x100*Read(sp++);
-		last_branch = pc-1;
 		pc = addr;
 		memptr = addr;
 		t += 7;
@@ -935,7 +916,6 @@ void OpDA() { // jp c,nnnn
 	addr += 0x100*Read(pc+1);
 	memptr = addr;
 	if (f & CF) {
-		last_branch = pc-1;
 		pc = addr;
 	} else pc += 2;
 }
@@ -953,7 +933,6 @@ void OpDC() { // call c,nnnn
 	if (f & CF) {
 		Write(--sp, pc_h);
 		Write(--sp, pc_l);
-		last_branch = pc-1;
 		pc = addr;
 		t += 13;
 	} else t += 6;
@@ -965,7 +944,6 @@ void OpDE() { // sbc a,nn
 void OpDF() { // rst 18
 	Write(--sp, pc_h);
 	Write(--sp, pc_l);
-	last_branch = pc-1;
 	pc = 0x18;
 	memptr = 0x18;
 	t += 7;
@@ -990,7 +968,6 @@ void OpE2() { // jp po,nnnn
 	addr += 0x100*Read(pc+1);
 	memptr = addr;
 	if (!(f & PV)) {
-		last_branch = pc-1;
 		pc = addr;
 	} else pc += 2;
 }
@@ -1010,7 +987,6 @@ void OpE4() { // call po,nnnn
 	if (!(f & PV)) {
 		Write(--sp, pc_h);
 		Write(--sp, pc_l);
-		last_branch = pc-1;
 		pc = addr;
 		t += 13;
 	} else t += 6;
@@ -1027,7 +1003,6 @@ void OpE6() { // and nn
 void OpE7() { // rst 20
 	Write(--sp, pc_h);
 	Write(--sp, pc_l);
-	last_branch = pc-1;
 	pc = 0x20;
 	memptr = 0x20;
 	t += 7;
@@ -1036,14 +1011,12 @@ void OpE8() { // ret pe
 	if (f & PV) {
 		unsigned addr = Read(sp++);
 		addr += 0x100*Read(sp++);
-		last_branch = pc-1;
 		pc = addr;
 		memptr = addr;
 		t += 7;
 	} else t += 1;
 }
 void OpE9() { // jp (hl)
-	last_branch = pc-1;
 	pc = hl;
 }
 void OpEA() { // jp pe,nnnn
@@ -1052,7 +1025,6 @@ void OpEA() { // jp pe,nnnn
 	addr += 0x100*Read(pc+1);
 	memptr = addr;
 	if (f & PV) {
-		last_branch = pc-1;
 		pc = addr;
 	} else pc += 2;
 }
@@ -1069,7 +1041,6 @@ void OpEC() { // call pe,nnnn
 	if (f & PV) {
 		Write(--sp, pc_h);
 		Write(--sp, pc_l);
-		last_branch = pc-1;
 		pc = addr;
 		t += 13;
 	} else t += 6;
@@ -1081,7 +1052,6 @@ void OpEE() { // xor nn
 void OpEF() { // rst 28
 	Write(--sp, pc_h);
 	Write(--sp, pc_l);
-	last_branch = pc-1;
 	pc = 0x28;
 	memptr = 0x28;
 	t += 7;
@@ -1090,7 +1060,6 @@ void OpF0() { // ret p
 	if (!(f & SF)) {
 		unsigned addr = Read(sp++);
 		addr += 0x100*Read(sp++);
-		last_branch = pc-1;
 		pc = addr;
 		memptr = addr;
 		t += 7;
@@ -1107,7 +1076,6 @@ void OpF2() { // jp p,nnnn
 	addr += 0x100*Read(pc+1);
 	memptr = addr;
 	if (!(f & SF)) {
-		last_branch = pc-1;
 		pc = addr;
 	} else pc += 2;
 }
@@ -1122,7 +1090,6 @@ void OpF4() { // call p,nnnn
 	if (!(f & SF)) {
 		Write(--sp, pc_h);
 		Write(--sp, pc_l);
-		last_branch = pc-1;
 		pc = addr;
 		t += 13;
 	} else t += 6;
@@ -1139,7 +1106,6 @@ void OpF6() { // or nn
 void OpF7() { // rst 30
 	Write(--sp, pc_h);
 	Write(--sp, pc_l);
-	last_branch = pc-1;
 	pc = 0x30;
 	memptr = 0x30;
 	t += 7;
@@ -1148,7 +1114,6 @@ void OpF8() { // ret m
 	if (f & SF) {
 		unsigned addr = Read(sp++);
 		addr += 0x100*Read(sp++);
-		last_branch = pc-1;
 		pc = addr;
 		memptr = addr;
 		t += 7;
@@ -1164,7 +1129,6 @@ void OpFA() { // jp m,nnnn
 	addr += 0x100*Read(pc+1);
 	memptr = addr;
 	if (f & SF) {
-		last_branch = pc-1;
 		pc = addr;
 	} else pc += 2;
 }
@@ -1180,7 +1144,6 @@ void OpFC() { // call m,nnnn
 	if (f & SF) {
 		Write(--sp, pc_h);
 		Write(--sp, pc_l);
-		last_branch = pc-1;
 		pc = addr;
 		t += 13;
 	} else t += 6;
@@ -1192,7 +1155,6 @@ void OpFE() { // cp nn
 void OpFF() { // rst 38
 	Write(--sp, pc_h);
 	Write(--sp, pc_l);
-	last_branch = pc-1;
 	pc = 0x38;
 	memptr = 0x38;
 	t += 7;
