@@ -41,6 +41,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../build/symbian/unreal_speccy_portable.hrh"
 
 DECLARE_PROFILER_SECTION(draw);
+DECLARE_PROFILER_SECTION(blit);
+DECLARE_PROFILER_SECTION(sound);
 
 namespace xPlatform
 {
@@ -50,14 +52,14 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 	virtual const char* Name() const { return "skip frames"; }
 	virtual const char** Values() const
 	{
-		static const char* values[] = { "off", "2", "4", "8", "16", NULL };
+		static const char* values[] = { "off", "2", "4", "8", NULL };
 		return values;
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(0, 5, next);
+		eOptionInt::Change(0, 4, next);
 	}
-	int Values(int id) const { static const int vals[] = { 0, 2, 4, 8, 16 }; return vals[id]; }
+	int Values(int id) const { static const int vals[] = { 0, 2, 4, 8 }; return vals[id]; }
 } op_skip_frames;
 
 void InitSound();
@@ -190,12 +192,13 @@ void TDCControl::Draw(const TRect& /*aRect*/) const
 	if(bitmap)
 	{
 		Draw();
+		PROFILER_SECTION(blit);
 		gc.BitBlt(TPoint(0, 0), bitmap);
 	}
 }
 void TDCControl::Draw() const
 {
-	PROFILER_BEGIN(dc_draw_symbian);
+	PROFILER_SECTION(draw);
 	byte* data = (byte*)Handler()->VideoData();
 	dword* data_ui = (dword*)Handler()->VideoDataUI();
 	bitmap->LockHeap();
@@ -218,7 +221,6 @@ void TDCControl::Draw() const
 		}
 	}
 	bitmap->UnlockHeap();
-	PROFILER_END(dc_draw_symbian);
 }
 void TDCControl::OnTimer()
 {
@@ -243,7 +245,10 @@ void TDCControl::OnTimer()
 		}
 		tick.SetCurrent();
 	}
-	OnLoopSound();
+	{
+		PROFILER_SECTION(sound);
+		OnLoopSound();
+	}
 }
 void TDCControl::HandleResourceChange(TInt aType)
 {
@@ -278,6 +283,7 @@ static char TranslateKey(const TKeyEvent& aKeyEvent)
     case '0':					return 'e';
     case '1':					return 'm';
     case '*':					return 'k';
+    case '3':					return 'p';
     default : break;
     }
     return 0;

@@ -64,7 +64,8 @@ void eSection::Reset()
 const char* eSection::Dump()
 {
 	static char dump[1024];
-	sprintf(dump, "%8s: %.2f/%.2f/%.2f (%u)", name, time_total.Ms()/entry_count, time_min.Ms(), time_max.Ms(), entry_count);
+	float average = entry_count ? time_total.Ms()/entry_count : 0;
+	sprintf(dump, "%8s: %.2f/%.2f/%.2f (%u)", name, average, time_min.Ms(), time_max.Ms(), entry_count);
 	return dump;
 }
 //=============================================================================
