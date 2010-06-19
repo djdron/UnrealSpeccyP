@@ -258,7 +258,8 @@ void GLCanvas::TranslateKey(int& key, dword& flags)
 	case '*':	key = '8';		break;
 	case '(':	key = '9';		break;
 	case ')':	key = '0';		break;
-	case '~':	key = '`';		break;
+	case '`':	key = 'm';		break;
+	case '\\':	key = 'k';		break;
 	case '\'':
 		if(flags&KF_SHIFT)
 		{

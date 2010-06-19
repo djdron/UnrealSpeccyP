@@ -88,6 +88,8 @@ static void TranslateKey(byte& _key, dword& _flags)
 	case '*':	_key = '8';		break;
 	case '(':	_key = '9';		break;
 	case ')':	_key = '0';		break;
+	case '`':	_key = 'm';		break;
+	case '\\':	_key = 'k';		break;
 	}
 }
 static byte TranslateKeySpecial(int _key, dword& _flags)

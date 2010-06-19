@@ -75,7 +75,7 @@ bool eMainDialog::OnKey(char key, dword flags)
 {
 	switch(key)
 	{
-	case '\\':
+	case 'k':
 		if(!Focused())
 		{
 			eKeyboard* d = new eKeyboard;
@@ -85,7 +85,7 @@ bool eMainDialog::OnKey(char key, dword flags)
 		}
 		Clear();
 		return true;
-	case '`':
+	case 'm':
 		if(!Focused() || (*childs)->Id() == D_FILE_OPEN)
 		{
 			Clear();

@@ -276,8 +276,8 @@ static char TranslateKey(const TKeyEvent& aKeyEvent)
     case EStdKeyDownArrow:      return 'd';
     case EStdKeyHash:			return ' ';
     case '0':					return 'e';
-    case '1':					return '`';
-    case '*':					return '\\';
+    case '1':					return 'm';
+    case '*':					return 'k';
     default : break;
     }
     return 0;

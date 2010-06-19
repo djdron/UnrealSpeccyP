@@ -380,8 +380,8 @@ void eKeys::Update()
 	UpdateKey(K_BUTTON_X, '1', flags);
 	UpdateKey(K_BUTTON_Y, ' ', flags);
 
-	UpdateKey(K_BUTTON_SELECT, '`'); //menu dialog
-	UpdateKey(K_BUTTON_START, '\\'); //keys dialog
+	UpdateKey(K_BUTTON_SELECT, 'm'); //menu dialog
+	UpdateKey(K_BUTTON_START, 'k'); //keys dialog
 }
 
 
