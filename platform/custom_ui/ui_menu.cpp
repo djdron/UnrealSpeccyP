@@ -38,6 +38,8 @@ public:
 	{
 		if(eInherited::OnKey(key, flags))
 			return true;
+		if(!option->Values())
+			return false;
 		switch(key)
 		{
 		case 'l':	Change(false);	return true;

@@ -29,16 +29,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xUi
 {
 
-static struct eOptionOpenFile : public xOptions::eOptionBool
+static struct eOptionOpenFile : public xOptions::eOptionB
 {
-	eOptionOpenFile() { storeable = false; }
+	eOptionOpenFile() : on(false) { storeable = false; }
 	virtual const char* Name() const { return "open file"; }
-	virtual const char** Values() const
-	{
-		static const char* values[] = { ">", ">", NULL };
-		return values;
-	}
-	virtual void Change(bool next = true) { Set(true); }
+	virtual const char*	Value() const { return ">"; }
+	virtual void Change(bool next = true) { if(next) on = true; }
+	bool on;
 } op_open_file;
 
 //=============================================================================
@@ -59,9 +56,9 @@ void eMainDialog::Update()
 		clear = false;
 		Clear();
 	}
-	if(op_open_file)
+	if(op_open_file.on)
 	{
-		op_open_file.Set(false);
+		op_open_file.on = false;
 		Clear();
 		eDialog* d = new eFileOpenDialog(path);
 		d->Id(D_FILE_OPEN);
