@@ -956,13 +956,13 @@ void eTablesInitializer::InitSbc()
 				fl |= NF;
 				_sbcf[c*0x10000 + x*0x100 + y] = fl;
 			}
-			for (int i = 0; i < 0x10000; i++)
-			{
-				_cpf[i] = (_sbcf[i] & ~(F3|F5)) | (i & (F3|F5));
-				byte tempbyte = (i >> 8) - (i & 0xFF) - ((_sbcf[i] & HF) >> 4);
-				_cpf8b[i] = (_sbcf[i] & ~(F3|F5|PV|CF)) + (tempbyte & F3) + ((tempbyte << 4) & F5);
-			}
 		}
+	}
+	for (int i = 0; i < 0x10000; i++)
+	{
+		_cpf[i] = (_sbcf[i] & ~(F3|F5)) | (i & (F3|F5));
+		byte tempbyte = (i >> 8) - (i & 0xFF) - ((_sbcf[i] & HF) >> 4);
+		_cpf8b[i] = (_sbcf[i] & ~(F3|F5|PV|CF)) + (tempbyte & F3) + ((tempbyte << 4) & F5);
 	}
 }
 //=============================================================================
