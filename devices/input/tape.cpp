@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../std.h"
 #include "../../speccy.h"
 #include "../../z80/z80.h"
+#include "../memory.h"
 #include "tape.h"
 
 static inline word Word(const byte* ptr)
@@ -917,6 +918,13 @@ void FastTapeEmul(xZ80::eZ80* z80)
 {
 	((eZ80_FastTape*)z80)->Emul();
 }
+namespace xZ80
+{
+inline byte eZ80::Read(word addr) const
+{
+	return memory->Read(addr);
+}
+}//namespace xZ80
 //=============================================================================
 //	eZ80_FastTape::Emul
 //-----------------------------------------------------------------------------
