@@ -54,9 +54,6 @@ enum eFlags
 	SF = 0x80
 };
 
-extern byte even_m1; // m1_wait = 0xc0 - on wait machines, 0 - no_wait on pentagon
-extern bool unstable_databus;
-
 class eZ80;
 typedef void (*eFastEmul)(eZ80* z80);
 
@@ -88,7 +85,7 @@ protected:
 	}
 	byte IoRead(word port) const;
 	void IoWrite(word port, byte v);
-	byte Read(word addr) const;
+	inline byte Read(word addr) const;
 	void Write(word addr, byte v);
 
 	typedef void (eZ80::*CALLFUNC)();

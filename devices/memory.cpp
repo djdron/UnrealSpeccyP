@@ -43,6 +43,9 @@ void eMemory::SetPage(int idx, int page)
 	bank_read[idx] = addr;
 	bank_write[idx] = idx ? addr : NULL;
 }
+//=============================================================================
+//	eMemory::Page
+//-----------------------------------------------------------------------------
 int	eMemory::Page(int idx)
 {
 	byte* addr = bank_read[idx];
@@ -98,23 +101,6 @@ void eRom::IoWrite(word port, byte v, int tact)
 {
 	page_selected = (page_selected & ~1) + ((v >> 4) & 1);
 	memory->SetPage(0, page_selected);
-}
-//=============================================================================
-//	eRom::Read
-//-----------------------------------------------------------------------------
-void eRom::Read(word addr)
-{
-	byte pc_h = addr >> 8;
-	if(page_selected == ROM_SOS && (pc_h == 0x3d))
-	{
-		page_selected = ROM_DOS;
-		memory->SetPage(0, page_selected);
-	}
-	else if(DosSelected() && (pc_h & 0xc0)) // pc > 0x3fff closes tr-dos
-	{
-		page_selected = ROM_SOS;
-		memory->SetPage(0, page_selected);
-	}
 }
 
 //=============================================================================

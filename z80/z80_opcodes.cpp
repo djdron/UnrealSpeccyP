@@ -51,7 +51,7 @@ void eZ80::Write(word addr, byte v)
 //=============================================================================
 //	eZ80::Read
 //-----------------------------------------------------------------------------
-byte eZ80::Read(word addr) const
+inline byte eZ80::Read(word addr) const
 {
 	return memory->Read(addr);
 }

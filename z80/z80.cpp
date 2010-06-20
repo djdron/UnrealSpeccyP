@@ -26,9 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xZ80
 {
 
-byte even_m1 = 0;
-bool unstable_databus = false;
-
 //=============================================================================
 //	eZ80::eZ80
 //-----------------------------------------------------------------------------
@@ -68,6 +65,23 @@ void eZ80::Reset()
 	pc = 0;
 }
 //=============================================================================
+//	eZ80::Step
+//-----------------------------------------------------------------------------
+inline byte eZ80::Read(word addr) const
+{
+	return memory->Read(addr);
+}
+//=============================================================================
+//	eZ80::Step
+//-----------------------------------------------------------------------------
+void eZ80::Step()
+{
+	rom->Read(pc);
+//	if(fast_emul)
+//		fast_emul(this);
+	(this->*normal_opcodes[Fetch()])();
+}
+//=============================================================================
 //	eZ80::Reset
 //-----------------------------------------------------------------------------
 void eZ80::Update(int int_len, int* nmi_pending)
@@ -87,15 +101,15 @@ void eZ80::Update(int int_len, int* nmi_pending)
 	while(t < frame_tacts)
 	{
 		Step();
-		if(*nmi_pending)
-		{
-			--*nmi_pending;
-			if(pc >= 0x4000)
-			{
-				Nmi();
-				*nmi_pending = 0;
-			}
-		}
+//		if(*nmi_pending)
+//		{
+//			--*nmi_pending;
+//			if(pc >= 0x4000)
+//			{
+//				Nmi();
+//				*nmi_pending = 0;
+//			}
+//		}
 	}
 	t -= frame_tacts;
 	eipos -= frame_tacts;
@@ -105,7 +119,7 @@ void eZ80::Update(int int_len, int* nmi_pending)
 //-----------------------------------------------------------------------------
 void eZ80::Int()
 {
-	byte vector = 0xff; //unstable_databus ? (byte)rdtsc() : 0xFF;
+	byte vector = 0xff;
 	word intad = 0x38;
 	if(im >= 2) // im2
 	{ 
@@ -129,21 +143,6 @@ void eZ80::Nmi()
 	Write(--sp, pc_l);
 	pc = 0x66;
 	iff1 = halted = 0;
-}
-//=============================================================================
-//	eZ80::Step
-//-----------------------------------------------------------------------------
-void eZ80::Step()
-{
-	rom->Read(pc);
-	if(fast_emul)
-		fast_emul(this);
-	if(pc_h & even_m1) //wait
-	{
-		t += t & 1;
-	}
-	byte opcode = Fetch();
-	(this->*normal_opcodes[opcode])();
 }
 
 }//namespace xZ80

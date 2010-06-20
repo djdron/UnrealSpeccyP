@@ -74,7 +74,20 @@ public:
 	virtual void Reset();
 	virtual bool IoWrite(word port) const;
 	virtual void IoWrite(word port, byte v, int tact);
-	void Read(word addr);
+	void Read(word addr)
+	{
+		byte pc_h = addr >> 8;
+		if(page_selected == ROM_SOS && (pc_h == 0x3d))
+		{
+			page_selected = ROM_DOS;
+			memory->SetPage(0, page_selected);
+		}
+		else if(DosSelected() && (pc_h & 0xc0)) // pc > 0x3fff closes tr-dos
+		{
+			page_selected = ROM_SOS;
+			memory->SetPage(0, page_selected);
+		}
+	}
 	bool DosSelected() const { return page_selected == ROM_DOS; }
 	void Mode48k(bool on) { mode_48k = on; }
 
