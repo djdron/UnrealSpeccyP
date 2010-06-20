@@ -153,27 +153,3 @@ void eDevices::_Add(eDeviceId id, eDevice* d)
 		*dl = d;
 	}
 }
-//=============================================================================
-//	eDevices::IoRead
-//-----------------------------------------------------------------------------
-byte eDevices::IoRead(word port, int tact)
-{
-	byte v = 0xff;
-	eDevice** dl = io_read_cache[io_read_map[port]];
-	while(*dl)
-	{
-		(*dl++)->IoRead(port, &v, tact);
-	}
-	return v;
-}
-//=============================================================================
-//	eDevices::IoWrite
-//-----------------------------------------------------------------------------
-void eDevices::IoWrite(word port, byte v, int tact)
-{
-	eDevice** dl = io_write_cache[io_write_map[port]];
-	while(*dl)
-	{
-		(*dl++)->IoWrite(port, v, tact);
-	}
-}

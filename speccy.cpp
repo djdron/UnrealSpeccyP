@@ -32,10 +32,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "devices/fdd/wd1793.h"
 #include "tools/profiler.h"
 
-DECLARE_PROFILER_SECTION(frame);
-DECLARE_PROFILER_SECTION(dev_s);
-DECLARE_PROFILER_SECTION(dev);
-DECLARE_PROFILER_SECTION(dev_e);
+PROFILER_DECLARE(dev_e);
+PROFILER_DECLARE(dev);
+PROFILER_DECLARE(dev_s);
+PROFILER_DECLARE(frame);
 
 //=============================================================================
 //	eSpeccy::eSpeccy

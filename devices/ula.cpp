@@ -234,7 +234,7 @@ void eUla::FrameUpdate()
 //=============================================================================
 //	UpdateRay
 //-----------------------------------------------------------------------------
-void eUla::_UpdateRay(int tact)
+void eUla::UpdateRay(int tact)
 {
 	int t = prev_t;
 	while(t < tact)

@@ -126,7 +126,7 @@ public:
 		for(int i = Handler()->AudioSources(); --i >= 0;)
 		{
 			dword size = Handler()->AudioDataReady(i);
-			bool ui_enabled = Handler()->VideoDataUI() != NULL;
+			bool ui_enabled = false;//Handler()->VideoDataUI() != NULL;
 			if(i == OpSound() && !ui_enabled && !Handler()->FullSpeed())
 			{
 				if(size > 44100*2*2/50*3)

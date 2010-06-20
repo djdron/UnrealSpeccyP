@@ -40,7 +40,7 @@ public:
 	virtual bool IoWrite(word port) const;
 	virtual void IoRead(word port, byte* v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
-	void	Write(int tact) { UpdateRay(tact); }
+	void	Write(int tact) { if(prev_t < tact) UpdateRay(tact); }
 
 	void*	Screen() const { return screen; }
 
@@ -54,12 +54,7 @@ protected:
 	void	CreateTables();
 	void	CreateTimings();
 	void	SwitchScreen(bool first, int tact);
-	void	UpdateRay(int tact)
-	{
-		if(prev_t < tact)
-			_UpdateRay(tact);
-	}
-	void	_UpdateRay(int tact);
+	void	UpdateRay(int tact);
 	void	UpdateRayBorder(int& t, int last_t);
 	void	UpdateRayPaper(int& t, int last_t);
 	void	FlushScreen();

@@ -77,8 +77,8 @@ inline byte eZ80::Read(word addr) const
 void eZ80::Step()
 {
 	rom->Read(pc);
-//	if(fast_emul)
-//		fast_emul(this);
+	if(fast_emul)
+		fast_emul(this);
 	(this->*normal_opcodes[Fetch()])();
 }
 //=============================================================================

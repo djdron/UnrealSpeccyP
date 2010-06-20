@@ -60,8 +60,20 @@ public:
 	template<class T> void Add(T* d) { _Add(T::Id(), d); }
 	template<class T> T* Get() const { return (T*)_Get(T::Id()); }
 
-	byte IoRead(word port, int tact);
-	void IoWrite(word port, byte v, int tact);
+	byte IoRead(word port, int tact)
+	{
+		byte v = 0xff;
+		eDevice** dl = io_read_cache[io_read_map[port]];
+		while(*dl)
+			(*dl++)->IoRead(port, &v, tact);
+		return v;
+	}
+	void IoWrite(word port, byte v, int tact)
+	{
+		eDevice** dl = io_write_cache[io_write_map[port]];
+		while(*dl)
+			(*dl++)->IoWrite(port, v, tact);
+	}
 
 	void FrameStart();
 	void FrameUpdate();

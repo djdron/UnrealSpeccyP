@@ -33,8 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif//_MAC
 
 
-DECLARE_PROFILER_SECTION(draw_p);
-DECLARE_PROFILER_SECTION(draw);
+PROFILER_DECLARE(draw_p);
+PROFILER_DECLARE(draw);
 
 namespace xPlatform
 {

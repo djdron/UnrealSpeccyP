@@ -68,7 +68,7 @@ protected:
 }
 //namespace xProfiler
 
-#define DECLARE_PROFILER_SECTION(name) static xProfiler::eSection profile_section_##name(#name);
+#define PROFILER_DECLARE(name) static xProfiler::eSection profile_section_##name(#name);
 #define PROFILER_BEGIN(name) profile_section_##name.Begin();
 #define PROFILER_END(name) profile_section_##name.End();
 #define PROFILER_SECTION(name) xProfiler::eSectionAuto profile_section_auto_##name(profile_section_##name);
@@ -76,7 +76,7 @@ protected:
 
 #else//USE_PROFILER
 
-#define DECLARE_PROFILER_SECTION(name)
+#define PROFILER_DECLARE(name)
 #define PROFILER_BEGIN(name)
 #define PROFILER_END(name)
 #define PROFILER_SECTION(name)
