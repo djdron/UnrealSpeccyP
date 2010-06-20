@@ -77,6 +77,7 @@ protected:
 	void Int();
 	void Nmi();
 	void Step();
+	void StepF();
 	byte Fetch()
 	{
 		r_low++;// = (cpu->r & 0x80) + ((cpu->r+1) & 0x7F);
@@ -85,7 +86,7 @@ protected:
 	}
 	byte IoRead(word port) const;
 	void IoWrite(word port, byte v);
-	inline byte Read(word addr) const;
+	byte Read(word addr) const;
 	void Write(word addr, byte v);
 
 	typedef void (eZ80::*CALLFUNC)();

@@ -239,7 +239,7 @@ void TDCControl::OnTimer()
 		DrawDeferred();
 		qword mks_org = 20000*sf;
 		qword mks = tick.Passed().Mks();
-		if(mks < mks_org)
+		if(mks < mks_org && !Handler()->FullSpeed())
 		{
 			User::AfterHighRes(mks_org - mks);
 		}

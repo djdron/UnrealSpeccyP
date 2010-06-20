@@ -72,13 +72,21 @@ inline byte eZ80::Read(word addr) const
 	return memory->Read(addr);
 }
 //=============================================================================
+//	eZ80::StepF
+//-----------------------------------------------------------------------------
+void eZ80::StepF()
+{
+	rom->Read(pc);
+	if(fast_emul)
+		fast_emul(this);
+	(this->*normal_opcodes[Fetch()])();
+}
+//=============================================================================
 //	eZ80::Step
 //-----------------------------------------------------------------------------
 void eZ80::Step()
 {
 	rom->Read(pc);
-	if(fast_emul)
-		fast_emul(this);
 	(this->*normal_opcodes[Fetch()])();
 }
 //=============================================================================
@@ -98,18 +106,28 @@ void eZ80::Update(int int_len, int* nmi_pending)
 		Step();
 	}
 	eipos = -1;
-	while(t < frame_tacts)
+	if(fast_emul)
 	{
-		Step();
-//		if(*nmi_pending)
-//		{
-//			--*nmi_pending;
-//			if(pc >= 0x4000)
+		while(t < frame_tacts)
+		{
+			StepF();
+		}
+	}
+	else
+	{
+		while(t < frame_tacts)
+		{
+			Step();
+//			if(*nmi_pending)
 //			{
-//				Nmi();
-//				*nmi_pending = 0;
+//				--*nmi_pending;
+//				if(pc >= 0x4000)
+//				{
+//					Nmi();
+//					*nmi_pending = 0;
+//				}
 //			}
-//		}
+		}
 	}
 	t -= frame_tacts;
 	eipos -= frame_tacts;
