@@ -47,8 +47,6 @@ void eUla::Init()
 	// pentagon timings
 	line_tacts	= 224;
 	paper_start	= 17989;
-	border_add	= 0;
-	border_and	= 0xffffffff;
 	prev_t = 0;
 	timing = timings;
 	colortab = colortab1;
@@ -196,7 +194,7 @@ void eUla::IoRead(word port, byte* v, int tact)
 		*v = 0xff;
 		return;
 	}
-	int t = (tact + border_add) & border_and;
+	int t = tact;
 	int offs = (t - timing->t) / 4;
 	byte* atr = base + timing->attr_offs + offs;
 	*v = *atr;
@@ -236,12 +234,10 @@ void eUla::FrameUpdate()
 //=============================================================================
 //	UpdateRay
 //-----------------------------------------------------------------------------
-void eUla::UpdateRay(int tact)
+void eUla::_UpdateRay(int tact)
 {
-	int last_t = (tact + border_add) & border_and;
 	int t = prev_t;
-
-	while(t < last_t)
+	while(t < tact)
 	{
 		switch(timing->zone)
 		{
@@ -249,10 +245,10 @@ void eUla::UpdateRay(int tact)
 			t = (timing + 1)->t;
 			break;
 		case eTiming::Z_BORDER:
-			UpdateRayBorder(t, last_t);
+			UpdateRayBorder(t, tact);
 			break;
 		case eTiming::Z_PAPER:
-			UpdateRayPaper(t, last_t);
+			UpdateRayPaper(t, tact);
 			break;
 		}
 		if(t == (timing + 1)->t)

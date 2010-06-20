@@ -54,7 +54,12 @@ protected:
 	void	CreateTables();
 	void	CreateTimings();
 	void	SwitchScreen(bool first, int tact);
-	void	UpdateRay(int tact);
+	void	UpdateRay(int tact)
+	{
+		if(prev_t < tact)
+			_UpdateRay(tact);
+	}
+	void	_UpdateRay(int tact);
 	void	UpdateRayBorder(int& t, int last_t);
 	void	UpdateRayPaper(int& t, int last_t);
 	void	FlushScreen();
@@ -82,8 +87,6 @@ protected:
 	eMemory* memory;
 	int		line_tacts;		// t-states per line
 	int		paper_start;	// start of paper
-	int		border_add;
-	int		border_and;
 	byte	border_color;
 	bool	first_screen;
 	byte*	base;
