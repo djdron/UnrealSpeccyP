@@ -414,7 +414,7 @@ class TApp : public CAknApplication
 {
 private:
 	CApaDocument* CreateDocumentL()	{ return new (ELeave) TDoc(*this); }
-	TUid AppDllUid() const { const TUid KUid = { 0xA000821A }; return KUid; }
+	TUid AppDllUid() const { const TUid KUid = { 0xA89FAC37 }; return KUid; }
 };
 
 LOCAL_C CApaApplication* NewApplication()
