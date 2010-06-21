@@ -16,6 +16,6 @@ ICON_TARGET = $(DIST_PATH)/$(PROJECT_NAME).mbm
 IMG_ARGS = /c24
 RSS_TARGETS = $(DIST_PATH)/$(PROJECT_NAME).rsc $(DIST_PATH)/$(PROJECT_NAME)_reg.rsc
 LANG_MACRO = LANGUAGE_SC
-SYSLIBRARY = euser.lib estlib.lib avkon.lib libGLES_CM.lib eikcore.lib cone.lib apparc.lib ws32.lib fbscli.lib efsrv.lib commondialogs.lib eikcoctl.lib mediaclientaudiostream.lib
+SYSLIBRARY = euser.lib estlib.lib avkon.lib libGLES_CM.lib eikcore.lib cone.lib apparc.lib ws32.lib fbscli.lib efsrv.lib commondialogs.lib eikcoctl.lib mediaclientaudiostream.lib remconcoreapi.lib remconinterfacebase.lib
 #CERT = /c/cert/selfsigned.cer
 #KEY = /c/cert/selfsigned.key

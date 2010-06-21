@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/profiler.h"
 #include "../../tools/options.h"
 #include "../../tools/tick.h"
+#include "../../options_common.h"
 
 #include <eikstart.h>
 #include <eikedwin.h>
@@ -36,6 +37,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <caknfileselectiondialog.h>
 #include <avkon.rsg>
 #include <aknsoundsystem.h>
+#include <remconcoreapitargetobserver.h>
+#include <remconcoreapitarget.h>
+#include <remconinterfaceselector.h>
 
 #include <unreal_speccy_portable.rsg>
 #include "../../build/symbian/unreal_speccy_portable.hrh"
@@ -106,13 +110,11 @@ void Done()
     Handler()->OnDone();
 }
 
-class TDCControl : public CCoeControl, MCoeControlObserver
+class TDCControl : public CCoeControl, MCoeControlObserver, MRemConCoreApiTargetObserver
 {
 public:
 	void ConstructL(const TRect& aRect);
-	TDCControl()
-		: iTimer(NULL), bitmap(NULL), frame(0), key_flags(KF_CURSOR|KF_KEMPSTON)
-		{}
+	TDCControl() : iTimer(NULL), bitmap(NULL), frame(0)	{}
 	virtual ~TDCControl();
 
 	void Reset() { Handler()->OnAction(A_RESET); }
@@ -131,37 +133,41 @@ private:
 	void Draw(const TRect& aRect) const;
 	void HandleControlEventL(CCoeControl* aControl,TCoeEvent aEventType) {}
 	TKeyResponse OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType);
+	virtual void MrccatoCommand(TRemConCoreApiOperationId, TRemConCoreApiButtonAction);
 protected:
 	CIdle* iTimer;
 	CFbsBitmap* bitmap;
 	mutable int frame;
+	xOptions::eOption<int>* op_joy;
+	xOptions::eOption<int>* op_volume;
+	CRemConInterfaceSelector* iInterfaceSelector;
+    CRemConCoreApiTarget*     iCoreTarget;
 
-	struct eMouse
-	{
-		enum eDir { D_NONE = 0x00, D_UP = 0x01, D_DOWN = 0x02, D_LEFT = 0x04, D_RIGHT = 0x08 };
-		eMouse() : enable(false), dir(D_NONE), x(0), y(0) {}
-		bool enable;
-		byte dir;
-		byte x, y;
-		bool Update();
-	};
-	mutable eMouse mouse;
-	dword key_flags;
+//	struct eMouse
+//	{
+//		enum eDir { D_NONE = 0x00, D_UP = 0x01, D_DOWN = 0x02, D_LEFT = 0x04, D_RIGHT = 0x08 };
+//		eMouse() : enable(false), dir(D_NONE), x(0), y(0) {}
+//		bool enable;
+//		byte dir;
+//		byte x, y;
+//		bool Update();
+//	};
+//	mutable eMouse mouse;
 
 	dword color_cache[16];
 	eTick tick;
 };
-bool TDCControl::eMouse::Update()
-{
-	if(dir&D_UP)		y += 1;
-	else if(dir&D_DOWN)	y -= 1;
-	else y = 0;
-	if(dir&D_LEFT)		x -= 1;
-	else if(dir&D_RIGHT)x += 1;
-	else x = 0;
-
-	return dir != D_NONE;
-}
+//bool TDCControl::eMouse::Update()
+//{
+//	if(dir&D_UP)		y += 1;
+//	else if(dir&D_DOWN)	y -= 1;
+//	else y = 0;
+//	if(dir&D_LEFT)		x -= 1;
+//	else if(dir&D_RIGHT)x += 1;
+//	else x = 0;
+//
+//	return dir != D_NONE;
+//}
 
 static inline dword BGRX(byte r, byte g, byte b)
 {
@@ -170,6 +176,12 @@ static inline dword BGRX(byte r, byte g, byte b)
 
 void TDCControl::ConstructL(const TRect& /*aRect*/)
 {
+	op_joy = xOptions::eOption<int>::Find("joystick");
+	op_volume = xOptions::eOption<int>::Find("volume");
+	iInterfaceSelector = CRemConInterfaceSelector::NewL();
+	iCoreTarget = CRemConCoreApiTarget::NewL(*iInterfaceSelector, *this);
+	iInterfaceSelector->OpenTargetL();
+
 	CreateWindowL();
 	SetExtentToWholeScreen();
 	ActivateL();
@@ -282,10 +294,10 @@ void TDCControl::Draw(bool horizontal) const
 }
 void TDCControl::OnTimer()
 {
-	if(mouse.enable && mouse.Update())
-	{
-		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
-	}
+//	if(mouse.enable && mouse.Update())
+//	{
+//		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
+//	}
 	Handler()->OnLoop();
 
 	++frame;
@@ -351,36 +363,66 @@ TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
     char ch = TranslateKey(aKeyEvent);
     if(!ch)
         return EKeyWasNotConsumed;
+    dword key_flags = xPlatform::KF_CURSOR;
+    if(op_joy)
+    {
+    	using namespace xPlatform;
+    	switch(*op_joy)
+    	{
+    	case J_KEMPSTON:	key_flags = KF_KEMPSTON;	break;
+    	case J_CURSOR:		key_flags = KF_CURSOR;		break;
+    	case J_QAOP:		key_flags = KF_QAOP;		break;
+    	case J_SINCLAIR2:	key_flags = KF_SINCLAIR2;	break;
+    	}
+    }
     switch(aType)
     {
     case EEventKeyDown:
         Handler()->OnKey(ch, KF_DOWN|key_flags);
-        switch(ch)
-        {
-        case 'u':   mouse.dir |= eMouse::D_UP; break;
-        case 'd':   mouse.dir |= eMouse::D_DOWN; break;
-        case 'l':   mouse.dir |= eMouse::D_LEFT; break;
-        case 'r':   mouse.dir |= eMouse::D_RIGHT; break;
-        case 'f':   Handler()->OnMouse(MA_BUTTON, 0, 1); break;
-        default : break;
-        }
+//        switch(ch)
+//        {
+//        case 'u':   mouse.dir |= eMouse::D_UP; break;
+//        case 'd':   mouse.dir |= eMouse::D_DOWN; break;
+//        case 'l':   mouse.dir |= eMouse::D_LEFT; break;
+//        case 'r':   mouse.dir |= eMouse::D_RIGHT; break;
+//        case 'f':   Handler()->OnMouse(MA_BUTTON, 0, 1); break;
+//        default : break;
+//        }
         break;
     case EEventKeyUp:
         Handler()->OnKey(ch, key_flags);
-        switch(ch)
-        {
-        case 'u':   mouse.dir &= ~eMouse::D_UP; break;
-        case 'd':   mouse.dir &= ~eMouse::D_DOWN; break;
-        case 'l':   mouse.dir &= ~eMouse::D_LEFT; break;
-        case 'r':   mouse.dir &= ~eMouse::D_RIGHT; break;
-        case 'f':   Handler()->OnMouse(MA_BUTTON, 0, 0); break;
-        default : break;
-        }
+//        switch(ch)
+//        {
+//        case 'u':   mouse.dir &= ~eMouse::D_UP; break;
+//        case 'd':   mouse.dir &= ~eMouse::D_DOWN; break;
+//        case 'l':   mouse.dir &= ~eMouse::D_LEFT; break;
+//        case 'r':   mouse.dir &= ~eMouse::D_RIGHT; break;
+//        case 'f':   Handler()->OnMouse(MA_BUTTON, 0, 0); break;
+//        default : break;
+//        }
         break;
     default:
         break;
     }
     return EKeyWasConsumed;
+}
+void TDCControl::MrccatoCommand(TRemConCoreApiOperationId id, TRemConCoreApiButtonAction a)
+{
+	if(op_volume && a == ERemConCoreApiButtonClick)
+	{
+		switch(id)
+		{
+		case ERemConCoreApiVolumeUp:
+			if(*op_volume < xPlatform::V_100)
+				op_volume->Change(true);
+			break;
+		case ERemConCoreApiVolumeDown:
+			if(*op_volume > xPlatform::V_MUTE)
+				op_volume->Change(false);
+			break;
+		default: break;
+		}
+	}
 }
 void TDCControl::OpenFile()
 {
