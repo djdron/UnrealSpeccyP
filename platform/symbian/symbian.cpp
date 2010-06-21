@@ -60,7 +60,22 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 		eOptionInt::Change(0, 4, next);
 	}
 	int Values(int id) const { static const int vals[] = { 0, 2, 4, 8 }; return vals[id]; }
+	virtual int Order() const { return 1; }
 } op_skip_frames;
+
+static struct eOptionRotateScreen : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "rotate screen"; }
+	virtual int Order() const { return 2; }
+} op_rotate_screen;
+
+static struct eOptionRotateJoy : public xOptions::eOptionBool
+{
+	eOptionRotateJoy() { Set(true); }
+	virtual const char* Name() const { return "rotate joystick"; }
+	virtual int Order() const { return 3; }
+} op_rotate_joystick;
+
 
 void InitSound();
 void DoneSound();
@@ -109,7 +124,7 @@ public:
 
 private:
 	void OnTimer();
-	void Draw() const;
+	void Draw(bool horizontal) const;
 	void HandleResourceChange(TInt aType);
 	TInt CountComponentControls() const { return 0; }
 	CCoeControl* ComponentControl(TInt aIndex) const { return NULL; }
@@ -124,7 +139,7 @@ protected:
 	struct eMouse
 	{
 		enum eDir { D_NONE = 0x00, D_UP = 0x01, D_DOWN = 0x02, D_LEFT = 0x04, D_RIGHT = 0x08 };
-		eMouse() : enable(true), dir(D_NONE), x(0), y(0) {}
+		eMouse() : enable(false), dir(D_NONE), x(0), y(0) {}
 		bool enable;
 		byte dir;
 		byte x, y;
@@ -172,7 +187,7 @@ void TDCControl::ConstructL(const TRect& /*aRect*/)
 	}
 
 	bitmap = new CFbsBitmap;
-	bitmap->Create(TSize(320, 240), EColor16MU);
+	bitmap->Create(TSize(320, 320), EColor16MU);
 	iTimer = CIdle::NewL(CActive::EPriorityIdle);
 	iTimer->Start(TCallBack(TDCControl::TimerCallBack, this));
 	tick.SetCurrent();
@@ -188,15 +203,22 @@ void TDCControl::Draw(const TRect& /*aRect*/) const
 {
 	CWindowGc& gc = SystemGc();
 	gc.SetBrushColor(0);
-	gc.Clear(Rect());
+	TRect r = Rect();
+	gc.Clear(r);
 	if(bitmap)
 	{
-		Draw();
+		bool h = (r.Width() > r.Height()) ^ op_rotate_screen;
+		Draw(h);
 		PROFILER_SECTION(blit);
-		gc.BitBlt(TPoint(0, 0), bitmap);
+		TRect rb(0, 0, h ? 320 : 240, h ? 240 : 320);
+		int dx = r.Width() - rb.Width();
+		int dy = r.Height() - rb.Height();
+		if(dx < 0)	dx = 0;
+		if(dy < 0)	dy = 0;
+		gc.BitBlt(TPoint(dx/2, dy/2), bitmap, rb);
 	}
 }
-void TDCControl::Draw() const
+void TDCControl::Draw(bool horizontal) const
 {
 	PROFILER_SECTION(draw);
 	byte* data = (byte*)Handler()->VideoData();
@@ -204,20 +226,56 @@ void TDCControl::Draw() const
 	bitmap->LockHeap();
 	dword* tex = (dword*)bitmap->DataAddress();
 
-	if(data_ui)
+	if(horizontal)
 	{
-		for(int i = 0; i < 320*240; ++i)
+		if(data_ui)
 		{
-			xUi::eRGBAColor c_ui = *data_ui++;
-			xUi::eRGBAColor c = color_cache[*data++];
-			*tex++ = BGRX((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b);
+			for(int i = 0; i < 320*240; ++i)
+			{
+				xUi::eRGBAColor c_ui = *data_ui++;
+				xUi::eRGBAColor c = color_cache[*data++];
+				*tex++ = BGRX((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b);
+			}
+		}
+		else
+		{
+			for(int i = 0; i < 320*240; ++i)
+			{
+				*tex++ = color_cache[*data++];
+			}
 		}
 	}
 	else
 	{
-		for(int i = 0; i < 320*240; ++i)
+		if(data_ui)
 		{
-			*tex++ = color_cache[*data++];
+			for(int j = 0; j < 320; j++)
+			{
+				byte* d = data + 320*239 + j;
+				dword* d_ui = data_ui + 320*239 + j;
+				for(int i = 0; i < 240; ++i)
+				{
+					xUi::eRGBAColor c_ui = *d_ui;
+					xUi::eRGBAColor c = color_cache[*d];
+					*tex++ = BGRX((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b);
+					d -= 320;
+					d_ui -= 320;
+				}
+				tex += 320-240;
+			}
+		}
+		else
+		{
+			for(int j = 0; j < 320; j++)
+			{
+				byte* d = data + 320*239 + j;
+				for(int i = 0; i < 240; ++i)
+				{
+					*tex++ = color_cache[*d];
+					d -= 320;
+				}
+				tex += 320-240;
+			}
 		}
 	}
 	bitmap->UnlockHeap();
@@ -272,13 +330,13 @@ static char TranslateKey(const TKeyEvent& aKeyEvent)
     case EStdKeyEnter:
     case EStdKeyDevice3:		return 'f';
     case '4':
-    case EStdKeyLeftArrow:		return 'l';
+    case EStdKeyLeftArrow:		return op_rotate_joystick ? 'd' : 'l';
     case '6':
-    case EStdKeyRightArrow:		return 'r';
+    case EStdKeyRightArrow:		return op_rotate_joystick ? 'u' : 'r';
     case '2':
-    case EStdKeyUpArrow:		return 'u';
+    case EStdKeyUpArrow:		return op_rotate_joystick ? 'l' : 'u';
     case '8':
-    case EStdKeyDownArrow:      return 'd';
+    case EStdKeyDownArrow:      return op_rotate_joystick ? 'r' : 'd';
     case EStdKeyHash:			return ' ';
     case '0':					return 'e';
     case '1':					return 'm';
