@@ -31,7 +31,7 @@ RESOURCE MENU_BAR r_menubar
         },
         MENU_TITLE
         { 
-            menu_pane = r_open_file; 
+            menu_pane = r_reset; 
         },
         MENU_TITLE
         { 
@@ -39,7 +39,7 @@ RESOURCE MENU_BAR r_menubar
         },
         MENU_TITLE
         { 
-            menu_pane = r_reset; 
+            menu_pane = r_open_file; 
         }
     };
 }
@@ -56,14 +56,14 @@ RESOURCE MENU_PANE r_exit
     };
 }
 
-RESOURCE MENU_PANE r_open_file
+RESOURCE MENU_PANE r_reset
 {
     items =
     {
         MENU_ITEM 
         { 
-            command = EOpenFile; 
-            txt = STRING_open_file; 
+            command = EReset; 
+            txt = STRING_reset; 
         }
     };
 }
@@ -80,14 +80,14 @@ RESOURCE MENU_PANE r_toggle_tape
     };
 }
 
-RESOURCE MENU_PANE r_reset
+RESOURCE MENU_PANE r_open_file
 {
     items =
     {
         MENU_ITEM 
         { 
-            command = EReset; 
-            txt = STRING_reset; 
+            command = EOpenFile; 
+            txt = STRING_open_file; 
         }
     };
 }
@@ -108,7 +108,7 @@ RESOURCE FILESELECTIONDIALOG r_file_selection_dialog
 		{
 			filter_type = EFilenameFilter;
 			filter_style = EInclusiveFilter;
-			filter_data = { "*.sna", "*.trd", "*.scl", "*.tap", "*.csw", "*.tzx" };
+			filter_data = { "*.sna", "*.z80", "*.trd", "*.scl", "*.tap", "*.csw", "*.tzx", "*.zip" };
 		}
 	};
 }
@@ -123,3 +123,4 @@ RESOURCE LOCALISABLE_APP_INFO r_localisable_app_info
         icon_file       = "\\resource\\apps\\unreal_speccy_portable.mbm";
     };
 }
+
