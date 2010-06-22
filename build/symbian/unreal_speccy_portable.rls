@@ -3,11 +3,9 @@
 rls_string STRING_app_caption_string       "Unreal Speccy Portable"
 rls_string STRING_app_short_caption_string "USP"
 
-rls_string STRING_exit          "Exit"
-
-rls_string STRING_reset         "Reset"
 rls_string STRING_open_file     "Open File"
 rls_string STRING_toggle_tape   "Start/Stop tape"
-rls_string STRING_select_file   "Select File"
+rls_string STRING_reset         "Reset"
+rls_string STRING_exit          "Exit"
 
 // End of File

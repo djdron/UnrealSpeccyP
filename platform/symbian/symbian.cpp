@@ -35,6 +35,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <akndoc.h>
 #include <akncommondialogs.h>
 #include <caknfileselectiondialog.h>
+#include <caknmemoryselectiondialog.h>
+#include <pathinfo.h>
 #include <avkon.rsg>
 #include <aknsoundsystem.h>
 #include <remconcoreapitargetobserver.h>
@@ -426,11 +428,30 @@ void TDCControl::MrccatoCommand(TRemConCoreApiOperationId id, TRemConCoreApiButt
 }
 void TDCControl::OpenFile()
 {
-	TFileName openFileName;
-	if(AknCommonDialogs::RunSelectDlgLD(openFileName, R_FILE_SELECTION_DIALOG))
+	TFileName path;
+	CAknMemorySelectionDialog* memDlg = CAknMemorySelectionDialog::NewL(ECFDDialogTypeSelect, ETrue);
+	CAknMemorySelectionDialog::TMemory memory = CAknMemorySelectionDialog::EPhoneMemory;
+	CAknFileSelectionDialog* dialog = CAknFileSelectionDialog::NewL(ECFDDialogTypeSelect, R_FILE_SELECTION_DIALOG);
+	for(;;)
 	{
-		Handler()->OnOpenFile(FileNameToCStr(openFileName));
+		if(memDlg->ExecuteL(memory) == CAknFileSelectionDialog::ERightSoftkey)
+			break;
+		if(memory==CAknMemorySelectionDialog::EMemoryCard)
+		{
+			path = PathInfo::MemoryCardRootPath();
+		}
+		else
+		{
+			path = PathInfo::PhoneMemoryRootPath();
+		}
+		if(dialog->ExecuteL(path))
+		{
+			Handler()->OnOpenFile(FileNameToCStr(path));
+			break;
+		}
 	}
+	delete memDlg;
+	delete dialog;
 }
 
 

@@ -94,8 +94,6 @@ RESOURCE MENU_PANE r_open_file
 
 RESOURCE FILESELECTIONDIALOG r_file_selection_dialog
 {
-	title = STRING_select_file;
-	root_path = "";
 	filters =
 	{
 		FILTER
