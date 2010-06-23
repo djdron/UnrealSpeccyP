@@ -59,14 +59,19 @@ public:
 		return (err == KErrNone);
 	}
 
-	void WriteSound(unsigned char* aBuffer, int bytes)
+	bool WriteSound(unsigned char* aBuffer, int bytes)
 	{
+		if(buffer_busy)
+			return false;
+		if(bytes > BUF_SIZE)
+			bytes = BUF_SIZE;
 		TPtrC8 ptr(aBuffer, bytes);
-		TPtr8 des((byte*)iSound[iCurrentBuf].Ptr(), bytes);
+		TPtr8 des((byte*)buffer.Ptr(), bytes);
 		des.Copy(ptr);
-		iSound[iCurrentBuf].SetLength(bytes);
-		iSndStream->WriteL(iSound[iCurrentBuf]);
-		iCurrentBuf = 1 - iCurrentBuf;
+		buffer.SetLength(bytes);
+		iSndStream->WriteL(buffer);
+		buffer_busy = true;
+		return true;
 	}
 
 	virtual void MaoscOpenComplete(TInt aError)
@@ -92,6 +97,7 @@ public:
 			iSndStream->SetVolume(iSndStream->MaxVolume()*OpVolume()/10);
 			iVolume = OpVolume();
 		}
+		buffer_busy = false;
 	}
 
 	virtual void MaoscPlayComplete(TInt aError)
@@ -106,7 +112,7 @@ public:
 
 	void ConstructL()
 	{
-		iCurrentBuf = 0;
+		buffer_busy = false;
 		iVolume = 0;
 		iSampleRate = 44100;
 		iStereo = true;
@@ -122,6 +128,8 @@ public:
 
 	void Update()
 	{
+		static bool video_paused = false;
+		bool video_paused_new = false;
 		using namespace xPlatform;
 		for(int i = Handler()->AudioSources(); --i >= 0;)
 		{
@@ -129,10 +137,12 @@ public:
 			bool ui_enabled = Handler()->VideoDataUI() != NULL;
 			if(i == OpSound() && !ui_enabled && !Handler()->FullSpeed())
 			{
-				if(size > 44100*2*2/50*3)
+				if(size > 44100*2*2/50*3)//~approx >10600 bytes
 				{
-					WriteSound((byte*)Handler()->AudioData(i), size);
-					Handler()->AudioDataUse(i, size);
+					if(WriteSound((byte*)Handler()->AudioData(i), size))
+						Handler()->AudioDataUse(i, size);
+					else
+						video_paused_new = true;
 				}
 			}
 			else
@@ -140,13 +150,19 @@ public:
 				Handler()->AudioDataUse(i, size);
 			}
 		}
+		if(video_paused_new != video_paused)
+		{
+			video_paused = video_paused_new;
+			Handler()->VideoPaused(video_paused);
+		}
 	}
 
 protected:
 	CMdaAudioOutputStream*	iSndStream;
 	TMdaAudioDataSettings	iAudioSettings;
-	TBuf8<65536>			iSound[2];
-	TInt					iCurrentBuf;
+	enum { BUF_SIZE = 32768 };
+	TBuf8<BUF_SIZE>			buffer;
+	bool					buffer_busy;
 	TInt					iVolume;
 	TInt					iSampleRate;
 	TInt					iStereo;
