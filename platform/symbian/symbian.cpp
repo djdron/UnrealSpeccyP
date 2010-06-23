@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <remconcoreapitargetobserver.h>
 #include <remconcoreapitarget.h>
 #include <remconinterfaceselector.h>
+#include <utf.h>
 
 #include <unreal_speccy_portable.rsg>
 #include "../../build/symbian/unreal_speccy_portable.hrh"
@@ -55,6 +56,7 @@ namespace xPlatform
 
 static struct eOptionSkipFrames : public xOptions::eOptionInt
 {
+	eOptionSkipFrames() { Set(2); }
 	virtual const char* Name() const { return "skip frames"; }
 	virtual const char** Values() const
 	{
@@ -82,6 +84,24 @@ static struct eOptionRotateJoy : public xOptions::eOptionBool
 	virtual int Order() const { return 3; }
 } op_rotate_joystick;
 
+static struct eOptionLastFolder : public xOptions::eOptionString
+{
+	eOptionLastFolder() { customizable = false; }
+	virtual const char* Name() const { return "last folder"; }
+} op_last_folder;
+
+static void SetLastFolder(const char* name)
+{
+	op_last_folder.Set(name);
+	char* name_end = (char*)(op_last_folder.Value() + strlen(name));
+	while(name_end > name && *name_end != '\\')
+		--name_end;
+	if(*name_end == '\\')
+	{
+		++name_end;
+		*name_end = '\0';
+	}
+}
 
 void InitSound();
 void DoneSound();
@@ -91,9 +111,18 @@ static const char* FileNameToCStr(const TFileName& n)
 {
 	static char buf[xIo::MAX_PATH_LEN];
     TPtr8 ptr((TUint8*)buf, xIo::MAX_PATH_LEN);
-    ptr.Copy(n);
+    CnvUtfConverter::ConvertFromUnicodeToUtf8(ptr, n);
+    ptr.SetLength(n.Length());
     ptr.ZeroTerminate();
     return buf;
+}
+static void CStrToFileName(const char* n, TFileName* name)
+{
+	int l = strlen(n);
+	TPtrC8 ptr((TUint8*)n, l + 1);
+	CnvUtfConverter::ConvertToUnicodeFromUtf8(*name, ptr);
+    name->SetLength(l);
+    name->ZeroTerminate();
 }
 
 void Init()
@@ -429,29 +458,34 @@ void TDCControl::MrccatoCommand(TRemConCoreApiOperationId id, TRemConCoreApiButt
 void TDCControl::OpenFile()
 {
 	TFileName path;
-	CAknMemorySelectionDialog* memDlg = CAknMemorySelectionDialog::NewL(ECFDDialogTypeSelect, ETrue);
-	CAknMemorySelectionDialog::TMemory memory = CAknMemorySelectionDialog::EPhoneMemory;
-	CAknFileSelectionDialog* dialog = CAknFileSelectionDialog::NewL(ECFDDialogTypeSelect, R_FILE_SELECTION_DIALOG);
+	CStrToFileName(op_last_folder, &path);
 	for(;;)
 	{
-		if(memDlg->ExecuteL(memory) == CAknFileSelectionDialog::ERightSoftkey)
+		if(!path.Length())
+		{
+			CAknMemorySelectionDialog* memDlg = CAknMemorySelectionDialog::NewL(ECFDDialogTypeSelect, ETrue);
+			CAknMemorySelectionDialog::TMemory memory = CAknMemorySelectionDialog::EPhoneMemory;
+			bool cancel = memDlg->ExecuteL(memory) == CAknFileSelectionDialog::ERightSoftkey;
+			delete memDlg;
+			if(cancel)
+				break;
+			if(memory==CAknMemorySelectionDialog::EMemoryCard)
+				path = PathInfo::MemoryCardRootPath();
+			else
+				path = PathInfo::PhoneMemoryRootPath();
+		}
+		CAknFileSelectionDialog* fileDlg = CAknFileSelectionDialog::NewL(ECFDDialogTypeSelect, R_FILE_SELECTION_DIALOG);
+		bool ok = fileDlg->ExecuteL(path);
+		delete fileDlg;
+		if(ok)
+		{
+			const char* name = FileNameToCStr(path);
+			Handler()->OnOpenFile(name);
+			SetLastFolder(name);
 			break;
-		if(memory==CAknMemorySelectionDialog::EMemoryCard)
-		{
-			path = PathInfo::MemoryCardRootPath();
 		}
-		else
-		{
-			path = PathInfo::PhoneMemoryRootPath();
-		}
-		if(dialog->ExecuteL(path))
-		{
-			Handler()->OnOpenFile(FileNameToCStr(path));
-			break;
-		}
+		path.Zero();
 	}
-	delete memDlg;
-	delete dialog;
 }
 
 

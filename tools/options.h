@@ -140,12 +140,9 @@ struct eOptionBool : public eOption<bool>
 
 struct eOptionString : public eOption<const char*>
 {
-	eOptionString() : alloc_size(0) {}
+	eOptionString() : alloc_size(32) { value = new char[alloc_size]; Value(""); }
 	virtual ~eOptionString() { SAFE_DELETE_ARRAY(value); }
-	virtual const char*	Value() const
-	{
-		return value ? value : "";
-	}
+	virtual const char*	Value() const { return value; }
 	virtual void Value(const char* v)
 	{
 		int s = strlen(v) + 1;
