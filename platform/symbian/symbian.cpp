@@ -84,24 +84,6 @@ static struct eOptionRotateJoy : public xOptions::eOptionBool
 	virtual int Order() const { return 3; }
 } op_rotate_joystick;
 
-static struct eOptionLastFolder : public xOptions::eOptionString
-{
-	eOptionLastFolder() { customizable = false; }
-	virtual const char* Name() const { return "last folder"; }
-} op_last_folder;
-
-static void SetLastFolder(const char* name)
-{
-	op_last_folder.Set(name);
-	char* name_end = (char*)(op_last_folder.Value() + strlen(name));
-	while(name_end > name && *name_end != '\\')
-		--name_end;
-	if(*name_end == '\\')
-	{
-		++name_end;
-		*name_end = '\0';
-	}
-}
 
 void InitSound();
 void DoneSound();
@@ -458,7 +440,7 @@ void TDCControl::MrccatoCommand(TRemConCoreApiOperationId id, TRemConCoreApiButt
 void TDCControl::OpenFile()
 {
 	TFileName path;
-	CStrToFileName(op_last_folder, &path);
+	CStrToFileName(LastFolder(), &path);
 	for(;;)
 	{
 		if(!path.Length())

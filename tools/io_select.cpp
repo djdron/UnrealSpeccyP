@@ -16,23 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __OPTIONS_COMMON_H__
-#define __OPTIONS_COMMON_H__
+#include "../std.h"
+#include "io_select.h"
 
-#pragma once
-
-namespace xPlatform
+namespace xIo
 {
 
-enum eJoystick { J_FIRST, J_KEMPSTON = J_FIRST, J_CURSOR, J_QAOP, J_SINCLAIR2, J_LAST };
-enum eSound { S_FIRST, S_BEEPER = S_FIRST, S_AY, S_TAPE, S_LAST };
-enum eVolume { V_FIRST, V_MUTE = V_FIRST, V_10, V_20, V_30, V_40, V_50, V_60, V_70, V_80, V_90, V_100, V_LAST };
-enum eDrive { D_FIRST, D_A = V_FIRST, D_B, D_C, D_D, D_LAST };
 
-const char* LastFolder();
-void SetLastFolder(const char* path);
 
 }
-//namespace xPlatform
-
-#endif//__OPTIONS_COMMON_H__
+//namespace xIo

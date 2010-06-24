@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_file_open.h"
 #include "../../tools/options.h"
 #include "../../tools/profiler.h"
+#include "../../options_common.h"
 
 #ifdef USE_UI
 
@@ -48,7 +49,6 @@ static struct eOptionOpenFile : public xOptions::eOptionB
 //-----------------------------------------------------------------------------
 eMainDialog::eMainDialog() : clear(false)
 {
-	strcpy(path, xIo::ResourcePath("\\*.*"));
 }
 //=============================================================================
 //	eMainDialog::Update
@@ -65,7 +65,7 @@ void eMainDialog::Update()
 	{
 		op_open_file.on = false;
 		Clear();
-		eDialog* d = new eFileOpenDialog(path);
+		eDialog* d = new eFileOpenDialog(xPlatform::LastFolder());
 		d->Id(D_FILE_OPEN);
 		Insert(d);
 	}
@@ -123,9 +123,7 @@ void eMainDialog::OnNotify(byte n, byte from)
 		{
 			eFileOpenDialog* d = (eFileOpenDialog*)*childs;
 			Handler()->OnOpenFile(d->Selected());
-			strcpy(path, d->Selected());
-			GetUpLevel(path);
-			strcat(path, "*.*");
+			xPlatform::SetLastFolder(d->Selected());
 			clear = true;
 		}
 		break;

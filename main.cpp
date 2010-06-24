@@ -183,6 +183,15 @@ static struct eSpeccyHandler : public eHandler
 		}
 		*type = '\0';
 	}
+	virtual bool FileTypeSupported(const char* name)
+	{
+		char type[xIo::MAX_PATH_LEN];
+		GetFileType(type, name);
+		if(!strcmp(type, "zip"))
+			return true;
+		eFileType* t = eFileType::Find(type);
+		return t != NULL;
+	}
 	bool OnOpenZip(const char* name)
 	{
 		unzFile h = unzOpen(name);

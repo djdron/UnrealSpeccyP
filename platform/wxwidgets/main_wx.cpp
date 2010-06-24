@@ -76,12 +76,6 @@ static struct eOptionWindowSize : public xOptions::eOptionInt
 	}
 } op_window_size;
 
-static struct eOptionLastFolder : public xOptions::eOptionString
-{
-	eOptionLastFolder() { customizable = false; }
-	virtual const char* Name() const { return "last folder"; }
-} op_last_folder;
-
 const wxEventType evtMouseCapture = wxNewEventType();
 enum wxEventMouseCaptureId { evID_MOUSE_CAPTURED = 1, evID_MOUSE_RELEASED };
 
@@ -477,7 +471,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 #endif//_MAC
 	void OnOpenFile(wxCommandEvent& event)
 	{
-		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(op_last_folder));
+		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(LastFolder()));
 		fd.SetWildcard(
 				L"Supported files|*.sna;*.z80;*.trd;*.scl;*.tap;*.csw;*.tzx;*.zip;"
 								L"*.SNA;*.Z80;*.TRD;*.SCL;*.TAP;*.CSW;*.TZX;*.ZIP|"
@@ -489,28 +483,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{
-			SetLastFolder(wxConvertWX2MB(fd.GetDirectory().c_str()));
+			SetLastFolder(wxConvertWX2MB(fd.GetPath().c_str()));
 			if(Handler()->OnOpenFile(wxConvertWX2MB(fd.GetPath().c_str())))
 				SetStatusText(_("File open OK"));
 			else
 				SetStatusText(_("File open FAILED"));
 		}
 	}
-	void SetLastFolder(const char* path)
-	{
-		op_last_folder.Set(path);
-	}
 	void OnSaveFile(wxCommandEvent& event)
 	{
 		Handler()->VideoPaused(true);
-		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(op_last_folder), wxEmptyString, wxFileSelectorDefaultWildcardStr, wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
+		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(LastFolder()), wxEmptyString, wxFileSelectorDefaultWildcardStr, wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
 		fd.SetWildcard(
 				L"Snapshot files (*.sna)|*.sna;*.SNA|"
 				L"All files|*.*"
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{
-			SetLastFolder(wxConvertWX2MB(fd.GetDirectory().c_str()));
 			wxString path = fd.GetPath();
 			size_t p = path.length() - 4;
 			if(path.length() < 4 || (path.rfind(L".sna") != p && path.rfind(L".SNA") != p))
@@ -519,6 +508,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 				SetStatusText(_("File save OK"));
 			else
 				SetStatusText(_("File save FAILED"));
+			SetLastFolder(wxConvertWX2MB(path.c_str()));
 		}
 		Handler()->VideoPaused(false);
 	}

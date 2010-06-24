@@ -164,5 +164,26 @@ static struct eOptionQuit : public xOptions::eOptionBool
 	virtual const char** Values() const { return NULL; }
 } op_quit;
 
+static struct eOptionLastFolder : public xOptions::eOptionString
+{
+	eOptionLastFolder() { customizable = false; }
+	virtual const char* Name() const { return "last folder"; }
+} op_last_folder;
+
+const char* LastFolder() { return op_last_folder; }
+void SetLastFolder(const char* name)
+{
+	op_last_folder.Set(name);
+	const char* n = op_last_folder;
+	char* n_end = (char*)(n + strlen(n));
+	while(n_end > n && *n_end != '\\' && *n_end != '/')
+		--n_end;
+	if(*n_end == '\\' || *n_end == '/')
+	{
+		++n_end;
+		*n_end = '\0';
+	}
+}
+
 }
 //namespace xPlatform

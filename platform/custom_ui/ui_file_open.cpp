@@ -20,16 +20,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_file_open.h"
 #include "../../ui/ui_list.h"
 #include "../io.h"
-
-#ifdef _WINDOWS
-#include <io.h>
-#endif//_WINDOWS
+#include "../../tools/io_select.h"
+#include "../platform.h"
 
 #ifdef USE_UI
 
 namespace xUi
 {
 
+//=============================================================================
+//	eFileOpenDialog::eFileOpenDialog
+//-----------------------------------------------------------------------------
+eFileOpenDialog::eFileOpenDialog(const char* _path) : list(NULL), selected(NULL)
+{
+	strcpy(path, _path);
+	memset(folders, 0, sizeof(folders));
+}
 //=============================================================================
 //	eFileOpenDialog::Init
 //-----------------------------------------------------------------------------
@@ -45,19 +51,43 @@ void eFileOpenDialog::Init()
 	OnChangePath();
 }
 //=============================================================================
+//	eFileOpenDialog::Init
+//-----------------------------------------------------------------------------
+int eFileOpenDialog::PathLevel() const
+{
+	int level = 0;
+	for(const char* src = path; *src; ++src)
+	{
+		if(*src == '\\' || *src == '/')
+			++level;
+	}
+	return level;
+}
+//=============================================================================
 //	eFileOpenDialog::OnChangePath
 //-----------------------------------------------------------------------------
 void eFileOpenDialog::OnChangePath()
 {
 	list->Clear();
 	memset(folders, 0, sizeof(folders));
-	int i = 0;
 
-#ifdef _LINUX
-	list->Insert("FILE 1");
-	list->Insert("FILE 2");
-	list->Insert("FILE 3");
-#endif//_LINUX
+	int i = 0;
+	if(PathLevel() > 1)
+	{
+		list->Insert("..");
+		folders[i++] = true;
+	}
+	for(xIo::eFileSelect fs(path); i < MAX_ITEMS && fs.Valid(); fs.Next())
+	{
+		if(!fs.IsFile() && !fs.IsDir())
+			continue;
+		if(!strcmp(fs.Name(), ".") || !strcmp(fs.Name(), ".."))
+			continue;
+		if(!fs.IsDir() && !xPlatform::Handler()->FileTypeSupported(fs.Name()))
+			continue;
+		list->Insert(fs.Name());
+		folders[i++] = fs.IsDir();
+	}
 
 #ifdef _WINDOWS
 	_finddata_t fd;
@@ -99,7 +129,7 @@ void eFileOpenDialog::OnChangePath()
 #endif//_DINGOO
 }
 
-void GetUpLevel(char* path, int level)
+static void GetUpLevel(char* path, int level = 1)
 {
 	for(int i = strlen(path); --i >= 0; )
 	{
@@ -128,13 +158,12 @@ void eFileOpenDialog::OnNotify(byte n, byte from)
 		if(!strcmp(list->Item(), ".."))
 		{
 			GetUpLevel(path, 2);
-			strcat(path, "*.*");
 		}
 		else
 		{
 			GetUpLevel(path);
 			strcat(path, list->Item());
-			strcat(path, "\\*.*");
+			strcat(path, "/");
 		}
 		OnChangePath();
 		return;

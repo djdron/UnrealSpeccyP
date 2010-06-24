@@ -41,7 +41,6 @@ protected:
 	bool Focused() const { return childs[0] != NULL; }
 protected:
 	bool clear;
-	char path[256];
 };
 
 }

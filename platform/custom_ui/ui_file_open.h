@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define	__UI_FILE_OPEN_H__
 
 #include "../../ui/ui_dialog.h"
+#include "../io.h"
 
 #pragma once
 
@@ -35,24 +36,19 @@ class eFileOpenDialog : public eDialog
 	enum { MAX_ITEMS = 2000 };
 	typedef eDialog eInherited;
 public:
-	eFileOpenDialog(const char* _path) : list(NULL), selected(NULL)
-	{
-		strcpy(path, _path);
-		memset(folders, 0, sizeof(folders));
-	}
+	eFileOpenDialog(const char* path);
 	virtual void Init();
 	const char* Selected() { return selected; }
 protected:
 	void OnNotify(byte n, byte from);
 	void OnChangePath();
+	int	PathLevel() const;
 protected:
-	char path[256];
+	char path[xIo::MAX_PATH_LEN];
 	eList* list;
 	bool folders[MAX_ITEMS];
 	const char* selected;
 };
-
-void GetUpLevel(char* path, int level = 1);
 
 }
 //namespace xUi
