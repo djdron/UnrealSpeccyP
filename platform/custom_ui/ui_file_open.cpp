@@ -88,45 +88,6 @@ void eFileOpenDialog::OnChangePath()
 		list->Insert(fs.Name());
 		folders[i++] = fs.IsDir();
 	}
-
-#ifdef _WINDOWS
-	_finddata_t fd;
-	dword handle = _findfirst(path, &fd);
-	dword res = handle;
-	while(res != -1 && i < MAX_ITEMS)
-	{
-		if(strcmp(fd.name, "."))
-		{
-			folders[i++] = fd.attrib&0x10;
-			list->Insert(fd.name);
-		}
-		res = _findnext(handle, &fd);
-	}
-	_findclose(handle);
-#endif//_WINDOWS
-
-#ifdef _DINGOO
-	eFindData fd;
-	int res = fsys_findfirst(path, -1, &fd);
-	int levels = 0;
-	for(const char* src = path; *src; ++src)
-	{
-		if(*src == '\\' || *src == '/')
-			++levels;
-	}
-	if(levels > 1) //isn't root
-	{
-		list->Insert("..");
-		folders[i++] = true;
-	}
-	while(!res && i < MAX_ITEMS)
-	{
-		folders[i++] = fd.attrib&0x10;
-		list->Insert(fd.name);
-		res = fsys_findnext(&fd);
-	}
-	fsys_findclose(&fd);
-#endif//_DINGOO
 }
 
 static void GetUpLevel(char* path, int level = 1)
