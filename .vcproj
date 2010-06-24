@@ -567,6 +567,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\platform\dingoo\io_select_dingoo.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\platform\dingoo\jz4740.h"
 					>
 				</File>
@@ -615,6 +619,10 @@
 				Name="linux"
 				>
 				<File
+					RelativePath=".\platform\linux\io_select_linux.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\platform\linux\tick_gtod.h"
 					>
 				</File>
@@ -622,6 +630,10 @@
 			<Filter
 				Name="win"
 				>
+				<File
+					RelativePath=".\platform\win\io_select_win.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\platform\win\tick_qpc.h"
 					>
@@ -735,6 +747,10 @@
 		<Filter
 			Name="tools"
 			>
+			<File
+				RelativePath=".\tools\io_select.h"
+				>
+			</File>
 			<File
 				RelativePath=".\tools\list.h"
 				>

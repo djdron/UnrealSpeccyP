@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../../std.h"
 #include "../../tools/io_select.h"
+#include "../io.h"
 
 #include <io.h>
 
@@ -29,15 +30,22 @@ namespace xIo
 class eFileSelectI
 {
 public:
-	eFileSelectI(const char* path) { handle = _findfirst(path, &fd); valid = handle != NULL; }
-	~eFileSelectI() { if(handle) _findclose(handle); }
+	eFileSelectI(const char* _path)
+	{
+		char path[MAX_PATH_LEN];
+		strcpy(path, _path);
+		strcat(path, "*.*");
+		handle = _findfirst(path, &fd);
+		valid = handle != -1;
+	}
+	~eFileSelectI() { if(handle != -1) _findclose(handle); }
 	bool Valid() const { return valid; }
-	void Next() { valid = _findnext(&fd) == 0; }
+	void Next() { valid = _findnext(handle, &fd) == 0; }
 	const char* Name() const { return fd.name; }
 	bool IsDir() const { return fd.attrib&0x10; }
 	bool IsFile() const { return !IsDir(); }
 	_finddata_t fd;
-	dword handle;
+	intptr_t handle;
 	bool valid;
 };
 
