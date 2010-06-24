@@ -268,12 +268,17 @@ void eZ80Accessor::UnpackPage(byte* dst, int dstlen, byte* src, int srclen)
 bool Load(eSpeccy* speccy, const char* type, const void* data, size_t data_size)
 {
 	speccy->Reset();
+	speccy->Devices().FrameStart();
 	eZ80Accessor* z80 = (eZ80Accessor*)speccy->CPU();
+	bool ok = false;
 	if(!strcmp(type, "sna"))
-		return z80->SetState((const eSnapshot_SNA*)data, data_size);
+		ok = z80->SetState((const eSnapshot_SNA*)data, data_size);
 	else if(!strcmp(type, "z80"))
-		return z80->SetState((const eSnapshot_Z80*)data, data_size);
-	return false;
+		ok = z80->SetState((const eSnapshot_Z80*)data, data_size);
+	dword t = z80->FrameTacts() + z80->T();
+	speccy->Devices().FrameUpdate();
+	speccy->Devices().FrameEnd(t);
+	return ok;
 }
 
 bool Store(eSpeccy* speccy, const char* file)
