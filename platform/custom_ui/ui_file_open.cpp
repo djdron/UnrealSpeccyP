@@ -85,22 +85,29 @@ void eFileOpenDialog::OnChangePath()
 //=============================================================================
 //	GetUpLevel
 //-----------------------------------------------------------------------------
-static void GetUpLevel(char* path)
+static const char* GetUpLevel(char* path)
 {
+	static char level_name[xIo::MAX_PATH_LEN];
+	level_name[0] = '\0';
 	int l = strlen(path);
 	if(!l)
-		return;
+		return level_name;
 	char* path_end = path + l - 1;
+	*path_end = '\0';
 	while(path_end > path)
 	{
 		--path_end;
 		if(*path_end == '\\' || *path_end == '/')
 		{
-			*++path_end = '\0';
-			return;
+			++path_end;
+			strcpy(level_name, path_end);
+			*path_end = '\0';
+			return level_name;
 		}
 	}
+	strcpy(level_name, path);
 	*path = '\0';
+	return level_name;
 }
 //=============================================================================
 //	eFileOpenDialog::OnNotify
@@ -111,9 +118,10 @@ void eFileOpenDialog::OnNotify(byte n, byte from)
 		return;
 	if(folders[list->Selected()])
 	{
+		const char* item = NULL;
 		if(!strcmp(list->Item(), ".."))
 		{
-			GetUpLevel(path);
+			item = GetUpLevel(path);
 		}
 		else
 		{
@@ -121,6 +129,8 @@ void eFileOpenDialog::OnNotify(byte n, byte from)
 			strcat(path, "/");
 		}
 		OnChangePath();
+		if(item)
+			list->Item(item);
 		return;
 	}
 	strcat(path, list->Item());

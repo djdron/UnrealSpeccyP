@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../io.h"
 
 #include <io.h>
+#include <windows.h>
 
 namespace xIo
 {
@@ -30,7 +31,18 @@ namespace xIo
 class eFileSelectI
 {
 public:
-	eFileSelectI(const char* _path)
+	virtual ~eFileSelectI() {}
+	virtual bool Valid() const = 0;
+	virtual void Next() = 0;
+	virtual const char* Name() const = 0;
+	virtual bool IsDir() const = 0;
+	virtual bool IsFile() const = 0;
+};
+
+class eWinFileSelectI : public eFileSelectI
+{
+public:
+	eWinFileSelectI(const char* _path)
 	{
 		char path[MAX_PATH_LEN];
 		strcpy(path, _path);
@@ -38,18 +50,55 @@ public:
 		handle = _findfirst(path, &fd);
 		valid = handle != -1;
 	}
-	~eFileSelectI() { if(handle != -1) _findclose(handle); }
-	bool Valid() const { return valid; }
-	void Next() { valid = _findnext(handle, &fd) == 0; }
-	const char* Name() const { return fd.name; }
-	bool IsDir() const { return fd.attrib&0x10; }
-	bool IsFile() const { return !IsDir(); }
+	virtual ~eWinFileSelectI() { if(handle != -1) _findclose(handle); }
+	virtual bool Valid() const { return valid; }
+	virtual void Next() { valid = _findnext(handle, &fd) == 0; }
+	virtual const char* Name() const { return fd.name; }
+	virtual bool IsDir() const { return fd.attrib&0x10; }
+	virtual bool IsFile() const { return !IsDir(); }
 	_finddata_t fd;
 	intptr_t handle;
 	bool valid;
 };
 
-eFileSelect::eFileSelect(const char* path) { impl = new eFileSelectI(path); }
+class eWinDriveSelectI : public eFileSelectI
+{
+public:
+	eWinDriveSelectI() : drives(GetLogicalDrives())
+	{
+		strcpy(drive, "a:");
+		Update();
+	}
+	virtual bool Valid() const { return drives != 0; }
+	void Update()
+	{
+		while(drives)
+		{
+			if(drives&1)
+				break;
+			drives >>= 1;
+			++*drive;
+		}
+	}
+	virtual void Next()
+	{
+		drives &= 0xfffe;
+		Update();
+	}
+	virtual const char* Name() const { return drive; }
+	virtual bool IsDir() const { return true; }
+	virtual bool IsFile() const { return false; }
+	dword drives;
+	char drive[3];
+};
+
+eFileSelect::eFileSelect(const char* path)
+{
+	if(PathIsRoot(path))
+		impl = new eWinDriveSelectI;
+	else
+		impl = new eWinFileSelectI(path);
+}
 eFileSelect::~eFileSelect() { delete impl; }
 bool eFileSelect::Valid() const { return impl->Valid(); }
 void eFileSelect::Next() { impl->Next(); }

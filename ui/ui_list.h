@@ -49,6 +49,7 @@ public:
 	}
 	void Insert(const char* item);
 	const char* Item() const { return selected >= 0 ? items[selected] : NULL; }
+	void Item(const char* item);
 	int	Selected() const { return selected; }
 	void Selected(int s);
 	virtual void Update();
