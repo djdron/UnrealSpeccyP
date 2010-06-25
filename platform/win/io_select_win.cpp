@@ -34,7 +34,7 @@ public:
 	{
 		char path[MAX_PATH_LEN];
 		strcpy(path, _path);
-		strcat(path, "*.*");
+		strcat(path, "*");
 		handle = _findfirst(path, &fd);
 		valid = handle != -1;
 	}
@@ -56,6 +56,8 @@ void eFileSelect::Next() { impl->Next(); }
 const char* eFileSelect::Name() const { return impl->Name(); }
 bool eFileSelect::IsDir() const { return impl->IsDir(); }
 bool eFileSelect::IsFile() const { return impl->IsFile(); }
+
+bool PathIsRoot(const char* path) {	return !strlen(path); }
 
 }
 //namespace xIo

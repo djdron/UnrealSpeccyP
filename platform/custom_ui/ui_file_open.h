@@ -42,7 +42,6 @@ public:
 protected:
 	void OnNotify(byte n, byte from);
 	void OnChangePath();
-	int	PathLevel() const;
 protected:
 	char path[xIo::MAX_PATH_LEN];
 	eList* list;

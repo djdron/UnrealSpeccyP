@@ -51,19 +51,6 @@ void eFileOpenDialog::Init()
 	OnChangePath();
 }
 //=============================================================================
-//	eFileOpenDialog::Init
-//-----------------------------------------------------------------------------
-int eFileOpenDialog::PathLevel() const
-{
-	int level = 0;
-	for(const char* src = path; *src; ++src)
-	{
-		if(*src == '\\' || *src == '/')
-			++level;
-	}
-	return level;
-}
-//=============================================================================
 //	eFileOpenDialog::OnChangePath
 //-----------------------------------------------------------------------------
 void eFileOpenDialog::OnChangePath()
@@ -72,41 +59,49 @@ void eFileOpenDialog::OnChangePath()
 	memset(folders, 0, sizeof(folders));
 
 	int i = 0;
-	if(PathLevel() > 1)
+	if(!xIo::PathIsRoot(path))
 	{
 		list->Insert("..");
 		folders[i++] = true;
 	}
+	// put folder first
+	for(xIo::eFileSelect ds(path); i < MAX_ITEMS && ds.Valid(); ds.Next())
+	{
+		if(!ds.IsDir())
+			continue;
+		if(!strcmp(ds.Name(), ".") || !strcmp(ds.Name(), ".."))
+			continue;
+		list->Insert(ds.Name());
+		folders[i++] = true;
+	}
 	for(xIo::eFileSelect fs(path); i < MAX_ITEMS && fs.Valid(); fs.Next())
 	{
-		if(!fs.IsFile() && !fs.IsDir())
-			continue;
-		if(!strcmp(fs.Name(), ".") || !strcmp(fs.Name(), ".."))
-			continue;
-		if(!fs.IsDir() && !xPlatform::Handler()->FileTypeSupported(fs.Name()))
+		if(!fs.IsFile() || !xPlatform::Handler()->FileTypeSupported(fs.Name()))
 			continue;
 		list->Insert(fs.Name());
-		folders[i++] = fs.IsDir();
+		folders[i++] = false;
 	}
 }
-
-static void GetUpLevel(char* path, int level = 1)
+//=============================================================================
+//	GetUpLevel
+//-----------------------------------------------------------------------------
+static void GetUpLevel(char* path)
 {
-	for(int i = strlen(path); --i >= 0; )
+	int l = strlen(path);
+	if(!l)
+		return;
+	char* path_end = path + l - 1;
+	while(path_end > path)
 	{
-		if(((path[i] == '\\') || (path[i] == '/')))
+		--path_end;
+		if(*path_end == '\\' || *path_end == '/')
 		{
-			while(--i >= 0 && ((path[i] == '\\') || (path[i] == '/')));
-			++i;
-			if(!--level)
-			{
-				path[i + 1] = '\0';
-				return;
-			}
+			*++path_end = '\0';
+			return;
 		}
 	}
+	*path = '\0';
 }
-
 //=============================================================================
 //	eFileOpenDialog::OnNotify
 //-----------------------------------------------------------------------------
@@ -118,18 +113,16 @@ void eFileOpenDialog::OnNotify(byte n, byte from)
 	{
 		if(!strcmp(list->Item(), ".."))
 		{
-			GetUpLevel(path, 2);
+			GetUpLevel(path);
 		}
 		else
 		{
-			GetUpLevel(path);
 			strcat(path, list->Item());
 			strcat(path, "/");
 		}
 		OnChangePath();
 		return;
 	}
-	GetUpLevel(path);
 	strcat(path, list->Item());
 	selected = path;
 	eInherited::OnNotify(n, id);

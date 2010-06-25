@@ -40,6 +40,8 @@ protected:
 	eFileSelectI* impl;
 };
 
+bool PathIsRoot(const char* path);
+
 }
 //namespace xIo
 
