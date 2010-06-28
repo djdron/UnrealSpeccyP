@@ -20,83 +20,74 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../speccy.h"
 
 #include "../tools/libpng/png.h"
+#include "../platform/platform.h"
 
 namespace xScreenshot
 {
 
-bool Store(eSpeccy* speccy, const char* file)
+static bool StorePNG(eSpeccy* speccy, FILE* png_file)
 {
-	FILE* png_file = fopen(file, "wb");
-	if(!png_file)
-		return false;
+	int width = 320, height = 240, bit_depth = 8, color_type = PNG_COLOR_TYPE_RGB;
+	png_uint_32 row_bytes = width*3;// 3 bytes (R, G, B) per pixel
 
-	png_struct    *png_ptr = NULL;
-	png_info      *info_ptr = NULL;
-	png_byte      *png_pixels = NULL;
-	png_byte      **row_pointers = NULL;
-	png_byte      *pix_ptr = NULL;
-	png_uint_32   row_bytes;
-
-	int width = 320, height = 240, bit_depth = 16, color_type = PNG_COLOR_TYPE_RGB;
-
-	/* prepare the standard PNG structures */
-	png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if (!png_ptr)
+	png_byte* png_pixels = new byte[row_bytes*height];
+	png_byte* p = png_pixels;
+	byte* data = (byte*)xPlatform::Handler()->VideoData();
+	for(int y = 0; y < height; ++y)
 	{
-		return false;
-	}
-	info_ptr = png_create_info_struct (png_ptr);
-	if (!info_ptr)
-	{
-		png_destroy_write_struct (&png_ptr, (png_infopp) NULL);
-		return false;
-	}
-
-	/* setjmp() must be called in every function that calls a PNG-reading libpng function */
-	if (setjmp (png_jmpbuf(png_ptr)))
-	{
-		png_destroy_write_struct (&png_ptr, (png_infopp) NULL);
-		return false;
-	}
-
-	/* initialize the png structure */
-	png_init_io (png_ptr, png_file);
-
-	/* we're going to write more or less the same PNG as the input file */
-	png_set_IHDR (png_ptr, info_ptr, width, height, bit_depth, color_type, PNG_INTERLACE_NONE,
-		PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-
-	/* write the file header information */
-	png_write_info (png_ptr, info_ptr);
-
-	/* if needed we will allocate memory for an new array of row-pointers */
-	if (row_pointers == (unsigned char**) NULL)
-	{
-		if ((row_pointers = (png_byte **) malloc (height * sizeof (png_bytep))) == NULL)
+		for(int x = 0; x < width; ++x)
 		{
-			png_destroy_write_struct (&png_ptr, (png_infopp) NULL);
-			return false;
+			const byte brightness = 200;
+			const byte bright_intensity = 55;
+			byte c = *data++;
+			byte i = c&8 ? brightness + bright_intensity : brightness;
+			byte b = c&1 ? i : 0;
+			byte r = c&2 ? i : 0;
+			byte g = c&4 ? i : 0;
+			*p++ = r;
+			*p++ = g;
+			*p++ = b;
 		}
 	}
 
-	/* set the individual row_pointers to point at the correct offsets */
-	for(int i = 0; i < (height); i++)
-		row_pointers[i] = png_pixels + i * row_bytes;
+	png_struct* png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if(!png_ptr)
+		return false;
+	png_info* info_ptr = png_create_info_struct(png_ptr);
+	if(!info_ptr)
+	{
+		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+		return false;
+	}
+	if(setjmp(png_jmpbuf(png_ptr)))
+	{
+		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+		return false;
+	}
+	png_init_io(png_ptr, png_file);
+	png_set_IHDR(png_ptr, info_ptr, width, height, bit_depth, color_type, PNG_INTERLACE_NONE,
+		PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+	png_write_info(png_ptr, info_ptr);
+	png_byte** row_pointers = new png_byte*[height];
+	for(int i = 0; i < height; i++)
+		row_pointers[i] = png_pixels + i*row_bytes;
+	png_write_image(png_ptr, row_pointers);
+	png_write_end(png_ptr, info_ptr);
+	png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
 
-	/* write out the entire image data in one call */
-	png_write_image (png_ptr, row_pointers);
-
-	/* write the additional chuncks to the PNG file (not really needed) */
-	png_write_end (png_ptr, info_ptr);
-
-	/* clean up after the write, and free any memory allocated */
-	png_destroy_write_struct (&png_ptr, (png_infopp) NULL);
-
-	if (row_pointers != (unsigned char**) NULL)
-		free (row_pointers);
-	if (png_pixels != (unsigned char*) NULL)
-		free (png_pixels);
+	SAFE_DELETE_ARRAY(row_pointers);
+	SAFE_DELETE_ARRAY(png_pixels);
 	return true;
+}
+
+bool Store(eSpeccy* speccy, const char* file)
+{
+	FILE* f = fopen(file, "wb");
+	if(!f)
+		return false;
+	bool ok = StorePNG(speccy, f);
+	fclose(f);
+	return ok;
 }
 
 }

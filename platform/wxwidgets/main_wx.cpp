@@ -496,14 +496,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(LastFolder()), wxEmptyString, wxFileSelectorDefaultWildcardStr, wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
 		fd.SetWildcard(
 				L"Snapshot files (*.sna)|*.sna;*.SNA|"
-				L"All files|*.*"
+				L"Screenshot files (*.png)|*.png;*.PNG|"
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{
 			wxString path = fd.GetPath();
+			int fi = fd.GetFilterIndex();
 			size_t p = path.length() - 4;
-			if(path.length() < 4 || (path.rfind(L".sna") != p && path.rfind(L".SNA") != p))
-				path += L".sna";
+			if(path.length() < 4 ||
+					(path.rfind(L".sna") != p && path.rfind(L".SNA") != p) ||
+					(path.rfind(L".png") != p && path.rfind(L".PNG") != p))
+				path += fi ? L".png" : L".sna";
 			if(Handler()->OnSaveFile(wxConvertWX2MB(path.c_str())))
 				SetStatusText(_("File save OK"));
 			else

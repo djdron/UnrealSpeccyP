@@ -43,6 +43,9 @@
  * PNG_USER_CONFIG has to be defined on the compiler command line. This
  * includes the resource compiler for Windows DLL configurations.
  */
+
+#define PNG_USER_CONFIG 1
+
 #ifdef PNG_USER_CONFIG
 #  ifndef PNG_USER_PRIVATEBUILD
 #    define PNG_USER_PRIVATEBUILD
