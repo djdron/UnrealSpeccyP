@@ -395,6 +395,7 @@ static struct eFileTypeTZX : public eFileTypeTAP
 	virtual const char* Type() { return "tzx"; }
 } ft_tzx;
 
+#ifdef USE_PNG
 static struct eFileTypePNG : public eFileType
 {
 	virtual bool Open(const void* data, size_t data_size) { return false; }
@@ -405,6 +406,7 @@ static struct eFileTypePNG : public eFileType
 	virtual const char* Type() { return "png"; }
 	virtual bool AbleOpen() { return false; }
 } ft_png;
+#endif//USE_PNG
 
 }
 //namespace xPlatform

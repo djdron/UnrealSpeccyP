@@ -19,8 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../std.h"
 #include "../speccy.h"
 
-#include "../tools/libpng/png.h"
 #include "../platform/platform.h"
+
+#ifdef USE_PNG
+
+#include "../tools/libpng/png.h"
 
 namespace xScreenshot
 {
@@ -92,3 +95,5 @@ bool Store(eSpeccy* speccy, const char* file)
 
 }
 //namespace xScreenshot
+
+#endif//USE_PNG
