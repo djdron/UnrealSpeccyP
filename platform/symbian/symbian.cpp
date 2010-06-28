@@ -153,6 +153,7 @@ protected:
 	mutable int frame;
 	xOptions::eOption<int>* op_joy;
 	xOptions::eOption<int>* op_volume;
+	xOptions::eOption<bool>* op_quit;
 	CRemConInterfaceSelector* iInterfaceSelector;
     CRemConCoreApiTarget*     iCoreTarget;
 
@@ -191,6 +192,7 @@ void TDCControl::ConstructL(const TRect& /*aRect*/)
 {
 	op_joy = xOptions::eOption<int>::Find("joystick");
 	op_volume = xOptions::eOption<int>::Find("volume");
+	op_quit = xOptions::eOption<bool>::Find("quit");
 	iInterfaceSelector = CRemConInterfaceSelector::NewL();
 	iCoreTarget = CRemConCoreApiTarget::NewL(*iInterfaceSelector, *this);
 	iInterfaceSelector->OpenTargetL();
@@ -307,6 +309,8 @@ void TDCControl::Draw(bool horizontal) const
 }
 void TDCControl::OnTimer()
 {
+	if(op_quit && *op_quit)
+		CEikonEnv::Static()->EikAppUi()->HandleCommandL(EEikCmdExit);
 //	if(mouse.enable && mouse.Update())
 //	{
 //		Handler()->OnMouse(MA_MOVE, mouse.x, mouse.y);
