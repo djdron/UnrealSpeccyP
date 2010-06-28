@@ -49,8 +49,7 @@ bool eDesktop::OnKey(char _key, dword flags)
 	if((pressed && !(flags&(xPlatform::KF_ALT|xPlatform::KF_SHIFT)) && (_key == key)) || (!pressed && (_key != key)))
 		return false;
 	key = pressed ? _key : '\0';
-	if(!key)
-		keypress_timer = 0;
+	keypress_timer = 0;
 	return eInherited::OnKey(key, flags);
 }
 
