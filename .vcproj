@@ -684,6 +684,10 @@
 			Name="snapshot"
 			>
 			<File
+				RelativePath=".\snapshot\screenshot.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\snapshot\snapshot.cpp"
 				>
 			</File>
@@ -920,6 +924,62 @@
 				</File>
 				<File
 					RelativePath=".\tools\tinyxml\tinyxmlparser.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="libpng"
+				>
+				<File
+					RelativePath=".\tools\libpng\png.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\png.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngconf.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngerror.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngget.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngmem.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngpriv.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngset.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngtrans.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngwio.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngwrite.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngwtran.c"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\libpng\pngwutil.c"
 					>
 				</File>
 			</Filter>

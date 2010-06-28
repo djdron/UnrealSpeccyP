@@ -36,6 +36,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools/profiler.h"
 #include "tools/options.h"
 
+namespace xScreenshot
+{
+bool Store(eSpeccy* speccy, const char* file);
+}
+//namespace xScreenshot
+
 namespace xPlatform
 {
 
@@ -387,6 +393,16 @@ static struct eFileTypeTZX : public eFileTypeTAP
 {
 	virtual const char* Type() { return "tzx"; }
 } ft_tzx;
+
+static struct eFileTypePNG : public eFileType
+{
+	virtual bool Open(const void* data, size_t data_size) { return false; }
+	virtual bool Store(const char* name)
+	{
+		return xScreenshot::Store(sh.speccy, name);
+	}
+	virtual const char* Type() { return "png"; }
+} ft_png;
 
 }
 //namespace xPlatform
