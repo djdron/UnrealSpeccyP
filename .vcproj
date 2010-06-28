@@ -967,6 +967,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\tools\libpng\pngusr.h"
+					>
+				</File>
+				<File
 					RelativePath=".\tools\libpng\pngwio.c"
 					>
 				</File>

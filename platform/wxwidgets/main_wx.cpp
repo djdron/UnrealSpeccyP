@@ -503,9 +503,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 			wxString path = fd.GetPath();
 			int fi = fd.GetFilterIndex();
 			size_t p = path.length() - 4;
-			if(path.length() < 4 ||
-					(path.rfind(L".sna") != p && path.rfind(L".SNA") != p) ||
-					(path.rfind(L".png") != p && path.rfind(L".PNG") != p))
+			if(path.length() < 4 || (
+					path.rfind(L".sna") != p && path.rfind(L".SNA") != p &&
+					path.rfind(L".png") != p && path.rfind(L".PNG") != p))
 				path += fi ? L".png" : L".sna";
 			if(Handler()->OnSaveFile(wxConvertWX2MB(path.c_str())))
 				SetStatusText(_("File save OK"));
