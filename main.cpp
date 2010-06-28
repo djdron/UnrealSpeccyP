@@ -49,6 +49,7 @@ struct eFileType : public eList<eFileType>
 {
 	virtual bool Open(const void* data, size_t data_size) = 0;
 	virtual bool Store(const char* name) { return false; }
+	virtual bool AbleOpen() { return true; }
 	virtual const char* Type() = 0;
 	static eFileType* Find(const char* type)
 	{
@@ -196,7 +197,7 @@ static struct eSpeccyHandler : public eHandler
 		if(!strcmp(type, "zip"))
 			return true;
 		eFileType* t = eFileType::Find(type);
-		return t != NULL;
+		return t && t->AbleOpen();
 	}
 	bool OnOpenZip(const char* name)
 	{
@@ -402,6 +403,7 @@ static struct eFileTypePNG : public eFileType
 		return xScreenshot::Store(sh.speccy, name);
 	}
 	virtual const char* Type() { return "png"; }
+	virtual bool AbleOpen() { return false; }
 } ft_png;
 
 }
