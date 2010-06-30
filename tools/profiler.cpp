@@ -73,7 +73,7 @@ const char* eSection::Dump()
 //-----------------------------------------------------------------------------
 void eSection::DumpAll()
 {
-	_LOG("Profiler dump:\n")
+	_LOG("Profiler dump:\n");
 	for(eSection* i = First(); i; i = i->Next())
 	{
 		_LOG(i->Dump());
