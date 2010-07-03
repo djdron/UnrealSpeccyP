@@ -43,15 +43,7 @@ public:
 	virtual void Change(bool next = true) {}
 	virtual void Apply() {}
 
-	static eOptionB* Find(const char* name)
-	{
-		for(eOptionB* o = First(); o; o = o->Next())
-		{
-			if(!strcmp(name, o->Name()))
-				return o;
-		}
-		return NULL;
-	}
+	static eOptionB* Find(const char* name);
 	virtual int Order() const { return 0; }
 
 protected:
@@ -73,69 +65,17 @@ protected:
 class eOptionInt : public eOption<int>
 {
 protected:
-	void Change(int f, int l, bool next = true)
-	{
-		if(next)
-		{
-			Set(self + 1);
-			if(self >= l)
-				Set(f);
-		}
-		else
-		{
-			Set(self - 1);
-			if(self < f)
-				Set(l - 1);
-		}
-	}
-	virtual const char*	Value() const
-	{
-		const char** vals = Values();
-		if(!vals)
-			return NULL;
-		return vals[value];
-	}
-	virtual void Value(const char* v)
-	{
-		const char** vals = Values();
-		if(!vals)
-			return;
-		int i = -1;
-		for(; *vals; ++vals)
-		{
-			++i;
-			if(!strcmp(*vals, v))
-				break;
-		}
-		value = i;
-	}
+	void Change(int f, int l, bool next = true);
+	virtual const char*	Value() const;
+	virtual void Value(const char* v);
 };
 
 struct eOptionBool : public eOption<bool>
 {
 	virtual void Change(bool next = true) { Set(!value); }
-	virtual const char*	Value() const
-	{
-		const char** vals = Values();
-		if(!vals)
-			return NULL;
-		return vals[value ? 1 : 0];
-	}
-	virtual void Value(const char* v)
-	{
-		const char** vals = Values();
-		if(!vals)
-			return;
-		if(!strcmp(v, vals[0]))
-			value = false;
-		else if(!strcmp(v, vals[1]))
-			value = true;
-	}
-	virtual const char** Values() const
-	{
-		static const char* values[] = { "off", "on", NULL };
-		return values;
-	}
+	virtual const char*	Value() const;
+	virtual void Value(const char* v);
+	virtual const char** Values() const;
 };
 
 struct eOptionString : public eOption<const char*>
@@ -143,17 +83,7 @@ struct eOptionString : public eOption<const char*>
 	eOptionString() : alloc_size(32) { value = new char[alloc_size]; Value(""); }
 	virtual ~eOptionString() { SAFE_DELETE_ARRAY(value); }
 	virtual const char*	Value() const { return value; }
-	virtual void Value(const char* v)
-	{
-		int s = strlen(v) + 1;
-		if(!value || alloc_size < s)
-		{
-			SAFE_DELETE_ARRAY(value);
-			value = new char[s];
-			alloc_size = s;
-		}
-		strcpy(const_cast<char*>(value), v);
-	}
+	virtual void Value(const char* v);
 	virtual void Set(const char*& v) { Value(v); }
 	int alloc_size;
 };

@@ -23,6 +23,88 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xOptions
 {
 
+eOptionB* eOptionB::Find(const char* name)
+{
+	for(eOptionB* o = First(); o; o = o->Next())
+	{
+		if(!strcmp(name, o->Name()))
+			return o;
+	}
+	return NULL;
+}
+void eOptionInt::Change(int f, int l, bool next)
+{
+	if(next)
+	{
+		Set(self + 1);
+		if(self >= l)
+			Set(f);
+	}
+	else
+	{
+		Set(self - 1);
+		if(self < f)
+			Set(l - 1);
+	}
+}
+const char*	eOptionInt::Value() const
+{
+	const char** vals = Values();
+	if(!vals)
+		return NULL;
+	return vals[value];
+}
+void eOptionInt::Value(const char* v)
+{
+	const char** vals = Values();
+	if(!vals)
+		return;
+	int i = -1;
+	for(; *vals; ++vals)
+	{
+		++i;
+		if(!strcmp(*vals, v))
+		{
+			value = i;
+			break;
+		}
+	}
+}
+const char*	eOptionBool::Value() const
+{
+	const char** vals = Values();
+	if(!vals)
+		return NULL;
+	return vals[value ? 1 : 0];
+}
+void eOptionBool::Value(const char* v)
+{
+	const char** vals = Values();
+	if(!vals)
+		return;
+	if(!strcmp(v, vals[0]))
+		value = false;
+	else if(!strcmp(v, vals[1]))
+		value = true;
+}
+const char** eOptionBool::Values() const
+{
+	static const char* values[] = { "off", "on", NULL };
+	return values;
+}
+void eOptionString::Value(const char* v)
+{
+	int s = strlen(v) + 1;
+	if(!value || alloc_size < s)
+	{
+		SAFE_DELETE_ARRAY(value);
+		value = new char[s];
+		alloc_size = s;
+	}
+	strcpy(const_cast<char*>(value), v);
+}
+
+
 static const char* FileName() { return xIo::ProfilePath(".options.xml"); }
 static char buf[256];
 static const char* OptNameToXmlName(const char* name)
@@ -124,7 +206,7 @@ void Load()
 void Store()
 {
 	TiXmlDocument doc;
-	TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "", "");
+	TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "UTF-8", "");
 	doc.LinkEndChild(decl);
 
 	TiXmlElement* root = new TiXmlElement("UnrealSpeccyPortable");

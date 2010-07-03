@@ -26,22 +26,6 @@ namespace xPlatform
 
 #ifdef USE_UI
 
-static struct eOptionJoy : public xOptions::eOptionInt
-{
-	eOptionJoy() { Set(J_KEMPSTON); }
-	virtual const char* Name() const { return "joystick"; }
-	virtual const char** Values() const
-	{
-		static const char* values[] = { "kempston", "cursor", "qaop", "sinclair2", NULL };
-		return values;
-	}
-	virtual void Change(bool next = true)
-	{
-		eOptionInt::Change(J_FIRST, J_LAST, next);
-	}
-	virtual int Order() const { return 10; }
-} op_joy;
-
 static struct eOptionTape : public xOptions::eOptionInt
 {
 	eOptionTape() { storeable = false; }
@@ -132,6 +116,22 @@ static struct eOptionPause : public xOptions::eOptionBool
 
 #endif//USE_UI
 
+static struct eOptionJoy : public xOptions::eOptionInt
+{
+	eOptionJoy() { Set(J_KEMPSTON); }
+	virtual const char* Name() const { return "joystick"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "kempston", "cursor", "qaop", "sinclair2", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		eOptionInt::Change(J_FIRST, J_LAST, next);
+	}
+	virtual int Order() const { return 10; }
+} op_joy;
+
 static struct eOptionDrive : public xOptions::eOptionInt
 {
 	eOptionDrive() { storeable = false; }
@@ -183,6 +183,23 @@ void SetLastFolder(const char* name)
 		++n_end;
 		*n_end = '\0';
 	}
+}
+
+bool OpQuit() { return op_quit; }
+void OpQuit(bool v) { op_quit.Set(v); }
+
+eJoystick OpJoystick() { return (eJoystick)(int)op_joy; }
+void OpJoystick(eJoystick v) { op_joy.Set(v); }
+dword OpJoyKeyFlags()
+{
+	switch(op_joy)
+	{
+	case J_KEMPSTON:	return KF_KEMPSTON;
+	case J_CURSOR:		return KF_CURSOR;
+	case J_QAOP:		return KF_QAOP;
+	case J_SINCLAIR2:	return KF_SINCLAIR2;
+	}
+	return KF_QAOP;
 }
 
 }

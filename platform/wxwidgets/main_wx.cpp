@@ -45,10 +45,12 @@ void DrawGL(int w, int h);
 
 struct eOptions
 {
-	eOptions() : true_speed(false), mode_48k(false), size_percent(-1) {}
+	eOptions() : true_speed(false), mode_48k(false), full_screen(false), size_percent(-1) {}
 	wxString file_to_open;
+	wxString joystick;
 	bool true_speed;
 	bool mode_48k;
+	bool full_screen;
 	int size_percent;
 };
 static eOptions options;
@@ -71,10 +73,16 @@ static struct eOptionWindowSize : public xOptions::eOptionInt
 	virtual const char* Name() const { return "window size"; }
 	virtual const char** Values() const
 	{
-		static const char* values[] = { "100%", "200%", NULL };
+		static const char* values[] = { "100%", "200%", "300%", NULL };
 		return values;
 	}
 } op_window_size;
+
+static struct eOptionFullScreen : public xOptions::eOptionBool
+{
+	eOptionFullScreen() { customizable = false; }
+	virtual const char* Name() const { return "full screen"; }
+} op_full_screen;
 
 const wxEventType evtMouseCapture = wxNewEventType();
 enum wxEventMouseCaptureId { evID_MOUSE_CAPTURED = 1, evID_MOUSE_RELEASED };
@@ -85,10 +93,8 @@ class GLCanvas : public wxGLCanvas
 public:
 	GLCanvas(wxWindow* parent)
 		: eInherited(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, _("GLCanvas"), canvas_attr)
-		, key_flags(KF_CURSOR|KF_KEMPSTON)
 		, mouse_pos(0, 0)
 	{
-		op_quit = xOptions::eOption<bool>::Find("quit");
 	}
 	virtual void OnPaint(wxPaintEvent& event)
 	{
@@ -108,7 +114,7 @@ public:
 	}
 	virtual void OnIdle(wxIdleEvent& event)
 	{
-		if(op_quit && *op_quit)
+		if(OpQuit())
 		{
 			GetParent()->Close(true);
 			return;
@@ -130,9 +136,9 @@ public:
 			return;
 		}
 //		printf("kd:%c\n", key);
-		dword flags = KF_DOWN|key_flags;
-		if(event.AltDown())			flags |= KF_ALT;
-		if(event.ShiftDown())		flags |= KF_SHIFT;
+		dword flags = KF_DOWN|OpJoyKeyFlags();
+		if(event.AltDown())		flags |= KF_ALT;
+		if(event.ShiftDown())	flags |= KF_SHIFT;
 		TranslateKey(key, flags);
 		Handler()->OnKey(key, flags);
 	}
@@ -141,10 +147,10 @@ public:
 		int key = event.GetKeyCode();
 //		printf("ku:%c\n", key);
 		dword flags = 0;
-		if(event.AltDown())			flags |= KF_ALT;
-		if(event.ShiftDown())		flags |= KF_SHIFT;
+		if(event.AltDown())		flags |= KF_ALT;
+		if(event.ShiftDown())	flags |= KF_SHIFT;
 		TranslateKey(key, flags);
-		Handler()->OnKey(key, key_flags);
+		Handler()->OnKey(key, OpJoyKeyFlags());
 	}
 	virtual void OnMouseMove(wxMouseEvent& event)
 	{
@@ -196,9 +202,6 @@ public:
 		}
 	}
 	void TranslateKey(int& key, dword& flags);
-
-	dword key_flags;
-	xOptions::eOption<bool>* op_quit;
 
 	static int canvas_attr[];
 	DECLARE_EVENT_TABLE()
@@ -386,6 +389,8 @@ public:
 		wxMenu* menuWindow = new wxMenu;
 		menuWindow->Append(ID_Size100, _("Size &100%\tCtrl+1"));
 		menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
+		menuWindow->Append(ID_Size300, _("Size &300%\tCtrl+3"));
+		menuWindow->Append(ID_SizeFS, _("Full screen\tCtrl+F"));
 
 		wxMenuBar* menuBar = new wxMenuBar;
 		menuBar->Append(menuFile, _("File"));
@@ -407,7 +412,10 @@ public:
 		SetMinSize(GetSize());
 
 		if(options.size_percent >= 0)
+		{
+			op_full_screen.Set(false);
 			SetClientSize(org_size*options.size_percent/100);
+		}
 		else
 		{
 			SetClientSize(org_size*(op_window_size + 1));
@@ -416,12 +424,15 @@ public:
 		gl_canvas = new GLCanvas(this);
 		gl_canvas->SetFocus();
 
-		UpdateJoyMenu();
 		if(options.true_speed)
 		{
 			op_true_speed.Set(options.true_speed);
 			op_true_speed.Apply();
 		}
+		if(options.full_screen)
+			op_full_screen.Set(options.full_screen);
+		if(op_full_screen)
+			ShowFullScreen(true, wxFULLSCREEN_ALL);
 		xOptions::eOption<bool>* op_mode_48k = xOptions::eOption<bool>::Find("mode 48k");
 		if(options.mode_48k && op_mode_48k)
 		{
@@ -429,6 +440,12 @@ public:
 			op_mode_48k->Apply();
 			Handler()->OnAction(A_RESET);
 		}
+		if(!options.joystick.empty())
+		{
+			xOptions::eOption<int>* op_joy = xOptions::eOption<int>::Find("joystick");
+			SAFE_CALL(op_joy)->Value(wxConvertWX2MB(options.joystick));
+		}
+		UpdateJoyMenu();
 		menu_true_speed->Check(op_true_speed);
 		menu_mode_48k->Check(op_mode_48k && *op_mode_48k);
 		if(!options.file_to_open.empty())
@@ -519,8 +536,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	{
 		switch(event.GetId())
 		{
-		case ID_Size100: SetClientSize(org_size); op_window_size.Set(0); break;
-		case ID_Size200: SetClientSize(org_size*2); op_window_size.Set(1); break;
+		case ID_Size100:
+		case ID_Size200:
+		case ID_Size300:
+			if(IsFullScreen())
+			{
+				ShowFullScreen(false, wxFULLSCREEN_ALL);
+				op_full_screen.Set(false);
+			}
+			op_window_size.Set(event.GetId() - ID_Size100);
+			SetClientSize(org_size*(op_window_size + 1));
+			break;
+		case ID_SizeFS:
+			op_full_screen.Change();
+			if(IsFullScreen() != op_full_screen)
+			{
+				ShowFullScreen(op_full_screen, wxFULLSCREEN_ALL);
+			}
+			break;
 		}
 	}
 	void OnTapeToggle(wxCommandEvent& event)
@@ -561,15 +594,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	}
 	void OnJoy(wxCommandEvent& event)
 	{
-		gl_canvas->key_flags = 0;
-		if(menu_joy.kempston->IsChecked())
-			gl_canvas->key_flags |= KF_KEMPSTON;
-		if(menu_joy.cursor->IsChecked())
-			gl_canvas->key_flags |= KF_CURSOR;
-		if(menu_joy.qaop->IsChecked())
-			gl_canvas->key_flags |= KF_QAOP;
-		if(menu_joy.sinclair2->IsChecked())
-			gl_canvas->key_flags |= KF_SINCLAIR2;
+		switch(event.GetId())
+		{
+		case ID_JoyKempston:	OpJoystick(J_KEMPSTON); break;
+		case ID_JoyCursor:		OpJoystick(J_CURSOR); break;
+		case ID_JoyQAOP:		OpJoystick(J_QAOP); break;
+		case ID_JoySinclair2:	OpJoystick(J_SINCLAIR2); break;
+		}
+		UpdateJoyMenu();
 	}
 	void OnPauseToggle(wxCommandEvent& event)
 	{
@@ -612,14 +644,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	}
 	void UpdateJoyMenu()
 	{
-		menu_joy.kempston->Check(gl_canvas->key_flags&KF_KEMPSTON);
-		menu_joy.cursor->Check(gl_canvas->key_flags&KF_CURSOR);
-		menu_joy.qaop->Check(gl_canvas->key_flags&KF_QAOP);
-		menu_joy.sinclair2->Check(gl_canvas->key_flags&KF_SINCLAIR2);
+		eJoystick joy = OpJoystick();
+		menu_joy.kempston->Check(joy == J_KEMPSTON);
+		menu_joy.cursor->Check(joy == J_CURSOR);
+		menu_joy.qaop->Check(joy == J_QAOP);
+		menu_joy.sinclair2->Check(joy == J_SINCLAIR2);
 	}
 	enum
 	{
-		ID_Reset = 1, ID_Size100, ID_Size200,
+		ID_Reset = 1, ID_Size100, ID_Size200, ID_Size300, ID_SizeFS,
 		ID_TapeToggle, ID_TapeFastToggle, ID_DriveNext,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
 		ID_PauseToggle, ID_TrueSpeedToggle, ID_Mode48kToggle
@@ -653,6 +686,8 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_Reset,		Frame::OnReset)
 	EVT_MENU(Frame::ID_Size100,		Frame::OnResize)
 	EVT_MENU(Frame::ID_Size200,		Frame::OnResize)
+	EVT_MENU(Frame::ID_Size300,		Frame::OnResize)
+	EVT_MENU(Frame::ID_SizeFS,		Frame::OnResize)
 	EVT_MENU(Frame::ID_TapeToggle,	Frame::OnTapeToggle)
 	EVT_MENU(Frame::ID_TapeFastToggle,Frame::OnTapeFastToggle)
 	EVT_MENU(Frame::ID_DriveNext,	Frame::OnDriveNext)
@@ -717,7 +752,9 @@ class App: public wxApp
 			{ wxCMD_LINE_PARAM, NULL, NULL, wxT("input file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_SWITCH, wxT("t"), wxT("true_speed"), wxT("true speed (50Hz) mode"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_SWITCH, wxT("m"), wxT("mode_48k"), wxT("mode 48k"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_SWITCH, wxT("f"), wxT("full_screen"), wxT("full screen mode"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_OPTION, wxT("s"), wxT("size"), wxT("window size (in percent)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_OPTION, wxT("j"), wxT("joystick"), wxT("use joystick (kempston, cursor, qaop, sinclair2)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_NONE }
 		};
 		parser.SetDesc(g_cmdLineDesc);
@@ -731,11 +768,17 @@ class App: public wxApp
 		}
 		options.true_speed = parser.Found(wxT("t"));
 		options.mode_48k = parser.Found(wxT("m"));
+		options.full_screen = parser.Found(wxT("f"));
 		long size = 0;
 		if(parser.Found(wxT("s"), &size))
 		{
 			if(size >= 100 && size < 500)
 				options.size_percent = size;
+		}
+		wxString joy;
+		if(parser.Found(wxT("j"), &joy))
+		{
+			options.joystick = joy;
 		}
 		return true;
 	}

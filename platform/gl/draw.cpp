@@ -113,20 +113,30 @@ void DrawGL(int _w, int _h)
 	PROFILER_END(draw_p);
 
 	PROFILER_SECTION(draw);
+
+	int w = _w;
+	int h = _h;
+	if(float(w)/h > 4.0f/3.0f)
+		w = float(_h)*4/3;
+	else
+		h = float(_w)*3/4;
+
+	GLint filter = w % 320 ? GL_LINEAR : GL_NEAREST;
+
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
     glScalef(320.0f/512.0f, 240.0f/256.0f, 1.0f);
 	glEnable(GL_TEXTURE_2D);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 512, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f);
-	glViewport(0, 0, _w, _h);
+	glViewport((_w - w)/2, (_h - h)/2, w, h);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();

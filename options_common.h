@@ -32,6 +32,13 @@ enum eDrive { D_FIRST, D_A = V_FIRST, D_B, D_C, D_D, D_LAST };
 const char* LastFolder();
 void SetLastFolder(const char* path);
 
+bool OpQuit();
+void OpQuit(bool v);
+
+eJoystick OpJoystick();
+void OpJoystick(eJoystick v);
+dword OpJoyKeyFlags();
+
 }
 //namespace xPlatform
 

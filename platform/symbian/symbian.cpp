@@ -151,9 +151,7 @@ protected:
 	CIdle* iTimer;
 	CFbsBitmap* bitmap;
 	mutable int frame;
-	xOptions::eOption<int>* op_joy;
 	xOptions::eOption<int>* op_volume;
-	xOptions::eOption<bool>* op_quit;
 	CRemConInterfaceSelector* iInterfaceSelector;
     CRemConCoreApiTarget*     iCoreTarget;
 
@@ -190,9 +188,7 @@ static inline dword BGRX(byte r, byte g, byte b)
 
 void TDCControl::ConstructL(const TRect& /*aRect*/)
 {
-	op_joy = xOptions::eOption<int>::Find("joystick");
 	op_volume = xOptions::eOption<int>::Find("volume");
-	op_quit = xOptions::eOption<bool>::Find("quit");
 	iInterfaceSelector = CRemConInterfaceSelector::NewL();
 	iCoreTarget = CRemConCoreApiTarget::NewL(*iInterfaceSelector, *this);
 	iInterfaceSelector->OpenTargetL();
@@ -309,7 +305,7 @@ void TDCControl::Draw(bool horizontal) const
 }
 void TDCControl::OnTimer()
 {
-	if(op_quit && *op_quit)
+	if(OpQuit())
 		CEikonEnv::Static()->EikAppUi()->HandleCommandL(EEikCmdExit);
 //	if(mouse.enable && mouse.Update())
 //	{
@@ -380,18 +376,7 @@ TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
     char ch = TranslateKey(aKeyEvent);
     if(!ch)
         return EKeyWasNotConsumed;
-    dword key_flags = xPlatform::KF_CURSOR;
-    if(op_joy)
-    {
-    	using namespace xPlatform;
-    	switch(*op_joy)
-    	{
-    	case J_KEMPSTON:	key_flags = KF_KEMPSTON;	break;
-    	case J_CURSOR:		key_flags = KF_CURSOR;		break;
-    	case J_QAOP:		key_flags = KF_QAOP;		break;
-    	case J_SINCLAIR2:	key_flags = KF_SINCLAIR2;	break;
-    	}
-    }
+    dword key_flags = OpJoyKeyFlags();
     switch(aType)
     {
     case EEventKeyDown:
