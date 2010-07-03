@@ -513,7 +513,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(LastFolder()), wxEmptyString, wxFileSelectorDefaultWildcardStr, wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
 		fd.SetWildcard(
 				L"Snapshot files (*.sna)|*.sna;*.SNA|"
-				L"Screenshot files (*.png)|*.png;*.PNG|"
+				L"Screenshot files (*.png)|*.png;*.PNG"
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{
