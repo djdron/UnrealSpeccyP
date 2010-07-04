@@ -123,6 +123,7 @@ void DrawGL(int _w, int _h)
 
 	GLint filter = w % 320 ? GL_LINEAR : GL_NEAREST;
 
+	glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
     glScalef(320.0f/512.0f, 240.0f/256.0f, 1.0f);
