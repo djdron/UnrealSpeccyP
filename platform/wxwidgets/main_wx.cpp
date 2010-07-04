@@ -431,8 +431,6 @@ public:
 		}
 		if(options.full_screen)
 			op_full_screen.Set(options.full_screen);
-		if(op_full_screen)
-			ShowFullScreen(true, wxFULLSCREEN_ALL);
 		xOptions::eOption<bool>* op_mode_48k = xOptions::eOption<bool>::Find("mode 48k");
 		if(options.mode_48k && op_mode_48k)
 		{
@@ -731,6 +729,8 @@ class App: public wxApp
 		Frame *frame = new Frame(wxConvertMB2WX(c), wxPoint(100, 100));
 		frame->Show(true);
 		SetTopWindow(frame);
+		if(op_full_screen)
+			frame->ShowFullScreen(true, wxFULLSCREEN_ALL);
 		InitSound();
 		return true;
 	}
