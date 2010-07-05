@@ -70,7 +70,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>Version 0.0.12</string>
+	<string>Version 0.0.17</string>
 	<key>CFBundleDisplayName</key>
 	<string>Portable ZX-Spectrum emulator</string>
 	<key>CFBundleGetInfoString</key>
