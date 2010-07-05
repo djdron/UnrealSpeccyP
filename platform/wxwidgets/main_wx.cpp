@@ -463,7 +463,7 @@ public:
 	{
 		wxAboutDialogInfo info;
 		info.SetName(GetTitle());
-		info.SetVersion(_("0.0.14"));
+		info.SetVersion(_("0.0.16"));
 		info.SetDescription(_("Portable ZX-Spectrum emulator."));
 		info.SetCopyright(_("Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor."));
 		info.SetWebSite(_("http://code.google.com/p/unrealspeccyp/"));
