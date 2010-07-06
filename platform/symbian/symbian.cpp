@@ -113,7 +113,7 @@ void Init()
     CEikonEnv::Static()->FsSession().PrivatePath(appPath);
     appPath.Insert(0, CEikonEnv::Static()->EikAppUi()->Application()->AppFullName().Left(2));
     xIo::SetResourcePath(FileNameToCStr(appPath));
-    xLog::SetLogPath("e:\\usp\\");
+    xLog::SetLogPath("e:\\");
     Handler()->OnInit();
     InitSound();
 }
@@ -347,66 +347,63 @@ TInt TDCControl::TimerCallBack( TAny* aInstance )
 	((TDCControl*)aInstance)->OnTimer();
 	return 1;
 }
-static char TranslateKey(const TKeyEvent& aKeyEvent)
+static char TranslateKey(const TKeyEvent& aKeyEvent, dword& flags)
 {
+	bool rotate = op_rotate_joystick;
+	if(aKeyEvent.iModifiers&EModifierShift)
+		flags |= KF_SHIFT;
+	if(aKeyEvent.iModifiers&EModifierCtrl)
+		flags |= KF_ALT;
     switch(aKeyEvent.iScanCode)
     {
     case '5':
-    case EStdKeyEnter:
     case EStdKeyDevice3:		return 'f';
     case '4':
-    case EStdKeyLeftArrow:		return op_rotate_joystick ? 'd' : 'l';
+    case EStdKeyLeftArrow:		return rotate ? 'd' : 'l';
     case '6':
-    case EStdKeyRightArrow:		return op_rotate_joystick ? 'u' : 'r';
+    case EStdKeyRightArrow:		return rotate ? 'u' : 'r';
     case '2':
-    case EStdKeyUpArrow:		return op_rotate_joystick ? 'l' : 'u';
+    case EStdKeyUpArrow:		return rotate ? 'l' : 'u';
     case '8':
-    case EStdKeyDownArrow:      return op_rotate_joystick ? 'r' : 'd';
+    case EStdKeyDownArrow:      return rotate ? 'r' : 'd';
     case EStdKeyHash:			return ' ';
     case '0':					return 'e';
     case '1':					return 'm';
+    case EStdKeyLeftFunc:
     case '*':					return 'k';
     case '3':					return 'p';
-    default : break;
+    case EStdKeyEnter:			return 'e';
+    case EStdKeyLeftShift:
+    case EStdKeyRightShift:		return 'c';
+    case EStdKeySpace:			return ' ';
+    case EStdKeyBackspace:
+    	flags |= KF_SHIFT;
+    	return '0';
+    default :
+    	break;
     }
+    if(aKeyEvent.iScanCode >= 'A' && aKeyEvent.iScanCode <= 'Z')
+    	return aKeyEvent.iScanCode;
     return 0;
 }
 TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)
 {
-    char ch = TranslateKey(aKeyEvent);
-    if(!ch)
-        return EKeyWasNotConsumed;
-    dword key_flags = OpJoyKeyFlags();
-    switch(aType)
-    {
-    case EEventKeyDown:
-        Handler()->OnKey(ch, KF_DOWN|key_flags);
-//        switch(ch)
-//        {
-//        case 'u':   mouse.dir |= eMouse::D_UP; break;
-//        case 'd':   mouse.dir |= eMouse::D_DOWN; break;
-//        case 'l':   mouse.dir |= eMouse::D_LEFT; break;
-//        case 'r':   mouse.dir |= eMouse::D_RIGHT; break;
-//        case 'f':   Handler()->OnMouse(MA_BUTTON, 0, 1); break;
-//        default : break;
-//        }
-        break;
-    case EEventKeyUp:
-        Handler()->OnKey(ch, key_flags);
-//        switch(ch)
-//        {
-//        case 'u':   mouse.dir &= ~eMouse::D_UP; break;
-//        case 'd':   mouse.dir &= ~eMouse::D_DOWN; break;
-//        case 'l':   mouse.dir &= ~eMouse::D_LEFT; break;
-//        case 'r':   mouse.dir &= ~eMouse::D_RIGHT; break;
-//        case 'f':   Handler()->OnMouse(MA_BUTTON, 0, 0); break;
-//        default : break;
-//        }
-        break;
-    default:
-        break;
-    }
-    return EKeyWasConsumed;
+	dword flags = OpJoyKeyFlags();
+	switch(aType)
+	{
+	case EEventKeyDown:
+		flags |= KF_DOWN;
+		break;
+	case EEventKeyUp:
+		break;
+	default:
+		return EKeyWasNotConsumed;
+	}
+	char ch = TranslateKey(aKeyEvent, flags);
+	if(!ch)
+		return EKeyWasNotConsumed;
+	Handler()->OnKey(ch, flags);
+	return EKeyWasConsumed;
 }
 void TDCControl::MrccatoCommand(TRemConCoreApiOperationId id, TRemConCoreApiButtonAction a)
 {
