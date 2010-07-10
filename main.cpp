@@ -32,9 +32,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "platform/io.h"
 #include "ui/ui_desktop.h"
 #include "platform/custom_ui/ui_main.h"
-#include "tools/zlib/unzip.h"
 #include "tools/profiler.h"
 #include "tools/options.h"
+
+#ifdef USE_ZIP
+#include "tools/zlib/unzip.h"
+#endif//USE_ZIP
 
 namespace xScreenshot
 {
@@ -199,6 +202,7 @@ static struct eSpeccyHandler : public eHandler
 		eFileType* t = eFileType::Find(type);
 		return t && t->AbleOpen();
 	}
+#ifdef USE_ZIP
 	bool OnOpenZip(const char* name)
 	{
 		unzFile h = unzOpen(name);
@@ -239,14 +243,17 @@ static struct eSpeccyHandler : public eHandler
 		unzClose(h);
 		return ok;
 	}
+#endif//USE_ZIP
 	virtual bool OnOpenFile(const char* name)
 	{
 		char type[xIo::MAX_PATH_LEN];
 		GetFileType(type, name);
+#ifdef USE_ZIP
 		if(!strcmp(type, "zip"))
 		{
 			return OnOpenZip(name);
 		}
+#endif//USE_ZIP
 		eFileType* t = eFileType::Find(type);
 		if(!t)
 			return false;

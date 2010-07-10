@@ -17,8 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "options.h"
-#include "tinyxml/tinyxml.h"
+#include "../platform/platform.h"
+
+#ifdef USE_CONFIG
 #include "../platform/io.h"
+#include "tinyxml/tinyxml.h"
+#endif//USE_CONFIG
 
 namespace xOptions
 {
@@ -104,30 +108,6 @@ void eOptionString::Value(const char* v)
 	strcpy(const_cast<char*>(value), v);
 }
 
-
-static const char* FileName() { return xIo::ProfilePath(".options.xml"); }
-static char buf[256];
-static const char* OptNameToXmlName(const char* name)
-{
-	strcpy(buf, name);
-	for(char* b = buf; *b; ++b)
-	{
-		if(*b == ' ')
-			*b = '_';
-	}
-	return buf;
-}
-static const char* XmlNameToOptName(const char* name)
-{
-	strcpy(buf, name);
-	for(char* b = buf; *b; ++b)
-	{
-		if(*b == '_')
-			*b = ' ';
-	}
-	return buf;
-}
-
 struct eOA : public eOptionB // access to protected members hack
 {
 	static void SortByOrder()
@@ -168,6 +148,30 @@ struct eOA : public eOptionB // access to protected members hack
 			pb->next = a;
 	}
 };
+
+#ifdef USE_CONFIG
+static const char* FileName() { return xIo::ProfilePath(".options.xml"); }
+static char buf[256];
+static const char* OptNameToXmlName(const char* name)
+{
+	strcpy(buf, name);
+	for(char* b = buf; *b; ++b)
+	{
+		if(*b == ' ')
+			*b = '_';
+	}
+	return buf;
+}
+static const char* XmlNameToOptName(const char* name)
+{
+	strcpy(buf, name);
+	for(char* b = buf; *b; ++b)
+	{
+		if(*b == '_')
+			*b = ' ';
+	}
+	return buf;
+}
 //=============================================================================
 //	Load
 //-----------------------------------------------------------------------------
@@ -225,6 +229,13 @@ void Store()
 	}
 	doc.SaveFile(FileName());
 }
+
+#else//USE_CONFIG
+
+void Load() { eOA::SortByOrder(); }
+void Store() {}
+
+#endif//USE_CONFIG
 
 }
 //namespace xOptions
