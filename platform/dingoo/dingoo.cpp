@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform.h"
 #include "../io.h"
 #include "../../ui/ui.h"
+#include "../../tools/options.h"
+#include "../../options_common.h"
 
 //#define __inline__
 
@@ -106,8 +108,6 @@ protected:
 	bool IsFuture() { return __tcu_full_match_flag(CHANNEL); }
 }timer;
 
-#define BGR565(r, g, b)	(((r&~7) << 8)|((g&~3) << 3)|(b >> 3))
-
 class eVideo
 {
 public:
@@ -145,6 +145,7 @@ protected:
 	void Set(dword cmd, int data = -1);
 	word* FrameBack() { return frame_back; }
 	enum { BRIGHTNESS = 190, BRIGHT_INTENSITY = 65 };
+	inline dword BGR565(byte r, byte g, byte b) const { return (((r&~7) << 8)|((g&~3) << 3)|(b >> 3)); }
 protected:
 	word*	frame;
 	word*	frame_back;
@@ -239,11 +240,20 @@ void eVideo::Update()
 	}
 }
 
+
+static xOptions::eOption<int>* op_sound = NULL;
+static xOptions::eOption<int>* op_volume = NULL;
+
+static int OpVolume() { return op_volume ? *op_volume : (int)V_100; }
+static int OpSound() { return op_sound ? *op_sound : (int)S_AY; }
+
 class eAudio
 {
 public:
 	eAudio() : volume(0)
 	{
+		op_sound = xOptions::eOption<int>::Find("sound");
+		op_volume = xOptions::eOption<int>::Find("volume");
 		SetVolume(volume);
 		struct eWaveoutOpen
 		{
@@ -269,16 +279,16 @@ protected:
 
 void eAudio::Update()
 {
-	if(Handler()->Volume() != volume)
+	if(OpVolume() != volume)
 	{
-		volume = Handler()->Volume();
+		volume = OpVolume();
 		SetVolume(volume * 3);
 	}
 	for(int i = Handler()->AudioSources(); --i >= 0;)
 	{
 		dword size = Handler()->AudioDataReady(i);
 		bool ui_enabled = Handler()->VideoDataUI();
-		if(i == Handler()->Sound() && !ui_enabled && !Handler()->FullSpeed())
+		if(i == OpSound() && !ui_enabled && !Handler()->FullSpeed())
 		{
 			waveout_write(handle, Handler()->AudioData(i), size);
 		}
@@ -339,9 +349,9 @@ void eKeys::Update()
 {
 	if(Pressed(K_BUTTON_SELECT) && Pressed(K_BUTTON_START))
 	{
-		Handler()->OnAction(A_QUIT);
+		OpQuit(true);
 	}
-	dword flags = KF_KEMPSTON << Handler()->Joystick();
+	dword flags = OpJoyKeyFlags();
 	bool ui_focused = Handler()->VideoDataUI();
 	if(!ui_focused)
 	{
@@ -355,7 +365,7 @@ void eKeys::Update()
 			if(!audio_next)
 			{
 				audio_next = true;
-				Handler()->OnAction(A_SOUND_NEXT);
+				SAFE_CALL(op_sound)->Change();
 			}
 			return;
 		}
@@ -407,7 +417,7 @@ void Done()
 
 void Loop()
 {
-	while(!Handler()->Quit() && _sys_judge_event(NULL) >= 0)
+	while(!OpQuit() && _sys_judge_event(NULL) >= 0)
 	{
 		if(!Handler()->FullSpeed())
 			timer.Wait();
