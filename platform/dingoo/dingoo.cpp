@@ -391,8 +391,8 @@ void Loop()
 // C++ support instead of libstdc++
 void* operator new(size_t size) { return malloc(size); }
 void* operator new[](size_t size) { return malloc(size); }
-void operator delete(void* p) { if(p) free(p); }
-void operator delete[](void* p) { if(p) free(p); }
+void operator delete(void* p) { free(p); }
+void operator delete[](void* p) { free(p); }
 extern "C" void __cxa_pure_virtual() {}
 
 typedef void (*_PVFV)();
