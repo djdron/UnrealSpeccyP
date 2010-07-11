@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef _DINGOO
+
 #include "../platform.h"
 #include "../io.h"
 #include "../../ui/ui.h"
@@ -24,35 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //#define __inline__
 
-#ifdef _DINGOO
-
-extern "C"
-{
-
 #define CFG_EXTAL	12000000	/* EXTAL freq: 12 MHz */
-#include "jz4740.h"
-
-//entry.a externals
-char*	__to_locale_ansi(wchar_t*);
-void	__dcache_writeback_all();
-void*	_lcd_get_frame();
-void	_lcd_set_frame();
-void	_kbd_get_status(void*);
-int		_sys_judge_event(void*);
-void*	waveout_open(void*);
-int		waveout_write(void*, void* buffer, int count);
-int		waveout_close(void*);
-int		waveout_set_volume(dword vol);
-
-size_t strlen(const char* src)
-{
-	int i = 0;
-	for(; src[i]; ++i);
-	return i;
-}
-
-}
-//extern "C"
+#include <dingoo/jz4740.h>
+#include <dingoo/cache.h>
+#include <dingoo/slcd.h>
+#include <dingoo/keyboard.h>
+#include <dingoo/audio.h>
 
 void* g_pGameDecodeBuf = NULL;
 
@@ -240,13 +219,6 @@ void eVideo::Update()
 	}
 }
 
-
-static xOptions::eOption<int>* op_sound = NULL;
-static xOptions::eOption<int>* op_volume = NULL;
-
-static int OpVolume() { return op_volume ? *op_volume : (int)V_100; }
-static int OpSound() { return op_sound ? *op_sound : (int)S_AY; }
-
 class eAudio
 {
 public:
@@ -255,18 +227,15 @@ public:
 		op_sound = xOptions::eOption<int>::Find("sound");
 		op_volume = xOptions::eOption<int>::Find("volume");
 		SetVolume(volume);
-		struct eWaveoutOpen
-		{
-			dword	frequency;
-			word	bits;
-			byte	channels;
-			byte	volume;
-		}wo = { 44100, 16, 2, 30 };
+		waveout_args wo = { 44100, 16, 2, 30 };
 		handle = waveout_open(&wo);
 	}
 	~eAudio() { waveout_close(handle); }
 	void Update();
+	xOptions::eOption<int>* op_sound;
 protected:
+	int OpVolume() { return op_volume ? *op_volume : (int)V_100; }
+	int OpSound() { return op_sound ? *op_sound : (int)S_AY; }
 	void SetVolume(int v)
 	{
 		waveout_set_volume(v);
@@ -275,6 +244,7 @@ protected:
 	void* handle;
 	int source;
 	int volume;
+	xOptions::eOption<int>* op_volume;
 }audio;
 
 void eAudio::Update()
@@ -290,7 +260,7 @@ void eAudio::Update()
 		bool ui_enabled = Handler()->VideoDataUI();
 		if(i == OpSound() && !ui_enabled && !Handler()->FullSpeed())
 		{
-			waveout_write(handle, Handler()->AudioData(i), size);
+			waveout_write(handle, (char*)Handler()->AudioData(i), size);
 		}
 		Handler()->AudioDataUse(i, size);
 	}
@@ -318,16 +288,10 @@ protected:
 		K_DPAD_LEFT		= 1 << 28,
 		K_DPAD_RIGHT	= 1 << 18
 	};
-	struct eKeyStatus
-	{
-		dword pressed;
-		dword released;
-		dword status;
-	};
 protected:
-	eKeyStatus Status() const
+	KEY_STATUS Status() const
 	{
-		eKeyStatus ks;
+		KEY_STATUS ks;
 		_kbd_get_status(&ks);
 		return ks;
 	}
@@ -365,7 +329,7 @@ void eKeys::Update()
 			if(!audio_next)
 			{
 				audio_next = true;
-				SAFE_CALL(op_sound)->Change();
+				SAFE_CALL(audio.op_sound)->Change();
 			}
 			return;
 		}
@@ -397,16 +361,8 @@ void eKeys::Update()
 
 bool Init(const char* res_path)
 {
-	char buf[1024];
-	strcpy(buf, __to_locale_ansi((wchar_t*)res_path));
-	int i = strlen(buf);
-	for(; --i >= 0; )
-	{
-		if((buf[i] == '\\') || (buf[i] == '/'))
-			break;
-	}
-	buf[++i] = '\0';
-	xIo::SetResourcePath(buf);
+	SetLastFolder(res_path);
+	xIo::SetResourcePath(LastFolder());
 	Handler()->OnInit();
 	return true;
 }
@@ -461,10 +417,10 @@ static void CrtDone()
 	CrtCallList(__DTOR_LIST__, __DTOR_END__); //global destructors call
 }
 
-extern "C" int GameMain(char* res_path)
+extern "C" int main(int argc, char** argv)
 {
 	CrtInit();
-	xPlatform::Init(res_path);
+	xPlatform::Init(argv[0]); // argv[0] contain path with .app name
 	xPlatform::Loop();
 	xPlatform::Done();
 	CrtDone();

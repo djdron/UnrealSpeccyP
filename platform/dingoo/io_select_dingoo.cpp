@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../../std.h"
 #include "../../tools/io_select.h"
+#include "../io.h"
+#include <dingoo/fsys.h>
 
 namespace xIo
 {
@@ -27,14 +29,25 @@ namespace xIo
 class eFileSelectI
 {
 public:
-	eFileSelectI(const char* path) { h = fsys_findfirst(path, -1, &fd); }
+	eFileSelectI(const char* _path)
+	{
+		char path[MAX_PATH_LEN];
+		strcpy(path, _path);
+		for(char* b = path; *b; ++b)
+		{
+			if(*b == '/')
+				*b = '\\';
+		}
+		strcat(path, "*");
+		h = fsys_findfirst(path, -1, &fd);
+	}
 	~eFileSelectI() { fsys_findclose(&fd); }
 	bool Valid() const { return h == 0; }
 	void Next() { h = fsys_findnext(&fd); }
 	const char* Name() const { return fd.name; }
-	bool IsDir() const { return fd.attrib&0x10; }
+	bool IsDir() const { return fd.attributes&0x10; }
 	bool IsFile() const { return !IsDir(); }
-	eFindData fd;
+	fsys_file_info_t fd;
 	int h;
 };
 
@@ -45,6 +58,7 @@ void eFileSelect::Next() { impl->Next(); }
 const char* eFileSelect::Name() const { return impl->Name(); }
 bool eFileSelect::IsDir() const { return impl->IsDir(); }
 bool eFileSelect::IsFile() const { return impl->IsFile(); }
+bool PathIsRoot(const char* path) {	return !strcmp(path, "/"); }
 
 }
 //namespace xIo
