@@ -51,7 +51,7 @@ void Write(const char* text)
 	if(!log_file)
 		Open();
 	fputs(text, log_file);
-	fflush(log_file);
+//	fflush(log_file);
 }
 
 }

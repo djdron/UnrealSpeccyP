@@ -24,7 +24,7 @@ INCLUDE   = -I$(DINGOO_SDK)/include -I$(MIPSTOOLS)/mipsel-linux/include -I$
 STD_OPTS  = -G0 -O3 $(INCLUDE) -Wall -finline-functions -fomit-frame-pointer -msoft-float -fno-builtin -fno-exceptions -mips32 -mno-abicalls -fno-pic -c -DMPU_JZ4740 -DNDEBUG -D_DINGOO -DUSE_UI 
 CPP_OPTS  = $(STD_OPTS) -fno-rtti -fno-threadsafe-statics  
 C_OPTS    = $(STD_OPTS) 
-LD_OPTS   = -nodefaultlibs --script $(LD_SCRIPT) -L$(LIB_PATH) -L$(LIBS)
+LD_OPTS   = -nodefaultlibs --script $(LD_SCRIPT) -L$(LIB_PATH) -L$(LIBS) -Map=$(BIN_TARGET).map
 
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
