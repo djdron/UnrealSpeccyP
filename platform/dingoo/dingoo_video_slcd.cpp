@@ -54,6 +54,8 @@ public:
 	eVideo() : frame(NULL), frame_back(NULL), ray_sync(false)
 	{
 		Set(0x2b, 0x000d);	//max refresh rate
+		Set(0x20, 0);
+		Set(0x21, 0);
 		Set(0x22);			//write to GRAM
 		frame = (word*)_lcd_get_frame();
 		frame_back = (word*)g_pGameDecodeBuf;
@@ -74,9 +76,11 @@ public:
 		{
 			int mirr = op_ray_sync;
 			mirr = mirr ? mirr - 1 : 0;
-			Set(0x03, 0x1048|(~mirr&3 << 4)); //entry mode restore
+			Set(0x03, 0x1048|(mirr&3 << 4)); //entry mode restore
 		}
 		Set(0x2b, 0x000d);	//default refresh rate
+		Set(0x20, 0);
+		Set(0x21, 0);
 		Set(0x22);			//write to GRAM
 	}
 	void Flip();
@@ -143,6 +147,8 @@ void eVideo::Update()
 	{
 		ray_sync = true;
 		Set(0x03, 0x1070);	//entry mode default
+		Set(0x20, 0);
+		Set(0x21, 0);
 		Set(0x22);			//write to GRAM
 	}
 	mirr = mirr ? mirr - 1 : 0;
