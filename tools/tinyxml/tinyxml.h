@@ -60,7 +60,15 @@ distribution.
 
 #if !defined(_SYMBIAN) && !defined(_DINGOO)
 #define TIXML_SAFE
-#endif//_SYMBIAN
+#endif//!_SYMBIAN && !_DINGOO
+
+#ifdef _DINGOO
+//temporary dingoo hacks while functions not exist in SDK
+extern "C" int dingoo_fprintf(FILE * f, const char* fmt, const char* s1 = "", const char* s2 = "");
+extern "C" int dingoo_sscanf(const char * str, const char * format, ...);
+#define fprintf dingoo_fprintf
+#define sscanf dingoo_sscanf
+#endif//_DINGOO
 
 #ifdef TIXML_SAFE
 	#if defined(_MSC_VER) && (_MSC_VER >= 1400 )

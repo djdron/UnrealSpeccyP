@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform.h"
 #include "../io.h"
 #include "../../options_common.h"
+//#include "../../tools/log.h"
 
 namespace xPlatform
 {
@@ -29,6 +30,8 @@ bool Init(const char* res_path)
 {
 	SetLastFolder(res_path);
 	xIo::SetResourcePath(LastFolder());
+	xIo::SetProfilePath(LastFolder());
+//	xLog::SetLogPath(LastFolder());
 	Handler()->OnInit();
 	return true;
 }
@@ -96,6 +99,17 @@ extern "C" int main(int argc, char** argv)
 	xPlatform::Loop();
 	xPlatform::Done();
 	CrtDone();
+	return 0;
+}
+extern "C" int dingoo_fprintf(FILE * f, const char* fmt, const char* s1, const char* s2)
+{
+	char buf[1024];
+	sprintf(buf, fmt, s1, s2);
+	fputs(buf, f);
+	return strlen(buf);
+}
+extern "C" int dingoo_sscanf(const char * str, const char * format, ...)
+{
 	return 0;
 }
 
