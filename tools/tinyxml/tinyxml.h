@@ -82,7 +82,7 @@ distribution.
 		#define TIXML_SSCANF   sscanf
 	#endif
 #else
-	#define TIXML_SSCANF scanf
+	#define TIXML_SSCANF sscanf
 #endif	
 
 class TiXmlDocument;

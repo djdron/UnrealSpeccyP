@@ -567,15 +567,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\platform\dingoo\dingoo_keys.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\dingoo\dingoo_sound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\dingoo\dingoo_timer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\dingoo\dingoo_video_slcd.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\platform\dingoo\io_select_dingoo.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\platform\dingoo\jz4740.h"
-					>
-				</File>
-				<File
-					RelativePath=".\platform\dingoo\stdio.h"
 					>
 				</File>
 			</Filter>
