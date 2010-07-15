@@ -1,11 +1,10 @@
 MIPSTOOLS = /home/djdron/mipsel-tools/mipsel-4.1.2-nopic
-DINGOO_SDK = /home/djdron/dingoo-sdk/dingoo_sdk
+DINGOO_SDK = /home/djdron/dingoo-sdk
 PATH := $(MIPSTOOLS)/bin:$(PATH)
 
 CXX       = mipsel-linux-g++
 C         = mipsel-linux-gcc
 LD        = mipsel-linux-ld
-OBJCOPY   = mipsel-linux-objcopy
 ELF2APP   = $(DINGOO_SDK)/tools/elf2app/elf2app 
 
 PROJECT_NAME = unreal_speccy_portable
@@ -18,13 +17,13 @@ OBJ_PATH = $(OBJ_BASE)
 
 SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml snapshot ui platform platform/custom_ui platform/dingoo devices devices/fdd devices/input devices/sound
 LIB_PATH  = $(DINGOO_SDK)/lib
-LIBS      = -lsml -lc -ljz4740 -lgcc
+LIBS      = -lc -ljz4740 -lgcc
 
 INCLUDE   = -I$(DINGOO_SDK)/include -I$(MIPSTOOLS)/mipsel-linux/include -I$
 STD_OPTS  = -G0 -O3 $(INCLUDE) -Wall -finline-functions -fomit-frame-pointer -msoft-float -fno-builtin -fno-exceptions -mips32 -mno-abicalls -fno-pic -c -DMPU_JZ4740 -DNDEBUG -D_DINGOO -DUSE_UI -DUSE_ZIP -DUSE_CONFIG
 CPP_OPTS  = $(STD_OPTS) -fno-rtti -fno-threadsafe-statics
 C_OPTS    = $(STD_OPTS)
-LD_OPTS   = -nodefaultlibs --script $(LD_SCRIPT) -L$(LIB_PATH) -L$(LIBS)
+LD_OPTS   = -nodefaultlibs --script $(LD_SCRIPT) -L$(LIB_PATH) $(LIBS)
 
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
@@ -36,12 +35,17 @@ C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
+ifdef SIM
+STD_OPTS := $(STD_OPTS) -DSIM_VERSION
+build: mkdirs $(BIN_TARGET).sim
+else
 build: mkdirs $(BIN_TARGET).app
+endif
 
 mkdirs:
 	mkdir -p $(DIST_PATH)
 	mkdir -p $(foreach dir, $(SRCFOLDERS), $(OBJ_PATH)/$(dir))
-
+	
 $(CXX_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.cpp
 	$(CXX) $(CPP_OPTS) -o $@ $<
 
@@ -54,11 +58,14 @@ $(BIN_TARGET).elf: $(CXX_OBJS) $(C_OBJS)
 $(BIN_TARGET).app: $(BIN_TARGET).elf
 	$(ELF2APP) $(BIN_TARGET)
 
+$(BIN_TARGET).sim: $(BIN_TARGET).app
+	mv $(BIN_TARGET).app $(BIN_TARGET).sim
+
 clean:
 	rm -rf $(CXX_OBJS)
 	rm -rf $(CXX_DEPS)
 	rm -rf $(C_OBJS)
 	rm -rf $(C_DEPS)
-	rm -rf $(BIN_TARGET).app $(BIN_TARGET).elf $(BIN_TARGET).bin $(BIN_TARGET).map
+	rm -rf $(BIN_TARGET).app $(BIN_TARGET).sim $(BIN_TARGET).elf $(BIN_TARGET).bin $(BIN_TARGET).map
 
 .PHONY: mkdirs clean build
