@@ -66,44 +66,14 @@ void Loop()
 }
 //namespace xPlatform
 
-// C++ support instead of libstdc++
-void* operator new(size_t size) { return malloc(size); }
-void* operator new[](size_t size) { return malloc(size); }
-void operator delete(void* p) { free(p); }
-void operator delete[](void* p) { free(p); }
-extern "C" void __cxa_pure_virtual() {}
-
-typedef void (*_PVFV)();
-extern _PVFV __CTOR_LIST__[];
-extern _PVFV __CTOR_END__[];
-extern _PVFV __DTOR_LIST__[];
-extern _PVFV __DTOR_END__[];
-
-static void CrtCallList(const _PVFV* beg, const _PVFV* end)
-{
-	for(; beg < end; ++beg)
-	{
-		if(*beg) (**beg)();
-	}
-}
-static void CrtInit()
-{
-	CrtCallList(__CTOR_LIST__, __CTOR_END__); //global constructors call
-}
-static void CrtDone()
-{
-	CrtCallList(__DTOR_LIST__, __DTOR_END__); //global destructors call
-}
-
 extern "C" int main(int argc, char** argv)
 {
-	CrtInit();
 	xPlatform::Init(argv[0]); // argv[0] contain path with .app name
 	xPlatform::Loop();
 	xPlatform::Done();
-	CrtDone();
 	return 0;
 }
+
 extern "C" int dingoo_fprintf(FILE * f, const char* fmt, const char* s1, const char* s2)
 {
 	char buf[1024];

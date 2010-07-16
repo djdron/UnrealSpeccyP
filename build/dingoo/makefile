@@ -19,7 +19,7 @@ RES_PATH = res
 
 SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml snapshot ui platform platform/custom_ui platform/dingoo devices devices/fdd devices/input devices/sound
 LIB_PATH  = $(DINGOO_SDK)/lib
-LIBS      = -lc -ljz4740 -lgcc
+LIBS      = -lc -ljz4740 -lgcc -lstdc++
 
 INCLUDE   = -I$(DINGOO_SDK)/include -I$(MIPSTOOLS)/mipsel-linux/include -I. -I$
 STD_OPTS  = -G0 -O3 $(INCLUDE) -Wall -finline-functions -fomit-frame-pointer -msoft-float -fno-builtin -fno-exceptions -mips32 -mno-abicalls -fno-pic -c -DMPU_JZ4740 -DNDEBUG -D_DINGOO -DUSE_UI -DUSE_ZIP -DUSE_CONFIG -DUSE_EMBEDDED_RESOURCES
