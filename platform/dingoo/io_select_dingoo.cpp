@@ -29,7 +29,18 @@ namespace xIo
 class eFileSelectI
 {
 public:
-	eFileSelectI(const char* _path)
+	virtual ~eFileSelectI() {}
+	virtual bool Valid() const = 0;
+	virtual void Next() = 0;
+	virtual const char* Name() const = 0;
+	virtual bool IsDir() const = 0;
+	virtual bool IsFile() const = 0;
+};
+
+class eDingooFileSelectI : public eFileSelectI
+{
+public:
+	eDingooFileSelectI(const char* _path)
 	{
 		char path[MAX_PATH_LEN];
 		strcpy(path, _path);
@@ -41,7 +52,7 @@ public:
 		strcat(path, "*");
 		h = fsys_findfirst(path, -1, &fd);
 	}
-	~eFileSelectI() { fsys_findclose(&fd); }
+	~eDingooFileSelectI() { fsys_findclose(&fd); }
 	bool Valid() const { return h == 0; }
 	void Next() { h = fsys_findnext(&fd); }
 	const char* Name() const { return fd.name; }
@@ -51,14 +62,41 @@ public:
 	int h;
 };
 
-eFileSelect::eFileSelect(const char* path) { impl = new eFileSelectI(path); }
+class eDingooDriveSelectI : public eFileSelectI
+{
+public:
+	eDingooDriveSelectI() : drives(0)
+	{
+		strcpy(drive, "a:");
+	}
+	virtual bool Valid() const { return drives < 2; }
+	virtual void Next()
+	{
+		++drives;
+		drive[0] = 'b';
+	}
+	virtual const char* Name() const { return drive; }
+	virtual bool IsDir() const { return true; }
+	virtual bool IsFile() const { return false; }
+	char drive[3];
+	dword drives;
+};
+
+eFileSelect::eFileSelect(const char* path)
+{
+	if(PathIsRoot(path))
+		impl = new eDingooDriveSelectI;
+	else
+		impl = new eDingooFileSelectI(path);
+}
 eFileSelect::~eFileSelect() { delete impl; }
 bool eFileSelect::Valid() const { return impl->Valid(); }
 void eFileSelect::Next() { impl->Next(); }
 const char* eFileSelect::Name() const { return impl->Name(); }
 bool eFileSelect::IsDir() const { return impl->IsDir(); }
 bool eFileSelect::IsFile() const { return impl->IsFile(); }
-bool PathIsRoot(const char* path) {	return !strcmp(path, "/"); }
+
+bool PathIsRoot(const char* path) {	return !strlen(path); }
 
 }
 //namespace xIo
