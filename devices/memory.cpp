@@ -20,6 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform/io.h"
 #include "memory.h"
 
+#ifdef USE_EMBEDDED_RESOURCES
+#include "res/rom/sos128.h"
+#include "res/rom/sos48.h"
+#include "res/rom/service.h"
+#include "res/rom/dos513f.h"
+#endif//USE_EMBEDDED_RESOURCES
+
 //=============================================================================
 //	eMemory::eMemory
 //-----------------------------------------------------------------------------
@@ -74,10 +81,17 @@ void eRom::LoadRom(int page, const char* rom)
 //-----------------------------------------------------------------------------
 void eRom::Init()
 {
-	LoadRom(ROM_128, xIo::ResourcePath("res/rom/128_low.rom"));
-	LoadRom(ROM_SOS, xIo::ResourcePath("res/rom/sos.rom"));
+#ifdef USE_EMBEDDED_RESOURCES
+	memcpy(memory->Get(ROM_128), sos128,	sos128_size);
+	memcpy(memory->Get(ROM_SOS), sos48,		sos48_size);
+	memcpy(memory->Get(ROM_SYS), service,	service_size);
+	memcpy(memory->Get(ROM_DOS), dos513f,	dos513f_size);
+#else//USE_EMBEDDED_RESOURCES
+	LoadRom(ROM_128, xIo::ResourcePath("res/rom/sos128.rom"));
+	LoadRom(ROM_SOS, xIo::ResourcePath("res/rom/sos48.rom"));
 	LoadRom(ROM_SYS, xIo::ResourcePath("res/rom/service.rom"));
 	LoadRom(ROM_DOS, xIo::ResourcePath("res/rom/dos513f.rom"));
+#endif//USE_EMBEDDED_RESOURCES
 }
 //=============================================================================
 //	eRom::Reset

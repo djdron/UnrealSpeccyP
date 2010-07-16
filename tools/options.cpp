@@ -150,7 +150,7 @@ struct eOA : public eOptionB // access to protected members hack
 };
 
 #ifdef USE_CONFIG
-static const char* FileName() { return xIo::ProfilePath(".options.xml"); }
+static const char* FileName() { return xIo::ProfilePath("unreal_speccy_portable.xml"); }
 static char buf[256];
 static const char* OptNameToXmlName(const char* name)
 {

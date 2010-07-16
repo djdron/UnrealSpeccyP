@@ -26,13 +26,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-bool Init(const char* res_path)
+bool Init(const char* path)
 {
-	SetLastFolder(res_path);
-	xIo::SetResourcePath(LastFolder());
+	SetLastFolder("A:\\GAME\\");
+//	xIo::SetResourcePath(LastFolder());
 	xIo::SetProfilePath(LastFolder());
 //	xLog::SetLogPath(LastFolder());
 	Handler()->OnInit();
+#ifdef SIM_VERSION
+	Handler()->OnOpenFile(path);
+#endif//SIM_VERSION
 	return true;
 }
 void Done()

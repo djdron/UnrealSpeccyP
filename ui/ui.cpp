@@ -22,6 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_UI
 
+#ifdef USE_EMBEDDED_RESOURCES
+#include "res/font/spxtrm4f.h"
+#endif//USE_EMBEDDED_RESOURCES
+
 namespace xUi
 {
 
@@ -79,17 +83,26 @@ static class eFont
 {
 public:
 	eFont() : w(0), h(0), data(NULL) {}
-	~eFont() { SAFE_DELETE(data); }
+	~eFont()
+	{
+#ifndef USE_EMBEDDED_RESOURCES
+		SAFE_DELETE(data);
+#endif//USE_EMBEDDED_RESOURCES
+	}
 	void Create(int _w, int _h, const char* fname)
 	{
 		assert(!data);
 		w = _w; h = _h;
+#ifdef USE_EMBEDDED_RESOURCES
+		data = spxtrm4f;
+#else//USE_EMBEDDED_RESOURCES
 		FILE* f = fopen(xIo::ResourcePath(fname), "rb");
 		assert(f);
 		int size = 8 * 256;
 		data = new byte[size];
 		fread(data, 1, size, f);
 		fclose(f);
+#endif//USE_EMBEDDED_RESOURCES
 	}
 	void Draw(int _char, const ePoint& p)
 	{
