@@ -121,6 +121,7 @@ void eKeys::Update()
 
 	UpdateKey(K_BUTTON_SELECT, 'm'); //menu dialog
 	UpdateKey(K_BUTTON_START, 'k'); //keys dialog
+	UpdateKey(K_POWER, 'p'); //profiler
 }
 
 void UpdateKeys() {	static eKeys keys; keys.Update(); }

@@ -21,10 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform.h"
 #include "../../ui/ui.h"
 #include "../../tools/options.h"
+#include "../../tools/profiler.h"
 
 #include <dingoo/jz4740.h>
 #include <dingoo/cache.h>
 #include <dingoo/slcd.h>
+
+PROFILER_DECLARE(draw);
+PROFILER_DECLARE(flip);
 
 void* g_pGameDecodeBuf = NULL;
 
@@ -53,10 +57,6 @@ class eVideo
 public:
 	eVideo() : frame(NULL), frame_back(NULL), ray_sync(false)
 	{
-		Set(0x2b, 0x000d);	//max refresh rate
-		Set(0x20, 0);
-		Set(0x21, 0);
-		Set(0x22);			//write to GRAM
 		frame = (word*)_lcd_get_frame();
 		frame_back = (word*)g_pGameDecodeBuf;
 
@@ -77,17 +77,16 @@ public:
 			int mirr = op_ray_sync;
 			mirr = mirr ? mirr - 1 : 0;
 			Set(0x03, 0x1048|(mirr&3 << 4)); //entry mode restore
+			Set(0x2b, 0x000d);	//default refresh rate
+			Set(0x20, 0);
+			Set(0x21, 0);
+			Set(0x22);			//write to GRAM
 		}
-		Set(0x2b, 0x000d);	//default refresh rate
-		Set(0x20, 0);
-		Set(0x21, 0);
-		Set(0x22);			//write to GRAM
 	}
 	void Flip();
 	void Update();
 protected:
 	void Set(dword cmd, int data = -1);
-	word* FrameBack() { return frame_back; }
 	enum { BRIGHTNESS = 190, BRIGHT_INTENSITY = 65 };
 	inline dword BGR565(byte r, byte g, byte b) const { return (((r&~7) << 8)|((g&~3) << 3)|(b >> 3)); }
 protected:
@@ -114,42 +113,54 @@ void eVideo::Set(dword cmd, int data)
 }
 void eVideo::Flip()
 {
-	word* tmp = frame;
-	frame = frame_back;
-	frame_back = tmp;
-
+	PROFILER_SECTION(flip);
 	__dcache_writeback_all();
+	if(ray_sync)
+	{
+		word* tmp = frame;
+		frame = frame_back;
+		frame_back = tmp;
 
-	while(!(REG_DMAC_DCCSR(0)&DMAC_DCCSR_TT));	// Wait for transfer terminated bit
-	REG_SLCD_CTRL = 1;							// Enable DMA on the SLCD
-	REG_DMAC_DCCSR(0) = 0;						// Disable DMA channel while configuring
-	REG_DMAC_DRSR(0) = DMAC_DRSR_RS_SLCD;		// DMA request source is SLCD
-	REG_DMAC_DSAR(0) = (dword)frame&0x1fffffff;	// Set source, target and count
-	REG_DMAC_DTAR(0) = SLCD_FIFO&0x1fffffff;
-	REG_DMAC_DTCR(0) = (320*240*2)/16;
+		while(!(REG_DMAC_DCCSR(0)&DMAC_DCCSR_TT));	// Wait for transfer terminated bit
+		REG_SLCD_CTRL = 1;							// Enable DMA on the SLCD
+		REG_DMAC_DCCSR(0) = 0;						// Disable DMA channel while configuring
+		REG_DMAC_DRSR(0) = DMAC_DRSR_RS_SLCD;		// DMA request source is SLCD
+		REG_DMAC_DSAR(0) = (dword)frame&0x1fffffff;	// Set source, target and count
+		REG_DMAC_DTAR(0) = SLCD_FIFO&0x1fffffff;
+		REG_DMAC_DTCR(0) = (320*240*2)/16;
 
-	// Source address increment, source width 32 bit,
-	// destination width 16 bit, data unit size 16 bytes,
-	// block transfer mode, no interrupt
-	REG_DMAC_DCMD(0) = DMAC_DCMD_SAI|DMAC_DCMD_SWDH_32
-		|DMAC_DCMD_DWDH_16|DMAC_DCMD_DS_16BYTE|DMAC_DCMD_TM;
+		// Source address increment, source width 32 bit,
+		// destination width 16 bit, data unit size 16 bytes,
+		// block transfer mode, no interrupt
+		REG_DMAC_DCMD(0) = DMAC_DCMD_SAI|DMAC_DCMD_SWDH_32
+			|DMAC_DCMD_DWDH_16|DMAC_DCMD_DS_16BYTE|DMAC_DCMD_TM;
 
-	REG_DMAC_DCCSR(0) |= DMAC_DCCSR_NDES;		// No DMA descriptor used
-	REG_DMAC_DCCSR(0) |= DMAC_DCCSR_EN;			// Set enable bit to start DMA
+		REG_DMAC_DCCSR(0) |= DMAC_DCCSR_NDES;		// No DMA descriptor used
+		REG_DMAC_DCCSR(0) |= DMAC_DCCSR_EN;			// Set enable bit to start DMA
+	}
+	else
+	{
+		_lcd_set_frame();
+	}
 }
 void eVideo::Update()
 {
+	PROFILER_SECTION(draw);
 	byte* src = (byte*)Handler()->VideoData();
 	dword* src_ui = (dword*)Handler()->VideoDataUI();
-	word* dst = FrameBack();
+	word* dst = ray_sync ? frame_back : frame;
 	int mirr = op_ray_sync;
 	if(mirr && !ray_sync)
 	{
-		ray_sync = true;
+		Set(0x2b, 0x000d);	//max refresh rate
+		Set(0x20, 0);
+		Set(0x21, 0);
+		Set(0x22);			//write to GRAM
 		Set(0x03, 0x1070);	//entry mode default
 		Set(0x20, 0);
 		Set(0x21, 0);
 		Set(0x22);			//write to GRAM
+		ray_sync = true;
 	}
 	mirr = mirr ? mirr - 1 : 0;
 	bool mirr_h = mirr & 1;
