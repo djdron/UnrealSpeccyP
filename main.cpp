@@ -197,8 +197,10 @@ static struct eSpeccyHandler : public eHandler
 	{
 		char type[xIo::MAX_PATH_LEN];
 		GetFileType(type, name);
+#ifdef USE_ZIP
 		if(!strcmp(type, "zip"))
 			return true;
+#endif//USE_ZIP
 		eFileType* t = eFileType::Find(type);
 		return t && t->AbleOpen();
 	}
