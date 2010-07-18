@@ -47,7 +47,6 @@ void WaitTimer();
 void UpdateKeys();
 void UpdateSound();
 void UpdateVideo();
-void FlipVideo();
 
 void Loop()
 {
@@ -55,7 +54,6 @@ void Loop()
 	{
 		if(!Handler()->FullSpeed())
 			WaitTimer();
-		FlipVideo();
 		UpdateSound();
 		UpdateKeys();
 		Handler()->OnLoop();

@@ -55,11 +55,9 @@ static struct eOptionRaySync : public xOptions::eOptionInt
 class eVideo
 {
 public:
-	eVideo() : frame(NULL), frame_back(NULL), ray_sync(false)
+	eVideo() : frame(NULL), ray_sync(false)
 	{
 		frame = (word*)_lcd_get_frame();
-		frame_back = (word*)g_pGameDecodeBuf;
-
 		for(int c = 0; c < 16; ++c)
 		{
 			byte i = c&8 ? BRIGHTNESS + BRIGHT_INTENSITY : BRIGHTNESS;
@@ -76,8 +74,8 @@ public:
 		{
 			int mirr = op_ray_sync;
 			mirr = mirr ? mirr - 1 : 0;
-			Set(0x03, 0x1048|(mirr&3 << 4)); //entry mode restore
 			Set(0x2b, 0x000d);	//default refresh rate
+			Set(0x03, 0x1048|(mirr&3 << 4)); //entry mode restore
 			Set(0x20, 0);
 			Set(0x21, 0);
 			Set(0x22);			//write to GRAM
@@ -91,7 +89,6 @@ protected:
 	inline dword BGR565(byte r, byte g, byte b) const { return (((r&~7) << 8)|((g&~3) << 3)|(b >> 3)); }
 protected:
 	word*	frame;
-	word*	frame_back;
 	word	colors565[16];
 	dword	colors888[16];
 	bool	ray_sync;
@@ -115,47 +112,18 @@ void eVideo::Flip()
 {
 	PROFILER_SECTION(flip);
 	__dcache_writeback_all();
-	if(ray_sync)
-	{
-		word* tmp = frame;
-		frame = frame_back;
-		frame_back = tmp;
-
-		while(!(REG_DMAC_DCCSR(0)&DMAC_DCCSR_TT));	// Wait for transfer terminated bit
-		REG_SLCD_CTRL = 1;							// Enable DMA on the SLCD
-		REG_DMAC_DCCSR(0) = 0;						// Disable DMA channel while configuring
-		REG_DMAC_DRSR(0) = DMAC_DRSR_RS_SLCD;		// DMA request source is SLCD
-		REG_DMAC_DSAR(0) = (dword)frame&0x1fffffff;	// Set source, target and count
-		REG_DMAC_DTAR(0) = SLCD_FIFO&0x1fffffff;
-		REG_DMAC_DTCR(0) = (320*240*2)/16;
-
-		// Source address increment, source width 32 bit,
-		// destination width 16 bit, data unit size 16 bytes,
-		// block transfer mode, no interrupt
-		REG_DMAC_DCMD(0) = DMAC_DCMD_SAI|DMAC_DCMD_SWDH_32
-			|DMAC_DCMD_DWDH_16|DMAC_DCMD_DS_16BYTE|DMAC_DCMD_TM;
-
-		REG_DMAC_DCCSR(0) |= DMAC_DCCSR_NDES;		// No DMA descriptor used
-		REG_DMAC_DCCSR(0) |= DMAC_DCCSR_EN;			// Set enable bit to start DMA
-	}
-	else
-	{
-		_lcd_set_frame();
-	}
+	_lcd_set_frame();
 }
 void eVideo::Update()
 {
 	PROFILER_SECTION(draw);
 	byte* src = (byte*)Handler()->VideoData();
 	dword* src_ui = (dword*)Handler()->VideoDataUI();
-	word* dst = ray_sync ? frame_back : frame;
+	word* dst = frame;
 	int mirr = op_ray_sync;
 	if(mirr && !ray_sync)
 	{
 		Set(0x2b, 0x000d);	//max refresh rate
-		Set(0x20, 0);
-		Set(0x21, 0);
-		Set(0x22);			//write to GRAM
 		Set(0x03, 0x1070);	//entry mode default
 		Set(0x20, 0);
 		Set(0x21, 0);
@@ -197,10 +165,12 @@ void eVideo::Update()
 	}
 }
 
-static eVideo& Video() { static eVideo video; return video; }
-
-void UpdateVideo() { Video().Update(); }
-void FlipVideo() { Video().Flip(); }
+void UpdateVideo()
+{
+	static eVideo video;
+	video.Update();
+	video.Flip();
+}
 
 }
 //namespace xPlatform
