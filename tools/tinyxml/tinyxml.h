@@ -71,11 +71,11 @@ extern "C" int dingoo_sscanf(const char * str, const char * format, ...);
 #endif//_DINGOO
 
 #ifdef TIXML_SAFE
-	#if defined(_MSC_VER) && (_MSC_VER >= 1400 )
+	#if defined(_MSC_VER) && (_MSC_VER >= 1400) && !defined(_WIN32_WCE)
 		// Microsoft visual studio, version 2005 and higher.
 		#define TIXML_SNPRINTF _snprintf_s
 		#define TIXML_SSCANF   sscanf_s
-	#elif defined(_MSC_VER) && (_MSC_VER >= 1200 )
+	#elif defined(_MSC_VER) && (_MSC_VER >= 1200)
 		// Microsoft visual studio, version 6 and higher.
 		//#pragma message( "Using _sn* functions." )
 		#define TIXML_SNPRINTF _snprintf

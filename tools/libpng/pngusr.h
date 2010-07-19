@@ -20,6 +20,9 @@
 #define PNG_NO_ERROR_TEXT
 #define png_error(s1,s2) png_err(s1)
 #define png_chunk_error(s1,s2) png_err(s1)
+#ifdef _WIN32_WCE
+#define PNG_ABORT()
+#endif
 
 #define PNG_NO_WRITE_BACKGROUND
 #define PNG_NO_WRITE_BGR

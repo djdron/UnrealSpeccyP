@@ -74,7 +74,7 @@
 
 #if defined(WIN32) || defined(_Windows) || defined(_WINDOWS) || \
     defined(_WIN32) || defined(__WIN32__)
-#  include <windows.h>  /* defines _WINDOWS_ macro */
+//#  include <windows.h>  /* defines _WINDOWS_ macro */
 /* I have no idea why is this necessary... */
 #  ifdef _MSC_VER
 #    include <malloc.h>

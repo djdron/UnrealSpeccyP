@@ -361,7 +361,11 @@ typedef uLong FAR uLongf;
 #endif
 
 #ifdef STDC
+#ifndef _WIN32_WCE
 #  include <sys/types.h>    /* for off_t */
+#else
+#define NO_ERRNO_H
+#endif
 #endif
 
 #define USE_FILE32API
