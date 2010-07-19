@@ -35,6 +35,9 @@ void SetLastFolder(const char* path);
 bool OpQuit();
 void OpQuit(bool v);
 
+eDrive OpDrive();
+void OpDrive(eDrive d);
+
 eJoystick OpJoystick();
 void OpJoystick(eJoystick v);
 dword OpJoyKeyFlags();

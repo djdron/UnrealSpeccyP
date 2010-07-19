@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "platform/custom_ui/ui_main.h"
 #include "tools/profiler.h"
 #include "tools/options.h"
+#include "options_common.h"
 
 #ifdef USE_ZIP
 #include "tools/zlib/unzip.h"
@@ -65,7 +66,7 @@ struct eFileType : public eList<eFileType>
 
 static struct eSpeccyHandler : public eHandler
 {
-	eSpeccyHandler() : speccy(NULL), video_paused(0), drive_for_open(0) {}
+	eSpeccyHandler() : speccy(NULL), video_paused(0) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit()
 	{
@@ -331,7 +332,6 @@ static struct eSpeccyHandler : public eHandler
 	xUi::eDesktop* ui_desktop;
 #endif//USE_UI
 	int video_paused;
-	int drive_for_open;
 
 	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];
@@ -378,7 +378,7 @@ static struct eFileTypeTRD : public eFileType
 {
 	virtual bool Open(const void* data, size_t data_size)
 	{
-		return sh.speccy->Device<eWD1793>()->Open(Type(), sh.drive_for_open, data, data_size);
+		return sh.speccy->Device<eWD1793>()->Open(Type(), OpDrive(), data, data_size);
 	}
 	virtual const char* Type() { return "trd"; }
 } ft_trd;

@@ -188,6 +188,9 @@ void SetLastFolder(const char* name)
 bool OpQuit() { return op_quit; }
 void OpQuit(bool v) { op_quit.Set(v); }
 
+eDrive OpDrive() { return (eDrive)(int)op_drive; }
+void OpDrive(eDrive d) { op_drive.Set(d); }
+
 eJoystick OpJoystick() { return (eJoystick)(int)op_joy; }
 void OpJoystick(eJoystick v) { op_joy.Set(v); }
 dword OpJoyKeyFlags()
