@@ -65,7 +65,7 @@ void eMainDialog::Update()
 	{
 		op_open_file.on = false;
 		Clear();
-		eDialog* d = new eFileOpenDialog(xPlatform::LastFolder());
+		eDialog* d = new eFileOpenDialog(xPlatform::OpLastFolder());
 		d->Id(D_FILE_OPEN);
 		Insert(d);
 	}
@@ -123,7 +123,6 @@ void eMainDialog::OnNotify(byte n, byte from)
 		{
 			eFileOpenDialog* d = (eFileOpenDialog*)*childs;
 			Handler()->OnOpenFile(d->Selected());
-			xPlatform::SetLastFolder(d->Selected());
 			clear = true;
 		}
 		break;

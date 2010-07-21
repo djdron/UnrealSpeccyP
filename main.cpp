@@ -249,6 +249,7 @@ static struct eSpeccyHandler : public eHandler
 #endif//USE_ZIP
 	virtual bool OnOpenFile(const char* name)
 	{
+		OpLastFile(name);
 		char type[xIo::MAX_PATH_LEN];
 		GetFileType(type, name);
 #ifdef USE_ZIP
@@ -280,6 +281,7 @@ static struct eSpeccyHandler : public eHandler
 	}
 	virtual bool OnSaveFile(const char* name)
 	{
+		OpLastFile(name);
 		char type[xIo::MAX_PATH_LEN];
 		GetFileType(type, name);
 		eFileType* t = eFileType::Find(type);

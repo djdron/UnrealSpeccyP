@@ -426,7 +426,7 @@ void TDCControl::MrccatoCommand(TRemConCoreApiOperationId id, TRemConCoreApiButt
 void TDCControl::OpenFile()
 {
 	TFileName path;
-	CStrToFileName(LastFolder(), &path);
+	CStrToFileName(OpLastFolder(), &path);
 	for(;;)
 	{
 		if(!path.Length())
@@ -449,7 +449,6 @@ void TDCControl::OpenFile()
 		{
 			const char* name = FileNameToCStr(path);
 			Handler()->OnOpenFile(name);
-			SetLastFolder(name);
 			break;
 		}
 		path.Zero();

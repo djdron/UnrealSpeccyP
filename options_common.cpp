@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "platform/platform.h"
+#include "platform/io.h"
 #include "tools/options.h"
 #include "ui/ui.h"
 #include "options_common.h"
@@ -25,6 +26,51 @@ namespace xPlatform
 {
 
 #ifdef USE_UI
+
+struct eOptionState : public xOptions::eOptionB
+{
+	eOptionState() { storeable = false; }
+	const char* SnapshotName() const
+	{
+		static char name[xIo::MAX_PATH_LEN];
+		strcpy(name, OpLastFile());
+		int l = strlen(name);
+		if(!l || name[l - 1] == '/' || name[l - 1] == '\\')
+			return NULL;
+		char* e = name + l;
+		while(e > name && *e != '.' && *e != '\\' && *e != '/')
+			--e;
+		if(*e != '.')
+			return NULL;
+		*e = '\0';
+		strcat(name, ".sna");
+		return name;
+	}
+};
+
+static struct eOptionSaveState : public eOptionState
+{
+	virtual const char* Name() const { return "save state"; }
+	virtual void Change(bool next = true)
+	{
+		const char* name = SnapshotName();
+		if(name)
+			Handler()->OnSaveFile(name);
+	}
+	virtual int Order() const { return 1; }
+} op_save_state;
+
+static struct eOptionLoadState : public eOptionState
+{
+	virtual const char* Name() const { return "load state"; }
+	virtual void Change(bool next = true)
+	{
+		const char* name = SnapshotName();
+		if(name)
+			Handler()->OnOpenFile(name);
+	}
+	virtual int Order() const { return 2; }
+} op_load_state;
 
 static struct eOptionTape : public xOptions::eOptionInt
 {
@@ -164,18 +210,19 @@ static struct eOptionQuit : public xOptions::eOptionBool
 	virtual const char** Values() const { return NULL; }
 } op_quit;
 
-static struct eOptionLastFolder : public xOptions::eOptionString
+static struct eOptionLastFile : public xOptions::eOptionString
 {
-	eOptionLastFolder() { customizable = false; }
-	virtual const char* Name() const { return "last folder"; }
-} op_last_folder;
+	eOptionLastFile() { customizable = false; }
+	virtual const char* Name() const { return "last file"; }
+} op_last_file;
 
-const char* LastFolder() { return op_last_folder; }
-void SetLastFolder(const char* name)
+const char* OpLastFile() { return op_last_file; }
+const char* OpLastFolder()
 {
-	op_last_folder.Set(name);
-	const char* n = op_last_folder;
-	char* n_end = (char*)(n + strlen(n));
+	static char lf[xIo::MAX_PATH_LEN];
+	strcpy(lf, OpLastFile());
+	char* n = lf;
+	char* n_end = n + strlen(n);
 	while(n_end > n && *n_end != '\\' && *n_end != '/')
 		--n_end;
 	if(*n_end == '\\' || *n_end == '/')
@@ -183,7 +230,9 @@ void SetLastFolder(const char* name)
 		++n_end;
 		*n_end = '\0';
 	}
+	return lf;
 }
+void OpLastFile(const char* name) { op_last_file.Set(name); }
 
 bool OpQuit() { return op_quit; }
 void OpQuit(bool v) { op_quit.Set(v); }

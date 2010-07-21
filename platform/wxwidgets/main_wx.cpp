@@ -486,7 +486,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 #endif//_MAC
 	void OnOpenFile(wxCommandEvent& event)
 	{
-		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(LastFolder()));
+		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(OpLastFolder()));
 		fd.SetWildcard(
 				L"Supported files|*.sna;*.z80;*.trd;*.scl;*.tap;*.csw;*.tzx;*.zip;"
 								L"*.SNA;*.Z80;*.TRD;*.SCL;*.TAP;*.CSW;*.TZX;*.ZIP|"
@@ -498,7 +498,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 			);
 		if(fd.ShowModal() == wxID_OK)
 		{
-			SetLastFolder(wxConvertWX2MB(fd.GetPath().c_str()));
 			if(Handler()->OnOpenFile(wxConvertWX2MB(fd.GetPath().c_str())))
 				SetStatusText(_("File open OK"));
 			else
@@ -508,7 +507,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	void OnSaveFile(wxCommandEvent& event)
 	{
 		Handler()->VideoPaused(true);
-		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(LastFolder()), wxEmptyString, wxFileSelectorDefaultWildcardStr, wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
+		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(OpLastFolder()), wxEmptyString, wxFileSelectorDefaultWildcardStr, wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
 		fd.SetWildcard(
 				L"Snapshot files (*.sna)|*.sna;*.SNA|"
 				L"Screenshot files (*.png)|*.png;*.PNG"
@@ -526,7 +525,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 				SetStatusText(_("File save OK"));
 			else
 				SetStatusText(_("File save FAILED"));
-			SetLastFolder(wxConvertWX2MB(path.c_str()));
 		}
 		Handler()->VideoPaused(false);
 	}

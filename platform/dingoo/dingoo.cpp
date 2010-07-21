@@ -28,10 +28,10 @@ namespace xPlatform
 
 bool Init(const char* path)
 {
-	SetLastFolder("A:\\GAME\\");
-//	xIo::SetResourcePath(LastFolder());
-	xIo::SetProfilePath(LastFolder());
-//	xLog::SetLogPath(LastFolder());
+	OpLastFile("A:\\GAME\\");
+//	xIo::SetResourcePath(OpLastFolder());
+	xIo::SetProfilePath(OpLastFolder());
+//	xLog::SetLogPath(OpLastFolder());
 	Handler()->OnInit();
 #ifdef SIM_VERSION
 	Handler()->OnOpenFile(path);
