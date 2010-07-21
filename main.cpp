@@ -360,6 +360,39 @@ static struct eOption48K : public xOptions::eOptionBool
 	virtual int Order() const { return 65; }
 } op_48k;
 
+static struct eOptionAYStereo : public xOptions::eOptionInt
+{
+	eOptionAYStereo() { Set(AS_ABC); }
+	enum eAYStereo { AS_FIRST, AS_ABC = AS_FIRST, AS_ACB, AS_BAC, AS_BCA, AS_CAB, AS_CBA, AS_MONO, AS_LAST };
+	virtual const char* Name() const { return "ay stereo"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "abc", "acb", "bac", "bca", "cab", "cba", "mono", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		eOptionInt::Change(AS_FIRST, AS_LAST, next);
+		Apply();
+	}
+	virtual void Apply()
+	{
+		eAY* ay = sh.speccy->Device<eAY>();
+		const SNDCHIP_PANTAB* sndr_pan = SNDR_PAN_MONO;
+		switch(self)
+		{
+		case AS_ABC: sndr_pan = SNDR_PAN_ABC; break;
+		case AS_ACB: sndr_pan = SNDR_PAN_ACB; break;
+		case AS_BAC: sndr_pan = SNDR_PAN_BAC; break;
+		case AS_BCA: sndr_pan = SNDR_PAN_BCA; break;
+		case AS_CAB: sndr_pan = SNDR_PAN_CAB; break;
+		case AS_CBA: sndr_pan = SNDR_PAN_CBA; break;
+		}
+		ay->SetVolumes(0x7FFF, SNDR_VOL_AY, sndr_pan);
+	}
+	virtual int Order() const { return 25; }
+}op_ay_stereo;
+
 static struct eFileTypeZ80 : public eFileType
 {
 	virtual bool Open(const void* data, size_t data_size)
