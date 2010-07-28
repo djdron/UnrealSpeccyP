@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define	__Z80_H__
 
 #include "z80_op_tables.h"
+#include "../platform/endian.h"
 
 #pragma once
 
@@ -31,16 +32,33 @@ class eDevices;
 namespace xZ80
 {
 
-#define DECLARE_REG16(reg, low, high)	\
-union	\
-{	\
-	struct	\
-	{		\
-		byte low;	\
-		byte high;	\
-	};	\
-	dword reg;	\
+#ifdef USE_BIG_ENDIAN
+#define DECLARE_REG16(reg, low, high)\
+union\
+{\
+	struct\
+	{\
+		byte reg##xx;\
+		byte reg##x;\
+		byte high;\
+		byte low;\
+	};\
+	dword reg;\
 };
+#else//USE_BIG_ENDIAN
+#define DECLARE_REG16(reg, low, high)\
+union\
+{\
+	struct\
+	{\
+		byte low;\
+		byte high;\
+		byte reg##x;\
+		byte reg##xx;\
+	};\
+	dword reg;\
+};
+#endif//USE_BIG_ENDIAN
 
 enum eFlags
 {

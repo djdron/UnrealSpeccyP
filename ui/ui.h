@@ -61,7 +61,11 @@ struct eRGBAColor
 	eRGBAColor& operator/=(byte v) { r /= v; g /= v; b /= v; return self; }
 	union
 	{
+#ifdef USE_BIG_ENDIAN
+		struct { byte a,b,g,r; };
+#else//USE_BIG_ENDIAN
 		struct { byte r,g,b,a; };
+#endif//USE_BIG_ENDIAN
 		dword rgba;
 	};
 };

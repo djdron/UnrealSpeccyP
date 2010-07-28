@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../devices/memory.h"
 #include "../devices/ula.h"
 #include "../speccy.h"
+#include "../platform/endian.h"
 
 #include "snapshot.h"
 
@@ -81,18 +82,18 @@ bool eZ80Accessor::SetState(const eSnapshot_SNA* s, size_t buf_size)
 	if(!sna48 && !sna128)
 		return false;
 
-	alt.af = s->alt_af;
-	alt.bc = s->alt_bc;
-	alt.de = s->alt_de;
-	alt.hl = s->alt_hl;
-	af = s->af;
-	bc = s->bc;
-	de = s->de;
-	hl = s->hl;
-	ix = s->ix;
-	iy = s->iy;
-	sp = s->sp;
-	pc = s->pc;
+	alt.af = WordLE(&s->alt_af);
+	alt.bc = WordLE(&s->alt_bc);
+	alt.de = WordLE(&s->alt_de);
+	alt.hl = WordLE(&s->alt_hl);
+	af = WordLE(&s->af);
+	bc = WordLE(&s->bc);
+	de = WordLE(&s->de);
+	hl = WordLE(&s->hl);
+	ix = WordLE(&s->ix);
+	iy = WordLE(&s->iy);
+	sp = WordLE(&s->sp);
+	pc = WordLE(&s->pc);
 	i = s->i;
 	r_low = s->r;
 	r_hi = s->r & 0x80;
@@ -136,6 +137,20 @@ size_t eZ80Accessor::StoreState(eSnapshot_SNA* s)
 	s->ix = ix; s->iy = iy; s->sp = sp; s->pc = pc;
 	s->i = i; s->r = (r_low & 0x7F)+r_hi; s->im = im;
 	s->iff1 = iff1 ? 0xFF : 0;
+
+	SwapEndian(&s->alt_af);
+	SwapEndian(&s->alt_bc);
+	SwapEndian(&s->alt_de);
+	SwapEndian(&s->alt_hl);
+	SwapEndian(&s->af);
+	SwapEndian(&s->bc);
+	SwapEndian(&s->de);
+	SwapEndian(&s->hl);
+	SwapEndian(&s->ix);
+	SwapEndian(&s->iy);
+	SwapEndian(&s->sp);
+	SwapEndian(&s->pc);
+
 	byte p7FFD = memory->Page(3) - eMemory::P_RAM0;
 	if(!devices->Get<eUla>()->FirstScreen())
 		p7FFD |= 0x08;
@@ -183,7 +198,9 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 	word reg_pc = s->pc;
 	if(reg_pc == 0)
 	{ // 2.01
-		ptr += 2 + s->len;
+		word len = s->len;
+		SwapEndian(&len);
+		ptr += 2 + len;
 		reg_pc = s->newpc;
 		while(ptr < (byte*)s + buf_size)
 		{
@@ -231,10 +248,11 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 		model48k = true;
 	}
 	a = s->a, f = s->f;
-	bc = s->bc, de = s->de, hl = s->hl;
-	alt.bc = s->bc1, alt.de = s->de1, alt.hl = s->hl1;
+	bc = WordLE(&s->bc), de = WordLE(&s->de), hl = WordLE(&s->hl);
+	alt.bc = WordLE(&s->bc1), alt.de = WordLE(&s->de1), alt.hl = WordLE(&s->hl1);
 	alt.a = s->a1, alt.f = s->f1;
-	pc = reg_pc, sp = s->sp; ix = s->ix, iy = s->iy;
+	pc = WordLE(&reg_pc), sp = WordLE(&s->sp); ix = WordLE(&s->ix), iy = WordLE(&s->iy);
+
 	i = s->i, r_low = s->r & 0x7F;
 	r_hi = ((flags & 1) << 7);
 	byte pFE = (flags >> 1) & 7;
