@@ -82,18 +82,18 @@ bool eZ80Accessor::SetState(const eSnapshot_SNA* s, size_t buf_size)
 	if(!sna48 && !sna128)
 		return false;
 
-	alt.af = WordLE(&s->alt_af);
-	alt.bc = WordLE(&s->alt_bc);
-	alt.de = WordLE(&s->alt_de);
-	alt.hl = WordLE(&s->alt_hl);
-	af = WordLE(&s->af);
-	bc = WordLE(&s->bc);
-	de = WordLE(&s->de);
-	hl = WordLE(&s->hl);
-	ix = WordLE(&s->ix);
-	iy = WordLE(&s->iy);
-	sp = WordLE(&s->sp);
-	pc = WordLE(&s->pc);
+	alt.af = SwapWord(&s->alt_af);
+	alt.bc = SwapWord(&s->alt_bc);
+	alt.de = SwapWord(&s->alt_de);
+	alt.hl = SwapWord(&s->alt_hl);
+	af = SwapWord(&s->af);
+	bc = SwapWord(&s->bc);
+	de = SwapWord(&s->de);
+	hl = SwapWord(&s->hl);
+	ix = SwapWord(&s->ix);
+	iy = SwapWord(&s->iy);
+	sp = SwapWord(&s->sp);
+	pc = SwapWord(&s->pc);
 	i = s->i;
 	r_low = s->r;
 	r_hi = s->r & 0x80;
@@ -248,10 +248,10 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 		model48k = true;
 	}
 	a = s->a, f = s->f;
-	bc = WordLE(&s->bc), de = WordLE(&s->de), hl = WordLE(&s->hl);
-	alt.bc = WordLE(&s->bc1), alt.de = WordLE(&s->de1), alt.hl = WordLE(&s->hl1);
+	bc = SwapWord(&s->bc), de = SwapWord(&s->de), hl = SwapWord(&s->hl);
+	alt.bc = SwapWord(&s->bc1), alt.de = SwapWord(&s->de1), alt.hl = SwapWord(&s->hl1);
 	alt.a = s->a1, alt.f = s->f1;
-	pc = WordLE(&reg_pc), sp = WordLE(&s->sp); ix = WordLE(&s->ix), iy = WordLE(&s->iy);
+	pc = SwapWord(&reg_pc), sp = SwapWord(&s->sp); ix = SwapWord(&s->ix), iy = SwapWord(&s->iy);
 
 	i = s->i, r_low = s->r & 0x7F;
 	r_hi = ((flags & 1) << 7);

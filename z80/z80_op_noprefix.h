@@ -201,7 +201,7 @@ void Op26() { // ld h,nn
 }
 void Op27()
 { // daa
-	af = WordLE((const word*)daatab+(a+0x100*((f & 3) + ((f >> 2) & 4)))*2);
+	af = SwapWord((const word*)daatab+(a+0x100*((f & 3) + ((f >> 2) & 4)))*2);
 }
 void Op28() { // jr z,rr
 	if ((f & ZF)) {
