@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xZ80
 {
 
-extern const byte* daatab;
+extern const word* daatab;
 extern const byte* incf;
 extern const byte* decf;
 extern const byte* rlcf;
