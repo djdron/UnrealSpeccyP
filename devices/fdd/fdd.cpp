@@ -251,7 +251,7 @@ bool eFdd::WriteSector(int cyl, int side, int sec, const byte* data)
 		return false;
 	int len = s->Len();
 	memcpy(s->data, data, len);
-	SectorDataW(s, len, SWAP_WORD(Crc(s->data - 1, len + 1)));
+	SectorDataW(s, len, swap_byte_order(Crc(s->data - 1, len + 1)));
 	return true;
 }
 //=============================================================================

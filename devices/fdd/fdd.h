@@ -19,9 +19,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef	__FDD_H__
 #define	__FDD_H__
 
+#include "../../platform/endian.h"
+
 #pragma once
 
-#define SWAP_WORD(x) ((((x) & 0xff) << 8) | ((word)(x) >> 8))
+#ifdef USE_BIG_ENDIAN
+inline word SwapBE(const word& v) { return v; }
+#else//USE_BIG_ENDIAN
+inline word SwapBE(const word& v) { return swap_byte_order(v); }
+#endif//USE_BIG_ENDIAN
+
 //*****************************************************************************
 //	eUdi
 //-----------------------------------------------------------------------------
@@ -53,8 +60,8 @@ public:
 			int Side() const	{ return id[ID_SIDE]; }
 			int Sec() const		{ return id[ID_SEC]; }
 			int Len() const		{ return 128 << (id[ID_LEN] & 3); }
-			word IdCrc() const	{ return SWAP_WORD(*(word*)(id + ID_AMOUNT)); }
-			word DataCrc() const{ return SWAP_WORD(*(word*)(data + Len())); }
+			word IdCrc() const	{ return SwapBE(*(word*)(id + ID_AMOUNT)); }
+			word DataCrc() const{ return SwapBE(*(word*)(data + Len())); }
 			byte*	id;
 			byte*	data;
 		};
