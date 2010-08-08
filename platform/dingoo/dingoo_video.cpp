@@ -55,7 +55,7 @@ static struct eOptionRaySync : public xOptions::eOptionInt
 class eVideo
 {
 public:
-	eVideo() : frame(NULL), ray_sync(false)
+	eVideo() : frame(NULL), ray_sync(false), mirr(0)
 	{
 		frame = (word*)_lcd_get_frame();
 		for(int c = 0; c < 16; ++c)
@@ -72,10 +72,9 @@ public:
 	{
 		if(ray_sync)
 		{
-			int mirr = op_ray_sync;
-			mirr = mirr ? mirr - 1 : 0;
 			Set(0x2b, 0x000d);	//default refresh rate
-			Set(0x03, 0x1048|(mirr&3 << 4)); //entry mode restore
+			int entry = 0x1048|((((~mirr&2) >> 1)|((~mirr&1) << 1)) << 4);
+			Set(0x03, entry);	//entry mode restore
 			Set(0x20, 0);
 			Set(0x21, 0);
 			Set(0x22);			//write to GRAM
@@ -92,6 +91,7 @@ protected:
 	word	colors565[16];
 	dword	colors888[16];
 	bool	ray_sync;
+	int		mirr;
 };
 
 void eVideo::Set(dword cmd, int data)
@@ -120,7 +120,7 @@ void eVideo::Update()
 	byte* src = (byte*)Handler()->VideoData();
 	dword* src_ui = (dword*)Handler()->VideoDataUI();
 	word* dst = frame;
-	int mirr = op_ray_sync;
+	mirr = op_ray_sync;
 	if(mirr && !ray_sync)
 	{
 		Set(0x2b, 0x000d);	//max refresh rate
