@@ -35,14 +35,14 @@ void* g_pGameDecodeBuf = NULL;
 namespace xPlatform
 {
 
-enum eRaySync { RS_FIRST, RS_OFF = RS_FIRST, RS_ON, RS_MIRROR_H, RS_MIRROR_V, RS_MIRROR_HV, RS_LAST };
+enum eRayMirror { RS_FIRST, RS_NONE = RS_FIRST, RS_MIRROR_H, RS_MIRROR_V, RS_MIRROR_HV, RS_LAST };
 
-static struct eOptionRaySync : public xOptions::eOptionInt
+static struct eOptionRayMirror : public xOptions::eOptionInt
 {
-	virtual const char* Name() const { return "ray sync"; }
+	virtual const char* Name() const { return "ray mirror"; }
 	virtual const char** Values() const
 	{
-		static const char* values[] = { "off", "on", "mirror_h", "mirror_v", "mirror_hv", NULL };
+		static const char* values[] = { "hv", "v", "h", "n", NULL };
 		return values;
 	}
 	virtual void Change(bool next = true)
@@ -50,12 +50,18 @@ static struct eOptionRaySync : public xOptions::eOptionInt
 		eOptionInt::Change(RS_FIRST, RS_LAST, next);
 	}
 	virtual int Order() const { return 75; }
+} op_ray_mirror;
+
+static struct eOptionRaySync : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "ray sync"; }
+	virtual int Order() const { return 76; }
 } op_ray_sync;
 
 class eVideo
 {
 public:
-	eVideo() : frame(NULL), ray_sync(false), mirr(0)
+	eVideo() : frame(NULL), ray_mirror(0), ray_sync(false)
 	{
 		frame = (word*)_lcd_get_frame();
 		for(int c = 0; c < 16; ++c)
@@ -71,14 +77,7 @@ public:
 	~eVideo()
 	{
 		if(ray_sync)
-		{
-			Set(0x2b, 0x000d);	//default refresh rate
-			int entry = 0x1048|((((~mirr&2) >> 1)|((~mirr&1) << 1)) << 4);
-			Set(0x03, entry);	//entry mode restore
-			Set(0x20, 0);
-			Set(0x21, 0);
-			Set(0x22);			//write to GRAM
-		}
+			RaySync(RaySyncRestoreEntry());
 	}
 	void Flip();
 	void Update();
@@ -86,12 +85,15 @@ protected:
 	void Set(dword cmd, int data = -1);
 	enum { BRIGHTNESS = 190, BRIGHT_INTENSITY = 65 };
 	inline dword BGR565(byte r, byte g, byte b) const { return (((r&~7) << 8)|((g&~3) << 3)|(b >> 3)); }
+	void	UpdateRayOptions();
+	void	RaySync(dword entry);
+	dword	RaySyncRestoreEntry() const { return 0x1048|((((~ray_mirror&2) >> 1)|((~ray_mirror&1) << 1)) << 4); }
 protected:
 	word*	frame;
 	word	colors565[16];
 	dword	colors888[16];
+	int		ray_mirror;
 	bool	ray_sync;
-	int		mirr;
 };
 
 void eVideo::Set(dword cmd, int data)
@@ -114,23 +116,31 @@ void eVideo::Flip()
 	__dcache_writeback_all();
 	_lcd_set_frame();
 }
+void eVideo::RaySync(dword entry)
+{
+	Set(0x2b, 0x000d);	//max refresh rate
+	Set(0x03, entry);	//entry mode
+	Set(0x20, 0);
+	Set(0x21, 0);
+	Set(0x22);			//write to GRAM
+}
+void eVideo::UpdateRayOptions()
+{
+	ray_mirror = 3 - op_ray_mirror;
+	if(ray_sync != op_ray_sync)
+	{
+		ray_sync = op_ray_sync;
+		RaySync(ray_sync ? 0x1070 : RaySyncRestoreEntry());
+	}
+}
 void eVideo::Update()
 {
 	PROFILER_SECTION(draw);
 	byte* src = (byte*)Handler()->VideoData();
 	dword* src_ui = (dword*)Handler()->VideoDataUI();
 	word* dst = frame;
-	mirr = op_ray_sync;
-	if(mirr && !ray_sync)
-	{
-		Set(0x2b, 0x000d);	//max refresh rate
-		Set(0x03, 0x1070);	//entry mode default
-		Set(0x20, 0);
-		Set(0x21, 0);
-		Set(0x22);			//write to GRAM
-		ray_sync = true;
-	}
-	mirr = mirr ? mirr - 1 : 0;
+	UpdateRayOptions();
+	int mirr = ray_sync ? ray_mirror : 0;
 	bool mirr_h = mirr & 1;
 	bool mirr_v = mirr & 2;
 	int offs_base = !ray_sync ? 0 : mirr_h ? 319 : 0;
