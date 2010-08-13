@@ -55,15 +55,20 @@ static bool StorePNG(eSpeccy* speccy, FILE* png_file)
 
 	png_struct* png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if(!png_ptr)
+	{
+		SAFE_DELETE_ARRAY(png_pixels);
 		return false;
+	}
 	png_info* info_ptr = png_create_info_struct(png_ptr);
 	if(!info_ptr)
 	{
+		SAFE_DELETE_ARRAY(png_pixels);
 		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
 		return false;
 	}
 	if(setjmp(png_jmpbuf(png_ptr)))
 	{
+		SAFE_DELETE_ARRAY(png_pixels);
 		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
 		return false;
 	}
@@ -76,7 +81,7 @@ static bool StorePNG(eSpeccy* speccy, FILE* png_file)
 		row_pointers[i] = png_pixels + i*row_bytes;
 	png_write_image(png_ptr, row_pointers);
 	png_write_end(png_ptr, info_ptr);
-	png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+	png_destroy_write_struct(&png_ptr, &info_ptr);
 
 	SAFE_DELETE_ARRAY(row_pointers);
 	SAFE_DELETE_ARRAY(png_pixels);
