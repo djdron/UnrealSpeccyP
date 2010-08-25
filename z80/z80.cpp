@@ -94,6 +94,8 @@ void eZ80::Step()
 //-----------------------------------------------------------------------------
 void eZ80::Update(int int_len, int* nmi_pending)
 {
+	if(!iff1 && halted)
+		return;
 	haltpos = 0;
 	// INT check separated from main Z80 loop to improve emulation speed
 	while(t < int_len)
@@ -119,13 +121,6 @@ void eZ80::Update(int int_len, int* nmi_pending)
 	{
 		while(t < frame_tacts)
 		{
-			if(halted)
-			{
-				unsigned int st = (frame_tacts - t-1)/4+1;
-				t += 4*st;
-				r_low += st;
-				break;
-			}
 			Step();
 //			if(*nmi_pending)
 //			{
