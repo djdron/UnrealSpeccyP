@@ -84,10 +84,10 @@ void eDeviceSound::AudioDataUse(dword size)
 //=============================================================================
 //	eDeviceSound::SetTimings
 //-----------------------------------------------------------------------------
-void eDeviceSound::SetTimings(dword clock_rate, dword sample_rate)
+void eDeviceSound::SetTimings(dword _clock_rate, dword _sample_rate)
 {
-	eDeviceSound::clock_rate = clock_rate;
-	eDeviceSound::sample_rate = sample_rate;
+	clock_rate = _clock_rate;
+	sample_rate = _sample_rate;
 
 	tick = base_tick = 0;
 	dstpos = dst_start = buffer;

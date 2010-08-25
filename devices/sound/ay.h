@@ -81,7 +81,7 @@ public:
 	virtual void IoRead(word port, byte* v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
 
-	enum CHIP_TYPE { CHIP_AY, CHIP_YM, CHIP_YM2203, CHIP_MAX }; //Dexus
+	enum CHIP_TYPE { CHIP_AY, CHIP_YM, CHIP_MAX };
 	static const char* GetChipName(CHIP_TYPE i);
 
 	void SetChip(CHIP_TYPE type) { chiptype = type; }

@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //-----------------------------------------------------------------------------
 eAY::eAY()
 {
-	bitA = bitB = bitC = 0;
+	bitA = bitB = bitC = bitN = 0;
 	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 	SetChip(CHIP_AY);
 	SetVolumes(0x7FFF, SNDR_VOL_AY, SNDR_PAN_ABC);
@@ -36,7 +36,7 @@ eAY::eAY()
 //-----------------------------------------------------------------------------
 bool eAY::IoRead(word port) const
 {
-	return (port&0xc0ff) == 0xc0fd;
+	return (port&0xC0FF) == 0xC0FD;
 }
 //=============================================================================
 //	eAY::IoWrite
@@ -45,8 +45,10 @@ bool eAY::IoWrite(word port) const
 {
  	if(port&2)
 		return false;
-	if((port&0xc0ff) == 0xc0fd || (port&0xC000) == 0x8000)
+ 	if((port & 0xC0FF) == 0xC0FD)
 		return true;
+ 	if((port & 0xC000) == 0x8000)
+ 		return true;
 	return false;
 }
 //=============================================================================
@@ -61,8 +63,6 @@ void eAY::IoRead(word port, byte* v, int tact)
 //-----------------------------------------------------------------------------
 void eAY::IoWrite(word port, byte v, int tact)
 {
-// 	if(port & 2)
-// 		return;
 	if((port & 0xC0FF) == 0xC0FD)
 	{
 		Select(v);
@@ -233,15 +233,15 @@ byte eAY::Read()
 //=============================================================================
 //	eAY::SetTimings
 //-----------------------------------------------------------------------------
-void eAY::SetTimings(dword system_clock_rate, dword chip_clock_rate, dword sample_rate)
+void eAY::SetTimings(dword _system_clock_rate, dword _chip_clock_rate, dword _sample_rate)
 {
-	chip_clock_rate /= 8;
+	_chip_clock_rate /= 8;
 
-	eAY::system_clock_rate = system_clock_rate;
-	eAY::chip_clock_rate = chip_clock_rate;
+	system_clock_rate = _system_clock_rate;
+	chip_clock_rate = _chip_clock_rate;
 
 	mult_const = (dword)(((qword)chip_clock_rate << MULT_C_1) / system_clock_rate);
-	eInherited::SetTimings(chip_clock_rate, sample_rate);
+	eInherited::SetTimings(_chip_clock_rate, _sample_rate);
 	passed_chip_ticks = passed_clk_ticks = 0;
 	t = 0; ns = 0xFFFF;
 
@@ -261,7 +261,7 @@ void eAY::SetVolumes(dword global_vol, const SNDCHIP_VOLTAB *voltab, const SNDCH
 //-----------------------------------------------------------------------------
 void eAY::_Reset(dword timestamp)
 {
-	for (int i = 0; i < 14; i++)
+	for(int i = 0; i < 14; i++)
 		reg[i] = 0;
 	ApplyRegs(timestamp);
 }
@@ -270,8 +270,10 @@ void eAY::_Reset(dword timestamp)
 //-----------------------------------------------------------------------------
 void eAY::ApplyRegs(dword timestamp)
 {
-	for (byte r = 0; r < 16; r++) {
-		Select(r); byte p = reg[r];
+	for(byte r = 0; r < 16; r++)
+	{
+		Select(r);
+		byte p = reg[r];
 		/* clr cached values */
 		Write(timestamp, p ^ 1);
 		Write(timestamp, p);
@@ -279,7 +281,7 @@ void eAY::ApplyRegs(dword timestamp)
 }
 
 // corresponds enum CHIP_TYPE
-const char * const ay_chips[] = { "AY-3-8910", "YM2149F", "YM2203" }; //Dexus
+const char * const ay_chips[] = { "AY-3-8910", "YM2149F" };
 
 const char* eAY::GetChipName(CHIP_TYPE i) { return ay_chips[i]; }
 
