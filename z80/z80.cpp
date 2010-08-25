@@ -104,6 +104,8 @@ void eZ80::Update(int int_len, int* nmi_pending)
 			break;
 		}
 		Step();
+		if(halted)
+			break;
 	}
 	eipos = -1;
 	if(fast_emul)
@@ -117,6 +119,13 @@ void eZ80::Update(int int_len, int* nmi_pending)
 	{
 		while(t < frame_tacts)
 		{
+			if(halted)
+			{
+				unsigned int st = (frame_tacts - t-1)/4+1;
+				t += 4*st;
+				r_low += st;
+				break;
+			}
 			Step();
 //			if(*nmi_pending)
 //			{
