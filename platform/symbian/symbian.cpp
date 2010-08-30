@@ -73,6 +73,7 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 
 static struct eOptionRotateScreen : public xOptions::eOptionBool
 {
+	eOptionRotateScreen() { Set(false); }
 	virtual const char* Name() const { return "rotate screen"; }
 	virtual int Order() const { return 2; }
 } op_rotate_screen;
@@ -83,6 +84,23 @@ static struct eOptionRotateJoy : public xOptions::eOptionBool
 	virtual const char* Name() const { return "rotate joystick"; }
 	virtual int Order() const { return 3; }
 } op_rotate_joystick;
+
+static struct eOptionKeyboard : public xOptions::eOptionInt
+{
+	enum eType { KT_FIRST, KT_NUMPAD = KT_FIRST, KT_COMBINED, KT_FULL, KT_LAST };
+	eOptionKeyboard() { Set(KT_NUMPAD); }
+	virtual const char* Name() const { return "keyboard"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "numpad", "combined", "full", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		eOptionInt::Change(KT_FIRST, KT_LAST, next);
+	}
+	virtual int Order() const { return 4; }
+} op_keyboard;
 
 
 void InitSound();
@@ -112,7 +130,9 @@ void Init()
     TFileName appPath;
     CEikonEnv::Static()->FsSession().PrivatePath(appPath);
     appPath.Insert(0, CEikonEnv::Static()->EikAppUi()->Application()->AppFullName().Left(2));
-    xIo::SetResourcePath(FileNameToCStr(appPath));
+    const char* p = FileNameToCStr(appPath);
+    xIo::SetResourcePath(p);
+    xIo::SetProfilePath(p);
     xLog::SetLogPath("e:\\");
     Handler()->OnInit();
     InitSound();
@@ -349,11 +369,51 @@ TInt TDCControl::TimerCallBack( TAny* aInstance )
 }
 static char TranslateKey(const TKeyEvent& aKeyEvent, dword& flags)
 {
-	bool rotate = op_rotate_joystick;
+	eOptionKeyboard::eType keyboard = (eOptionKeyboard::eType)(int)op_keyboard;
 	if(aKeyEvent.iModifiers&EModifierShift)
 		flags |= KF_SHIFT;
 	if(aKeyEvent.iModifiers&EModifierCtrl)
 		flags |= KF_ALT;
+	if(keyboard == eOptionKeyboard::KT_COMBINED)
+	{
+		bool num_mod = (aKeyEvent.iModifiers&EModifierFunc) != 0;
+		if(num_mod && aKeyEvent.iScanCode >= '0' && aKeyEvent.iScanCode <= '9')
+	    	return aKeyEvent.iScanCode;
+		switch(aKeyEvent.iScanCode)
+		{
+		case '1':				return 'R';
+		case '2':				return 'T';
+		case '3':				return 'Y';
+	    case '*':				return 'U';
+		case '4':				return 'F';
+		case '5':				return 'G';
+		case '6':				return 'H';
+	    case EStdKeyHash:		return 'J';
+		case '7':				return 'V';
+		case '8':				return 'B';
+		case '9':				return 'N';
+		case '0':				return 'M';
+		}
+	}
+	if(keyboard == eOptionKeyboard::KT_FULL)
+	{
+		if(aKeyEvent.iScanCode >= '0' && aKeyEvent.iScanCode <= '9')
+	    	return aKeyEvent.iScanCode;
+	}
+	if(keyboard != eOptionKeyboard::KT_NUMPAD)
+	{
+	    if(aKeyEvent.iScanCode >= 'A' && aKeyEvent.iScanCode <= 'Z')
+	    	return aKeyEvent.iScanCode;
+		switch(aKeyEvent.iScanCode)
+		{
+		case EStdKeyLeftFunc:		return 'k';
+		case EStdKeyEnter:			return 'e';
+		case EStdKeyLeftShift:
+		case EStdKeyRightShift:		return 'c';
+		case EStdKeySpace:			return ' ';
+		}
+	}
+	bool rotate = op_rotate_joystick;
     switch(aKeyEvent.iScanCode)
     {
     case '5':
@@ -368,22 +428,13 @@ static char TranslateKey(const TKeyEvent& aKeyEvent, dword& flags)
     case EStdKeyDownArrow:      return rotate ? 'r' : 'd';
     case EStdKeyHash:			return ' ';
     case '0':					return 'e';
-    case '1':					return 'm';
-    case EStdKeyLeftFunc:
     case '*':					return 'k';
     case '3':					return 'p';
-    case EStdKeyEnter:			return 'e';
-    case EStdKeyLeftShift:
-    case EStdKeyRightShift:		return 'c';
-    case EStdKeySpace:			return ' ';
-    case EStdKeyBackspace:
-    	flags |= KF_SHIFT;
-    	return '0';
-    default :
-    	break;
+    case EStdKeyYes:			return 'm';
+	case EStdKeyBackspace:
+		flags |= KF_SHIFT;
+		return '0';
     }
-    if(aKeyEvent.iScanCode >= 'A' && aKeyEvent.iScanCode <= 'Z')
-    	return aKeyEvent.iScanCode;
     return 0;
 }
 TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)
