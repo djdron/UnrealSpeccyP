@@ -30,7 +30,7 @@
 </option>
 <option id="gnu.cpp.compiler.option.optimization.level.1325729979" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.option.debugging.level.1332162411" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-<option id="gnu.cpp.compiler.option.other.other.2133437596" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 `wx-config --cxxflags`" valueType="string"/>
+<option id="gnu.cpp.compiler.option.other.other.2133437596" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 `wx-config --cxxflags` `sdl-config --cflags`" valueType="string"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1575335485" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.c.compiler.base.123789017" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
@@ -45,7 +45,7 @@
 <listOptionValue builtIn="false" value="openal"/>
 <listOptionValue builtIn="false" value="glut"/>
 </option>
-<option id="gnu.cpp.link.option.flags.894661611" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="`wx-config --libs core,base,gl,adv`" valueType="string"/>
+<option id="gnu.cpp.link.option.flags.894661611" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="`wx-config --libs core,base,gl,adv` `sdl-config --libs`" valueType="string"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.492936164" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 <additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -840,7 +840,7 @@
 </option>
 <option id="gnu.cpp.compiler.option.optimization.level.498186558" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.option.debugging.level.1711226431" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
-<option id="gnu.cpp.compiler.option.other.other.1719824686" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 `wx-config --cxxflags`" valueType="string"/>
+<option id="gnu.cpp.compiler.option.other.other.1719824686" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 `wx-config --cxxflags` `sdl-config --cflags`" valueType="string"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.160758036" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1502053413" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
@@ -854,8 +854,8 @@
 <listOptionValue builtIn="false" value="GL"/>
 <listOptionValue builtIn="false" value="openal"/>
 </option>
-<option id="gnu.cpp.link.option.flags.142958059" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="`wx-config --libs core,base,gl,adv`" valueType="string"/>
-<option id="gnu.cpp.link.option.strip.29404680" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
+<option id="gnu.cpp.link.option.flags.142958059" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="`wx-config --libs core,base,gl,adv` `sdl-config --libs`" valueType="string"/>
+<option id="gnu.cpp.link.option.strip.29404680" name="Omit all symbol information (-s)" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1011746149" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 <additionalInput kind="additionalinput" paths="$(LIBS)"/>

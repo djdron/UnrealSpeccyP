@@ -23,6 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#ifdef USE_SDL
+#define USE_UI
+#endif//USE_SDL
+
 //#define USE_UI
 
 #ifdef USE_UI

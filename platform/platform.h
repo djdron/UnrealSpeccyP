@@ -25,10 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #if defined(_WINDOWS) || defined(_LINUX) || defined(_MAC)
 
+#ifndef USE_SDL
 #define USE_OAL
 #define USE_GL
 //#define USE_GLUT
 #define USE_WXWIDGETS
+#endif//USE_SDL
 
 #define USE_PNG
 #define USE_CONFIG
