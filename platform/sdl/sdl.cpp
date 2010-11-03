@@ -84,8 +84,8 @@ static void Loop()
 		}
 		Handler()->OnLoop();
 		UpdateScreen();
-		SDL_Delay(5);
 		UpdateAudio();
+//		SDL_Delay(5);
 		if(OpQuit())
 			quit = true;
 	}

@@ -100,10 +100,12 @@ void UpdateScreen()
 	{
 		for(int y = 0; y < 240; ++y)
 		{
-			for(int x = 0; x < 320; ++x)
+			for(int x = 0; x < 320/4; ++x)
 			{
-				word c(color_cache.items[*data++]);
-				*scr++ = c;
+				*scr++ = color_cache.items[*data++];
+				*scr++ = color_cache.items[*data++];
+				*scr++ = color_cache.items[*data++];
+				*scr++ = color_cache.items[*data++];
 			}
 			scr += offscreen->pitch - 320*2;
 		}
