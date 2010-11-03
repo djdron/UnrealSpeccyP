@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define	__UI_DESKTOP_H__
 
 #include "ui_dialog.h"
+#include "../tools/tick.h"
 
 #pragma once
 
@@ -30,10 +31,9 @@ namespace xUi
 
 class eDesktop : public eDialog
 {
-	enum { KEY_REPEAT_DELAY = 10 };
 	typedef eDialog eInherited;
 public:
-	eDesktop() : key(0), key_flags(0), keypress_timer(0)
+	eDesktop()
 	{
 		_CreateFont(6, 6, "res/font/spxtrm4f.fnt");
 	}
@@ -49,9 +49,19 @@ public:
 	virtual bool OnKey(char key, dword flags);
 
 protected:
-	char key;
-	dword key_flags;
-	int keypress_timer;
+	struct eAutoRepeat
+	{
+		eAutoRepeat() : first(false), key(0), key_flags(0) {}
+		enum { DELAY = 200, INTERVAL = 20 };
+		bool Ok() const { return key && timer.Passed().Ms() > (first ? DELAY : INTERVAL); }
+		void Set(char _key, dword _flags) { first = true; key = _key; key_flags = _flags; timer.SetCurrent(); }
+		void Repeat() { first = false; timer.SetCurrent(); }
+		bool first;
+		char key;
+		dword key_flags;
+		eTick timer;
+	};
+	eAutoRepeat autorepeat;
 };
 
 }

@@ -29,27 +29,24 @@ namespace xUi
 //-----------------------------------------------------------------------------
 void eDesktop::Update()
 {
-	if(key)
+	if(autorepeat.Ok())
 	{
-		if(keypress_timer > KEY_REPEAT_DELAY)
-		{
-			eInherited::OnKey(key, key_flags);
-		}
-		++keypress_timer;
+		autorepeat.Repeat();
+		eInherited::OnKey(autorepeat.key, autorepeat.key_flags);
 	}
 	eInherited::Update();
 }
 //=============================================================================
 //	eDesktop::OnKey
 //-----------------------------------------------------------------------------
-bool eDesktop::OnKey(char _key, dword flags)
+bool eDesktop::OnKey(char key, dword flags)
 {
-	key_flags = flags;
 	bool pressed = flags&xPlatform::KF_DOWN;
-	if((pressed && !(flags&(xPlatform::KF_ALT|xPlatform::KF_SHIFT)) && (_key == key)) || (!pressed && (_key != key)))
+	if((pressed && !(flags&(xPlatform::KF_ALT|xPlatform::KF_SHIFT)) && (key == autorepeat.key)) || (!pressed && (key != autorepeat.key)))
 		return false;
-	key = pressed ? _key : '\0';
-	keypress_timer = 0;
+	if(!pressed)
+		key = '\0';
+	autorepeat.Set(key, flags);
 	return eInherited::OnKey(key, flags);
 }
 
