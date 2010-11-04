@@ -31,7 +31,7 @@ static SDL_Surface* offscreen = NULL;
 
 bool InitVideo()
 {
-    screen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE);
+    screen = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE);
     if(!screen)
         return false;
 	offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16,

@@ -18,7 +18,7 @@ C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
 STD_OPTS  = -G0 -O3 -Wall -c -fmessage-length=0 -finline-functions -fomit-frame-pointer -msoft-float -fno-builtin -fno-exceptions -fno-pic -DNDEBUG
-CXXFLAGS  = $(STD_OPTS) -fno-rtti -fno-threadsafe-statics -D_LINUX -DUSE_SDL `sdl-config --cflags`
+CXXFLAGS  = $(STD_OPTS) -fno-rtti -fno-threadsafe-statics -D_LINUX -DUSE_SDL -DSDL_KEYS_DINGOO `sdl-config --cflags`
 CFLAGS    = $(STD_OPTS)
 LFLAGS    = -s `sdl-config --libs`
 

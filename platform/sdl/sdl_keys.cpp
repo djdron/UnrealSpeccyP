@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform.h"
 
 #ifdef USE_SDL
+#ifdef SDL_KEYS_COMMON
 
 #include <SDL.h>
 #include "../../options_common.h"
@@ -158,4 +159,5 @@ void ProcessKey(SDL_Event& e)
 }
 //namespace xPlatform
 
+#endif//SDL_KEYS_COMMON
 #endif//USE_SDL

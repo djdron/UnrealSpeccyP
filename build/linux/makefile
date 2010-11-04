@@ -21,7 +21,7 @@ CFLAGS = -O3 -Wall -c -fmessage-length=0
 LFLAGS = -s
 
 ifdef SDL
-CXXFLAGS := $(CXXFLAGS) -DUSE_SDL `sdl-config --cflags`
+CXXFLAGS := $(CXXFLAGS) -DUSE_SDL -DSDL_KEYS_COMMON `sdl-config --cflags`
 LFLAGS := $(LFLAGS) `sdl-config --libs`
 else
 CXXFLAGS := $(CXXFLAGS) `wx-config --cxxflags`
