@@ -59,7 +59,6 @@ public:
 	DIR* dir;
 	dirent* dir_ent;
 	struct stat dir_stat;
-	int h;
 };
 
 eFileSelect::eFileSelect(const char* path) { impl = new eFileSelectI(path); }
