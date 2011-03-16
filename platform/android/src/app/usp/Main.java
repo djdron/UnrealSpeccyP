@@ -18,6 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.nio.ByteBuffer;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.LinearLayout;
@@ -25,11 +29,32 @@ import android.content.Context;
 
 public class Main extends Activity
 {
+	ByteBuffer getBinResource(int id)
+	{
+		InputStream is = getResources().openRawResource(id);
+		byte[] data = null;
+		try
+		{
+			data = new byte[is.available()];
+			is.read(data);
+		}
+		catch(IOException e)
+		{}
+		ByteBuffer bb = ByteBuffer.allocateDirect(data.length);
+		bb.put(data);
+		bb.rewind();
+		return bb;
+	}
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
 		super.onCreate(savedInstanceState);
-		Emulator.the.Init();
+		ByteBuffer font = getBinResource(R.raw.spxtrm4f);
+		ByteBuffer rom0 = getBinResource(R.raw.sos128);
+		ByteBuffer rom1 = getBinResource(R.raw.sos48);
+		ByteBuffer rom2 = getBinResource(R.raw.service);
+		ByteBuffer rom3 = getBinResource(R.raw.dos513f);
+		Emulator.the.Init(font, rom0, rom1, rom2, rom3);
 		Context c = getApplicationContext();
 		LinearLayout v = new LinearLayout(c);
 		v.setOrientation(LinearLayout.VERTICAL);

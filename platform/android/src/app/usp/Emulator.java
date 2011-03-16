@@ -26,7 +26,7 @@ public class Emulator
 	{
 		System.loadLibrary("usp");
 	}
-	synchronized native void	Init();
+	synchronized native void	Init(ByteBuffer font, ByteBuffer rom0, ByteBuffer rom1, ByteBuffer rom2, ByteBuffer rom3);
 	synchronized native void	Done();
 	synchronized native void	UpdateVideo(ByteBuffer buf);
 	synchronized native int		UpdateAudio(ByteBuffer buf);

@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package app.usp;
 
 import java.nio.ByteBuffer;
-
 import android.graphics.Canvas;
 import android.graphics.Bitmap;
 import android.media.AudioTrack;

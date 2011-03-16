@@ -27,6 +27,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res/rom/dos513f.h"
 #endif//USE_EMBEDDED_RESOURCES
 
+#ifdef _ANDROID
+extern byte sos128[];
+extern byte sos48[];
+extern byte service[];
+extern byte dos513f[];
+#endif//_ANDROID
+
 //=============================================================================
 //	eMemory::eMemory
 //-----------------------------------------------------------------------------
@@ -81,11 +88,11 @@ void eRom::LoadRom(int page, const char* rom)
 //-----------------------------------------------------------------------------
 void eRom::Init()
 {
-#ifdef USE_EMBEDDED_RESOURCES
-	memcpy(memory->Get(ROM_128), sos128,	sos128_size);
-	memcpy(memory->Get(ROM_SOS), sos48,		sos48_size);
-	memcpy(memory->Get(ROM_SYS), service,	service_size);
-	memcpy(memory->Get(ROM_DOS), dos513f,	dos513f_size);
+#if defined(USE_EMBEDDED_RESOURCES) || defined(_ANDROID)
+	memcpy(memory->Get(ROM_128), sos128,	eMemory::PAGE_SIZE);
+	memcpy(memory->Get(ROM_SOS), sos48,		eMemory::PAGE_SIZE);
+	memcpy(memory->Get(ROM_SYS), service,	eMemory::PAGE_SIZE);
+	memcpy(memory->Get(ROM_DOS), dos513f,	eMemory::PAGE_SIZE);
 #else//USE_EMBEDDED_RESOURCES
 	LoadRom(ROM_128, xIo::ResourcePath("res/rom/sos128.rom"));
 	LoadRom(ROM_SOS, xIo::ResourcePath("res/rom/sos48.rom"));

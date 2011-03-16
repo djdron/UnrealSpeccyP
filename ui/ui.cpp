@@ -26,6 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res/font/spxtrm4f.h"
 #endif//USE_EMBEDDED_RESOURCES
 
+#ifdef _ANDROID
+extern byte spxtrm4f[];
+#endif//_ANDROID
+
 namespace xUi
 {
 
@@ -85,7 +89,7 @@ public:
 	eFont() : w(0), h(0), data(NULL) {}
 	~eFont()
 	{
-#ifndef USE_EMBEDDED_RESOURCES
+#if !defined(USE_EMBEDDED_RESOURCES) && !defined(_ANDROID)
 		SAFE_DELETE(data);
 #endif//USE_EMBEDDED_RESOURCES
 	}
@@ -93,7 +97,7 @@ public:
 	{
 		assert(!data);
 		w = _w; h = _h;
-#ifdef USE_EMBEDDED_RESOURCES
+#if defined(USE_EMBEDDED_RESOURCES) || defined(_ANDROID)
 		data = spxtrm4f;
 #else//USE_EMBEDDED_RESOURCES
 		FILE* f = fopen(xIo::ResourcePath(fname), "rb");

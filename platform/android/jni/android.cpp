@@ -24,6 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../io.h"
 #include "../../../options_common.h"
 
+byte spxtrm4f[2048];
+byte sos128[16384];
+byte sos48[16384];
+byte service[16384];
+byte dos513f[16384];
+
 namespace xPlatform
 {
 void UpdateScreen(word* scr);
@@ -31,9 +37,15 @@ void ProcessKey(char key, bool down);
 void InitSound();
 void DoneSound();
 int UpdateSound(byte* buf);
-void Init()
+
+void Init(const byte* font, const byte* rom0, const byte* rom1, const byte* rom2, const byte* rom3)
 {
-	const char* res = "/sdcard/usp/";
+	memcpy(spxtrm4f, 	font, sizeof(spxtrm4f));
+	memcpy(sos128,		rom0, sizeof(sos128));
+	memcpy(sos48,		rom1, sizeof(sos48));
+	memcpy(service,		rom2, sizeof(service));
+	memcpy(dos513f,		rom3, sizeof(dos513f));
+	const char* res = "/sdcard/";
 	OpLastFile(res);
 	xIo::SetResourcePath(res);
 	xIo::SetProfilePath(res);
@@ -52,9 +64,14 @@ void Done()
 extern "C"
 {
 
-void Java_app_usp_Emulator_Init(JNIEnv* env, jobject obj)
+void Java_app_usp_Emulator_Init(JNIEnv* env, jobject obj, jobject font_buf, jobject rom0_buf, jobject rom1_buf, jobject rom2_buf, jobject rom3_buf)
 {
-	xPlatform::Init();
+	const byte* font = (const byte*)env->GetDirectBufferAddress(font_buf);
+	const byte* rom0 = (const byte*)env->GetDirectBufferAddress(rom0_buf);
+	const byte* rom1 = (const byte*)env->GetDirectBufferAddress(rom1_buf);
+	const byte* rom2 = (const byte*)env->GetDirectBufferAddress(rom2_buf);
+	const byte* rom3 = (const byte*)env->GetDirectBufferAddress(rom3_buf);
+	xPlatform::Init(font, rom0, rom1, rom2, rom3);
 }
 void Java_app_usp_Emulator_Done(JNIEnv* env, jobject obj)
 {
