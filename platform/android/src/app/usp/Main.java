@@ -47,6 +47,8 @@ public class Main extends Activity
 		return bb;
 	}
 	LinearLayout layout;
+	View view;
+	Control control;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -58,30 +60,38 @@ public class Main extends Activity
 		ByteBuffer rom3 = getBinResource(R.raw.dos513f);
 		Emulator.the.Init(font, rom0, rom1, rom2, rom3);
 		Context c = getApplicationContext();
+		view = new View(c);
+		control = new Control(c);
 		layout = new LinearLayout(c);
-		layout.addView(new View(c));
-		layout.addView(new Control(c));
 		setContentView(layout);
 		UpdateOrientation(getResources().getConfiguration());
     }
 	public void UpdateOrientation(Configuration config)
 	{
+		layout.removeAllViews();
 		if(config.orientation == Configuration.ORIENTATION_LANDSCAPE)
+		{
 			layout.setOrientation(LinearLayout.HORIZONTAL);
+			layout.addView(control);
+			layout.addView(view);
+		}
 		else
+		{
 			layout.setOrientation(LinearLayout.VERTICAL);
+			layout.addView(view);
+			layout.addView(control);
+		}
+		control.requestFocus();
 	}
     protected void onPause()
 	{
     	super.onPause();
-    	View v = (View)layout.getChildAt(0);
-    	v.OnPause();
+    	view.OnPause();
 	}
     protected void onResume()
 	{
     	super.onResume();
-    	View v = (View)layout.getChildAt(0);
-    	v.OnResume();
+    	view.OnResume();
 	}
     @Override
 	public void onConfigurationChanged(Configuration newConfig)

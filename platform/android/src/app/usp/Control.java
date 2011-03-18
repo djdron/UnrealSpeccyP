@@ -39,7 +39,6 @@ public class Control extends ImageView
 		setImageBitmap(bm);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
-		requestFocus();
 	}
 	protected void onMeasure(int w, int h)
 	{
