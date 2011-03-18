@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.content.Context;
+import android.content.res.Configuration;
 
 public class Main extends Activity
 {
@@ -45,6 +46,7 @@ public class Main extends Activity
 		bb.rewind();
 		return bb;
 	}
+	LinearLayout layout;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -56,10 +58,35 @@ public class Main extends Activity
 		ByteBuffer rom3 = getBinResource(R.raw.dos513f);
 		Emulator.the.Init(font, rom0, rom1, rom2, rom3);
 		Context c = getApplicationContext();
-		LinearLayout v = new LinearLayout(c);
-		v.setOrientation(LinearLayout.VERTICAL);
-		v.addView(new View(c));
-		v.addView(new Control(c));
-		setContentView(v);
+		layout = new LinearLayout(c);
+		layout.addView(new View(c));
+		layout.addView(new Control(c));
+		setContentView(layout);
+		UpdateOrientation(getResources().getConfiguration());
     }
+	public void UpdateOrientation(Configuration config)
+	{
+		if(config.orientation == Configuration.ORIENTATION_LANDSCAPE)
+			layout.setOrientation(LinearLayout.HORIZONTAL);
+		else
+			layout.setOrientation(LinearLayout.VERTICAL);
+	}
+    protected void onPause()
+	{
+    	super.onPause();
+    	View v = (View)layout.getChildAt(0);
+    	v.OnPause();
+	}
+    protected void onResume()
+	{
+    	super.onResume();
+    	View v = (View)layout.getChildAt(0);
+    	v.OnResume();
+	}
+    @Override
+	public void onConfigurationChanged(Configuration newConfig)
+	{
+		super.onConfigurationChanged(newConfig);
+		UpdateOrientation(newConfig);
+	}
 }

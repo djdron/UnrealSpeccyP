@@ -42,8 +42,7 @@ int UpdateSound(byte* buf)
 	for(int i = Handler()->AudioSources(); --i >= 0;)
 	{
 		dword size = Handler()->AudioDataReady(i);
-		bool ui_enabled = Handler()->VideoDataUI() != NULL;
-		if(i == OpSound() && !ui_enabled && !Handler()->FullSpeed())
+		if(i == OpSound() && !Handler()->FullSpeed())
 		{
 			if(size > 44100*2*2/50*3)//~approx >10600 bytes
 			{

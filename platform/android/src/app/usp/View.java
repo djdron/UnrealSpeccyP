@@ -31,22 +31,18 @@ import android.content.Context;
 
 public class View extends SurfaceView  implements Callback
 {
-	protected SurfaceHolder sh;
-	protected Bitmap bmp;
-	protected ByteBuffer buf_video;
-	protected ByteBuffer buf_audio;
+	private SurfaceHolder sh = null;
+	private Bitmap bmp = Bitmap.createBitmap(320, 240, Bitmap.Config.RGB_565);
+	private ByteBuffer buf_video = ByteBuffer.allocateDirect(320*240*2);
+	private ByteBuffer buf_audio = ByteBuffer.allocateDirect(32768);
 	private static class Lock {};
 	private final Object lock_scr = new Lock();
-	protected AudioTrack audio;
-	protected byte[] aud;
+	private AudioTrack audio;
+	private byte[] aud = new byte[32768];
+	private boolean paused = false;
 	public View(Context context)
 	{
 		super(context);
-		bmp = Bitmap.createBitmap(320, 240, Bitmap.Config.RGB_565);
-		buf_video = ByteBuffer.allocateDirect(320*240*2);
-		buf_audio = ByteBuffer.allocateDirect(32768);
-		sh = null;
-		aud = new byte[32768];
 		getHolder().addCallback(this);
 		final int freq = 44100;
 		final int channels = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
@@ -66,7 +62,7 @@ public class View extends SurfaceView  implements Callback
 			{
 				for(;;)
 				{
-					if(sh != null)
+					if(!paused && sh != null)
 						Draw();
 					else
 						Thread.yield();
@@ -113,5 +109,13 @@ public class View extends SurfaceView  implements Callback
 				sh.unlockCanvasAndPost(c);
 			}
 		}
+	}
+	public void OnPause()
+	{
+		synchronized(lock_scr) { paused = true; }
+	}
+	public void OnResume()
+	{
+		synchronized(lock_scr) { paused = false; }
 	}
 }
