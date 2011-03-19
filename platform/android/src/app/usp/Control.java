@@ -44,7 +44,7 @@ public class Control extends ImageView
 	{
 		setMeasuredDimension(SIZE, SIZE);
 	}
-	static private char TranslateKey(int keyCode)
+	private final char TranslateKey(int keyCode)
 	{
 		switch(keyCode)
 		{
@@ -53,9 +53,6 @@ public class Control extends ImageView
 		case KeyEvent.KEYCODE_DPAD_UP:			return 'u';
 		case KeyEvent.KEYCODE_DPAD_DOWN:		return 'd';
 		case KeyEvent.KEYCODE_DPAD_CENTER:		return 'f';
-		case KeyEvent.KEYCODE_MENU:				return 'm';
-		case KeyEvent.KEYCODE_CALL:				return 'e';
-		case KeyEvent.KEYCODE_BACK:				return 'k';
 
 		case KeyEvent.KEYCODE_0:				return '0';
 		case KeyEvent.KEYCODE_1:				return '1';
@@ -97,6 +94,11 @@ public class Control extends ImageView
 		
 		case KeyEvent.KEYCODE_ENTER:			return 'e';
 		case KeyEvent.KEYCODE_SPACE:			return ' ';
+
+		case KeyEvent.KEYCODE_MENU:				return 'm';
+		case KeyEvent.KEYCODE_BACK:				return 'k';
+		case KeyEvent.KEYCODE_CALL:				return 'e';
+		case KeyEvent.KEYCODE_CAMERA:			return ' ';
 		}
 		return 0;
 	}
@@ -134,9 +136,12 @@ public class Control extends ImageView
 			Emulator.the.OnKey('f', false);
 			return true;
 		}
+
 		final float x = event.getX() - SIZE/2;
 		final float y = event.getY() - SIZE/2;
-		Emulator.the.OnKey('f', Math.abs(x) < THRESHOLD && Math.abs(y) < THRESHOLD);
+		if(Math.abs(x) < THRESHOLD && Math.abs(y) < THRESHOLD)
+			Emulator.the.OnKey('f', true);
+
 		Emulator.the.OnKey('r', x > +THRESHOLD);
 		Emulator.the.OnKey('l', x < -THRESHOLD);
 		Emulator.the.OnKey('d', y > +THRESHOLD);

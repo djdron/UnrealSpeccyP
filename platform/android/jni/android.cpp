@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <jni.h>
 #include "../../io.h"
 #include "../../../options_common.h"
+#include "../../../tools/options.h"
 
 byte spxtrm4f[2048];
 byte sos128[16384];
@@ -93,6 +94,11 @@ jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_bu
 void Java_app_usp_Emulator_OnKey(JNIEnv* env, jobject obj, jchar key, jboolean down)
 {
 	xPlatform::ProcessKey(key, down);
+}
+
+void Java_app_usp_Emulator_StoreOptions(JNIEnv* env, jobject obj)
+{
+	xOptions::Store();
 }
 
 }

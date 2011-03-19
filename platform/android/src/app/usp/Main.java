@@ -66,6 +66,12 @@ public class Main extends Activity
 		setContentView(layout);
 		UpdateOrientation(getResources().getConfiguration());
     }
+    @Override
+    public void onDestroy()
+    {
+    	Emulator.the.Done();
+    	super.onDestroy();
+    }
 	public void UpdateOrientation(Configuration config)
 	{
 		layout.removeAllViews();
@@ -85,6 +91,7 @@ public class Main extends Activity
 	}
     protected void onPause()
 	{
+    	Emulator.the.StoreOptions();
     	super.onPause();
     	view.OnPause();
 	}
