@@ -39,21 +39,28 @@ void InitSound();
 void DoneSound();
 int UpdateSound(byte* buf);
 
-void Init(const byte* font, const byte* rom0, const byte* rom1, const byte* rom2, const byte* rom3)
+static void InitResources(const byte* font, const byte* rom0, const byte* rom1, const byte* rom2, const byte* rom3)
 {
 	memcpy(spxtrm4f, 	font, sizeof(spxtrm4f));
 	memcpy(sos128,		rom0, sizeof(sos128));
 	memcpy(sos48,		rom1, sizeof(sos48));
 	memcpy(service,		rom2, sizeof(service));
 	memcpy(dos513f,		rom3, sizeof(dos513f));
-	const char* res = "/sdcard/";
+}
+
+static void Init(const char* path)
+{
+	const char* res = "/";
 	OpLastFile(res);
 	xIo::SetResourcePath(res);
-	xIo::SetProfilePath(res);
+	char buf[xIo::MAX_PATH_LEN];
+	strcpy(buf, path);
+	strcat(buf, "/");
+	xIo::SetProfilePath(buf);
 	Handler()->OnInit();
 	InitSound();
 }
-void Done()
+static void Done()
 {
 	DoneSound();
 	Handler()->OnDone();
@@ -65,14 +72,21 @@ void Done()
 extern "C"
 {
 
-void Java_app_usp_Emulator_Init(JNIEnv* env, jobject obj, jobject font_buf, jobject rom0_buf, jobject rom1_buf, jobject rom2_buf, jobject rom3_buf)
+void Java_app_usp_Emulator_InitResources(JNIEnv* env, jobject obj, jobject font_buf, jobject rom0_buf, jobject rom1_buf, jobject rom2_buf, jobject rom3_buf)
 {
 	const byte* font = (const byte*)env->GetDirectBufferAddress(font_buf);
 	const byte* rom0 = (const byte*)env->GetDirectBufferAddress(rom0_buf);
 	const byte* rom1 = (const byte*)env->GetDirectBufferAddress(rom1_buf);
 	const byte* rom2 = (const byte*)env->GetDirectBufferAddress(rom2_buf);
 	const byte* rom3 = (const byte*)env->GetDirectBufferAddress(rom3_buf);
-	xPlatform::Init(font, rom0, rom1, rom2, rom3);
+	xPlatform::InitResources(font, rom0, rom1, rom2, rom3);
+}
+
+void Java_app_usp_Emulator_Init(JNIEnv* env, jobject obj, jstring jpath, jobject font_buf, jobject rom0_buf, jobject rom1_buf, jobject rom2_buf, jobject rom3_buf)
+{
+    const char* path = env->GetStringUTFChars(jpath, NULL);
+	xPlatform::Init(path);
+    env->ReleaseStringUTFChars(jpath, path);
 }
 void Java_app_usp_Emulator_Done(JNIEnv* env, jobject obj)
 {

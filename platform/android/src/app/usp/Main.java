@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -58,7 +59,8 @@ public class Main extends Activity
 		ByteBuffer rom1 = getBinResource(R.raw.sos48);
 		ByteBuffer rom2 = getBinResource(R.raw.service);
 		ByteBuffer rom3 = getBinResource(R.raw.dos513f);
-		Emulator.the.Init(font, rom0, rom1, rom2, rom3);
+		Emulator.the.InitResources(font, rom0, rom1, rom2, rom3);
+		Emulator.the.Init(getFilesDir().getAbsolutePath());
 		Context c = getApplicationContext();
 		view = new View(this, c);
 		control = new Control(c);
