@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-inline word BGR565(byte r, byte g, byte b) { return ((r&~7) << 8)|((g&~3) << 3)|(b >> 3); }
+inline dword BGR565(byte r, byte g, byte b) { return ((r&~7) << 8)|((g&~3) << 3)|(b >> 3); }
 inline dword RGBX(byte r, byte g, byte b) { return (b << 16)|(g << 8)|r; }
 
 static struct eCachedColors
@@ -41,10 +41,12 @@ static struct eCachedColors
 			byte r = c&2 ? i : 0;
 			byte g = c&4 ? i : 0;
 			items[c] = BGR565(r, g, b);
+			items_shifted[c] = BGR565(r, g, b) << 16;
 			items_rgbx[c] = RGBX(r, g, b);
 		}
 	}
-	word items[16];
+	dword items[16];
+	dword items_shifted[16];
 	dword items_rgbx[16];
 }
 color_cache;
@@ -69,14 +71,19 @@ void UpdateScreen(word* scr)
 	else
 #endif//USE_UI
 	{
+		dword* scr1 = (dword*)scr;
 		for(int y = 0; y < 240; ++y)
 		{
-			for(int x = 0; x < 320/4; ++x)
+			for(int x = 0; x < 320/8; ++x)
 			{
-				*scr++ = color_cache.items[*data++];
-				*scr++ = color_cache.items[*data++];
-				*scr++ = color_cache.items[*data++];
-				*scr++ = color_cache.items[*data++];
+				dword c = color_cache.items[*data++];
+				*scr1++ = c | color_cache.items_shifted[*data++];
+				c = color_cache.items[*data++];
+				*scr1++ = c | color_cache.items_shifted[*data++];
+				c = color_cache.items[*data++];
+				*scr1++ = c | color_cache.items_shifted[*data++];
+				c = color_cache.items[*data++];
+				*scr1++ = c | color_cache.items_shifted[*data++];
 			}
 		}
 	}
