@@ -27,12 +27,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res/rom/dos513f.h"
 #endif//USE_EMBEDDED_RESOURCES
 
-#ifdef _ANDROID
+#ifdef USE_EXTERN_RESOURCES
 extern byte sos128[];
 extern byte sos48[];
 extern byte service[];
 extern byte dos513f[];
-#endif//_ANDROID
+#endif//USE_EXTERN_RESOURCES
 
 //=============================================================================
 //	eMemory::eMemory
@@ -88,7 +88,7 @@ void eRom::LoadRom(int page, const char* rom)
 //-----------------------------------------------------------------------------
 void eRom::Init()
 {
-#if defined(USE_EMBEDDED_RESOURCES) || defined(_ANDROID)
+#if defined(USE_EMBEDDED_RESOURCES) || defined(USE_EXTERN_RESOURCES)
 	memcpy(memory->Get(ROM_128), sos128,	eMemory::PAGE_SIZE);
 	memcpy(memory->Get(ROM_SOS), sos48,		eMemory::PAGE_SIZE);
 	memcpy(memory->Get(ROM_SYS), service,	eMemory::PAGE_SIZE);
