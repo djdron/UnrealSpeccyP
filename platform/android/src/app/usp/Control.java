@@ -136,30 +136,11 @@ public class Control extends ImageView
 		}
 		final float x = event.getX() - SIZE/2;
 		final float y = event.getY() - SIZE/2;
-		if(Math.abs(x) < THRESHOLD && Math.abs(y) < THRESHOLD)
-		{
-			Emulator.the.OnKey('f', true);
-		}
-		if(x < -THRESHOLD)
-		{
-			Emulator.the.OnKey('r', false);
-			Emulator.the.OnKey('l', true);
-		}
-		else if(x > +THRESHOLD)
-		{
-			Emulator.the.OnKey('l', false);
-			Emulator.the.OnKey('r', true);
-		}
-		if(y < -THRESHOLD)
-		{
-			Emulator.the.OnKey('d', false);
-			Emulator.the.OnKey('u', true);
-		}
-		else if(y > +THRESHOLD)
-		{
-			Emulator.the.OnKey('u', false);
-			Emulator.the.OnKey('d', true);
-		}
+		Emulator.the.OnKey('f', Math.abs(x) < THRESHOLD && Math.abs(y) < THRESHOLD);
+		Emulator.the.OnKey('r', x > +THRESHOLD);
+		Emulator.the.OnKey('l', x < -THRESHOLD);
+		Emulator.the.OnKey('d', y > +THRESHOLD);
+		Emulator.the.OnKey('u', y < -THRESHOLD);
 		return true;
 	}
 }
