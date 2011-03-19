@@ -120,6 +120,7 @@ void eMainDialog::OnNotify(byte n, byte from)
 	switch(from)
 	{
 	case D_FILE_OPEN:
+		if(!clear)
 		{
 			eFileOpenDialog* d = (eFileOpenDialog*)*childs;
 			Handler()->OnOpenFile(d->Selected());

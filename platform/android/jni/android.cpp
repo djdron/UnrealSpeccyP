@@ -52,7 +52,7 @@ static void Init(const char* path)
 {
 	const char* res = "/";
 	OpLastFile(res);
-	xIo::SetResourcePath(res);
+//	xIo::SetResourcePath(res);
 	char buf[xIo::MAX_PATH_LEN];
 	strcpy(buf, path);
 	strcat(buf, "/");
