@@ -28,7 +28,7 @@ public class Emulator
 	}
 	synchronized native void	Init(ByteBuffer font, ByteBuffer rom0, ByteBuffer rom1, ByteBuffer rom2, ByteBuffer rom3);
 	synchronized native void	Done();
-	synchronized native void	UpdateVideo(ByteBuffer buf);
+	synchronized native boolean	UpdateVideo(ByteBuffer buf);
 	synchronized native int		UpdateAudio(ByteBuffer buf);
 	synchronized native void	OnKey(char key, boolean down);
 	synchronized native void	StoreOptions();

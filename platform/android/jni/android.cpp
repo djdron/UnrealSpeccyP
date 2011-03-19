@@ -79,11 +79,15 @@ void Java_app_usp_Emulator_Done(JNIEnv* env, jobject obj)
 	xPlatform::Done();
 }
 
-void Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
+jboolean Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
 {
 	xPlatform::Handler()->OnLoop();
 	uint16_t* buf = (uint16_t*)env->GetDirectBufferAddress(byte_buffer);
 	xPlatform::UpdateScreen(buf);
+	bool quit = xPlatform::OpQuit();
+	if(quit)
+		xPlatform::OpQuit(false);
+	return !quit;
 }
 jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer)
 {

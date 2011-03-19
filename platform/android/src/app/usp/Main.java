@@ -60,7 +60,7 @@ public class Main extends Activity
 		ByteBuffer rom3 = getBinResource(R.raw.dos513f);
 		Emulator.the.Init(font, rom0, rom1, rom2, rom3);
 		Context c = getApplicationContext();
-		view = new View(c);
+		view = new View(this, c);
 		control = new Control(c);
 		layout = new LinearLayout(c);
 		setContentView(layout);
