@@ -82,7 +82,7 @@ void Java_app_usp_Emulator_InitResources(JNIEnv* env, jobject obj, jobject font_
 	xPlatform::InitResources(font, rom0, rom1, rom2, rom3);
 }
 
-void Java_app_usp_Emulator_Init(JNIEnv* env, jobject obj, jstring jpath, jobject font_buf, jobject rom0_buf, jobject rom1_buf, jobject rom2_buf, jobject rom3_buf)
+void Java_app_usp_Emulator_Init(JNIEnv* env, jobject obj, jstring jpath)
 {
     const char* path = env->GetStringUTFChars(jpath, NULL);
 	xPlatform::Init(path);
@@ -112,6 +112,13 @@ jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_bu
 void Java_app_usp_Emulator_OnKey(JNIEnv* env, jobject obj, jchar key, jboolean down)
 {
 	xPlatform::ProcessKey(key, down);
+}
+
+void Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
+{
+    const char* file = env->GetStringUTFChars(jfile, NULL);
+    xPlatform::Handler()->OnOpenFile(file);
+    env->ReleaseStringUTFChars(jfile, file);
 }
 
 void Java_app_usp_Emulator_StoreOptions(JNIEnv* env, jobject obj)

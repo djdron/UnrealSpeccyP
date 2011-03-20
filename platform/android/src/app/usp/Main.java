@@ -23,8 +23,10 @@ import java.io.InputStream;
 
 import java.nio.ByteBuffer;
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.content.Context;
 import android.content.res.Configuration;
 
@@ -66,6 +68,12 @@ public class Main extends Activity
 		layout = new LinearLayout(c);
 		setContentView(layout);
 		UpdateOrientation(getResources().getConfiguration());
+		String file = Uri.parse(getIntent().toUri(0)).getPath();
+		if(file.length() != 0)
+		{
+			Toast.makeText(getApplicationContext(), "Opening \"" + file + "\"", Toast.LENGTH_LONG).show();
+			Emulator.the.Open(file);
+		}
     }
     @Override
     public void onDestroy()
