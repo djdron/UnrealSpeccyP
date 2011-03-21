@@ -34,7 +34,7 @@ byte dos513f[16384];
 namespace xPlatform
 {
 void UpdateScreen(word* scr);
-void ProcessKey(char key, bool down);
+void ProcessKey(char key, bool down, bool shift, bool alt);
 void InitSound();
 void DoneSound();
 int UpdateSound(byte* buf);
@@ -109,9 +109,9 @@ jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_bu
 	return xPlatform::UpdateSound(buf);
 }
 
-void Java_app_usp_Emulator_OnKey(JNIEnv* env, jobject obj, jchar key, jboolean down)
+void Java_app_usp_Emulator_OnKey(JNIEnv* env, jobject obj, jchar key, jboolean down, jboolean shift, jboolean alt)
 {
-	xPlatform::ProcessKey(key, down);
+	xPlatform::ProcessKey(key, down, shift, alt);
 }
 
 void Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)

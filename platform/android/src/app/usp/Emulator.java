@@ -31,7 +31,7 @@ public class Emulator
 	synchronized native void	Done();
 	synchronized native boolean	UpdateVideo(ByteBuffer buf);
 	synchronized native int		UpdateAudio(ByteBuffer buf);
-	synchronized native void	OnKey(char key, boolean down);
+	synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 	synchronized native void	Open(final String file);
 	synchronized native void	StoreOptions();
 

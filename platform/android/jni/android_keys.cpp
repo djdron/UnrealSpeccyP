@@ -25,9 +25,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-void ProcessKey(char key, bool down)
+void ProcessKey(char key, bool down, bool shift, bool alt)
 {
-	Handler()->OnKey(key, OpJoyKeyFlags() | (down ? KF_DOWN : 0));
+	dword flags = OpJoyKeyFlags();
+	if(down)
+		flags |= KF_DOWN;
+	if(shift)
+		flags |= KF_SHIFT;
+	if(alt)
+		flags |= KF_ALT;
+	Handler()->OnKey(key, flags);
 }
 
 }

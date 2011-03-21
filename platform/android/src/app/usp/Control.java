@@ -94,6 +94,10 @@ public class Control extends ImageView
 		
 		case KeyEvent.KEYCODE_ENTER:			return 'e';
 		case KeyEvent.KEYCODE_SPACE:			return ' ';
+		case KeyEvent.KEYCODE_SHIFT_LEFT:
+		case KeyEvent.KEYCODE_SHIFT_RIGHT:		return 'c';
+		case KeyEvent.KEYCODE_ALT_LEFT:
+		case KeyEvent.KEYCODE_ALT_RIGHT:		return 's';
 
 		case KeyEvent.KEYCODE_MENU:				return 'm';
 		case KeyEvent.KEYCODE_BACK:				return 'k';
@@ -110,7 +114,7 @@ public class Control extends ImageView
 			super.onKeyDown(keyCode, event);
 			return false;
 		}
-		Emulator.the.OnKey(k, true);
+		Emulator.the.OnKey(k, true, event.isShiftPressed(), event.isAltPressed());
 		return true;
 	}
 	public boolean onKeyUp(int keyCode, KeyEvent event)
@@ -121,7 +125,7 @@ public class Control extends ImageView
 			super.onKeyUp(keyCode, event);
 			return false;
 		}
-		Emulator.the.OnKey(k, false);
+		Emulator.the.OnKey(k, false, false, false);
 		return true;
 	}
 	public boolean onTouchEvent(MotionEvent event)
@@ -129,23 +133,23 @@ public class Control extends ImageView
 		final int a = event.getAction();
 		if(a == MotionEvent.ACTION_UP || a == MotionEvent.ACTION_CANCEL)
 		{
-			Emulator.the.OnKey('r', false);
-			Emulator.the.OnKey('l', false);
-			Emulator.the.OnKey('u', false);
-			Emulator.the.OnKey('d', false);
-			Emulator.the.OnKey('f', false);
+			Emulator.the.OnKey('r', false, false, false);
+			Emulator.the.OnKey('l', false, false, false);
+			Emulator.the.OnKey('u', false, false, false);
+			Emulator.the.OnKey('d', false, false, false);
+			Emulator.the.OnKey('f', false, false, false);
 			return true;
 		}
 
 		final float x = event.getX() - SIZE/2;
 		final float y = event.getY() - SIZE/2;
 		if(Math.abs(x) < THRESHOLD && Math.abs(y) < THRESHOLD)
-			Emulator.the.OnKey('f', true);
+			Emulator.the.OnKey('f', true, false, false);
 
-		Emulator.the.OnKey('r', x > +THRESHOLD);
-		Emulator.the.OnKey('l', x < -THRESHOLD);
-		Emulator.the.OnKey('d', y > +THRESHOLD);
-		Emulator.the.OnKey('u', y < -THRESHOLD);
+		Emulator.the.OnKey('r', x > +THRESHOLD, false, false);
+		Emulator.the.OnKey('l', x < -THRESHOLD, false, false);
+		Emulator.the.OnKey('d', y > +THRESHOLD, false, false);
+		Emulator.the.OnKey('u', y < -THRESHOLD, false, false);
 		return true;
 	}
 }
