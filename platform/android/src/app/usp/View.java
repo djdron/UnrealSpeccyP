@@ -41,6 +41,7 @@ public class View extends SurfaceView  implements Callback
 	private AudioTrack audio;
 	private byte[] aud = new byte[32768];
 	private boolean paused = false;
+	private boolean thread_exit = false;
 	private Activity main_activity;
 	public View(Activity a, Context context)
 	{
@@ -63,7 +64,7 @@ public class View extends SurfaceView  implements Callback
 		{
 			public void run()
 			{
-				for(;;)
+				while(!thread_exit)
 				{
 					if(!paused && sh != null)
 						Draw();
@@ -95,6 +96,7 @@ public class View extends SurfaceView  implements Callback
 	{
 		if(!Emulator.the.UpdateVideo(buf_video))
 		{
+			thread_exit = true;
 			main_activity.finish();
 			return;
 		}
