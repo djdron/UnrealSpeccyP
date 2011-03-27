@@ -40,9 +40,9 @@ public class View extends SurfaceView  implements Callback
 	private final Object lock_scr = new Lock();
 	private AudioTrack audio;
 	private byte[] aud = new byte[32768];
-	private boolean paused = false;
-	private boolean thread_exit = false;
 	private Activity main_activity;
+	private Thread thread = null;
+	private boolean thread_exit = false;
 	public View(Activity a, Context context)
 	{
 		super(context);
@@ -56,32 +56,45 @@ public class View extends SurfaceView  implements Callback
 								freq, channels, format, buf_size*4,
 								AudioTrack.MODE_STREAM);
 		audio.play();
-		StartRenderThread();
 	}
 	private void StartRenderThread()
 	{
-		Thread t = new Thread(new Runnable()
+		thread_exit = false;
+		if(thread != null)
+			return;
+		thread = new Thread(new Runnable()
 		{
 			public void run()
 			{
 				while(!thread_exit)
 				{
-					if(!paused && sh != null)
+					if(sh != null)
 						Draw();
 					else
 						Thread.yield();
 				}
 			}
 		},"draw");
-		t.start();
+		thread.start();
+	}
+	private void StopRenderThread()
+	{
+		if(thread != null)
+		{
+			thread_exit = true;
+			try{ thread.join(); } catch(InterruptedException e) {}
+			thread = null;
+		}
 	}
 	public void surfaceCreated(SurfaceHolder holder)
 	{
 		synchronized(lock_scr) { sh = holder; }
+		StartRenderThread();
 	}
 	public void surfaceDestroyed(SurfaceHolder holder)
 	{
 		synchronized(lock_scr) { sh = null; }
+		StopRenderThread();
 	}
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
 	{
@@ -118,13 +131,5 @@ public class View extends SurfaceView  implements Callback
 				sh.unlockCanvasAndPost(c);
 			}
 		}
-	}
-	public void OnPause()
-	{
-		synchronized(lock_scr) { paused = true; }
-	}
-	public void OnResume()
-	{
-		synchronized(lock_scr) { paused = false; }
 	}
 }

@@ -20,19 +20,96 @@ package app.usp;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.nio.ByteBuffer;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.Toast;
+import android.view.Gravity;
+import android.view.View;
 import android.content.Context;
 import android.content.res.Configuration;
+import com.mobclix.android.sdk.MobclixAdView;
+import com.mobclix.android.sdk.MobclixMMABannerXLAdView;
 
 public class Main extends Activity
 {
-	ByteBuffer getBinResource(int id)
+	private TableLayout layout;
+	private TableRow row1, row2;
+	private app.usp.View view;
+	private Control control;
+	private MobclixAdView banner;
+	private View view_dummy;
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+		super.onCreate(savedInstanceState);
+		Emulator.the.InitResources(BinRes(R.raw.spxtrm4f), BinRes(R.raw.sos128), BinRes(R.raw.sos48), BinRes(R.raw.service), BinRes(R.raw.dos513f));
+		Emulator.the.Init(getFilesDir().getAbsolutePath());
+		Context c = getApplicationContext();
+		view = new app.usp.View(this, c);
+		control = new Control(c);
+		banner = new MobclixMMABannerXLAdView(this);
+		layout = new TableLayout(c);
+		row1 = new TableRow(c);
+		row2 = new TableRow(c);
+		view_dummy = new View(c);
+		setContentView(layout);
+		UpdateOrientation(getResources().getConfiguration());
+		String file = Uri.parse(getIntent().toUri(0)).getPath();
+		if(file.length() != 0)
+		{
+			Toast.makeText(getApplicationContext(), "Opening \"" + file + "\"", Toast.LENGTH_LONG).show();
+			Emulator.the.Open(file);
+		}
+//		banner.setTestMode(true);
+    }
+    @Override
+    public void onDestroy()
+    {
+    	Emulator.the.Done();
+    	super.onDestroy();
+    }
+	private void UpdateOrientation(Configuration config)
+	{
+		row1.removeAllViews();
+		row2.removeAllViews();
+		layout.removeAllViews();
+		if(config.orientation == Configuration.ORIENTATION_LANDSCAPE)
+		{
+			row1.setGravity(Gravity.CENTER);
+			row2.setGravity(Gravity.RIGHT);
+			row1.addView(control, new TableRow.LayoutParams());
+			row1.addView(view, new TableRow.LayoutParams());
+			row2.addView(view_dummy, new TableRow.LayoutParams());
+			row2.addView(banner, new TableRow.LayoutParams());
+			layout.addView(row1);
+			layout.addView(row2);
+		}
+		else
+		{
+			row1.setGravity(Gravity.BOTTOM);
+			layout.addView(view);
+			layout.addView(control);
+			row1.addView(banner, new TableRow.LayoutParams());
+			layout.addView(row1);
+		}
+		control.requestFocus();
+	}
+    protected void onPause()
+	{
+    	Emulator.the.StoreOptions();
+    	super.onPause();
+	}
+    @Override
+	public void onConfigurationChanged(Configuration newConfig)
+	{
+		super.onConfigurationChanged(newConfig);
+		UpdateOrientation(newConfig);
+	}
+	final private ByteBuffer BinRes(int id)
 	{
 		InputStream is = getResources().openRawResource(id);
 		byte[] data = null;
@@ -47,72 +124,5 @@ public class Main extends Activity
 		bb.put(data);
 		bb.rewind();
 		return bb;
-	}
-	LinearLayout layout;
-	View view;
-	Control control;
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-		super.onCreate(savedInstanceState);
-		ByteBuffer font = getBinResource(R.raw.spxtrm4f);
-		ByteBuffer rom0 = getBinResource(R.raw.sos128);
-		ByteBuffer rom1 = getBinResource(R.raw.sos48);
-		ByteBuffer rom2 = getBinResource(R.raw.service);
-		ByteBuffer rom3 = getBinResource(R.raw.dos513f);
-		Emulator.the.InitResources(font, rom0, rom1, rom2, rom3);
-		Emulator.the.Init(getFilesDir().getAbsolutePath());
-		Context c = getApplicationContext();
-		view = new View(this, c);
-		control = new Control(c);
-		layout = new LinearLayout(c);
-		setContentView(layout);
-		UpdateOrientation(getResources().getConfiguration());
-		String file = Uri.parse(getIntent().toUri(0)).getPath();
-		if(file.length() != 0)
-		{
-			Toast.makeText(getApplicationContext(), "Opening \"" + file + "\"", Toast.LENGTH_LONG).show();
-			Emulator.the.Open(file);
-		}
-    }
-    @Override
-    public void onDestroy()
-    {
-    	Emulator.the.Done();
-    	super.onDestroy();
-    }
-	public void UpdateOrientation(Configuration config)
-	{
-		layout.removeAllViews();
-		if(config.orientation == Configuration.ORIENTATION_LANDSCAPE)
-		{
-			layout.setOrientation(LinearLayout.HORIZONTAL);
-			layout.addView(control);
-			layout.addView(view);
-		}
-		else
-		{
-			layout.setOrientation(LinearLayout.VERTICAL);
-			layout.addView(view);
-			layout.addView(control);
-		}
-		control.requestFocus();
-	}
-    protected void onPause()
-	{
-    	Emulator.the.StoreOptions();
-    	super.onPause();
-    	view.OnPause();
-	}
-    protected void onResume()
-	{
-    	super.onResume();
-    	view.OnResume();
-	}
-    @Override
-	public void onConfigurationChanged(Configuration newConfig)
-	{
-		super.onConfigurationChanged(newConfig);
-		UpdateOrientation(newConfig);
 	}
 }
