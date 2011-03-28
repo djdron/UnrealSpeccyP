@@ -89,12 +89,10 @@ public class View extends SurfaceView  implements Callback
 	public void surfaceCreated(SurfaceHolder holder)
 	{
 		synchronized(lock_scr) { sh = holder; }
-		StartRenderThread();
 	}
 	public void surfaceDestroyed(SurfaceHolder holder)
 	{
 		synchronized(lock_scr) { sh = null; }
-		StopRenderThread();
 	}
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
 	{
@@ -131,5 +129,13 @@ public class View extends SurfaceView  implements Callback
 				sh.unlockCanvasAndPost(c);
 			}
 		}
+	}
+	public void OnResume()
+	{
+		StartRenderThread();
+	}
+	public void OnPause()
+	{
+		StopRenderThread();
 	}
 }

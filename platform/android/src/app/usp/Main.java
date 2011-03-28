@@ -98,9 +98,15 @@ public class Main extends Activity
 		}
 		control.requestFocus();
 	}
+    protected void onResume()
+	{
+    	super.onResume();
+    	view.OnResume();
+	}
     protected void onPause()
 	{
     	Emulator.the.StoreOptions();
+    	view.OnPause();
     	super.onPause();
 	}
     @Override
