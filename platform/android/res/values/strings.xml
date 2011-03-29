@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Unreal Speccy Portable</string>
+    <string name="open_file">Open File</string><string name="save_state">Save State</string>
+    <string name="load_state">Load State</string>
+    <string name="select_joystick">Select Joystick</string>
+    <string name="joystick_kempston">Kempston</string>
+    <string name="joystick_cursor">Cursor</string>
+    <string name="joystick_qaop">QAOP</string>
+    <string name="joystick_sinclair2">Sinclair 2</string>
+    <string name="reset">Reset</string>
+    <string name="quit">Quit</string>
 </resources>

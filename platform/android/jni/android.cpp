@@ -121,9 +121,37 @@ void Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
     env->ReleaseStringUTFChars(jfile, file);
 }
 
+void Java_app_usp_Emulator_LoadState(JNIEnv* env, jobject obj)
+{
+	using namespace xOptions;
+	eOptionB* o = eOptionB::Find("load state");
+	SAFE_CALL(o)->Change();
+}
+
+void Java_app_usp_Emulator_SaveState(JNIEnv* env, jobject obj)
+{
+	using namespace xOptions;
+	eOptionB* o = eOptionB::Find("save state");
+	SAFE_CALL(o)->Change();
+}
+
 void Java_app_usp_Emulator_StoreOptions(JNIEnv* env, jobject obj)
 {
 	xOptions::Store();
+}
+
+void Java_app_usp_Emulator_Reset(JNIEnv* env, jobject obj)
+{
+	xPlatform::Handler()->OnAction(xPlatform::A_RESET);
+}
+
+jint Java_app_usp_Emulator_GetJoystick(JNIEnv* env, jobject obj)
+{
+	return xPlatform::OpJoystick();
+}
+void Java_app_usp_Emulator_SetJoystick(JNIEnv* env, jobject obj, jint joy)
+{
+	return xPlatform::OpJoystick((xPlatform::eJoystick)joy);
 }
 
 }

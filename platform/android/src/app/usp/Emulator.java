@@ -33,7 +33,12 @@ public class Emulator
 	synchronized native int		UpdateAudio(ByteBuffer buf);
 	synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 	synchronized native void	Open(final String file);
+	synchronized native void	LoadState();
+	synchronized native void	SaveState();
 	synchronized native void	StoreOptions();
+	synchronized native void	Reset();
+	synchronized native int		GetJoystick();
+	synchronized native void	SetJoystick(int joy);
 
 	public static Emulator the = new Emulator();
 }

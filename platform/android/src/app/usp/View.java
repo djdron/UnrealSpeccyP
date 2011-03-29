@@ -130,12 +130,6 @@ public class View extends SurfaceView  implements Callback
 			}
 		}
 	}
-	public void OnResume()
-	{
-		StartRenderThread();
-	}
-	public void OnPause()
-	{
-		StopRenderThread();
-	}
+	public void OnResume()	{ StartRenderThread(); }
+	public void OnPause()	{ StopRenderThread(); }
 }
