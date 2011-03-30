@@ -80,10 +80,11 @@ public class Main extends Activity
 		row1.removeAllViews();
 		row2.removeAllViews();
 		layout.removeAllViews();
+		row2.setMinimumHeight(80);
 		if(config.orientation == Configuration.ORIENTATION_LANDSCAPE)
 		{
 			row1.setGravity(Gravity.CENTER);
-			row2.setGravity(Gravity.RIGHT);
+			row2.setGravity(Gravity.RIGHT|Gravity.BOTTOM);
 			row1.addView(control, new TableRow.LayoutParams());
 			row1.addView(view, new TableRow.LayoutParams());
 			row2.addView(view_dummy, new TableRow.LayoutParams());
@@ -93,13 +94,14 @@ public class Main extends Activity
 		}
 		else
 		{
-			row1.setGravity(Gravity.BOTTOM);
+			row2.setGravity(Gravity.BOTTOM);
 			layout.addView(view);
 			layout.addView(control);
-			row1.addView(banner, new TableRow.LayoutParams());
-			layout.addView(row1);
+			row2.addView(banner, new TableRow.LayoutParams());
+			layout.addView(row2);
 		}
 		control.requestFocus();
+		view.setKeepScreenOn(true);
 	}
 	protected void onResume()
 	{
