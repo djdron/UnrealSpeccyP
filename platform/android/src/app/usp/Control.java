@@ -99,7 +99,7 @@ public class Control extends ImageView
 		case KeyEvent.KEYCODE_ALT_LEFT:
 		case KeyEvent.KEYCODE_ALT_RIGHT:		return 's';
 
-		case KeyEvent.KEYCODE_MENU:				return 'm';
+//		case KeyEvent.KEYCODE_MENU:				return 'm';
 		case KeyEvent.KEYCODE_BACK:				return 'k';
 		case KeyEvent.KEYCODE_CALL:				return 'e';
 		case KeyEvent.KEYCODE_CAMERA:			return ' ';

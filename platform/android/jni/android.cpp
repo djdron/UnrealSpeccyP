@@ -69,6 +69,21 @@ static void Done()
 }
 //namespace xPlatform
 
+template<class T> static int GetOption(const char* name)
+{
+	xOptions::eOption<T>* o = xOptions::eOption<T>::Find(name);
+	return o ? *o : T(0);
+}
+template<class T> static int SetOption(const char* name, const T& value)
+{
+	xOptions::eOption<T>* o = xOptions::eOption<T>::Find(name);
+	if(o)
+	{
+		o->Set(value);
+		o->Apply();
+	}
+}
+
 extern "C"
 {
 
@@ -120,6 +135,10 @@ void Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
     xPlatform::Handler()->OnOpenFile(file);
     env->ReleaseStringUTFChars(jfile, file);
 }
+jstring Java_app_usp_Emulator_GetLastFolder(JNIEnv* env, jobject obj)
+{
+	return env->NewStringUTF(xPlatform::OpLastFolder());
+}
 
 void Java_app_usp_Emulator_LoadState(JNIEnv* env, jobject obj)
 {
@@ -145,13 +164,32 @@ void Java_app_usp_Emulator_Reset(JNIEnv* env, jobject obj)
 	xPlatform::Handler()->OnAction(xPlatform::A_RESET);
 }
 
-jint Java_app_usp_Emulator_GetJoystick(JNIEnv* env, jobject obj)
+jint Java_app_usp_Emulator_GetOptionInt(JNIEnv* env, jobject obj, jstring jname)
 {
-	return xPlatform::OpJoystick();
+    const char* name = env->GetStringUTFChars(jname, NULL);
+	int r = GetOption<int>(name);
+    env->ReleaseStringUTFChars(jname, name);
+    return r;
 }
-void Java_app_usp_Emulator_SetJoystick(JNIEnv* env, jobject obj, jint joy)
+void Java_app_usp_Emulator_SetOptionInt(JNIEnv* env, jobject obj, jstring jname, jint value)
 {
-	return xPlatform::OpJoystick((xPlatform::eJoystick)joy);
+    const char* name = env->GetStringUTFChars(jname, NULL);
+	SetOption<int>(name, value);
+    env->ReleaseStringUTFChars(jname, name);
+}
+
+jboolean Java_app_usp_Emulator_GetOptionBool(JNIEnv* env, jobject obj, jstring jname)
+{
+    const char* name = env->GetStringUTFChars(jname, NULL);
+	int r = GetOption<bool>(name);
+    env->ReleaseStringUTFChars(jname, name);
+    return r;
+}
+void Java_app_usp_Emulator_SetOptionBool(JNIEnv* env, jobject obj, jstring jname, jboolean value)
+{
+    const char* name = env->GetStringUTFChars(jname, NULL);
+	SetOption<bool>(name, value);
+    env->ReleaseStringUTFChars(jname, name);
 }
 
 }

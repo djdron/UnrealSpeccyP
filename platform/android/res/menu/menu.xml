@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="@string/open_file" android:id="@+id/open_file"/>
-    <item android:title="@string/save_state" android:id="@+id/save_state"/>
-    <item android:title="@string/load_state" android:id="@+id/load_state"/>
-    <item android:title="@string/select_joystick" android:id="@+id/select_joystick">
-        <menu>
-        	<group android:checkableBehavior="single">
-	            <item android:id="@+id/joystick_kempston" android:title="@string/joystick_kempston"></item>
-	            <item android:id="@+id/joystick_cursor" android:title="@string/joystick_cursor"></item>
-	            <item android:id="@+id/joystick_qaop" android:title="@string/joystick_qaop"></item>
-	            <item android:id="@+id/joystick_sinclair2" android:title="@string/joystick_sinclair2"></item>
-			</group>	        
-        </menu>
-    </item>
-    <item android:title="@string/reset" android:id="@+id/reset"/>
-    <item android:title="@string/quit" android:id="@+id/quit"/>
+    <item android:title="@string/load_state" android:id="@+id/load_state" android:icon="@android:drawable/ic_media_rew"></item><item android:id="@+id/save_state" android:title="@string/save_state" android:icon="@android:drawable/btn_star_big_on"></item><item android:id="@+id/reset" android:title="@string/reset" android:icon="@android:drawable/ic_menu_revert"></item><item android:title="@string/open_file" android:id="@+id/open_file" android:icon="@android:drawable/ic_menu_save"></item>
+    
+    <item android:id="@+id/preferences" android:title="@string/preferences" android:icon="@android:drawable/ic_menu_manage"></item><item android:id="@+id/quit" android:title="@string/quit" android:icon="@android:drawable/ic_lock_power_off"></item>
+    
+    
+    
 </menu>

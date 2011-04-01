@@ -29,16 +29,22 @@ public class Emulator
 	synchronized native void	InitResources(final ByteBuffer font, final ByteBuffer rom0, final ByteBuffer rom1, final ByteBuffer rom2, final ByteBuffer rom3);
 	synchronized native void	Init(final String path);
 	synchronized native void	Done();
+
 	synchronized native boolean	UpdateVideo(ByteBuffer buf);
 	synchronized native int		UpdateAudio(ByteBuffer buf);
 	synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
+
 	synchronized native void	Open(final String file);
+	synchronized native String	GetLastFolder();
 	synchronized native void	LoadState();
 	synchronized native void	SaveState();
-	synchronized native void	StoreOptions();
 	synchronized native void	Reset();
-	synchronized native int		GetJoystick();
-	synchronized native void	SetJoystick(int joy);
+
+	synchronized native int		GetOptionInt(final String name);
+	synchronized native void	SetOptionInt(final String name, int value);
+	synchronized native boolean	GetOptionBool(final String name);
+	synchronized native void	SetOptionBool(final String name, boolean value);
+	synchronized native void	StoreOptions();
 
 	public static Emulator the = new Emulator();
 }
