@@ -8,6 +8,7 @@ import java.util.List;
 import android.app.ListActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.os.Bundle;
 import android.view.View;
 
 public class FileSelector extends ListActivity
@@ -28,7 +29,7 @@ public class FileSelector extends ListActivity
     	items.clear();
     	if(current_path.getParent() != null)
     	{
-    		items.add("..");
+    		items.add("/..");
     	}
     	if(current_path.canRead())
     	{
@@ -51,34 +52,39 @@ public class FileSelector extends ListActivity
 	    	items.addAll(list);
     	}
 		ArrayAdapter<String> a = new ArrayAdapter<String>(this, R.layout.file_selector_item, items);
-		this.setListAdapter(a);
+		setListAdapter(a);
     }
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id)
 	{
 		super.onListItemClick(l, v, position, id);
 		String f = items.get(position);
-		if(f.equals(".."))
+		if(f.equals("/.."))
 		{
 			File parent = current_path.getParentFile();
 			if(parent != null)
+			{
+				String name = "/" + current_path.getName();
 				current_path = parent;
+				Update();
+				int x = items.indexOf(name);
+				if(x >= 0)
+					getListView().setSelection(x);
+			}
 		}
 		else
 		{
 			if(f.startsWith("/"))
+			{
 				current_path = new File(current_path.getPath() + f);
+				Update();
+			}
 			else
+			{
 				current_path = new File(current_path.getPath() + "/" + f);
-		}
-		if(current_path.isFile())
-		{
-			Emulator.the.Open(current_path.getAbsolutePath());
-			finish();
-		}
-		else
-		{
-			Update();
+				Emulator.the.Open(current_path.getAbsolutePath());
+				finish();
+			}
 		}
 	}
 }
