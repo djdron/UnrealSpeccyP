@@ -35,7 +35,7 @@ public class Emulator
 	synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 
 	synchronized native void	Open(final String file);
-	synchronized native String	GetLastFolder();
+	synchronized native String	GetLastFile();
 	synchronized native void	LoadState();
 	synchronized native void	SaveState();
 	synchronized native void	Reset();

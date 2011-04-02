@@ -18,10 +18,25 @@ public class FileSelector extends ListActivity
 	protected void onResume()
 	{
 		super.onResume();
-		current_path = new File(Emulator.the.GetLastFolder());
+		File last_file = new File(Emulator.the.GetLastFile());
+		String last_name = last_file.getName();
+		current_path = last_file.getParentFile();
 		if(current_path == null || !current_path.exists())
+		{
 			current_path = new File("/");
+			last_name = "";
+		}
 		Update();
+		SelectItem(last_name);
+	}
+	private void SelectItem(final String name)
+	{
+		if(name.length() > 0)
+		{
+			int x = items.indexOf(name);
+			if(x >= 0)
+				getListView().setSelection(x);
+		}
 	}
     private void Update()
     {
@@ -45,7 +60,7 @@ public class FileSelector extends ListActivity
 	    	for(File f : files)
 	    	{
 	    		if(!f.isDirectory())
-	    			items.add(f.getName());
+	    			list.add(f.getName());
 	    	}
 	    	Collections.sort(list);
 	    	items.addAll(list);
@@ -66,9 +81,7 @@ public class FileSelector extends ListActivity
 				String name = "/" + current_path.getName();
 				current_path = parent;
 				Update();
-				int x = items.indexOf(name);
-				if(x >= 0)
-					getListView().setSelection(x);
+				SelectItem(name);
 			}
 		}
 		else
