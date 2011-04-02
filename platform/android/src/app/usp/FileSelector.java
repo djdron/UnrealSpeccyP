@@ -8,7 +8,6 @@ import java.util.List;
 import android.app.ListActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.os.Bundle;
 import android.view.View;
 
 public class FileSelector extends ListActivity

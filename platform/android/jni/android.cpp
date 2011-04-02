@@ -134,6 +134,7 @@ void Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
     const char* file = env->GetStringUTFChars(jfile, NULL);
     xPlatform::Handler()->OnOpenFile(file);
     env->ReleaseStringUTFChars(jfile, file);
+    xPlatform::Handler()->OnAction(xPlatform::A_TAPE_TOGGLE);
 }
 jstring Java_app_usp_Emulator_GetLastFolder(JNIEnv* env, jobject obj)
 {
