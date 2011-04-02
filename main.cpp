@@ -307,6 +307,13 @@ static struct eSpeccyHandler : public eHandler
 					tape->Stop();
 				return tape->Started() ? AR_TAPE_STARTED : AR_TAPE_STOPPED;
 			}
+		case A_TAPE_QUERY:
+			{
+				eTape* tape = speccy->Device<eTape>();
+				if(!tape->Inserted())
+					return AR_TAPE_NOT_INSERTED;
+				return tape->Started() ? AR_TAPE_STARTED : AR_TAPE_STOPPED;
+			}
 		case A_TAPE_FAST_TOGGLE:
 			{
 				eTape* tape = speccy->Device<eTape>();

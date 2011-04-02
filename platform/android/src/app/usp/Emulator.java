@@ -46,5 +46,8 @@ public class Emulator
 	synchronized native void	SetOptionBool(final String name, boolean value);
 	synchronized native void	StoreOptions();
 
+	synchronized native int		TapeState();
+	synchronized native void	TapeToggle();
+
 	public static Emulator the = new Emulator();
 }

@@ -58,7 +58,7 @@ enum eKeyFlags
 enum eMouseAction { MA_MOVE, MA_BUTTON, MA_WHEEL };
 enum eAction
 {
-	A_RESET, A_TAPE_TOGGLE, A_TAPE_FAST_TOGGLE
+	A_RESET, A_TAPE_TOGGLE, A_TAPE_FAST_TOGGLE, A_TAPE_QUERY
 };
 enum eActionResult
 {

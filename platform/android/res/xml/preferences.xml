@@ -8,7 +8,8 @@
             <ListPreference android:key="ay stereo" android:entryValues="@array/sound_chip_stereo_values" android:entries="@array/sound_chip_stereo_names" android:title="@string/sound_chip_stereo"></ListPreference>
         </PreferenceCategory><PreferenceCategory android:title="@string/pref_peripherals">
             <ListPreference android:title="@string/drive" android:key="drive" android:entryValues="@array/drive_values" android:entries="@array/drive_names"></ListPreference>
-            <CheckBoxPreference android:title="@string/mode_48k" android:key="mode 48k"></CheckBoxPreference>
+            <Preference android:title="@string/tape" android:key="tape"></Preference><CheckBoxPreference android:title="@string/mode_48k" android:key="mode 48k"></CheckBoxPreference>
         </PreferenceCategory>
+        
         
     </PreferenceScreen>

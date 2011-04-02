@@ -134,7 +134,6 @@ void Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
     const char* file = env->GetStringUTFChars(jfile, NULL);
     xPlatform::Handler()->OnOpenFile(file);
     env->ReleaseStringUTFChars(jfile, file);
-    xPlatform::Handler()->OnAction(xPlatform::A_TAPE_TOGGLE);
 }
 jstring Java_app_usp_Emulator_GetLastFile(JNIEnv* env, jobject obj)
 {
@@ -191,6 +190,21 @@ void Java_app_usp_Emulator_SetOptionBool(JNIEnv* env, jobject obj, jstring jname
     const char* name = env->GetStringUTFChars(jname, NULL);
 	SetOption<bool>(name, value);
     env->ReleaseStringUTFChars(jname, name);
+}
+
+jint Java_app_usp_Emulator_TapeState(JNIEnv* env, jobject obj)
+{
+	using namespace xPlatform;
+	switch(Handler()->OnAction(A_TAPE_QUERY))
+	{
+	case AR_TAPE_NOT_INSERTED:	return 0;
+	case AR_TAPE_STOPPED:		return 1;
+	case AR_TAPE_STARTED:		return 2;
+	}
+}
+void Java_app_usp_Emulator_TapeToggle(JNIEnv* env, jobject obj)
+{
+	xPlatform::Handler()->OnAction(xPlatform::A_TAPE_TOGGLE);
 }
 
 }
