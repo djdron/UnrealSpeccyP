@@ -15,6 +15,7 @@ public class FileSelector extends ListActivity
 {
 	private List<String> items = new ArrayList<String>();
 	private File current_path = new File("/");
+
 	@Override
 	protected void onResume()
 	{
@@ -39,23 +40,23 @@ public class FileSelector extends ListActivity
 				getListView().setSelection(x);
 		}
 	}
-    private void Update()
-    {
-    	items.clear();
-    	if(current_path.getParent() != null)
-    	{
-    		items.add("/..");
-    	}
-    	if(current_path.canRead())
-    	{
-	    	File[] files = current_path.listFiles();
-	    	for(File f : files)
-	    	{
-	    		if(f.isDirectory())
-	    			items.add("/" + f.getName());
-	    		else
-	    			items.add(f.getName());
-	    	}
+	private void Update()
+	{
+		items.clear();
+		if(current_path.getParent() != null)
+		{
+			items.add("/..");
+		}
+		if(current_path.canRead())
+		{
+			File[] files = current_path.listFiles();
+			for(File f : files)
+			{
+				if(f.isDirectory())
+					items.add("/" + f.getName());
+				else
+					items.add(f.getName());
+			}
 			class CmpNames implements Comparator<String>
 			{
 				@Override
@@ -71,14 +72,14 @@ public class FileSelector extends ListActivity
 					}
 					return a.compareToIgnoreCase(b);
 				}
-			};
-	    	Collections.sort(items, new CmpNames());
-    	}
+			}
+			Collections.sort(items, new CmpNames());
+		}
 		ArrayAdapter<String> a = new ArrayAdapter<String>(this, R.layout.file_selector_item, items);
 		setListAdapter(a);
-    }
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id)
+	}
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id)
 	{
 		super.onListItemClick(l, v, position, id);
 		String f = items.get(position);
