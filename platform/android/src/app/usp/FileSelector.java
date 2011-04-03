@@ -3,6 +3,7 @@ package app.usp;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.app.ListActivity;
@@ -48,22 +49,30 @@ public class FileSelector extends ListActivity
     	if(current_path.canRead())
     	{
 	    	File[] files = current_path.listFiles();
-	    	List<String> list = new ArrayList<String>();
 	    	for(File f : files)
 	    	{
 	    		if(f.isDirectory())
-	    			list.add("/" + f.getName());
+	    			items.add("/" + f.getName());
+	    		else
+	    			items.add(f.getName());
 	    	}
-	    	Collections.sort(list);
-	    	items.addAll(list);
-	    	list.clear();
-	    	for(File f : files)
-	    	{
-	    		if(!f.isDirectory())
-	    			list.add(f.getName());
-	    	}
-	    	Collections.sort(list);
-	    	items.addAll(list);
+			class CmpNames implements Comparator<String>
+			{
+				@Override
+				public int compare(final String a, final String b)
+				{
+					if(a.length() == 0 || b.length() == 0)
+						return a.compareToIgnoreCase(b);
+					final boolean adir = a.charAt(0) == '/';
+					final boolean bdir = b.charAt(0) == '/';
+					if(adir != bdir)
+					{
+						return adir ? -1 : +1;
+					}
+					return a.compareToIgnoreCase(b);
+				}
+			};
+	    	Collections.sort(items, new CmpNames());
     	}
 		ArrayAdapter<String> a = new ArrayAdapter<String>(this, R.layout.file_selector_item, items);
 		setListAdapter(a);
