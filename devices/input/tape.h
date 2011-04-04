@@ -24,11 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 class eSpeccy;
-namespace xZ80 { class eZ80; }
+namespace xZ80 { class eZ80; class eZ80_FastTape; }
 
 class eTape : public eDeviceSound
 {
 	typedef eDeviceSound eInherited;
+	friend class xZ80::eZ80_FastTape;
 public:
 	eTape(eSpeccy* s) : speccy(s) {}
 	virtual void Init();

@@ -902,38 +902,32 @@ byte eTape::TapeBit(int tact)
 	return (byte)tape.tape_bit;
 }
 
+namespace xZ80
+{
+
 //*****************************************************************************
 //	eZ80_FastTape
 //-----------------------------------------------------------------------------
 class eZ80_FastTape: public xZ80::eZ80
 {
 public:
-	void Emul();
+	void EmulEdge();
+	void EmulTrap();
+	void Emul()
+	{
+		EmulTrap();
+		EmulEdge();
+	}
 };
-
 //=============================================================================
-//	FastTapeEmul
+//	eZ80_FastTape::EmulEdge
 //-----------------------------------------------------------------------------
-void FastTapeEmul(xZ80::eZ80* z80)
+void eZ80_FastTape::EmulEdge()
 {
-	((eZ80_FastTape*)z80)->Emul();
-}
-namespace xZ80
-{
-inline byte eZ80::Read(word addr) const
-{
-	return memory->Read(addr);
-}
-}//namespace xZ80
-//=============================================================================
-//	eZ80_FastTape::Emul
-//-----------------------------------------------------------------------------
-void eZ80_FastTape::Emul()
-{
-	byte p0 = Read(pc + 0);
-	byte p1 = Read(pc + 1);
-	byte p2 = Read(pc + 2);
-	byte p3 = Read(pc + 3);
+	byte p0 = memory->Read(pc + 0);
+	byte p1 = memory->Read(pc + 1);
+	byte p2 = memory->Read(pc + 2);
+	byte p3 = memory->Read(pc + 3);
 	if(p0 == 0x3D && p1 == 0x20 && p2 == 0xFD && p3 == 0xA7)
 	{ // dec a:jr nz,$-1
 		t += ((byte)(a - 1)) * 16;
@@ -954,15 +948,15 @@ void eZ80_FastTape::Emul()
 	}
 	if(p0 == 0x04 && p1 == 0xC8 && p2 == 0x3E)
 	{
-		byte p04 = Read(pc + 4);
-		byte p05 = Read(pc + 5);
-		byte p06 = Read(pc + 6);
-		byte p07 = Read(pc + 7);
-		byte p08 = Read(pc + 8);
-		byte p09 = Read(pc + 9);
-		byte p10 = Read(pc + 10);
-		byte p11 = Read(pc + 11);
-		byte p12 = Read(pc + 12);
+		byte p04 = memory->Read(pc + 4);
+		byte p05 = memory->Read(pc + 5);
+		byte p06 = memory->Read(pc + 6);
+		byte p07 = memory->Read(pc + 7);
+		byte p08 = memory->Read(pc + 8);
+		byte p09 = memory->Read(pc + 9);
+		byte p10 = memory->Read(pc + 10);
+		byte p11 = memory->Read(pc + 11);
+		byte p12 = memory->Read(pc + 12);
 		if(p04 == 0xDB && p05 == 0xFE && p06 == 0x1F && p07 == 0xD0 && p08
 				== 0xA9 && p09 == 0xE6 && p10 == 0x20 && p11 == 0x28 && p12
 				== 0xF3)
@@ -1040,14 +1034,14 @@ void eZ80_FastTape::Emul()
 	}
 	if(p0 == 0x04 && p1 == 0x20 && p2 == 0x03)
 	{
-		byte p06 = Read(pc + 6);
-		byte p08 = Read(pc + 8);
-		byte p09 = Read(pc + 9);
-		byte p10 = Read(pc + 10);
-		byte p11 = Read(pc + 11);
-		byte p12 = Read(pc + 12);
-		byte p13 = Read(pc + 13);
-		byte p14 = Read(pc + 14);
+		byte p06 = memory->Read(pc + 6);
+		byte p08 = memory->Read(pc + 8);
+		byte p09 = memory->Read(pc + 9);
+		byte p10 = memory->Read(pc + 10);
+		byte p11 = memory->Read(pc + 11);
+		byte p12 = memory->Read(pc + 12);
+		byte p13 = memory->Read(pc + 13);
+		byte p14 = memory->Read(pc + 14);
 		if(p06 == 0xDB && p08 == 0x1F && p09 == 0xC8 && p10 == 0xA9 && p11
 				== 0xE6 && p12 == 0x20 && p13 == 0x28 && p14 == 0xF1)
 		{ // find edge from Donkey Kong
@@ -1065,13 +1059,13 @@ void eZ80_FastTape::Emul()
 	}
 	if(p0 == 0x3E && p2 == 0xDB && p3 == 0xFE)
 	{
-		byte p04 = Read(pc + 4);
-		byte p05 = Read(pc + 5);
-		byte p06 = Read(pc + 6);
-		byte p07 = Read(pc + 7);
-		byte p09 = Read(pc + 9);
-		byte p10 = Read(pc + 10);
-		byte p11 = Read(pc + 11);
+		byte p04 = memory->Read(pc + 4);
+		byte p05 = memory->Read(pc + 5);
+		byte p06 = memory->Read(pc + 6);
+		byte p07 = memory->Read(pc + 7);
+		byte p09 = memory->Read(pc + 9);
+		byte p10 = memory->Read(pc + 10);
+		byte p11 = memory->Read(pc + 11);
 		if(p04 == 0xA9 && p05 == 0xE6 && p06 == 0x40 && p07 == 0x20 && p09
 				== 0x05 && p10 == 0x20 && p11 == 0xF4)
 		{ // lode runner
@@ -1087,4 +1081,91 @@ void eZ80_FastTape::Emul()
 			}
 		}
 	}
+}
+//=============================================================================
+//	eZ80_FastTape::EmulTrap
+//-----------------------------------------------------------------------------
+void eZ80_FastTape::EmulTrap()
+{
+	if((pc & 0xFFFF) != 0x056B)
+		return;
+	eTape* tape = devices->Get<eTape>();
+	dword pulse;
+	do
+	{
+		if(tape->tape.play_pointer >= tape->tape.end_of_tape ||
+				(pulse = tape->tape_pulse[*tape->tape.play_pointer++]) == (dword)-1)
+		{
+			tape->Stop();
+			return;
+		}
+	}
+	while(pulse > 770);
+	++tape->tape.play_pointer;
+
+	// loading header
+	l = 0;
+	for(dword bit = 0x80; bit; bit >>= 1)
+	{
+		if(tape->tape.play_pointer >= tape->tape.end_of_tape ||
+				(pulse = tape->tape_pulse[*tape->tape.play_pointer++]) == (dword)-1)
+		{
+			tape->Stop();
+			pc = 0x05E2;
+			return;
+		}
+		l |= (pulse > 1240) ? bit : 0;
+		++tape->tape.play_pointer;
+	}
+
+	// loading data
+	do
+	{
+		l = 0;
+		for(dword bit = 0x80; bit; bit >>= 1)
+		{
+			if(tape->tape.play_pointer >= tape->tape.end_of_tape ||
+					(pulse = tape->tape_pulse[*tape->tape.play_pointer++]) == (dword)-1)
+			{
+				tape->Stop();
+				pc = 0x05E2;
+				return;
+			}
+			l |= (pulse > 1240) ? bit : 0;
+			++tape->tape.play_pointer;
+		}
+		memory->Write(ix++, l);
+		--de;
+	}
+	while(de & 0xFFFF);
+
+	// loading CRC
+	l = 0;
+	for(dword bit = 0x80; bit; bit >>= 1)
+	{
+		if(tape->tape.play_pointer >= tape->tape.end_of_tape ||
+				(pulse = tape->tape_pulse[*tape->tape.play_pointer++]) == (dword)-1)
+		{
+			tape->Stop();
+			pc = 0x05E2;
+			return;
+		}
+		l |= (pulse > 1240) ? bit : 0;
+		++tape->tape.play_pointer;
+	}
+	pc = 0x05DF;
+	f |= CF;
+	bc = 0xB001;
+	h = 0;
+}
+
+}
+//namespace xZ80
+
+//=============================================================================
+//	FastTapeEmul
+//-----------------------------------------------------------------------------
+void FastTapeEmul(xZ80::eZ80* z80)
+{
+	((xZ80::eZ80_FastTape*)z80)->Emul();
 }
