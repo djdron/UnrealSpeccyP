@@ -15,7 +15,7 @@ public class FileSelector extends ListActivity
 {
 	private List<String> items = new ArrayList<String>();
 	private File current_path = new File("/");
-
+	
 	@Override
 	protected void onResume()
 	{
@@ -52,10 +52,11 @@ public class FileSelector extends ListActivity
 			File[] files = current_path.listFiles();
 			for(File f : files)
 			{
+				String name = f.getName();
 				if(f.isDirectory())
-					items.add("/" + f.getName());
-				else
-					items.add(f.getName());
+					items.add("/" + name);
+				else if(Emulator.the.FileTypeSupported(name))
+					items.add(name);
 			}
 			class CmpNames implements Comparator<String>
 			{

@@ -207,6 +207,14 @@ void Java_app_usp_Emulator_TapeToggle(JNIEnv* env, jobject obj)
 	xPlatform::Handler()->OnAction(xPlatform::A_TAPE_TOGGLE);
 }
 
+jboolean Java_app_usp_Emulator_FileTypeSupported(JNIEnv* env, jobject obj, jstring jname)
+{
+    const char* name = env->GetStringUTFChars(jname, NULL);
+	bool r = xPlatform::Handler()->FileTypeSupported(name);
+    env->ReleaseStringUTFChars(jname, name);
+    return r;
+}
+
 }
 //extern "C"
 
