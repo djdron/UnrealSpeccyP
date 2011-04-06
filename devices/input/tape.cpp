@@ -149,7 +149,7 @@ void eTape::FindTapeSizes()
 void eTape::StopTape()
 {
 	FindTapeIndex();
-	if(tape.play_pointer == tape.end_of_tape)
+	if(tape.play_pointer >= tape.end_of_tape)
 		tape.index = 0;
 	tape.play_pointer = 0;
 	tape.edge_change = 0x7FFFFFFFFFFFFFFFLL;
@@ -893,7 +893,7 @@ byte eTape::TapeBit(int tact)
 		}
 		dword pulse;
 		tape.tape_bit ^= -1;
-		if(tape.play_pointer == tape.end_of_tape ||
+		if(tape.play_pointer >= tape.end_of_tape ||
 				(pulse = tape_pulse[*tape.play_pointer++]) == (dword)-1)
 			StopTape();
 		else

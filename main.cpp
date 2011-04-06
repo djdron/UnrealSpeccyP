@@ -64,6 +64,12 @@ struct eFileType : public eList<eFileType>
 	}
 };
 
+static struct eOptionTapeFast : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "fast tape"; }
+	virtual int Order() const { return 50; }
+} op_tape_fast;
+
 static struct eSpeccyHandler : public eHandler
 {
 	eSpeccyHandler() : speccy(NULL), video_paused(0) {}
@@ -302,7 +308,13 @@ static struct eSpeccyHandler : public eHandler
 				if(!tape->Inserted())
 					return AR_TAPE_NOT_INSERTED;
 				if(!tape->Started())
+				{
+					if(op_tape_fast)
+						speccy->CPU()->FastEmul(FastTapeEmul);
+					else
+						speccy->CPU()->FastEmul(NULL);
 					tape->Start();
+				}
 				else
 					tape->Stop();
 				return tape->Started() ? AR_TAPE_STARTED : AR_TAPE_STOPPED;
@@ -313,17 +325,6 @@ static struct eSpeccyHandler : public eHandler
 				if(!tape->Inserted())
 					return AR_TAPE_NOT_INSERTED;
 				return tape->Started() ? AR_TAPE_STARTED : AR_TAPE_STOPPED;
-			}
-		case A_TAPE_FAST_TOGGLE:
-			{
-				eTape* tape = speccy->Device<eTape>();
-				if(!tape->Inserted())
-					return AR_TAPE_NOT_INSERTED;
-				if(!speccy->CPU()->FastEmul())
-					speccy->CPU()->FastEmul(FastTapeEmul);
-				else
-					speccy->CPU()->FastEmul(NULL);
-				return speccy->CPU()->FastEmul() ? AR_TAPE_FAST_SET : AR_TAPE_FAST_RESET;
 			}
 		}
 		return AR_ERROR;

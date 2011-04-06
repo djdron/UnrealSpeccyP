@@ -372,7 +372,7 @@ public:
 
 		wxMenu* menuDevice = new wxMenu;
 		menuDevice->Append(ID_TapeToggle, _("Start/Stop tape\tF5"));
-		menuDevice->Append(ID_TapeFastToggle, _("Tape fast"));
+		menu_tape_fast = menuDevice->Append(ID_TapeFastToggle, _("Tape fast"), _(""), wxITEM_CHECK);
 		menuDevice->Append(ID_DriveNext, _("Select next drive\tF6"));
 		menu_pause = menuDevice->Append(ID_PauseToggle, _("Pause\tF7"), _(""), wxITEM_CHECK);
 		menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, _("True speed\tF8"), _(""), wxITEM_CHECK);
@@ -446,6 +446,9 @@ public:
 		UpdateJoyMenu();
 		menu_true_speed->Check(op_true_speed);
 		menu_mode_48k->Check(op_mode_48k && *op_mode_48k);
+		xOptions::eOption<bool>* op_tape_fast = xOptions::eOption<bool>::Find("fast tape");
+		menu_tape_fast->Check(op_tape_fast && *op_tape_fast);
+
 		if(!options.file_to_open.empty())
 			Handler()->OnOpenFile(wxConvertWX2MB(options.file_to_open));
 	}
@@ -564,13 +567,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	}
 	void OnTapeFastToggle(wxCommandEvent& event)
 	{
-		switch(Handler()->OnAction(A_TAPE_FAST_TOGGLE))
-		{
-		case AR_TAPE_FAST_SET:		SetStatusText(_("Fast tape speed"));		break;
-		case AR_TAPE_FAST_RESET:	SetStatusText(_("Normal tape speed"));	break;
-		case AR_TAPE_NOT_INSERTED:	SetStatusText(_("Tape not inserted"));	break;
-		default: break;
-		}
+		using namespace xOptions;
+		eOption<bool>* op_tape_fast = eOption<bool>::Find("fast tape");
+		SAFE_CALL(op_tape_fast)->Change();
+		bool tape_fast = op_tape_fast && *op_tape_fast;
+		menu_tape_fast->Check(tape_fast);
+		SetStatusText(tape_fast ? _("Fast tape on") : _("Fast tape off"));
 	}
 	void OnDriveNext(wxCommandEvent& event)
 	{
@@ -664,6 +666,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	wxMenuItem* menu_pause;
 	wxMenuItem* menu_true_speed;
 	wxMenuItem* menu_mode_48k;
+	wxMenuItem* menu_tape_fast;
 
 private:
 	DECLARE_EVENT_TABLE()

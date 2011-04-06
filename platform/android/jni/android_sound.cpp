@@ -47,6 +47,8 @@ int UpdateSound(byte* buf)
 			if(size > 44100*2*2/50*3)//~approx >10600 bytes
 			{
 				res = size;
+				if(res > 32768)
+					res = 32768;
 				memcpy(buf, Handler()->AudioData(i), res);
 				Handler()->AudioDataUse(i, size);
 			}

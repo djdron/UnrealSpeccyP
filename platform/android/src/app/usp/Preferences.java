@@ -16,14 +16,16 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static private String sound_chip_id = "sound chip";
 	final static private String sound_chip_stereo_id = "ay stereo";
 	final static private String select_drive_id = "drive";
-	final static private String mode_48k_id = "mode 48k";
 	final static private String tape_id = "tape";
+	final static private String tape_fast_id = "fast tape";
+	final static private String mode_48k_id = "mode 48k";
 	private ListPreference select_joystick;
 	private ListPreference sound_source;
 	private ListPreference sound_chip;
 	private ListPreference sound_chip_stereo;
 	private ListPreference select_drive;
 	private Preference tape;
+	private CheckBoxPreference tape_fast;
 	private CheckBoxPreference mode_48k;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -36,6 +38,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         sound_chip_stereo = (ListPreference)getPreferenceScreen().findPreference(sound_chip_stereo_id);
         select_drive = (ListPreference)getPreferenceScreen().findPreference(select_drive_id);
         tape = (Preference)getPreferenceScreen().findPreference(tape_id);
+        tape_fast = (CheckBoxPreference)getPreferenceScreen().findPreference(tape_fast_id);
         mode_48k = (CheckBoxPreference)getPreferenceScreen().findPreference(mode_48k_id);
 	}
 	private void UpdateDescs()
@@ -61,6 +64,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		sound_chip.setValueIndex(Emulator.the.GetOptionInt(sound_chip_id));
 		sound_chip_stereo.setValueIndex(Emulator.the.GetOptionInt(sound_chip_stereo_id));
 		select_drive.setValueIndex(Emulator.the.GetOptionInt(select_drive_id));
+		tape_fast.setChecked(Emulator.the.GetOptionBool(tape_fast_id));
 		mode_48k.setChecked(Emulator.the.GetOptionBool(mode_48k_id));
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		UpdateDescs();
@@ -102,6 +106,11 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		else if(key.equals(mode_48k_id))
 		{
 			Emulator.the.SetOptionBool(mode_48k_id, mode_48k.isChecked());
+			UpdateDescs();
+		}
+		else if(key.equals(tape_fast_id))
+		{
+			Emulator.the.SetOptionBool(tape_fast_id, tape_fast.isChecked());
 			UpdateDescs();
 		}
 	}

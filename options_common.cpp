@@ -94,28 +94,6 @@ static struct eOptionTape : public xOptions::eOptionInt
 	virtual int Order() const { return 40; }
 } op_tape;
 
-static struct eOptionTapeFast : public xOptions::eOptionBool
-{
-	eOptionTapeFast() { storeable = false; }
-	virtual const char* Name() const { return "fast tape"; }
-	virtual void Change(bool next = true)
-	{
-		switch(Handler()->OnAction(A_TAPE_FAST_TOGGLE))
-		{
-		case AR_TAPE_FAST_SET:
-			Set(true);
-			break;
-		case AR_TAPE_FAST_RESET:
-		case AR_TAPE_NOT_INSERTED:
-			Set(false);
-			break;
-		default:
-			break;
-		}
-	}
-	virtual int Order() const { return 50; }
-} op_tape_fast;
-
 static struct eOptionSound : public xOptions::eOptionInt
 {
 	eOptionSound() { Set(S_AY); }
