@@ -16,14 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../platform.h"
+#include "../platform.h"
 
 #ifdef _ANDROID
 
 #include <jni.h>
-#include "../../io.h"
-#include "../../../options_common.h"
-#include "../../../tools/options.h"
+#include "../io.h"
+#include "../../options_common.h"
+#include "../../tools/options.h"
 
 byte spxtrm4f[2048];
 byte sos128[16384];
