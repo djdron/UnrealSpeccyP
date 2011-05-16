@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="app.usp"
-      android:versionCode="2"
-      android:versionName="0.20">
+      android:installLocation="auto"
+      android:versionCode="4"
+      android:versionName="0.22">
     <uses-sdk android:minSdkVersion="7" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
 
@@ -35,13 +36,17 @@
             </intent-filter>
         </activity>
 
+<!--
 		<meta-data android:name="com.mobclix.APPLICATION_ID" android:value="9CDDAF11-3CD0-4AD3-A472-49B84AD996A3"/>
 		<activity android:name="com.mobclix.android.sdk.MobclixBrowserActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+-->
 		<activity android:name="Preferences" android:label="@string/preferences"></activity>
 		<activity android:name="FileSelector" android:label="@string/file_selector"></activity>
     </application>
+<!--
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.GET_TASKS"></uses-permission>
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+-->
 </manifest>

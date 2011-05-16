@@ -39,6 +39,7 @@ public class Emulator
 	synchronized native void	LoadState();
 	synchronized native void	SaveState();
 	synchronized native void	Reset();
+	synchronized native boolean	FileTypeSupported(final String name);
 
 	synchronized native int		GetOptionInt(final String name);
 	synchronized native void	SetOptionInt(final String name, int value);

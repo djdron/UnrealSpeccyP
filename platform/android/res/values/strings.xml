@@ -33,6 +33,6 @@
     <string name="drive">Beta Disk Drive</string><string name="drive_a">A</string><string name="drive_b">B</string><string name="drive_c">C</string><string name="drive_d">D</string>
     <string name="mode_48k">Mode 48K</string>
     <string name="file_selector">Select File</string><string name="tape">Tape</string>
-    <string name="tape_na">Not Available (open tape file first)</string><string name="tape_started">Started (press to stop)</string><string name="tape_stopped">Stopped (press to start)</string>
+    <string name="tape_na">Not Available (open tape file first)</string><string name="tape_started">Started (press to stop)</string><string name="tape_stopped">Stopped (press to start)</string><string name="tape_fast">Fast tape</string><string name="tape_fast_desc">Use tape traps</string>
     
 </resources>

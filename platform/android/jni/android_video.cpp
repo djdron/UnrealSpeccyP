@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../platform.h"
+#include "../../platform.h"
 
 #ifdef _ANDROID
 
-#include "../../ui/ui.h"
+#include "../../../ui/ui.h"
 
 namespace xPlatform
 {

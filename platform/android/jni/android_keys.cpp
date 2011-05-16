@@ -16,47 +16,25 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../platform.h"
+#include "../../platform.h"
 
 #ifdef _ANDROID
 
-#include "../../tools/options.h"
-#include "../../options_common.h"
+#include "../../../options_common.h"
 
 namespace xPlatform
 {
 
-static xOptions::eOption<int>* op_sound = NULL;
-static int OpSound() { return op_sound ? *op_sound : (int)S_AY; }
-
-void InitSound()
+void ProcessKey(char key, bool down, bool shift, bool alt)
 {
-	op_sound = xOptions::eOption<int>::Find("sound");
-}
-void DoneSound()
-{
-}
-int UpdateSound(byte* buf)
-{
-	int res = 0;
-	for(int i = Handler()->AudioSources(); --i >= 0;)
-	{
-		dword size = Handler()->AudioDataReady(i);
-		if(i == OpSound() && !Handler()->FullSpeed())
-		{
-			if(size > 44100*2*2/50*3)//~approx >10600 bytes
-			{
-				res = size;
-				if(res > 32768)
-					res = 32768;
-				memcpy(buf, Handler()->AudioData(i), res);
-				Handler()->AudioDataUse(i, size);
-			}
-		}
-		else
-			Handler()->AudioDataUse(i, size);
-	}
-	return res;
+	dword flags = OpJoyKeyFlags();
+	if(down)
+		flags |= KF_DOWN;
+	if(shift)
+		flags |= KF_SHIFT;
+	if(alt)
+		flags |= KF_ALT;
+	Handler()->OnKey(key, flags);
 }
 
 }
