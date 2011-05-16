@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <resources>
+        <string-array name="joystick_names">
+            <item>@string/joystick_kempston</item>
+            <item>@string/joystick_cursor</item>
+            <item>@string/joystick_qaop</item>
+            <item>@string/joystick_sinclair2</item>
+        </string-array>
+        <string-array name="joystick_values">
+            <item>0</item>
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
+        </string-array>
+        <string-array name="sound_source_names">
+            <item>@string/sound_source_beeper</item>
+            <item>@string/sound_source_ay</item>
+            <item>@string/sound_source_tape</item>
+        </string-array>
+        <string-array name="sound_source_values">
+            <item>0</item>
+            <item>1</item>
+            <item>2</item>
+        </string-array>
+        <string-array name="sound_chip_names">
+            <item>@string/sound_chip_ay</item>
+            <item>@string/sound_chip_ym</item>
+        </string-array>
+        
+        <string-array name="sound_chip_values">
+            <item>0</item>
+            <item>1</item>
+        </string-array>
+        <string-array name="sound_chip_stereo_names">
+            <item>@string/sound_chip_stereo_abc</item>
+            <item>@string/sound_chip_stereo_acb</item>
+            <item>@string/sound_chip_stereo_bac</item>
+            <item>@string/sound_chip_stereo_bca</item>
+            <item>@string/sound_chip_stereo_cab</item>
+            <item>@string/sound_chip_stereo_cba</item>
+            <item>@string/sound_chip_stereo_mono</item>
+        </string-array>
+        <string-array name="sound_chip_stereo_values">
+            <item>0</item>
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
+            <item>4</item>
+            <item>5</item>
+            <item>6</item>
+        </string-array>
+        <string-array name="drive_names">
+            <item>@string/drive_a</item>
+            <item>@string/drive_b</item>
+            <item>@string/drive_c</item>
+            <item>@string/drive_d</item>
+        </string-array>
+        <string-array name="drive_values">
+            <item>0</item>
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
+        </string-array>
+    </resources>
