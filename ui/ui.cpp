@@ -102,9 +102,9 @@ public:
 #else//USE_EMBEDDED_RESOURCES
 		FILE* f = fopen(xIo::ResourcePath(fname), "rb");
 		assert(f);
-		int size = 8 * 256;
+		size_t size = 8 * 256;
 		data = new byte[size];
-		fread(data, 1, size, f);
+		assert(fread(data, 1, size, f) == size);
 		fclose(f);
 #endif//USE_EMBEDDED_RESOURCES
 	}
