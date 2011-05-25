@@ -15,16 +15,6 @@ SOURCES += ../../speccy.cpp \
 	../../ui/ui_control.cpp \
 	../../ui/ui_button.cpp \
 	../../ui/ui.cpp \
-	../../tools/libpng/pngwutil.c \
-	../../tools/libpng/pngwtran.c \
-	../../tools/libpng/pngwrite.c \
-	../../tools/libpng/pngwio.c \
-	../../tools/libpng/pngtrans.c \
-	../../tools/libpng/pngset.c \
-	../../tools/libpng/pngmem.c \
-	../../tools/libpng/pngget.c \
-	../../tools/libpng/pngerror.c \
-	../../tools/libpng/png.c \
 	../../tools/tinyxml/tinyxmlparser.cpp \
 	../../tools/tinyxml/tinyxmlerror.cpp \
 	../../tools/tinyxml/tinyxml.cpp \
@@ -69,7 +59,7 @@ SOURCES += ../../speccy.cpp \
 	../../tools/options.cpp \
 	../../tools/log.cpp \
 	../../platform/qt/io_select_qt.cpp \
-    ../../platform/qt/qt_sound.cpp
+	../../platform/qt/qt_sound.cpp
 
 HEADERS  += \
 	../../std_types.h \
@@ -91,10 +81,6 @@ HEADERS  += \
 	../../ui/ui_control.h \
 	../../ui/ui_button.h \
 	../../ui/ui.h \
-	../../tools/libpng/pngusr.h \
-	../../tools/libpng/pngpriv.h \
-	../../tools/libpng/pngconf.h \
-	../../tools/libpng/png.h \
 	../../tools/tinyxml/tinyxml.h \
 	../../tools/tinyxml/tinystr.h \
 	../../tools/zlib/zutil.h \
@@ -140,7 +126,7 @@ HEADERS  += \
 	../../tools/log.h \
 	../../tools/list.h \
 	../../tools/io_select.h \
-    ../../platform/qt/qt_sound.h
+	../../platform/qt/qt_sound.h
 
 FORMS    +=
 
@@ -150,7 +136,7 @@ MOBILITY =
 QMAKE_CXXFLAGS_WARN_ON  = -Wall
 QMAKE_CFLAGS_WARN_ON    = -Wall
 
-DEFINES += USE_QT USE_UI USE_PNG USE_CONFIG USE_ZIP
+DEFINES += USE_QT USE_UI USE_CONFIG USE_ZIP
 
 symbian {
 	TARGET.UID3 = 0xe0ae1b49
