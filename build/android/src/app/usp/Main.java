@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +53,7 @@ public class Main extends Activity
 		Emulator.the.InitResources(BinRes(R.raw.spxtrm4f), BinRes(R.raw.sos128), BinRes(R.raw.sos48), BinRes(R.raw.service), BinRes(R.raw.dos513f));
 		Emulator.the.Init(getFilesDir().getAbsolutePath());
 		Context c = getApplicationContext();
-		view = new app.usp.View(this, c);
+		view = new app.usp.View(c);
 		control = new Control(c);
 //		banner = new MobclixMMABannerXLAdView(this);
 		layout = new TableLayout(c);
@@ -81,8 +82,15 @@ public class Main extends Activity
 		row2.removeAllViews();
 		layout.removeAllViews();
 		row2.setMinimumHeight(80);
+		
+		DisplayMetrics dm = getResources().getDisplayMetrics();
+		int w = dm.widthPixels;
+		int h = dm.heightPixels;
+		view.SetFiltering(Emulator.the.GetOptionBool(Preferences.filtering_id));
 		if(config.orientation == Configuration.ORIENTATION_LANDSCAPE)
 		{
+			w -= 160;
+			view.SetZoom(Emulator.the.GetOptionInt(Preferences.select_zoom_id), w, h);
 			row1.setGravity(Gravity.CENTER);
 			row2.setGravity(Gravity.RIGHT|Gravity.BOTTOM);
 			row1.addView(control, new TableRow.LayoutParams());
@@ -94,6 +102,8 @@ public class Main extends Activity
 		}
 		else
 		{
+			h -= 160;
+			view.SetZoom(Emulator.the.GetOptionInt(Preferences.select_zoom_id), w, h);
 			row2.setGravity(Gravity.BOTTOM);
 			layout.addView(view);
 			layout.addView(control);
@@ -138,9 +148,13 @@ public class Main extends Activity
 		case R.id.load_state:	Emulator.the.LoadState(); 		return true;
 		case R.id.reset:		Emulator.the.Reset(); 			return true;
     	case R.id.preferences:	startActivityForResult(new Intent(this, Preferences.class), 0); return true;
-		case R.id.quit:			finish(); 						return true;    		
+		case R.id.quit:			Exit(); 						return true;    		
     	}
     	return super.onOptionsItemSelected(item);
+    }
+    final private void Exit()
+    {
+    	android.os.Process.killProcess(android.os.Process.myPid());
     }
 	final private ByteBuffer BinRes(int id)
 	{

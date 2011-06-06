@@ -39,6 +39,29 @@ void InitSound();
 void DoneSound();
 int UpdateSound(byte* buf);
 
+static struct eOptionZoom : public xOptions::eOptionInt
+{
+	eOptionZoom() { Set(0); }
+	virtual const char* Name() const { return "zoom"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "none", "fill", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		eOptionInt::Change(0, 1, next);
+	}
+	virtual int Order() const { return 1; }
+} op_zoom;
+
+static struct eOptionFiltering : public xOptions::eOptionBool
+{
+	eOptionFiltering() { Set(false); }
+	virtual const char* Name() const { return "filtering"; }
+	virtual int Order() const { return 2; }
+} op_filtering;
+
 static void InitResources(const byte* font, const byte* rom0, const byte* rom1, const byte* rom2, const byte* rom3)
 {
 	memcpy(spxtrm4f, 	font, sizeof(spxtrm4f));
@@ -108,15 +131,11 @@ void Java_app_usp_Emulator_Done(JNIEnv* env, jobject obj)
 	xPlatform::Done();
 }
 
-jboolean Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
+void Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
 {
 	xPlatform::Handler()->OnLoop();
 	uint16_t* buf = (uint16_t*)env->GetDirectBufferAddress(byte_buffer);
 	xPlatform::UpdateScreen(buf);
-	bool quit = xPlatform::OpQuit();
-	if(quit)
-		xPlatform::OpQuit(false);
-	return !quit;
 }
 jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer)
 {

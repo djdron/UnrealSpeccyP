@@ -19,6 +19,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static private String tape_id = "tape";
 	final static private String tape_fast_id = "fast tape";
 	final static private String mode_48k_id = "mode 48k";
+	final static public String select_zoom_id = "zoom";
+	final static public String filtering_id = "filtering";
 	private ListPreference select_joystick;
 	private ListPreference sound_source;
 	private ListPreference sound_chip;
@@ -27,6 +29,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private Preference tape;
 	private CheckBoxPreference tape_fast;
 	private CheckBoxPreference mode_48k;
+	private ListPreference select_zoom;
+	private CheckBoxPreference filtering;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -40,6 +44,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         tape = (Preference)getPreferenceScreen().findPreference(tape_id);
         tape_fast = (CheckBoxPreference)getPreferenceScreen().findPreference(tape_fast_id);
         mode_48k = (CheckBoxPreference)getPreferenceScreen().findPreference(mode_48k_id);
+        select_zoom = (ListPreference)getPreferenceScreen().findPreference(select_zoom_id);
+        filtering = (CheckBoxPreference)getPreferenceScreen().findPreference(filtering_id);
 	}
 	private void UpdateDescs()
 	{
@@ -54,6 +60,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		case 1:	tape.setSummary(R.string.tape_stopped);	tape.setEnabled(true);	break;
 		case 2:	tape.setSummary(R.string.tape_started);	tape.setEnabled(true);	break;
 		}
+		select_zoom.setSummary(select_zoom.getEntry());
 	}
 	@Override
 	protected void onResume()
@@ -66,6 +73,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		select_drive.setValueIndex(Emulator.the.GetOptionInt(select_drive_id));
 		tape_fast.setChecked(Emulator.the.GetOptionBool(tape_fast_id));
 		mode_48k.setChecked(Emulator.the.GetOptionBool(mode_48k_id));
+		select_zoom.setValueIndex(Emulator.the.GetOptionInt(select_zoom_id));
+		filtering.setChecked(Emulator.the.GetOptionBool(filtering_id));
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		UpdateDescs();
 	}
@@ -111,6 +120,16 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		else if(key.equals(tape_fast_id))
 		{
 			Emulator.the.SetOptionBool(tape_fast_id, tape_fast.isChecked());
+			UpdateDescs();
+		}
+		else if(key.equals(select_zoom_id))
+		{
+			Emulator.the.SetOptionInt(select_zoom_id, Integer.parseInt(select_zoom.getValue()));
+			UpdateDescs();
+		}
+		else if(key.equals(filtering_id))
+		{
+			Emulator.the.SetOptionBool(filtering_id, filtering.isChecked());
 			UpdateDescs();
 		}
 	}

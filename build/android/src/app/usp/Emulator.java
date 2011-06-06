@@ -30,7 +30,7 @@ public class Emulator
 	synchronized native void	Init(final String path);
 	synchronized native void	Done();
 
-	synchronized native boolean	UpdateVideo(ByteBuffer buf);
+	synchronized native void	UpdateVideo(ByteBuffer buf);
 	synchronized native int		UpdateAudio(ByteBuffer buf);
 	synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 
