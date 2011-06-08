@@ -86,11 +86,13 @@ public class Main extends Activity
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		int w = dm.widthPixels;
 		int h = dm.heightPixels;
+		final int zoom = Emulator.the.GetOptionInt(Preferences.select_zoom_id);
 		view.SetFiltering(Emulator.the.GetOptionBool(Preferences.filtering_id));
+		view.SetSkipFrames(Emulator.the.GetOptionInt(Preferences.select_skip_frames_id));
 		if(config.orientation == Configuration.ORIENTATION_LANDSCAPE)
 		{
 			w -= 160;
-			view.SetZoom(Emulator.the.GetOptionInt(Preferences.select_zoom_id), w, h);
+			view.SetZoom(zoom, w, h);
 			row1.setGravity(Gravity.CENTER);
 			row2.setGravity(Gravity.RIGHT|Gravity.BOTTOM);
 			row1.addView(control, new TableRow.LayoutParams());
@@ -103,7 +105,7 @@ public class Main extends Activity
 		else
 		{
 			h -= 160;
-			view.SetZoom(Emulator.the.GetOptionInt(Preferences.select_zoom_id), w, h);
+			view.SetZoom(zoom, w, h);
 			row2.setGravity(Gravity.BOTTOM);
 			layout.addView(view);
 			layout.addView(control);
@@ -138,19 +140,29 @@ public class Main extends Activity
     	getMenuInflater().inflate(R.menu.menu, menu);		
     	return true;
     }
+    static final int A_FILE_SELECTOR = 0;
+    static final int A_PREFERENCES = 1;
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
     	switch(item.getItemId())
     	{
-    	case R.id.open_file:	startActivityForResult(new Intent(this, FileSelector.class), 0); return true;
+    	case R.id.open_file:	startActivityForResult(new Intent(this, FileSelector.class), A_FILE_SELECTOR); return true;
 		case R.id.save_state:	Emulator.the.SaveState(); 		return true;
 		case R.id.load_state:	Emulator.the.LoadState(); 		return true;
 		case R.id.reset:		Emulator.the.Reset(); 			return true;
-    	case R.id.preferences:	startActivityForResult(new Intent(this, Preferences.class), 0); return true;
-		case R.id.quit:			Exit(); 						return true;    		
+    	case R.id.preferences:	startActivityForResult(new Intent(this, Preferences.class), A_PREFERENCES); return true;
+		case R.id.quit:			Exit(); 						return true;
     	}
     	return super.onOptionsItemSelected(item);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(requestCode == A_PREFERENCES)
+        {
+        	UpdateOrientation(getResources().getConfiguration());
+        }
     }
     final private void Exit()
     {

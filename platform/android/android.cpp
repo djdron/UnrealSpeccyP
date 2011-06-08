@@ -48,10 +48,6 @@ static struct eOptionZoom : public xOptions::eOptionInt
 		static const char* values[] = { "none", "fill", NULL };
 		return values;
 	}
-	virtual void Change(bool next = true)
-	{
-		eOptionInt::Change(0, 1, next);
-	}
 	virtual int Order() const { return 1; }
 } op_zoom;
 
@@ -61,6 +57,18 @@ static struct eOptionFiltering : public xOptions::eOptionBool
 	virtual const char* Name() const { return "filtering"; }
 	virtual int Order() const { return 2; }
 } op_filtering;
+
+static struct eOptionSkipFrames : public xOptions::eOptionInt
+{
+	eOptionSkipFrames() { Set(0); }
+	virtual const char* Name() const { return "skip frames"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "none", "2", "4", NULL };
+		return values;
+	}
+	virtual int Order() const { return 3; }
+} op_skip_frames;
 
 static void InitResources(const byte* font, const byte* rom0, const byte* rom1, const byte* rom2, const byte* rom3)
 {
@@ -131,9 +139,12 @@ void Java_app_usp_Emulator_Done(JNIEnv* env, jobject obj)
 	xPlatform::Done();
 }
 
-void Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
+void Java_app_usp_Emulator_Update(JNIEnv* env, jobject obj)
 {
 	xPlatform::Handler()->OnLoop();
+}
+void Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
+{
 	uint16_t* buf = (uint16_t*)env->GetDirectBufferAddress(byte_buffer);
 	xPlatform::UpdateScreen(buf);
 }

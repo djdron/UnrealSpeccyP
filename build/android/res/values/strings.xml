@@ -33,8 +33,9 @@
     <string name="drive">Beta Disk Drive</string><string name="drive_a">A</string><string name="drive_b">B</string><string name="drive_c">C</string><string name="drive_d">D</string>
     <string name="mode_48k">Mode 48K</string>
     <string name="file_selector">Select File</string><string name="tape">Tape</string>
-    <string name="tape_na">Not Available (open tape file first)</string><string name="tape_started">Started (press to stop)</string><string name="tape_stopped">Stopped (press to start)</string><string name="tape_fast">Fast tape</string><string name="tape_fast_desc">Use tape traps</string>
+    <string name="tape_na">Not Available (open tape file first)</string><string name="tape_started">Started (press to stop)</string><string name="tape_stopped">Stopped (press to start)</string><string name="tape_fast">Fast Tape</string><string name="tape_fast_desc">Use Tape Traps</string>
     
-    <string name="zoom">Zoom mode</string><string name="zoom_none">None</string><string name="zoom_fill">Fill screen</string><string name="filtering">Filtering</string>
+    <string name="zoom">Zoom Mode</string><string name="zoom_none">None</string><string name="zoom_fill">Fill Screen</string><string name="filtering">Filtering</string>
+    <string name="skip_frames">Skip Frames</string><string name="skip_frames_none">None</string><string name="skip_frames_2">2</string><string name="skip_frames_4">4</string>
     
 </resources>

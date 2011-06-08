@@ -22,8 +22,6 @@ import java.nio.ByteBuffer;
 import android.graphics.Canvas;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.media.AudioTrack;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -46,8 +44,10 @@ public class View extends SurfaceView  implements Callback
 	private byte[] aud = new byte[32768];
 	private Thread thread = null;
 	private boolean thread_exit = false;
-	private float scale = 2.0f;
+	private float scale = 1.0f;
 	private Paint paint_flags = null;
+	private int frame = 0;
+	private int skip_frames = 1;
 	public View(Context context)
 	{
 		super(context);
@@ -111,9 +111,15 @@ public class View extends SurfaceView  implements Callback
 	}
 	private void Draw()
 	{
-		Emulator.the.UpdateVideo(buf_video);
-		buf_video.rewind();
-		bmp.copyPixelsFromBuffer(buf_video);
+		++frame;
+		Emulator.the.Update();
+		final boolean update_video = (frame % skip_frames) == 0;
+		if(update_video)
+		{
+			Emulator.the.UpdateVideo(buf_video);
+			buf_video.rewind();
+			bmp.copyPixelsFromBuffer(buf_video);
+		}
 		final int audio_bytes_ready = Emulator.the.UpdateAudio(buf_audio);
 		if(audio_bytes_ready != 0)
 		{
@@ -121,20 +127,30 @@ public class View extends SurfaceView  implements Callback
 			buf_audio.get(aud);
 			audio.write(aud, 0, audio_bytes_ready);
 		}
-		synchronized(lock_scr)
+		if(update_video) synchronized(lock_scr)
 		{
 			if(sh != null)
 			{
 				Canvas c = sh.lockCanvas();
-				Rect src = new Rect(0, 0, WIDTH, HEIGHT);
-				RectF dst = new RectF(0, 0, WIDTH*scale, HEIGHT*scale);
-				c.drawBitmap(bmp, src, dst, paint_flags);
+				c.save();
+				c.scale(scale, scale);
+				c.drawBitmap(bmp, 0, 0, paint_flags);
+				c.restore();
 				sh.unlockCanvasAndPost(c);
 			}
 		}
 	}
 	public void OnResume()	{ StartRenderThread(); }
 	public void OnPause()	{ StopRenderThread(); }
+	public void SetSkipFrames(int sf)
+	{
+		if(sf != 0)
+		{
+			skip_frames = (1 << sf) + 1;
+		}
+		else
+			skip_frames = 1;
+	}
 	public void SetZoom(int zoom, int w, int h)
 	{
 		if(zoom != 0)

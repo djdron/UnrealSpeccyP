@@ -21,6 +21,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static private String mode_48k_id = "mode 48k";
 	final static public String select_zoom_id = "zoom";
 	final static public String filtering_id = "filtering";
+	final static public String select_skip_frames_id = "skip frames";
 	private ListPreference select_joystick;
 	private ListPreference sound_source;
 	private ListPreference sound_chip;
@@ -31,6 +32,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private CheckBoxPreference mode_48k;
 	private ListPreference select_zoom;
 	private CheckBoxPreference filtering;
+	private ListPreference select_skip_frames;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -46,13 +48,15 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         mode_48k = (CheckBoxPreference)getPreferenceScreen().findPreference(mode_48k_id);
         select_zoom = (ListPreference)getPreferenceScreen().findPreference(select_zoom_id);
         filtering = (CheckBoxPreference)getPreferenceScreen().findPreference(filtering_id);
+        select_skip_frames = (ListPreference)getPreferenceScreen().findPreference(select_skip_frames_id);
 	}
 	private void UpdateDescs()
 	{
 		select_joystick.setSummary(select_joystick.getEntry());
 		sound_source.setSummary(sound_source.getEntry());
-		sound_chip.setSummary(sound_chip.getEntry());
-		sound_chip_stereo.setSummary(sound_chip_stereo.getEntry());
+		boolean is_AY = Emulator.the.GetOptionInt(sound_source_id) == 1; // AY
+		sound_chip.setSummary(sound_chip.getEntry());				sound_chip.setEnabled(is_AY);
+		sound_chip_stereo.setSummary(sound_chip_stereo.getEntry());	sound_chip_stereo.setEnabled(is_AY);
 		select_drive.setSummary(select_drive.getEntry());
 		switch(Emulator.the.TapeState())
 		{
@@ -61,6 +65,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		case 2:	tape.setSummary(R.string.tape_started);	tape.setEnabled(true);	break;
 		}
 		select_zoom.setSummary(select_zoom.getEntry());
+        select_skip_frames.setSummary(select_skip_frames.getEntry());
 	}
 	@Override
 	protected void onResume()
@@ -75,6 +80,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		mode_48k.setChecked(Emulator.the.GetOptionBool(mode_48k_id));
 		select_zoom.setValueIndex(Emulator.the.GetOptionInt(select_zoom_id));
 		filtering.setChecked(Emulator.the.GetOptionBool(filtering_id));
+		int v = Emulator.the.GetOptionInt(select_skip_frames_id);
+		select_skip_frames.setValueIndex(v);
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		UpdateDescs();
 	}
@@ -130,6 +137,11 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		else if(key.equals(filtering_id))
 		{
 			Emulator.the.SetOptionBool(filtering_id, filtering.isChecked());
+			UpdateDescs();
+		}
+		else if(key.equals(select_skip_frames_id))
+		{
+			Emulator.the.SetOptionInt(select_skip_frames_id, Integer.parseInt(select_skip_frames.getValue()));
 			UpdateDescs();
 		}
 	}
