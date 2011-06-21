@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
     <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/preferences">
         <PreferenceCategory android:title="@string/pref_control">
-            <ListPreference android:entryValues="@array/joystick_values" android:entries="@array/joystick_names" android:title="@string/select_joystick" android:key="joystick"></ListPreference>
+            <ListPreference android:entryValues="@array/joystick_values" android:entries="@array/joystick_names" android:title="@string/select_joystick" android:key="joystick"></ListPreference><CheckBoxPreference android:key="use sensor" android:title="@string/use_sensor" android:summary="@string/use_sensor_desc"></CheckBoxPreference>
             
         </PreferenceCategory><PreferenceCategory android:title="@string/pref_sound">
             <ListPreference android:entryValues="@array/sound_source_values" android:entries="@array/sound_source_names" android:title="@string/sound_source" android:key="sound"></ListPreference><ListPreference android:title="@string/sound_chip" android:entryValues="@array/sound_chip_values" android:entries="@array/sound_chip_names" android:key="sound chip"></ListPreference>

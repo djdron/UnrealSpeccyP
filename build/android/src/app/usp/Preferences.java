@@ -22,6 +22,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static public String select_zoom_id = "zoom";
 	final static public String filtering_id = "filtering";
 	final static public String select_skip_frames_id = "skip frames";
+	final static public String use_sensor_id = "use sensor";
 	private ListPreference select_joystick;
 	private ListPreference sound_source;
 	private ListPreference sound_chip;
@@ -33,6 +34,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private ListPreference select_zoom;
 	private CheckBoxPreference filtering;
 	private ListPreference select_skip_frames;
+	private CheckBoxPreference use_sensor;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -49,6 +51,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         select_zoom = (ListPreference)getPreferenceScreen().findPreference(select_zoom_id);
         filtering = (CheckBoxPreference)getPreferenceScreen().findPreference(filtering_id);
         select_skip_frames = (ListPreference)getPreferenceScreen().findPreference(select_skip_frames_id);
+        use_sensor = (CheckBoxPreference)getPreferenceScreen().findPreference(use_sensor_id);
 	}
 	private void UpdateDescs()
 	{
@@ -82,6 +85,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		filtering.setChecked(Emulator.the.GetOptionBool(filtering_id));
 		int v = Emulator.the.GetOptionInt(select_skip_frames_id);
 		select_skip_frames.setValueIndex(v);
+		use_sensor.setChecked(Emulator.the.GetOptionBool(use_sensor_id));
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		UpdateDescs();
 	}
@@ -142,6 +146,11 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		else if(key.equals(select_skip_frames_id))
 		{
 			Emulator.the.SetOptionInt(select_skip_frames_id, Integer.parseInt(select_skip_frames.getValue()));
+			UpdateDescs();
+		}
+		else if(key.equals(use_sensor_id))
+		{
+			Emulator.the.SetOptionBool(use_sensor_id, use_sensor.isChecked());
 			UpdateDescs();
 		}
 	}

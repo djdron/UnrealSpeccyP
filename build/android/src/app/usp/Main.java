@@ -75,6 +75,7 @@ public class Main extends Activity
 	{
 		Emulator.the.Done();
 		super.onDestroy();
+    	android.os.Process.killProcess(android.os.Process.myPid());
 	}
 	private void UpdateOrientation(Configuration config)
 	{
@@ -82,7 +83,7 @@ public class Main extends Activity
 		row2.removeAllViews();
 		layout.removeAllViews();
 		row2.setMinimumHeight(80);
-		
+
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		int w = dm.widthPixels;
 		int h = dm.heightPixels;
@@ -120,12 +121,14 @@ public class Main extends Activity
 	{
 		super.onResume();
 		view.OnResume();
+		control.OnResume();
 	}
     @Override
 	protected void onPause()
 	{
 		Emulator.the.StoreOptions();
 		view.OnPause();
+		control.OnPause();
 		super.onPause();
 	}
     @Override
@@ -166,7 +169,7 @@ public class Main extends Activity
     }
     final private void Exit()
     {
-    	android.os.Process.killProcess(android.os.Process.myPid());
+    	finish();
     }
 	final private ByteBuffer BinRes(int id)
 	{

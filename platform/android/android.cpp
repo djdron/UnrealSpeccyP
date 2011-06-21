@@ -70,6 +70,13 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 	virtual int Order() const { return 3; }
 } op_skip_frames;
 
+static struct eOptionUseSensor : public xOptions::eOptionBool
+{
+	eOptionUseSensor() { Set(false); }
+	virtual const char* Name() const { return "use sensor"; }
+	virtual int Order() const { return 4; }
+} op_use_sensor;
+
 static void InitResources(const byte* font, const byte* rom0, const byte* rom1, const byte* rom2, const byte* rom3)
 {
 	memcpy(spxtrm4f, 	font, sizeof(spxtrm4f));
