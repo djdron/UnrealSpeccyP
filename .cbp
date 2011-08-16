@@ -79,33 +79,74 @@
 		<Unit filename="platform/custom_ui/ui_main.h" />
 		<Unit filename="platform/custom_ui/ui_menu.cpp" />
 		<Unit filename="platform/custom_ui/ui_menu.h" />
-		<Unit filename="platform/dingoo/dingoo.cpp" />
-		<Unit filename="platform/dingoo/jz4740.h" />
-		<Unit filename="platform/dingoo/stdio.h" />
+		<Unit filename="platform/custom_ui/ui_profiler.cpp" />
+		<Unit filename="platform/endian.h" />
 		<Unit filename="platform/gl/draw.cpp" />
 		<Unit filename="platform/gl/vsync.cpp" />
 		<Unit filename="platform/glut/main_glut.cpp" />
 		<Unit filename="platform/io.cpp" />
 		<Unit filename="platform/io.h" />
+		<Unit filename="platform/linux/io_select_linux.cpp" />
 		<Unit filename="platform/linux/tick_gtod.h" />
-		<Unit filename="platform/mac/mac.cpp" />
 		<Unit filename="platform/oal/oal.cpp" />
 		<Unit filename="platform/platform.cpp" />
 		<Unit filename="platform/platform.h" />
-		<Unit filename="platform/symbian/division.cpp" />
-		<Unit filename="platform/symbian/symbian.cpp" />
-		<Unit filename="platform/symbian/symbian_gles.cpp" />
-		<Unit filename="platform/symbian/tick.h" />
+		<Unit filename="platform/qt/io_select_qt.cpp" />
+		<Unit filename="platform/qt/main_qt.cpp" />
+		<Unit filename="platform/qt/qt_sound.cpp" />
+		<Unit filename="platform/qt/qt_sound.h" />
+		<Unit filename="platform/qt/window.cpp" />
+		<Unit filename="platform/qt/window.h" />
+		<Unit filename="platform/sdl/sdl.cpp" />
+		<Unit filename="platform/sdl/sdl_keys.cpp" />
+		<Unit filename="platform/sdl/sdl_keys_dingoo.cpp" />
+		<Unit filename="platform/sdl/sdl_sound.cpp" />
+		<Unit filename="platform/sdl/sdl_video.cpp" />
+		<Unit filename="platform/win/io_select_win.cpp" />
 		<Unit filename="platform/win/tick_qpc.h" />
-		<Unit filename="platform/win_mobile/win_mobile.cpp" />
-		<Unit filename="platform/win_mobile/win_mobile_sound.cpp" />
 		<Unit filename="platform/wxwidgets/main_wx.cpp" />
+		<Unit filename="snapshot/screenshot.cpp" />
 		<Unit filename="snapshot/snapshot.cpp" />
 		<Unit filename="snapshot/snapshot.h" />
 		<Unit filename="speccy.cpp" />
 		<Unit filename="speccy.h" />
 		<Unit filename="std.h" />
 		<Unit filename="std_types.h" />
+		<Unit filename="tools/io_select.h" />
+		<Unit filename="tools/libpng/png.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/libpng/png.h" />
+		<Unit filename="tools/libpng/pngconf.h" />
+		<Unit filename="tools/libpng/pngerror.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/libpng/pngget.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/libpng/pngmem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/libpng/pngpriv.h" />
+		<Unit filename="tools/libpng/pngset.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/libpng/pngtrans.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/libpng/pngusr.h" />
+		<Unit filename="tools/libpng/pngwio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/libpng/pngwrite.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/libpng/pngwtran.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tools/libpng/pngwutil.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="tools/list.h" />
 		<Unit filename="tools/log.cpp" />
 		<Unit filename="tools/log.h" />
@@ -198,6 +239,7 @@
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
