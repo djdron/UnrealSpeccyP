@@ -45,7 +45,7 @@ public class Main extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
 		super.onCreate(savedInstanceState);
-		Emulator.the.InitResources(BinRes(R.raw.spxtrm4f), BinRes(R.raw.sos128), BinRes(R.raw.sos48), BinRes(R.raw.service), BinRes(R.raw.dos513f));
+		Emulator.the.InitResources(BinRes(R.raw.sos128), BinRes(R.raw.sos48), BinRes(R.raw.service), BinRes(R.raw.dos513f));
 		Emulator.the.Init(getFilesDir().getAbsolutePath());
 		Context c = getApplicationContext();
 		view = new app.usp.View(c);

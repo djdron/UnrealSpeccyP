@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../touch_ui/tui_keyboard.h"
 #include "../touch_ui/tui_joystick.h"
 
-byte spxtrm4f[2048];
 byte sos128[16384];
 byte sos48[16384];
 byte service[16384];
@@ -86,9 +85,8 @@ static struct eOptionUseKeyboard : public xOptions::eOptionBool
 	virtual int Order() const { return 5; }
 } op_use_keyboard;
 
-static void InitResources(const byte* font, const byte* rom0, const byte* rom1, const byte* rom2, const byte* rom3)
+static void InitResources(const byte* rom0, const byte* rom1, const byte* rom2, const byte* rom3)
 {
-	memcpy(spxtrm4f, 	font, sizeof(spxtrm4f));
 	memcpy(sos128,		rom0, sizeof(sos128));
 	memcpy(sos48,		rom1, sizeof(sos48));
 	memcpy(service,		rom2, sizeof(service));
@@ -134,14 +132,13 @@ template<class T> static int SetOption(const char* name, const T& value)
 extern "C"
 {
 
-void Java_app_usp_Emulator_InitResources(JNIEnv* env, jobject obj, jobject font_buf, jobject rom0_buf, jobject rom1_buf, jobject rom2_buf, jobject rom3_buf)
+void Java_app_usp_Emulator_InitResources(JNIEnv* env, jobject obj, jobject rom0_buf, jobject rom1_buf, jobject rom2_buf, jobject rom3_buf)
 {
-	const byte* font = (const byte*)env->GetDirectBufferAddress(font_buf);
 	const byte* rom0 = (const byte*)env->GetDirectBufferAddress(rom0_buf);
 	const byte* rom1 = (const byte*)env->GetDirectBufferAddress(rom1_buf);
 	const byte* rom2 = (const byte*)env->GetDirectBufferAddress(rom2_buf);
 	const byte* rom3 = (const byte*)env->GetDirectBufferAddress(rom3_buf);
-	xPlatform::InitResources(font, rom0, rom1, rom2, rom3);
+	xPlatform::InitResources(rom0, rom1, rom2, rom3);
 }
 
 void Java_app_usp_Emulator_Init(JNIEnv* env, jobject obj, jstring jpath)
