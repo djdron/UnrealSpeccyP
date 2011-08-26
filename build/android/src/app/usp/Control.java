@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package app.usp;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -34,14 +35,15 @@ import android.hardware.SensorManager;
 
 public class Control extends ImageView implements SensorEventListener
 {
-	static final int SIZE = 160;
-	static final int THRESHOLD = 20;
 	static final float SENSOR_THRESHOLD = 1.0f;
 
 	private Sensor accelerometer;
 	private SensorManager sensor_manager;
 	private WindowManager window_manager;
     private Display display;
+    private Bitmap keyboard;
+    private Bitmap joystick;
+    private boolean keyboard_active = false;
 
 	public Control(Context context)
 	{
@@ -53,15 +55,21 @@ public class Control extends ImageView implements SensorEventListener
 
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inScaled = false;
-		Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.control, options);
-		bm.setDensity(Bitmap.DENSITY_NONE);
-		setImageBitmap(bm);
+		keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard, options);
+		keyboard.setDensity(Bitmap.DENSITY_NONE);
+		joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick, options);
+		joystick.setDensity(Bitmap.DENSITY_NONE);
+		keyboard_active = Emulator.the.GetOptionBool(Preferences.use_keyboard_id);
+		setImageBitmap(keyboard_active ? keyboard : joystick);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 	}
 	protected void onMeasure(int w, int h)
 	{
-		setMeasuredDimension(SIZE, SIZE);
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+			setMeasuredDimension(0, 0);
+		else
+			setMeasuredDimension(keyboard.getWidth(), keyboard.getHeight());
 	}
 	private final char TranslateKey(int keyCode)
 	{
@@ -119,7 +127,7 @@ public class Control extends ImageView implements SensorEventListener
 		case KeyEvent.KEYCODE_ALT_RIGHT:		return 's';
 
 //		case KeyEvent.KEYCODE_MENU:				return 'm';
-		case KeyEvent.KEYCODE_BACK:				return 'k';
+//		case KeyEvent.KEYCODE_BACK:				return 'k';
 		case KeyEvent.KEYCODE_CALL:				return 'e';
 		case KeyEvent.KEYCODE_CAMERA:			return ' ';
 		}
@@ -127,6 +135,13 @@ public class Control extends ImageView implements SensorEventListener
 	}
 	public boolean onKeyDown(int keyCode, KeyEvent event)
 	{
+		if(keyCode == KeyEvent.KEYCODE_BACK)
+		{
+			keyboard_active = !keyboard_active;
+			Emulator.the.SetOptionBool(Preferences.use_keyboard_id, keyboard_active);
+			setImageBitmap(keyboard_active ? keyboard : joystick);
+			return true;
+		}
 		final char k = TranslateKey(keyCode);
 		if(k == 0)
 		{
@@ -149,26 +164,13 @@ public class Control extends ImageView implements SensorEventListener
 	}
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		final int a = event.getAction();
-		if(a == MotionEvent.ACTION_UP || a == MotionEvent.ACTION_CANCEL)
-		{
-			Emulator.the.OnKey('r', false, false, false);
-			Emulator.the.OnKey('l', false, false, false);
-			Emulator.the.OnKey('u', false, false, false);
-			Emulator.the.OnKey('d', false, false, false);
-			Emulator.the.OnKey('f', false, false, false);
-			return true;
-		}
-
-		final float x = event.getX() - SIZE/2;
-		final float y = event.getY() - SIZE/2;
-		if(Math.abs(x) < THRESHOLD && Math.abs(y) < THRESHOLD)
-			Emulator.the.OnKey('f', true, false, false);
-
-		Emulator.the.OnKey('r', x > +THRESHOLD, false, false);
-		Emulator.the.OnKey('l', x < -THRESHOLD, false, false);
-		Emulator.the.OnKey('d', y > +THRESHOLD, false, false);
-		Emulator.the.OnKey('u', y < -THRESHOLD, false, false);
+		final int pidx = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+		final int pid = event.getPointerId(pidx);
+		final float x = event.getX(pid)/getWidth();
+		final float y = event.getY(pid)/getHeight();
+		final int a = event.getAction() & MotionEvent.ACTION_MASK;
+		final boolean down = a == MotionEvent.ACTION_DOWN || a == MotionEvent.ACTION_POINTER_DOWN || a == MotionEvent.ACTION_MOVE;
+		Emulator.the.OnTouch(keyboard_active, x, y, down, pid);
 		return true;
 	}
 	public void OnResume()

@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../io.h"
 #include "../../options_common.h"
 #include "../../tools/options.h"
+#include "../touch_ui/tui_keyboard.h"
+#include "../touch_ui/tui_joystick.h"
 
 byte spxtrm4f[2048];
 byte sos128[16384];
@@ -76,6 +78,13 @@ static struct eOptionUseSensor : public xOptions::eOptionBool
 	virtual const char* Name() const { return "use sensor"; }
 	virtual int Order() const { return 4; }
 } op_use_sensor;
+
+static struct eOptionUseKeyboard : public xOptions::eOptionBool
+{
+	eOptionUseKeyboard() { Set(true); }
+	virtual const char* Name() const { return "use keyboard"; }
+	virtual int Order() const { return 5; }
+} op_use_keyboard;
 
 static void InitResources(const byte* font, const byte* rom0, const byte* rom1, const byte* rom2, const byte* rom3)
 {
@@ -164,6 +173,14 @@ jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_bu
 void Java_app_usp_Emulator_OnKey(JNIEnv* env, jobject obj, jchar key, jboolean down, jboolean shift, jboolean alt)
 {
 	xPlatform::ProcessKey(key, down, shift, alt);
+}
+
+void Java_app_usp_Emulator_OnTouch(JNIEnv* env, jobject obj, jboolean keyboard, jfloat x, jfloat y, jboolean down, jint pointer_id)
+{
+	if(keyboard)
+		xPlatform::OnTouchKey(x, y, down, pointer_id);
+	else
+		xPlatform::OnTouchJoy(x, y, down, pointer_id);
 }
 
 void Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)

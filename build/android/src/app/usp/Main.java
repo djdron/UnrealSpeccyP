@@ -31,12 +31,9 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-//import com.mobclix.android.sdk.MobclixAdView;
-//import com.mobclix.android.sdk.MobclixMMABannerXLAdView;
 
 public class Main extends Activity
 {
@@ -44,8 +41,6 @@ public class Main extends Activity
 	private TableRow row1, row2;
 	private app.usp.View view;
 	private Control control;
-//	private MobclixAdView banner;
-	private View view_dummy;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -55,11 +50,12 @@ public class Main extends Activity
 		Context c = getApplicationContext();
 		view = new app.usp.View(c);
 		control = new Control(c);
-//		banner = new MobclixMMABannerXLAdView(this);
 		layout = new TableLayout(c);
 		row1 = new TableRow(c);
 		row2 = new TableRow(c);
-		view_dummy = new View(c);
+		row1.setGravity(Gravity.CENTER);
+		row2.setGravity(Gravity.CENTER);
+		layout.setGravity(Gravity.BOTTOM);
 		setContentView(layout);
 		UpdateOrientation(getResources().getConfiguration());
 		String file = Uri.parse(getIntent().toUri(0)).getPath();
@@ -68,7 +64,6 @@ public class Main extends Activity
 			Toast.makeText(getApplicationContext(), "Opening \"" + file + "\"", Toast.LENGTH_LONG).show();
 			Emulator.the.Open(file);
 		}
-//		banner.setTestMode(true);
     }
     @Override
 	public void onDestroy()
@@ -82,7 +77,6 @@ public class Main extends Activity
 		row1.removeAllViews();
 		row2.removeAllViews();
 		layout.removeAllViews();
-		row2.setMinimumHeight(80);
 
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		int w = dm.widthPixels;
@@ -92,25 +86,17 @@ public class Main extends Activity
 		view.SetSkipFrames(Emulator.the.GetOptionInt(Preferences.select_skip_frames_id));
 		if(config.orientation == Configuration.ORIENTATION_LANDSCAPE)
 		{
-			w -= 160;
 			view.SetZoom(zoom, w, h);
-			row1.setGravity(Gravity.CENTER);
-			row2.setGravity(Gravity.RIGHT|Gravity.BOTTOM);
 			row1.addView(control, new TableRow.LayoutParams());
 			row1.addView(view, new TableRow.LayoutParams());
-			row2.addView(view_dummy, new TableRow.LayoutParams());
-//			row2.addView(banner, new TableRow.LayoutParams());
 			layout.addView(row1);
-			layout.addView(row2);
 		}
 		else
 		{
-			h -= 160;
 			view.SetZoom(zoom, w, h);
-			row2.setGravity(Gravity.BOTTOM);
-			layout.addView(view);
-			layout.addView(control);
-//			row2.addView(banner, new TableRow.LayoutParams());
+			row1.addView(view, new TableRow.LayoutParams());
+			row2.addView(control, new TableRow.LayoutParams());
+			layout.addView(row1);
 			layout.addView(row2);
 		}
 		control.requestFocus();

@@ -23,6 +23,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static public String filtering_id = "filtering";
 	final static public String select_skip_frames_id = "skip frames";
 	final static public String use_sensor_id = "use sensor";
+	final static public String use_keyboard_id = "use keyboard";
 	private ListPreference select_joystick;
 	private ListPreference sound_source;
 	private ListPreference sound_chip;

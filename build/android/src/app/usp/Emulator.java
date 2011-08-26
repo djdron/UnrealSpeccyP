@@ -34,6 +34,7 @@ public class Emulator
 	synchronized native void	UpdateVideo(ByteBuffer buf);
 	synchronized native int		UpdateAudio(ByteBuffer buf);
 	synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
+	synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
 
 	synchronized native void	Open(final String file);
 	synchronized native String	GetLastFile();
