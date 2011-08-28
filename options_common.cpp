@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-#ifdef USE_UI
+#if defined(USE_UI) || defined(USE_OPTIONS_COMMON)
 
 struct eOptionState : public xOptions::eOptionB
 {
