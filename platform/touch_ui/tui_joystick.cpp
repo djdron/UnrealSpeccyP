@@ -30,15 +30,41 @@ enum { KEY_COUNT = 80 };
 static int key_state[KEY_COUNT];
 static const char key_map[KEY_COUNT] =
 {
-	'.', '.', 'u', '.', '.', '.', ' ', ' ', 'e', 'e',
-	'.', '.', 'u', '.', '.', '.', ' ', ' ', 'e', 'e',
-	'.', '.', 'u', '.', '.', '.', ' ', ' ', 'f', '.',
+	'L', 'L', 'u', 'U', 'U', '.', ' ', ' ', 'e', 'e',
+	'L', 'L', 'u', 'U', 'U', '.', ' ', ' ', 'e', 'e',
+	'L', 'L', 'u', 'U', 'U', '.', ' ', ' ', 'f', '.',
 	'l', 'l', '.', 'r', 'r', '.', '.', 'f', 'f', 'f',
-	'.', '.', 'd', '.', '.', '.', '.', 'f', 'f', 'f',
-	'.', '.', 'd', '.', '.', '.', '.', 'f', 'f', 'f',
-	'.', '.', 'd', '.', '.', '.', '.', 'f', 'f', 'f',
-	'.', '.', '.', '.', '.', '.', '.', 'f', 'f', 'f',
+	'D', 'D', 'd', 'R', 'R', '.', '.', 'f', 'f', 'f',
+	'D', 'D', 'd', 'R', 'R', '.', '.', 'f', 'f', 'f',
+	'D', 'D', 'd', 'R', 'R', '.', '.', 'f', 'f', 'f',
+	'D', 'D', 'd', 'R', 'R', '.', '.', 'f', 'f', 'f',
 };
+
+static void ProcessKey(char key, dword flags)
+{
+	switch(key)
+	{
+	case 'L':
+		Handler()->OnKey('u', flags);
+		Handler()->OnKey('l', flags);
+		break;
+	case 'U':
+		Handler()->OnKey('u', flags);
+		Handler()->OnKey('r', flags);
+		break;
+	case 'R':
+		Handler()->OnKey('d', flags);
+		Handler()->OnKey('r', flags);
+		break;
+	case 'D':
+		Handler()->OnKey('d', flags);
+		Handler()->OnKey('l', flags);
+		break;
+	default:
+		Handler()->OnKey(key, flags);
+		break;
+	}
+}
 
 void OnTouchJoy(float _x, float _y, bool down, int pointer_id)
 {
@@ -60,21 +86,21 @@ void OnTouchJoy(float _x, float _y, bool down, int pointer_id)
 			if(key_state[i] == pid)
 			{
 				key_state[i] = 0;
-				Handler()->OnKey(key_map[i], flags);
+				ProcessKey(key_map[i], flags);
 			}
 		}
 		if(key_map[k] == '.')
 			return;
 		key_state[k] = pid;
 		flags |= KF_DOWN;
-		Handler()->OnKey(key_map[k], flags);
+		ProcessKey(key_map[k], flags);
 	}
 	else
 	{
 		if(key_map[k] == '.')
 			return;
 		key_state[k] = 0;
-		Handler()->OnKey(key_map[k], flags);
+		ProcessKey(key_map[k], flags);
 	}
 }
 
