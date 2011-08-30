@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+		<file alias="rom/dos513f.rom">../../res/rom/dos513f.rom</file>
+		<file alias="rom/service.rom">../../res/rom/service.rom</file>
+		<file alias="rom/sos128.rom">../../res/rom/sos128.rom</file>
+		<file alias="rom/sos48.rom">../../res/rom/sos48.rom</file>
+		<file alias="font/spxtrm4f.fnt">../../res/font/spxtrm4f.fnt</file>
+    </qresource>
+</RCC>

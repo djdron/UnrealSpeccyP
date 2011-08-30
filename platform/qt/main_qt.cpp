@@ -19,7 +19,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_QT
 
 #include <QtGui/QApplication>
+#include <QFile>
 #include "window.h"
+
+byte sos128[16384];
+byte sos48[16384];
+byte service[16384];
+byte dos513f[16384];
+byte spxtrm4f[2048];
+
+static void InitResource(const char* name, byte* data)
+{
+	QFile f(name);
+	f.open(QIODevice::ReadOnly);
+	f.read((char*)data, f.size());
+	f.close();
+}
+
+//=============================================================================
+//	InitResources
+//-----------------------------------------------------------------------------
+static void InitResources()
+{
+	InitResource(":/rom/dos513f.rom", dos513f);
+	InitResource(":/rom/service.rom", service);
+	InitResource(":/rom/sos128.rom", sos128);
+	InitResource(":/rom/sos48.rom", sos48);
+	InitResource(":/font/spxtrm4f.fnt", spxtrm4f);
+}
 
 //=============================================================================
 //	main
@@ -27,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
+	InitResources();
 	Window w;
 #if defined(Q_WS_S60)
 	w.showMaximized();

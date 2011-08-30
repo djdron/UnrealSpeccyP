@@ -38,7 +38,6 @@ SOURCES += ../../speccy.cpp \
 	../../platform/custom_ui/ui_main.cpp \
 	../../platform/custom_ui/ui_keyboard.cpp \
 	../../platform/custom_ui/ui_file_open.cpp \
-	../../platform/linux/io_select_linux.cpp \
 	../../platform/qt/window.cpp \
 	../../platform/platform.cpp \
 	../../platform/io.cpp \
@@ -128,6 +127,8 @@ HEADERS  += \
 	../../tools/io_select.h \
 	../../platform/qt/qt_sound.h
 
+RESOURCES += unreal_speccy_portable.qrc
+
 FORMS    +=
 
 CONFIG += mobility
@@ -136,9 +137,10 @@ MOBILITY =
 QMAKE_CXXFLAGS_WARN_ON  = -Wall
 QMAKE_CFLAGS_WARN_ON    = -Wall
 
-DEFINES += USE_QT USE_UI USE_CONFIG USE_ZIP
+DEFINES += USE_QT USE_UI USE_CONFIG USE_ZIP USE_EXTERN_RESOURCES
 
 symbian {
+	DEFINES += _POSIX
 	TARGET.UID3 = 0xe0ae1b49
 	# TARGET.CAPABILITY +=
 	TARGET.EPOCSTACKSIZE = 0x14000

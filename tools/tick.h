@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform/win/tick_qpc.h"
 #endif//_WINDOWS
 
-#ifdef _LINUX
+#if defined(_LINUX) || defined(_POSIX)
 #include "../platform/linux/tick_gtod.h"
 #endif//_LINUX
 
