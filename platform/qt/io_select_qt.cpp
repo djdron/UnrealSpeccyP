@@ -30,10 +30,12 @@ namespace xIo
 class eFileSelectI
 {
 public:
-	eFileSelectI(const char* _path) : dir(_path)
+	eFileSelectI(const char* _path)
 	{
+		QDir dir(_path);
 		content = dir.entryInfoList();
 		idx = content.size() ? 0 : -1;
+		UpdateName();
 	}
 	bool Valid() const { return idx >= 0; }
 	void Next()
@@ -41,13 +43,22 @@ public:
 		++idx;
 		if(idx >= content.size())
 			idx = -1;
+		UpdateName();
 	}
-	const char* Name() const { return qPrintable(content[idx].fileName()); }
+	void UpdateName()
+	{
+		if(idx < 0)
+			name[0] = '\0';
+		else
+			strcpy(name, qPrintable(content[idx].fileName()));
+	}
+
+	const char* Name() const { return name; }
 	bool IsDir() const { return content[idx].isDir(); }
 	bool IsFile() const { return content[idx].isFile(); }
-	QDir dir;
 	QFileInfoList content;
 	int idx;
+	char name[MAX_PATH_LEN];
 };
 
 eFileSelect::eFileSelect(const char* path) { impl = new eFileSelectI(path); }
