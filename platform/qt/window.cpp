@@ -50,9 +50,8 @@ Window::Window(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Form
 	fmt.setCodec("audio/pcm");
 	fmt.setByteOrder(QAudioFormat::LittleEndian);
 	fmt.setSampleType(QAudioFormat::SignedInt);
-	audio_stream = new eAudioStream(this);
 	audio = new QAudioOutput(fmt, this);
-	audio->start(audio_stream);
+	stream = audio->start();
 }
 
 //=============================================================================
@@ -120,30 +119,14 @@ void Window::UpdateScreen(uchar* _scr) const
 		}
 	}
 }
-
+//=============================================================================
+//	Window::UpdateSound
+//-----------------------------------------------------------------------------
 void Window::UpdateSound()
 {
-	using namespace xPlatform;
-	for(int i = Handler()->AudioSources(); --i >= 0;)
-	{
-		dword size = Handler()->AudioDataReady(i);
-		if(i == OpSound() && !Handler()->FullSpeed())
-		{
-			audio_stream->Fill(Handler()->AudioData(i), size);
-		}
-		Handler()->AudioDataUse(i, size);
-	}
-	static bool video_paused = false;
-	bool video_paused_new = audio_stream->Ready() > 44100*2*2/50;
-	if(video_paused_new != video_paused)
-	{
-		video_paused = video_paused_new;
-		Handler()->VideoPaused(video_paused);
-	}
-	if(audio->state() != QAudio::ActiveState)
-	{
-		audio->start(audio_stream);
-	}
+	audio_buffer.Update(OpSound());
+	qint64 out = stream->write((const char*)audio_buffer.Ptr(), audio_buffer.Ready());
+	audio_buffer.Use(out);
 }
 
 //=============================================================================

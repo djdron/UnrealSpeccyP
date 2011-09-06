@@ -19,27 +19,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef QT_SOUND_H
 #define QT_SOUND_H
 
-#include <QIODevice>
 #include "../../std_types.h"
 
 #pragma once
 
-class eAudioStream : public QIODevice
+class eAudioBuffer
 {
-	Q_OBJECT
 public:
-	eAudioStream(QObject* parent) : QIODevice(parent), ready(0) { open(QIODevice::ReadOnly); }
-	virtual qint64 readData(char* data, qint64 maxlen);
-	virtual qint64 writeData(const char *data, qint64 len) { return 0; }
-
-	void	Fill(void* data, size_t size);
-	void	Use(void* out, size_t size);
-	qint64	Ready() const { return ready; }
+	eAudioBuffer() : ready(0) {}
+	void	Update(int active_sound_src);
+	dword	Ready() const { return ready; }
+	const void*	Ptr() const { return buffer; }
+	void	Use(dword size);
 
 protected:
+	void	Fill(const void* data, dword size);
 	enum { BUF_SIZE = 65536 };
 	byte	buffer[BUF_SIZE];
-	size_t	ready;
+	dword	ready;
 };
 
 #endif // QT_SOUND_H

@@ -19,16 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_QT
 
 #include "qt_sound.h"
+#include "../platform.h"
 
-qint64 eAudioStream::readData(char* data, qint64 maxlen)
-{
-	if(maxlen > BUF_SIZE)
-		maxlen = BUF_SIZE;
-	size_t use = ready < (size_t)maxlen ? ready : (size_t)maxlen;
-	Use(data, use);
-	return use;
-}
-void eAudioStream::Fill(void* data, size_t size)
+//=============================================================================
+//	eAudioBuffer::Fill
+//-----------------------------------------------------------------------------
+void eAudioBuffer::Fill(const void* data, dword size)
 {
 	if(ready + size < BUF_SIZE)
 	{
@@ -38,14 +34,39 @@ void eAudioStream::Fill(void* data, size_t size)
 	else
 		ready = 0;
 }
-void eAudioStream::Use(void* out, size_t size)
+//=============================================================================
+//	eAudioBuffer::Use
+//-----------------------------------------------------------------------------
+void eAudioBuffer::Use(dword size)
 {
 	if(size)
 	{
-		memcpy(out, buffer, size);
 		if(ready > size)
 			memmove(buffer, buffer + size, ready - size);
 		ready -= size;
+	}
+}
+//=============================================================================
+//	eAudioBuffer::Update
+//-----------------------------------------------------------------------------
+void eAudioBuffer::Update(int active_sound_src)
+{
+	using namespace xPlatform;
+	for(int i = Handler()->AudioSources(); --i >= 0;)
+	{
+		dword size = Handler()->AudioDataReady(i);
+		if(i == active_sound_src && !Handler()->FullSpeed())
+		{
+			Fill(Handler()->AudioData(i), size);
+		}
+		Handler()->AudioDataUse(i, size);
+	}
+	static bool video_paused = false;
+	bool video_paused_new = Ready() > (44100*2*2/50)*3; // 3-frame audio data
+	if(video_paused_new != video_paused)
+	{
+		video_paused = video_paused_new;
+		Handler()->VideoPaused(video_paused);
 	}
 }
 

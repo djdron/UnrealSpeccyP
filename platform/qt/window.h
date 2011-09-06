@@ -21,11 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QWidget>
 #include "../../std_types.h"
+#include "qt_sound.h"
 
 #pragma once
 
 class QAudioOutput;
-class eAudioStream;
 
 //=============================================================================
 //	Window
@@ -51,7 +51,8 @@ protected:
 protected:
 	QImage			screen;
 	QAudioOutput*	audio;
-	eAudioStream*	audio_stream;
+	QIODevice*		stream;
+	eAudioBuffer	audio_buffer;
 };
 
 #endif // WINDOW_H
