@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QtGui/QApplication>
 #include <QFile>
-#include "window.h"
+#include "qt_window.h"
 
 byte sos128[16384];
 byte sos48[16384];

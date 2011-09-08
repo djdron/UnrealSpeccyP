@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 class QAudioOutput;
+class eControl;
 
 //=============================================================================
 //	eView
@@ -41,13 +42,9 @@ public:
 protected:
 	virtual void	paintEvent(QPaintEvent* event);
 	virtual void	timerEvent(QTimerEvent* event);
-	virtual void	keyPressEvent(QKeyEvent* event);
-	virtual void	keyReleaseEvent(QKeyEvent* event);
 
 	void			UpdateScreen(uchar* data) const;
 	void			UpdateSound();
-	void			EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const;
-	void			TranslateKey(int& key, dword& flags) const;
 
 protected:
 	QImage			screen;
@@ -65,6 +62,9 @@ class eWindow : public QMainWindow
 	Q_OBJECT
 public:
 	eWindow(QWidget* parent = NULL);
+protected:
+	eView*		view;
+	eControl*	control;
 };
 
 #endif // WINDOW_H

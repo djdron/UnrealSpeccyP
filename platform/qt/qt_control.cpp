@@ -19,149 +19,77 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_QT
 
 #include <QtGui>
-#include <QAudioOutput>
 
-#include "window.h"
-#include "qt_sound.h"
+#include "../../std_types.h"
 #include "../platform.h"
 #include "../../options_common.h"
-#include "../../ui/ui.h"
-#include "../../tools/options.h"
-
-static xOptions::eOption<int>* op_sound = NULL;
-static int OpSound() { return op_sound ? *op_sound : (int)xPlatform::S_AY; }
+#include "../touch_ui/tui_keyboard.h"
+#include "../touch_ui/tui_joystick.h"
+#include "qt_control.h"
 
 //=============================================================================
-//	eView::eView
+//	eControl::eControl
 //-----------------------------------------------------------------------------
-eView::eView(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Format_RGB32)
+eControl::eControl(QWidget* parent) : QWidget(parent)
 {
-	using namespace xPlatform;
-	OpLastFile("/");
-	Handler()->OnInit();
-	op_sound = xOptions::eOption<int>::Find("sound");
-	setAttribute(Qt::WA_InputMethodEnabled, false);
-	setFocusPolicy(Qt::StrongFocus);
-	setFixedSize(screen.size());
-	startTimer(10);
-	QAudioFormat fmt;
-	fmt.setFrequency(44100);
-	fmt.setChannels(2);
-	fmt.setSampleSize(16);
-	fmt.setCodec("audio/pcm");
-	fmt.setByteOrder(QAudioFormat::LittleEndian);
-	fmt.setSampleType(QAudioFormat::SignedInt);
-	audio = new QAudioOutput(fmt, this);
-	stream = audio->start();
+	keyboard.load(":/image/keyboard.png");
+	joystick.load(":/image/joystick.png");
+	setFixedSize(keyboard.size());
+	setAttribute(Qt::WA_NoSystemBackground, true);
+	setAttribute(Qt::WA_AcceptTouchEvents);
 }
-
 //=============================================================================
-//	eView::~eView
+//	eControl::paintEvent
 //-----------------------------------------------------------------------------
-eView::~eView()
+bool eControl::event(QEvent* event)
 {
-	audio->stop();
-	xPlatform::Handler()->OnDone();
-}
-
-//=============================================================================
-//	eCachedColors
-//-----------------------------------------------------------------------------
-static struct eCachedColors
-{
-	eCachedColors()
+	switch(event->type())
 	{
-		const byte brightness = 200;
-		const byte bright_intensity = 55;
-		for(int c = 0; c < 16; ++c)
+	case QEvent::MouseButtonPress:
+	case QEvent::MouseButtonRelease:
+	case QEvent::MouseMove:
 		{
-			byte i = c&8 ? brightness + bright_intensity : brightness;
-			byte b = c&1 ? i : 0;
-			byte r = c&2 ? i : 0;
-			byte g = c&4 ? i : 0;
-			items[c] = qRgb(r, g, b);
-		}
-	}
-	dword items[16];
-}
-color_cache;
-
-//=============================================================================
-//	eView::UpdateScreen
-//-----------------------------------------------------------------------------
-void eView::UpdateScreen(uchar* _scr) const
-{
-	using namespace xPlatform;
-	byte* data = (byte*)Handler()->VideoData();
-	dword* p = (dword*)_scr;
-#ifdef USE_UI
-	dword* data_ui = (dword*)Handler()->VideoDataUI();
-	if(data_ui)
-	{
-		for(int y = 0; y < 240; ++y)
-		{
-			for(int x = 0; x < 320; ++x)
+			QMouseEvent* me = (QMouseEvent*)event;
+			bool ok = event->type() == QEvent::MouseMove ? ((me->buttons() & Qt::LeftButton) != 0) : (me->button() == Qt::LeftButton);
+			if(ok)
 			{
-				xUi::eRGBAColor c_ui = *data_ui++;
-				xUi::eRGBAColor c = color_cache.items[*data++];
-				*p++ = qRgb((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b);
+				float x = float(me->x())/width();
+				float y = float(me->y())/height();
+				xPlatform::OnTouchKey(x, y, event->type() != QEvent::MouseButtonRelease, 0);
+				return true;
 			}
 		}
-	}
-	else
-#endif//USE_UI
-	{
-		for(int y = 0; y < 240; ++y)
+		return true;
+	case QEvent::TouchBegin:
+	case QEvent::TouchUpdate:
+	case QEvent::TouchEnd:
 		{
-			for(int x = 0; x < 320; ++x)
+			QTouchEvent* te = (QTouchEvent*)event;
+			foreach(const QTouchEvent::TouchPoint& p, te->touchPoints())
 			{
-				*p++ = color_cache.items[*data++];
+				float x = p.pos().x()/width();
+				float y = p.pos().x()/height();
+				xPlatform::OnTouchKey(x, y, event->type() != QEvent::TouchEnd, p.id());
 			}
 		}
+		return true;
+	default:
+		return QWidget::event(event);
 	}
 }
 //=============================================================================
-//	eView::UpdateSound
+//	eControl::paintEvent
 //-----------------------------------------------------------------------------
-void eView::UpdateSound()
-{
-	audio_buffer.Update(OpSound());
-	if(audio->state() != QAudio::StoppedState)
-	{
-		qint64 out = stream->write((const char*)audio_buffer.Ptr(), audio_buffer.Ready());
-		audio_buffer.Use(out);
-	}
-}
-
-//=============================================================================
-//	eView::paintEvent
-//-----------------------------------------------------------------------------
-void eView::paintEvent(QPaintEvent* event)
+void eControl::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
-	painter.drawImage(QPointF(0, 0), screen);
-}
-
-//=============================================================================
-//	eView::timerEvent
-//-----------------------------------------------------------------------------
-void eView::timerEvent(QTimerEvent* event)
-{
-	xPlatform::Handler()->OnLoop();
-	UpdateSound();
-#ifdef Q_WS_S60 // skip frames
-	static int x = 0;
-	if(++x % 5 == 0)
-#endif//Q_WS_S60
-	{
-		UpdateScreen(screen.bits());
-		update();
-	}
+	painter.fillRect(keyboard.rect(), Qt::black);
+	painter.drawImage(QPointF(0, 0), keyboard);
 }
 //=============================================================================
-//	eView::keyPressEvent
+//	eControl::keyPressEvent
 //-----------------------------------------------------------------------------
-void eView::keyPressEvent(QKeyEvent* event)
+void eControl::keyPressEvent(QKeyEvent* event)
 {
 	if(event->isAutoRepeat())
 	{
@@ -177,9 +105,9 @@ void eView::keyPressEvent(QKeyEvent* event)
 	key > 0 ? event->accept() : event->ignore();
 }
 //=============================================================================
-//	eView::keyReleaseEvent
+//	eControl::keyReleaseEvent
 //-----------------------------------------------------------------------------
-void eView::keyReleaseEvent(QKeyEvent* event)
+void eControl::keyReleaseEvent(QKeyEvent* event)
 {
 	if(event->isAutoRepeat())
 	{
@@ -195,9 +123,9 @@ void eView::keyReleaseEvent(QKeyEvent* event)
 	key > 0 ? event->accept() : event->ignore();
 }
 //=============================================================================
-//	eView::EventKeyFlags
+//	eControl::EventKeyFlags
 //-----------------------------------------------------------------------------
-void eView::EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const
+void eControl::EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const
 {
 	*key = event->key();
 #ifdef Q_WS_S60
@@ -215,9 +143,9 @@ void eView::EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const
 	if(event->modifiers()&Qt::SHIFT)	*flags |= xPlatform::KF_SHIFT;
 }
 //=============================================================================
-//	eView::TranslateKey
+//	eControl::TranslateKey
 //-----------------------------------------------------------------------------
-void eView::TranslateKey(int& key, dword& flags) const
+void eControl::TranslateKey(int& key, dword& flags) const
 {
 	using namespace xPlatform;
 	switch(key)
@@ -323,18 +251,6 @@ void eView::TranslateKey(int& key, dword& flags) const
 	}
 	if(key > 127 || key < 32)
 		key = 0;
-}
-
-
-//=============================================================================
-//	eWindow::eWindow
-//-----------------------------------------------------------------------------
-eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
-{
-	setWindowTitle(xPlatform::Handler()->WindowCaption());
-	eView* v = new eView(this);
-	setCentralWidget(v);
-	v->setFocus();
 }
 
 #endif//USE_QT

@@ -38,7 +38,8 @@ SOURCES += ../../speccy.cpp \
 	../../platform/custom_ui/ui_main.cpp \
 	../../platform/custom_ui/ui_keyboard.cpp \
 	../../platform/custom_ui/ui_file_open.cpp \
-	../../platform/qt/window.cpp \
+	../../platform/touch_ui/tui_keyboard.cpp \
+	../../platform/touch_ui/tui_joystick.cpp \
 	../../platform/platform.cpp \
 	../../platform/io.cpp \
 	../../devices/fdd/wd1793.cpp \
@@ -58,7 +59,9 @@ SOURCES += ../../speccy.cpp \
 	../../tools/options.cpp \
 	../../tools/log.cpp \
 	../../platform/qt/io_select_qt.cpp \
-	../../platform/qt/qt_sound.cpp
+	../../platform/qt/qt_sound.cpp \
+	../../platform/qt/qt_window.cpp \
+	../../platform/qt/qt_control.cpp
 
 HEADERS  += \
 	../../std_types.h \
@@ -100,8 +103,9 @@ HEADERS  += \
 	../../platform/custom_ui/ui_main.h \
 	../../platform/custom_ui/ui_keyboard.h \
 	../../platform/custom_ui/ui_file_open.h \
+	../../platform/touch_ui/tui_keyboard.h \
+	../../platform/touch_ui/tui_joystick.h \
 	../../platform/linux/tick_gtod.h \
-	../../platform/qt/window.h \
 	../../platform/platform.h \
 	../../platform/io.h \
 	../../platform/endian.h \
@@ -125,7 +129,9 @@ HEADERS  += \
 	../../tools/log.h \
 	../../tools/list.h \
 	../../tools/io_select.h \
-	../../platform/qt/qt_sound.h
+	../../platform/qt/qt_sound.h \
+	../../platform/qt/qt_window.h \
+	../../platform/qt/qt_control.h
 
 RESOURCES += unreal_speccy_portable.qrc
 
@@ -137,7 +143,7 @@ MOBILITY =
 QMAKE_CXXFLAGS_WARN_ON  = -Wall
 QMAKE_CFLAGS_WARN_ON    = -Wall
 
-DEFINES += USE_QT USE_UI USE_CONFIG USE_ZIP USE_EXTERN_RESOURCES
+DEFINES += USE_QT USE_UI USE_CONFIG USE_ZIP USE_EXTERN_RESOURCES USE_TUI
 
 symbian {
 	DEFINES += _POSIX
@@ -155,3 +161,9 @@ unix:!symbian {
 	}
 	INSTALLS += target
 }
+
+
+
+
+
+
