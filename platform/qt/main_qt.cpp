@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 	InitResources();
-	Window w;
+	eWindow w;
 #if defined(Q_WS_S60)
 	w.showMaximized();
 #else

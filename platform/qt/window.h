@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <QWidget>
+#include <QMainWindow>
 #include "../../std_types.h"
 #include "qt_sound.h"
 
@@ -28,15 +28,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class QAudioOutput;
 
 //=============================================================================
-//	Window
+//	eView
 //-----------------------------------------------------------------------------
-class Window : public QWidget
+class eView : public QWidget
 {
 	Q_OBJECT
 
 public:
-	Window(QWidget* parent = NULL);
-	~Window();
+	eView(QWidget* parent = NULL);
+	~eView();
 
 protected:
 	virtual void	paintEvent(QPaintEvent* event);
@@ -46,6 +46,7 @@ protected:
 
 	void			UpdateScreen(uchar* data) const;
 	void			UpdateSound();
+	void			EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const;
 	void			TranslateKey(int& key, dword& flags) const;
 
 protected:
@@ -53,6 +54,17 @@ protected:
 	QAudioOutput*	audio;
 	QIODevice*		stream;
 	eAudioBuffer	audio_buffer;
+};
+
+
+//=============================================================================
+//	eWindow
+//-----------------------------------------------------------------------------
+class eWindow : public QMainWindow
+{
+	Q_OBJECT
+public:
+	eWindow(QWidget* parent = NULL);
 };
 
 #endif // WINDOW_H

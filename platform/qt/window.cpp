@@ -32,15 +32,16 @@ static xOptions::eOption<int>* op_sound = NULL;
 static int OpSound() { return op_sound ? *op_sound : (int)xPlatform::S_AY; }
 
 //=============================================================================
-//	Window::Window
+//	eView::eView
 //-----------------------------------------------------------------------------
-Window::Window(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Format_RGB32)
+eView::eView(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Format_RGB32)
 {
 	using namespace xPlatform;
 	OpLastFile("/");
 	Handler()->OnInit();
 	op_sound = xOptions::eOption<int>::Find("sound");
-	setWindowTitle(Handler()->WindowCaption());
+	setAttribute(Qt::WA_InputMethodEnabled, false);
+	setFocusPolicy(Qt::StrongFocus);
 	setFixedSize(screen.size());
 	startTimer(10);
 	QAudioFormat fmt;
@@ -55,9 +56,9 @@ Window::Window(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Form
 }
 
 //=============================================================================
-//	Window::~Window
+//	eView::~eView
 //-----------------------------------------------------------------------------
-Window::~Window()
+eView::~eView()
 {
 	audio->stop();
 	xPlatform::Handler()->OnDone();
@@ -86,9 +87,9 @@ static struct eCachedColors
 color_cache;
 
 //=============================================================================
-//	Window::UpdateScreen
+//	eView::UpdateScreen
 //-----------------------------------------------------------------------------
-void Window::UpdateScreen(uchar* _scr) const
+void eView::UpdateScreen(uchar* _scr) const
 {
 	using namespace xPlatform;
 	byte* data = (byte*)Handler()->VideoData();
@@ -120,83 +121,111 @@ void Window::UpdateScreen(uchar* _scr) const
 	}
 }
 //=============================================================================
-//	Window::UpdateSound
+//	eView::UpdateSound
 //-----------------------------------------------------------------------------
-void Window::UpdateSound()
+void eView::UpdateSound()
 {
 	audio_buffer.Update(OpSound());
-	qint64 out = stream->write((const char*)audio_buffer.Ptr(), audio_buffer.Ready());
-	audio_buffer.Use(out);
+	if(audio->state() != QAudio::StoppedState)
+	{
+		qint64 out = stream->write((const char*)audio_buffer.Ptr(), audio_buffer.Ready());
+		audio_buffer.Use(out);
+	}
 }
 
 //=============================================================================
-//	Window::paintEvent
+//	eView::paintEvent
 //-----------------------------------------------------------------------------
-void Window::paintEvent(QPaintEvent* event)
+void eView::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
 	painter.drawImage(QPointF(0, 0), screen);
 }
 
 //=============================================================================
-//	Window::timerEvent
+//	eView::timerEvent
 //-----------------------------------------------------------------------------
-void Window::timerEvent(QTimerEvent* event)
+void eView::timerEvent(QTimerEvent* event)
 {
 	xPlatform::Handler()->OnLoop();
-	UpdateScreen(screen.bits());
 	UpdateSound();
-	update();
+#ifdef Q_WS_S60 // skip frames
+	static int x = 0;
+	if(++x % 5 == 0)
+#endif//Q_WS_S60
+	{
+		UpdateScreen(screen.bits());
+		update();
+	}
 }
 //=============================================================================
-//	Window::keyPressEvent
+//	eView::keyPressEvent
 //-----------------------------------------------------------------------------
-void Window::keyPressEvent(QKeyEvent* event)
+void eView::keyPressEvent(QKeyEvent* event)
 {
 	if(event->isAutoRepeat())
 	{
 		event->ignore();
 		return;
 	}
-	int key = event->key();
 	using namespace xPlatform;
+	int key = 0;
 	dword flags = KF_DOWN|OpJoyKeyFlags();
-	if(event->modifiers()&Qt::ALT)		flags |= KF_ALT;
-	if(event->modifiers()&Qt::SHIFT)	flags |= KF_SHIFT;
+	EventKeyFlags(event, &key, &flags);
 	TranslateKey(key, flags);
 	xPlatform::Handler()->OnKey(key, flags);
 	key > 0 ? event->accept() : event->ignore();
 }
 //=============================================================================
-//	Window::keyReleaseEvent
+//	eView::keyReleaseEvent
 //-----------------------------------------------------------------------------
-void Window::keyReleaseEvent(QKeyEvent* event)
+void eView::keyReleaseEvent(QKeyEvent* event)
 {
 	if(event->isAutoRepeat())
 	{
 		event->ignore();
 		return;
 	}
-	int key = event->key();
 	using namespace xPlatform;
+	int key = 0;
 	dword flags = 0;
-	if(event->modifiers()&Qt::ALT)		flags |= KF_ALT;
-	if(event->modifiers()&Qt::SHIFT)	flags |= KF_SHIFT;
+	EventKeyFlags(event, &key, &flags);
 	TranslateKey(key, flags);
 	Handler()->OnKey(key, OpJoyKeyFlags());
 	key > 0 ? event->accept() : event->ignore();
 }
 //=============================================================================
-//	Window::keyReleaseEvent
+//	eView::EventKeyFlags
 //-----------------------------------------------------------------------------
-void Window::TranslateKey(int& key, dword& flags) const
+void eView::EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const
+{
+	*key = event->key();
+#ifdef Q_WS_S60
+	if((event->nativeModifiers() & 0x3000) != 0x3000) // blue arrow not held down
+	{
+		int nsc = event->nativeScanCode();
+		if(nsc >= 'A' && nsc <= 'Z')
+			*key = nsc;
+	}
+	if((event->nativeModifiers() & 0x2800) == 0x2800) *flags |= xPlatform::KF_ALT; // 'sym' key held down
+	if(event->modifiers()&Qt::CTRL)		*flags |= xPlatform::KF_ALT;
+#else//Q_WS_S60
+	if(event->modifiers()&Qt::ALT)		*flags |= xPlatform::KF_ALT;
+#endif//Q_WS_S60
+	if(event->modifiers()&Qt::SHIFT)	*flags |= xPlatform::KF_SHIFT;
+}
+//=============================================================================
+//	eView::TranslateKey
+//-----------------------------------------------------------------------------
+void eView::TranslateKey(int& key, dword& flags) const
 {
 	using namespace xPlatform;
 	switch(key)
 	{
 	case Qt::Key_Shift:		key = 'c';	break;
 	case Qt::Key_Alt:		key = 's';	break;
-	case Qt::Key_Return:	key = 'e';	break;
+	case Qt::Key_Return:
+	case Qt::Key_Enter:		key = 'e';	break;
 	case Qt::Key_Tab:
 		key = '\0';
 		flags |= KF_ALT;
@@ -210,6 +239,7 @@ void Window::TranslateKey(int& key, dword& flags) const
 	case Qt::Key_Right:		key = 'r';	break;
 	case Qt::Key_Up:		key = 'u';	break;
 	case Qt::Key_Down:		key = 'd';	break;
+	case Qt::Key_Select:	key = 'f';	break;
 	case Qt::Key_Control:	key = 'f';	flags &= ~KF_CTRL; break;
 	case '!':	key = '1';		break;
 	case '@':	key = '2';		break;
@@ -221,6 +251,8 @@ void Window::TranslateKey(int& key, dword& flags) const
 	case '*':	key = '8';		break;
 	case '(':	key = '9';		break;
 	case ')':	key = '0';		break;
+	case Qt::Key_Yes:
+	case Qt::Key_Escape:
 	case '~':
 	case '`':	key = 'm';		break;
 	case '\\':	key = 'k';		break;
@@ -289,8 +321,20 @@ void Window::TranslateKey(int& key, dword& flags) const
 		flags |= KF_ALT;
 		break;
 	}
-	if(key > 255 || key < 32)
+	if(key > 127 || key < 32)
 		key = 0;
+}
+
+
+//=============================================================================
+//	eWindow::eWindow
+//-----------------------------------------------------------------------------
+eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
+{
+	setWindowTitle(xPlatform::Handler()->WindowCaption());
+	eView* v = new eView(this);
+	setCentralWidget(v);
+	v->setFocus();
 }
 
 #endif//USE_QT
