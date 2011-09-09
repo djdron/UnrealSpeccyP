@@ -69,7 +69,7 @@ bool eControl::event(QEvent* event)
 			{
 				float x = p.pos().x()/width();
 				float y = p.pos().x()/height();
-				xPlatform::OnTouchKey(x, y, event->type() != QEvent::TouchEnd, p.id());
+				xPlatform::OnTouchKey(x, y, p.state() != Qt::TouchPointReleased, p.id());
 			}
 		}
 		return true;
