@@ -65,6 +65,7 @@ public:
 private slots:
 	void OnOpenFile();
 	void OnReset();
+	void OnControlToggle();
 protected:
 	eView*		view;
 	eControl*	control;

@@ -168,6 +168,11 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 #ifndef Q_WS_S60
 	QMenu* menu = menuBar()->addMenu(tr("&File"));
 #else//Q_WS_S60
+	QAction* acontrol = new QAction(this);
+	acontrol->setText(tr("Control"));
+	acontrol->setSoftKeyRole(QAction::NegativeSoftKey);
+	connect(acontrol, SIGNAL(triggered()), this, SLOT(OnControlToggle()));
+	this->addAction(acontrol);
 	QMenuBar* menu = menuBar();
 #endif//Q_WS_S60
 
@@ -181,12 +186,10 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 	connect(areset, SIGNAL(triggered()), this, SLOT(OnReset()));
 	menu->addAction(areset);
 
-#ifndef Q_WS_S60
-	QAction* aquit = new QAction(tr("E&xit"), this);
-	aquit->setShortcuts(QKeySequence::Quit);
-	connect(aquit, SIGNAL(triggered()), this, SLOT(close()));
-	menu->addAction(aquit);
-#endif//Q_WS_S60
+	QAction* aexit = new QAction(tr("E&xit"), this);
+	aexit->setShortcuts(QKeySequence::Quit);
+	connect(aexit, SIGNAL(triggered()), this, SLOT(close()));
+	menu->addAction(aexit);
 
 	QWidget* w = new QWidget;
 	QLayout* l = new QVBoxLayout(w);
@@ -216,11 +219,18 @@ void eWindow::OnOpenFile()
 		Handler()->OnOpenFile(name.toUtf8().data());
 }
 //=============================================================================
-//	eWindow::OnOpenFile
+//	eWindow::OnReset
 //-----------------------------------------------------------------------------
 void eWindow::OnReset()
 {
 	xPlatform::Handler()->OnAction(xPlatform::A_RESET);
+}
+//=============================================================================
+//	eWindow::OnControlToggle
+//-----------------------------------------------------------------------------
+void eWindow::OnControlToggle()
+{
+	control->ToggleKeyboard();
 }
 
 #endif//USE_QT

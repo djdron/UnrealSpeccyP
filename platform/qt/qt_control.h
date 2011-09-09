@@ -27,6 +27,7 @@ class eControl : public QWidget
 {
 public:
 	eControl(QWidget* parent = NULL);
+	void			ToggleKeyboard();
 
 protected:
 	virtual bool	event (QEvent* event);
@@ -36,9 +37,11 @@ protected:
 
 	void			EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const;
 	void			TranslateKey(int& key, dword& flags) const;
+	void			OnTouch(float x, float y, bool down, int pointer_id);
 
 	QImage			keyboard;
 	QImage			joystick;
+	bool			keyboard_active;
 };
 
 #endif//QT_CONTROL_H

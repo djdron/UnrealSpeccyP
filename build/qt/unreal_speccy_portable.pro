@@ -151,6 +151,7 @@ symbian {
 	# TARGET.CAPABILITY +=
 	TARGET.EPOCSTACKSIZE = 0x14000
 	TARGET.EPOCHEAPSIZE = 0x800000 0x800000
+	ICON = unreal_speccy_portable.svg
 }
 
 unix:!symbian {

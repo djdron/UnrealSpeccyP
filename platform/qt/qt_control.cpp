@@ -30,13 +30,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //=============================================================================
 //	eControl::eControl
 //-----------------------------------------------------------------------------
-eControl::eControl(QWidget* parent) : QWidget(parent)
+eControl::eControl(QWidget* parent) : QWidget(parent), keyboard_active(true)
 {
 	keyboard.load(":/image/keyboard.png");
 	joystick.load(":/image/joystick.png");
 	setFixedSize(keyboard.size());
 	setAttribute(Qt::WA_NoSystemBackground, true);
 	setAttribute(Qt::WA_AcceptTouchEvents);
+	setContextMenuPolicy(Qt::NoContextMenu);
+}
+//=============================================================================
+//	eControl::ToggleKeyboard
+//-----------------------------------------------------------------------------
+void eControl::ToggleKeyboard()
+{
+	keyboard_active = !keyboard_active;
+	update();
+}
+//=============================================================================
+//	eControl::OnTouch
+//-----------------------------------------------------------------------------
+void eControl::OnTouch(float x, float y, bool down, int pointer_id)
+{
+	if(keyboard_active)
+		xPlatform::OnTouchKey(x, y, down, pointer_id);
+	else
+		xPlatform::OnTouchJoy(x, y, down, pointer_id);
 }
 //=============================================================================
 //	eControl::paintEvent
@@ -55,7 +74,7 @@ bool eControl::event(QEvent* event)
 			{
 				float x = float(me->x())/width();
 				float y = float(me->y())/height();
-				xPlatform::OnTouchKey(x, y, event->type() != QEvent::MouseButtonRelease, 0);
+				OnTouch(x, y, event->type() != QEvent::MouseButtonRelease, 0);
 				return true;
 			}
 		}
@@ -69,7 +88,7 @@ bool eControl::event(QEvent* event)
 			{
 				float x = p.pos().x()/width();
 				float y = p.pos().x()/height();
-				xPlatform::OnTouchKey(x, y, p.state() != Qt::TouchPointReleased, p.id());
+				OnTouch(x, y, p.state() != Qt::TouchPointReleased, p.id());
 			}
 		}
 		return true;
@@ -84,7 +103,7 @@ void eControl::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
 	painter.fillRect(keyboard.rect(), Qt::black);
-	painter.drawImage(QPointF(0, 0), keyboard);
+	painter.drawImage(QPointF(0, 0), keyboard_active ? keyboard : joystick);
 }
 //=============================================================================
 //	eControl::keyPressEvent
