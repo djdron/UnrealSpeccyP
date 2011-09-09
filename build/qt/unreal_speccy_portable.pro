@@ -161,9 +161,3 @@ unix:!symbian {
 	}
 	INSTALLS += target
 }
-
-
-
-
-
-

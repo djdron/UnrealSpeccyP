@@ -62,6 +62,9 @@ class eWindow : public QMainWindow
 	Q_OBJECT
 public:
 	eWindow(QWidget* parent = NULL);
+private slots:
+	void OnOpenFile();
+	void OnReset();
 protected:
 	eView*		view;
 	eControl*	control;

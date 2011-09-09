@@ -164,6 +164,26 @@ void eView::timerEvent(QTimerEvent* event)
 eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 {
 	setWindowTitle(xPlatform::Handler()->WindowCaption());
+
+	QMenu* file = menuBar()->addMenu(tr("&File"));
+
+	QAction* aopen = new QAction(tr("&Open..."), this);
+	aopen->setShortcuts(QKeySequence::Open);
+	aopen->setStatusTip(tr("Open file"));
+	connect(aopen, SIGNAL(triggered()), this, SLOT(OnOpenFile()));
+	file->addAction(aopen);
+
+	QAction* areset = new QAction(tr("&Reset..."), this);
+	connect(areset, SIGNAL(triggered()), this, SLOT(OnReset()));
+	file->addAction(areset);
+
+#ifndef Q_WS_S60
+	QAction* aquit = new QAction(tr("E&xit"), this);
+	aquit->setShortcuts(QKeySequence::Quit);
+	connect(aquit, SIGNAL(triggered()), this, SLOT(close()));
+	file->addAction(aquit);
+#endif//Q_WS_S60
+
 	QWidget* w = new QWidget;
 	QLayout* l = new QVBoxLayout(w);
 	l->setMargin(0);
@@ -172,6 +192,31 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 	l->addWidget(control = new eControl);
 	setCentralWidget(w);
 	control->setFocus();
+}
+//=============================================================================
+//	eWindow::OnOpenFile
+//-----------------------------------------------------------------------------
+void eWindow::OnOpenFile()
+{
+	using namespace xPlatform;
+	QString name = QFileDialog::getOpenFileName(this, tr("Open file"), OpLastFolder(),
+		tr(	"Supported files (*.sna *.z80 *.trd *.scl *.tap *.csw *.tzx *.zip);;"
+			"All files (*.*);;"
+			"Snapshot files (*.sna *.z80);;"
+			"Disk images (*.trd *.scl);;"
+			"Tape files (*.tap *.csw *.tzx);;"
+			"ZIP archives (*.zip)"
+			));
+
+	if(!name.isEmpty())
+		Handler()->OnOpenFile(name.toUtf8().data());
+}
+//=============================================================================
+//	eWindow::OnOpenFile
+//-----------------------------------------------------------------------------
+void eWindow::OnReset()
+{
+	xPlatform::Handler()->OnAction(xPlatform::A_RESET);
 }
 
 #endif//USE_QT
