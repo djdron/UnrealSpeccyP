@@ -165,23 +165,27 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 {
 	setWindowTitle(xPlatform::Handler()->WindowCaption());
 
-	QMenu* file = menuBar()->addMenu(tr("&File"));
+#ifndef Q_WS_S60
+	QMenu* menu = menuBar()->addMenu(tr("&File"));
+#else//Q_WS_S60
+	QMenuBar* menu = menuBar();
+#endif//Q_WS_S60
 
 	QAction* aopen = new QAction(tr("&Open..."), this);
 	aopen->setShortcuts(QKeySequence::Open);
 	aopen->setStatusTip(tr("Open file"));
 	connect(aopen, SIGNAL(triggered()), this, SLOT(OnOpenFile()));
-	file->addAction(aopen);
+	menu->addAction(aopen);
 
 	QAction* areset = new QAction(tr("&Reset..."), this);
 	connect(areset, SIGNAL(triggered()), this, SLOT(OnReset()));
-	file->addAction(areset);
+	menu->addAction(areset);
 
 #ifndef Q_WS_S60
 	QAction* aquit = new QAction(tr("E&xit"), this);
 	aquit->setShortcuts(QKeySequence::Quit);
 	connect(aquit, SIGNAL(triggered()), this, SLOT(close()));
-	file->addAction(aquit);
+	menu->addAction(aquit);
 #endif//Q_WS_S60
 
 	QWidget* w = new QWidget;
