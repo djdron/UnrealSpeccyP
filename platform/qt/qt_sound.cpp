@@ -21,6 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "qt_sound.h"
 #include "../platform.h"
 
+namespace xPlatform
+{
+
 //=============================================================================
 //	eAudioBuffer::Fill
 //-----------------------------------------------------------------------------
@@ -51,7 +54,6 @@ void eAudioBuffer::Use(dword size)
 //-----------------------------------------------------------------------------
 void eAudioBuffer::Update(int active_sound_src)
 {
-	using namespace xPlatform;
 	for(int i = Handler()->AudioSources(); --i >= 0;)
 	{
 		dword size = Handler()->AudioDataReady(i);
@@ -69,5 +71,8 @@ void eAudioBuffer::Update(int active_sound_src)
 		Handler()->VideoPaused(video_paused);
 	}
 }
+
+}
+//namespace xPlatform
 
 #endif//USE_QT

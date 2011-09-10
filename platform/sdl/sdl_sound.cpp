@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_SDL
 
 #include <SDL.h>
-#include "../../tools/options.h"
 #include "../../options_common.h"
 
 namespace xPlatform
@@ -63,8 +62,6 @@ protected:
 };
 
 static eAudioBuffer* audio_buffer = NULL;
-static xOptions::eOption<int>* op_sound = NULL;
-static int OpSound() { return op_sound ? *op_sound : (int)S_AY; }
 
 static void AudioCallback(void* userdata, Uint8* stream, int len)
 {
@@ -86,7 +83,6 @@ bool InitAudio()
 	audio.callback = AudioCallback;
 	if(SDL_OpenAudio(&audio, NULL) < 0)
 		return false;
-	op_sound = xOptions::eOption<int>::Find("sound");
 	audio_buffer = new eAudioBuffer;
 	SDL_PauseAudio(0);
 	return true;

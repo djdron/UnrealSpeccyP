@@ -138,7 +138,21 @@ static struct eOptionPause : public xOptions::eOptionBool
 	virtual int Order() const { return 70; }
 } op_pause;
 
-#endif//USE_UI
+eVolume	OpVolume() { return (eVolume)(int)op_volume; }
+void OpVolume(eVolume v) { op_volume.Set(v); }
+
+eSound	OpSound() { return (eSound)(int)op_sound; }
+void OpSound(eSound s) { op_sound.Set(s); }
+
+#else//USE_UI || USE_OPTIONS_COMMON
+
+eVolume	OpVolume() { return V_100; }
+void OpVolume(eVolume v) {}
+
+eSound	OpSound() { return S_AY; }
+void OpSound(eSound s) {}
+
+#endif//USE_UI || USE_OPTIONS_COMMON
 
 static struct eOptionJoy : public xOptions::eOptionInt
 {

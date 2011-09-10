@@ -16,50 +16,45 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef QT_WINDOW_H
-#define QT_WINDOW_H
+#ifndef QT_VIEW_H
+#define QT_VIEW_H
 
-#include <QMainWindow>
+#include <QWidget>
+#include "qt_sound.h"
 
 #pragma once
+
+class QAudioOutput;
 
 namespace xPlatform
 {
 
-class eControl;
-class eView;
-
 //=============================================================================
-//	eWindow
+//	eView
 //-----------------------------------------------------------------------------
-class eWindow : public QMainWindow
+class eView : public QWidget
 {
 	Q_OBJECT
-public:
-	eWindow(QWidget* parent = NULL);
 
-private slots:
-	void OnOpenFile();
-	void OnReset();
-	void OnControlToggle();
-	void OnSaveState();
-	void OnLoadState();
-	void OnJoyKempston();
-	void OnJoyCursor();
-	void OnJoyQAOP();
-	void OnJoySinclair();
-	void OnSndBeeper();
-	void OnSndAY();
-	void OnSndTape();
-	void OnTapeToggle();
-	void OnTapeFast();
+public:
+	eView(QWidget* parent = NULL);
+	~eView();
 
 protected:
-	eView*		view;
-	eControl*	control;
+	virtual void	paintEvent(QPaintEvent* event);
+	virtual void	timerEvent(QTimerEvent* event);
+
+	void			UpdateScreen(uchar* data) const;
+	void			UpdateSound();
+
+protected:
+	QImage			screen;
+	QAudioOutput*	audio;
+	QIODevice*		stream;
+	eAudioBuffer	audio_buffer;
 };
 
 }
 //namespace xPlatform
 
-#endif//QT_WINDOW_H
+#endif//QT_VIEW_H

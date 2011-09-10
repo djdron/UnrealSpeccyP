@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef _DINGOO
 
 #include "../platform.h"
-#include "../../tools/options.h"
 #include "../../options_common.h"
 
 #include <dingoo/audio.h>
@@ -32,8 +31,6 @@ class eAudio
 public:
 	eAudio() : volume(0)
 	{
-		op_sound = xOptions::eOption<int>::Find("sound");
-		op_volume = xOptions::eOption<int>::Find("volume");
 		SetVolume(volume);
 		waveout_args wo = { 44100, 16, 2, 30 };
 		handle = waveout_open(&wo);
@@ -41,8 +38,6 @@ public:
 	~eAudio() { waveout_close(handle); }
 	void Update();
 protected:
-	int OpVolume() { return op_volume ? *op_volume : (int)V_100; }
-	int OpSound() { return op_sound ? *op_sound : (int)S_AY; }
 	void SetVolume(int v)
 	{
 		waveout_set_volume(v);
@@ -51,8 +46,6 @@ protected:
 	void* handle;
 	int source;
 	int volume;
-	xOptions::eOption<int>* op_volume;
-	xOptions::eOption<int>* op_sound;
 };
 
 void eAudio::Update()

@@ -43,6 +43,12 @@ eJoystick OpJoystick();
 void OpJoystick(eJoystick v);
 dword OpJoyKeyFlags();
 
+eVolume OpVolume();
+void OpVolume(eVolume v);
+
+eSound OpSound();
+void OpSound(eSound s);
+
 }
 //namespace xPlatform
 

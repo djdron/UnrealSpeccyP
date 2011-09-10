@@ -23,6 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+namespace xPlatform
+{
+
 class eAudioBuffer
 {
 public:
@@ -38,5 +41,8 @@ protected:
 	byte	buffer[BUF_SIZE];
 	dword	ready;
 };
+
+}
+//namespace xPlatform
 
 #endif // QT_SOUND_H

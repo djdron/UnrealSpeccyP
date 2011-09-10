@@ -4,7 +4,6 @@
         <file alias="rom/service.rom">../../res/rom/service.rom</file>
         <file alias="rom/sos128.rom">../../res/rom/sos128.rom</file>
         <file alias="rom/sos48.rom">../../res/rom/sos48.rom</file>
-        <file alias="font/spxtrm4f.fnt">../../res/font/spxtrm4f.fnt</file>
         <file alias="image/keyboard.png">res/image/keyboard.png</file>
         <file alias="image/joystick.png">res/image/joystick.png</file>
     </qresource>

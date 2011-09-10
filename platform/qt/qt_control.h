@@ -20,8 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define QT_CONTROL_H
 
 #include <QWidget>
+#include "../../std_types.h"
 
 #pragma once
+
+namespace xPlatform
+{
 
 class eControl : public QWidget
 {
@@ -41,7 +45,9 @@ protected:
 
 	QImage			keyboard;
 	QImage			joystick;
-	bool			keyboard_active;
 };
+
+}
+//namespace xPlatform
 
 #endif//QT_CONTROL_H

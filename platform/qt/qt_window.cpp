@@ -19,154 +19,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_QT
 
 #include <QtGui>
-#include <QAudioOutput>
 
 #include "qt_window.h"
 #include "qt_control.h"
-#include "qt_sound.h"
+#include "qt_view.h"
 #include "../platform.h"
 #include "../../options_common.h"
-#include "../../ui/ui.h"
 #include "../../tools/options.h"
 
-static xOptions::eOption<int>* op_sound = NULL;
-static int OpSound() { return op_sound ? *op_sound : (int)xPlatform::S_AY; }
-
-//=============================================================================
-//	eView::eView
-//-----------------------------------------------------------------------------
-eView::eView(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Format_RGB32)
+namespace xPlatform
 {
-	using namespace xPlatform;
-	OpLastFile("/");
-	Handler()->OnInit();
-	op_sound = xOptions::eOption<int>::Find("sound");
-	setFixedSize(screen.size());
-	startTimer(10);
-	QAudioFormat fmt;
-	fmt.setFrequency(44100);
-	fmt.setChannels(2);
-	fmt.setSampleSize(16);
-	fmt.setCodec("audio/pcm");
-	fmt.setByteOrder(QAudioFormat::LittleEndian);
-	fmt.setSampleType(QAudioFormat::SignedInt);
-	audio = new QAudioOutput(fmt, this);
-	stream = audio->start();
-}
-
-//=============================================================================
-//	eView::~eView
-//-----------------------------------------------------------------------------
-eView::~eView()
-{
-	audio->stop();
-	xPlatform::Handler()->OnDone();
-}
-
-//=============================================================================
-//	eCachedColors
-//-----------------------------------------------------------------------------
-static struct eCachedColors
-{
-	eCachedColors()
-	{
-		const byte brightness = 200;
-		const byte bright_intensity = 55;
-		for(int c = 0; c < 16; ++c)
-		{
-			byte i = c&8 ? brightness + bright_intensity : brightness;
-			byte b = c&1 ? i : 0;
-			byte r = c&2 ? i : 0;
-			byte g = c&4 ? i : 0;
-			items[c] = qRgb(r, g, b);
-		}
-	}
-	dword items[16];
-}
-color_cache;
-
-//=============================================================================
-//	eView::UpdateScreen
-//-----------------------------------------------------------------------------
-void eView::UpdateScreen(uchar* _scr) const
-{
-	using namespace xPlatform;
-	byte* data = (byte*)Handler()->VideoData();
-	dword* p = (dword*)_scr;
-#ifdef USE_UI
-	dword* data_ui = (dword*)Handler()->VideoDataUI();
-	if(data_ui)
-	{
-		for(int y = 0; y < 240; ++y)
-		{
-			for(int x = 0; x < 320; ++x)
-			{
-				xUi::eRGBAColor c_ui = *data_ui++;
-				xUi::eRGBAColor c = color_cache.items[*data++];
-				*p++ = qRgb((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b);
-			}
-		}
-	}
-	else
-#endif//USE_UI
-	{
-		for(int y = 0; y < 240; ++y)
-		{
-			for(int x = 0; x < 320; ++x)
-			{
-				*p++ = color_cache.items[*data++];
-			}
-		}
-	}
-}
-//=============================================================================
-//	eView::UpdateSound
-//-----------------------------------------------------------------------------
-void eView::UpdateSound()
-{
-	audio_buffer.Update(OpSound());
-	if(audio->state() != QAudio::StoppedState)
-	{
-		qint64 out = stream->write((const char*)audio_buffer.Ptr(), audio_buffer.Ready());
-		audio_buffer.Use(out);
-	}
-}
-
-//=============================================================================
-//	eView::paintEvent
-//-----------------------------------------------------------------------------
-void eView::paintEvent(QPaintEvent* event)
-{
-	QPainter painter(this);
-	painter.drawImage(QPointF(0, 0), screen);
-}
-
-//=============================================================================
-//	eView::timerEvent
-//-----------------------------------------------------------------------------
-void eView::timerEvent(QTimerEvent* event)
-{
-	xPlatform::Handler()->OnLoop();
-	UpdateSound();
-#ifdef Q_WS_S60 // skip frames
-	static int x = 0;
-	if(++x % 5 == 0)
-#endif//Q_WS_S60
-	{
-		UpdateScreen(screen.bits());
-		update();
-	}
-}
 
 //=============================================================================
 //	eWindow::eWindow
 //-----------------------------------------------------------------------------
 eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 {
-	setWindowTitle(xPlatform::Handler()->WindowCaption());
+	setWindowTitle(Handler()->WindowCaption());
 
 #ifndef Q_WS_S60
 	QMenu* menu = menuBar()->addMenu(tr("&File"));
+	QMenu* dmenu = menuBar()->addMenu(tr("&Device"));
 #else//Q_WS_S60
 	QAction* acontrol = new QAction(this);
 	acontrol->setText(tr("Control"));
@@ -174,6 +47,7 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 	connect(acontrol, SIGNAL(triggered()), this, SLOT(OnControlToggle()));
 	this->addAction(acontrol);
 	QMenuBar* menu = menuBar();
+	QMenuBar* dmenu = menu;
 #endif//Q_WS_S60
 
 	QAction* aopen = new QAction(tr("&Open..."), this);
@@ -182,9 +56,73 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 	connect(aopen, SIGNAL(triggered()), this, SLOT(OnOpenFile()));
 	menu->addAction(aopen);
 
-	QAction* areset = new QAction(tr("&Reset..."), this);
+	QAction* asave = new QAction(tr("&Save state"), this);
+	asave->setShortcuts(QKeySequence::Save);
+	connect(asave, SIGNAL(triggered()), this, SLOT(OnSaveState()));
+	menu->addAction(asave);
+
+	QAction* aload = new QAction(tr("&Load state"), this);
+	aload->setShortcuts(QKeySequence::Undo);
+	connect(aload, SIGNAL(triggered()), this, SLOT(OnLoadState()));
+	menu->addAction(aload);
+
+	QAction* ajoy_kempston = new QAction(tr("&Kempston"), this);
+	QAction* ajoy_cursor = new QAction(tr("&Cursor"), this);
+	QAction* ajoy_qaop = new QAction(tr("&QAOP"), this);
+	QAction* ajoy_sinclair = new QAction(tr("&Sinclair"), this);
+	{
+		QMenu* jmenu = dmenu->addMenu(tr("&Joystick"));
+		ajoy_kempston->setCheckable(true);
+		ajoy_cursor->setCheckable(true);
+		ajoy_qaop->setCheckable(true);
+		ajoy_sinclair->setCheckable(true);
+		connect(ajoy_kempston, SIGNAL(triggered()), this, SLOT(OnJoyKempston()));
+		connect(ajoy_cursor, SIGNAL(triggered()), this, SLOT(OnJoyCursor()));
+		connect(ajoy_qaop, SIGNAL(triggered()), this, SLOT(OnJoyQAOP()));
+		connect(ajoy_sinclair, SIGNAL(triggered()), this, SLOT(OnJoySinclair()));
+		jmenu->addAction(ajoy_kempston);
+		jmenu->addAction(ajoy_cursor);
+		jmenu->addAction(ajoy_qaop);
+		jmenu->addAction(ajoy_sinclair);
+		QActionGroup* gjoy = new QActionGroup(this);
+		gjoy->addAction(ajoy_kempston);
+		gjoy->addAction(ajoy_cursor);
+		gjoy->addAction(ajoy_qaop);
+		gjoy->addAction(ajoy_sinclair);
+	}
+	QAction* asnd_beeper = new QAction(tr("&Beeper"), this);
+	QAction* asnd_ay = new QAction(tr("&AY"), this);
+	QAction* asnd_tape = new QAction(tr("&Tape"), this);
+	{
+		QMenu* smenu = dmenu->addMenu(tr("&Sound"));
+		asnd_beeper->setCheckable(true);
+		asnd_ay->setCheckable(true);
+		asnd_tape->setCheckable(true);
+		connect(asnd_beeper, SIGNAL(triggered()), this, SLOT(OnSndBeeper()));
+		connect(asnd_ay, SIGNAL(triggered()), this, SLOT(OnSndAY()));
+		connect(asnd_tape, SIGNAL(triggered()), this, SLOT(OnSndTape()));
+		smenu->addAction(asnd_beeper);
+		smenu->addAction(asnd_ay);
+		smenu->addAction(asnd_tape);
+		QActionGroup* gsnd = new QActionGroup(this);
+		gsnd->addAction(asnd_beeper);
+		gsnd->addAction(asnd_ay);
+		gsnd->addAction(asnd_tape);
+	}
+
+	QAction* atape_toggle = new QAction(tr("&Start/stop tape"), this);
+	connect(atape_toggle, SIGNAL(triggered()), this, SLOT(OnTapeToggle()));
+	dmenu->addAction(atape_toggle);
+
+	QAction* atape_fast = new QAction(tr("&Fast tape"), this);
+	atape_fast->setCheckable(true);
+	connect(atape_fast, SIGNAL(triggered()), this, SLOT(OnTapeFast()));
+	dmenu->addAction(atape_fast);
+
+	QAction* areset = new QAction(tr("&Reset"), this);
+	areset->setShortcuts(QKeySequence::New);
 	connect(areset, SIGNAL(triggered()), this, SLOT(OnReset()));
-	menu->addAction(areset);
+	dmenu->addAction(areset);
 
 	QAction* aexit = new QAction(tr("E&xit"), this);
 	aexit->setShortcuts(QKeySequence::Quit);
@@ -199,13 +137,30 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 	l->addWidget(control = new eControl);
 	setCentralWidget(w);
 	control->setFocus();
+
+	switch(OpJoystick())
+	{
+	case J_KEMPSTON:	ajoy_kempston->setChecked(true);	break;
+	case J_CURSOR:		ajoy_cursor->setChecked(true);		break;
+	case J_QAOP:		ajoy_qaop->setChecked(true);		break;
+	case J_SINCLAIR2:	ajoy_sinclair->setChecked(true);	break;
+	default: break;
+	}
+	switch(OpSound())
+	{
+	case S_BEEPER:		asnd_beeper->setChecked(true);		break;
+	case S_AY:			asnd_ay->setChecked(true);			break;
+	case S_TAPE:		asnd_tape->setChecked(true);		break;
+	default: break;
+	}
+	xOptions::eOptionBool* o = (xOptions::eOptionBool*)xOptions::eOptionB::Find("fast tape");
+	atape_fast->setChecked(o && *o);
 }
 //=============================================================================
 //	eWindow::OnOpenFile
 //-----------------------------------------------------------------------------
 void eWindow::OnOpenFile()
 {
-	using namespace xPlatform;
 	QString name = QFileDialog::getOpenFileName(this, tr("Open file"), OpLastFolder(),
 		tr(	"Supported files (*.sna *.z80 *.trd *.scl *.tap *.csw *.tzx *.zip);;"
 			"All files (*.*);;"
@@ -223,7 +178,7 @@ void eWindow::OnOpenFile()
 //-----------------------------------------------------------------------------
 void eWindow::OnReset()
 {
-	xPlatform::Handler()->OnAction(xPlatform::A_RESET);
+	Handler()->OnAction(A_RESET);
 }
 //=============================================================================
 //	eWindow::OnControlToggle
@@ -232,5 +187,52 @@ void eWindow::OnControlToggle()
 {
 	control->ToggleKeyboard();
 }
+//=============================================================================
+//	eWindow::OnSaveState
+//-----------------------------------------------------------------------------
+void eWindow::OnSaveState()
+{
+	using namespace xOptions;
+	eOptionB* o = eOptionB::Find("save state");
+	SAFE_CALL(o)->Change();
+}
+//=============================================================================
+//	eWindow::OnLoadState
+//-----------------------------------------------------------------------------
+void eWindow::OnLoadState()
+{
+	using namespace xOptions;
+	eOptionB* o = eOptionB::Find("load state");
+	SAFE_CALL(o)->Change();
+}
+//=============================================================================
+//	eWindow::OnJoy*
+//-----------------------------------------------------------------------------
+void eWindow::OnJoyKempston()	{ OpJoystick(J_KEMPSTON);	}
+void eWindow::OnJoyCursor()		{ OpJoystick(J_CURSOR);		}
+void eWindow::OnJoyQAOP()		{ OpJoystick(J_QAOP);		}
+void eWindow::OnJoySinclair()	{ OpJoystick(J_SINCLAIR2);	}
+void eWindow::OnSndBeeper()		{ OpSound(S_BEEPER);		}
+void eWindow::OnSndAY()			{ OpSound(S_AY);			}
+void eWindow::OnSndTape()		{ OpSound(S_TAPE);			}
+
+//=============================================================================
+//	eWindow::OnTapeToggle
+//-----------------------------------------------------------------------------
+void eWindow::OnTapeToggle()
+{
+	Handler()->OnAction(A_TAPE_TOGGLE);
+}
+//=============================================================================
+//	eWindow::OnTapeFast
+//-----------------------------------------------------------------------------
+void eWindow::OnTapeFast()
+{
+	xOptions::eOptionBool* o = (xOptions::eOptionBool*)xOptions::eOptionB::Find("fast tape");
+	SAFE_CALL(o)->Change();
+}
+
+}
+//namespace xPlatform
 
 #endif//USE_QT

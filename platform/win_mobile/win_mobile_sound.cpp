@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include "../../tools/log.h"
-#include "../../tools/options.h"
 #include "../../options_common.h"
 
 namespace xPlatform
@@ -33,7 +32,6 @@ class eAudio
 public:
 	eAudio() : handle(NULL)
 	{
-		op_sound = xOptions::eOption<int>::Find("sound");
 		WAVEFORMATEX wf;
 		wf.cbSize = sizeof(wf);
 		wf.wFormatTag = WAVE_FORMAT_PCM;
@@ -54,10 +52,8 @@ public:
 			waveOutClose(handle);
 	}
 	void Update();
-	int OpSound() { return op_sound ? *op_sound : (int)S_AY; }
 protected:
 	HWAVEOUT handle;
-	xOptions::eOption<int>* op_sound;
 };
 
 void eAudio::Update()

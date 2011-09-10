@@ -22,15 +22,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../../std_types.h"
 #include "../platform.h"
+#include "../../tools/options.h"
 #include "../../options_common.h"
 #include "../touch_ui/tui_keyboard.h"
 #include "../touch_ui/tui_joystick.h"
 #include "qt_control.h"
 
+namespace xPlatform
+{
+
+static struct eOptionUseKeyboard : public xOptions::eOptionBool
+{
+	eOptionUseKeyboard() { Set(true); }
+	virtual const char* Name() const { return "use keyboard"; }
+	virtual int Order() const { return 5; }
+} op_use_keyboard;
+
 //=============================================================================
 //	eControl::eControl
 //-----------------------------------------------------------------------------
-eControl::eControl(QWidget* parent) : QWidget(parent), keyboard_active(true)
+eControl::eControl(QWidget* parent) : QWidget(parent)
 {
 	keyboard.load(":/image/keyboard.png");
 	joystick.load(":/image/joystick.png");
@@ -44,7 +55,7 @@ eControl::eControl(QWidget* parent) : QWidget(parent), keyboard_active(true)
 //-----------------------------------------------------------------------------
 void eControl::ToggleKeyboard()
 {
-	keyboard_active = !keyboard_active;
+	op_use_keyboard.Change();
 	update();
 }
 //=============================================================================
@@ -52,10 +63,10 @@ void eControl::ToggleKeyboard()
 //-----------------------------------------------------------------------------
 void eControl::OnTouch(float x, float y, bool down, int pointer_id)
 {
-	if(keyboard_active)
-		xPlatform::OnTouchKey(x, y, down, pointer_id);
+	if(op_use_keyboard)
+		OnTouchKey(x, y, down, pointer_id);
 	else
-		xPlatform::OnTouchJoy(x, y, down, pointer_id);
+		OnTouchJoy(x, y, down, pointer_id);
 }
 //=============================================================================
 //	eControl::paintEvent
@@ -103,7 +114,7 @@ void eControl::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
 	painter.fillRect(keyboard.rect(), Qt::black);
-	painter.drawImage(QPointF(0, 0), keyboard_active ? keyboard : joystick);
+	painter.drawImage(QPointF(0, 0), op_use_keyboard ? keyboard : joystick);
 }
 //=============================================================================
 //	eControl::keyPressEvent
@@ -115,12 +126,11 @@ void eControl::keyPressEvent(QKeyEvent* event)
 		event->ignore();
 		return;
 	}
-	using namespace xPlatform;
 	int key = 0;
 	dword flags = KF_DOWN|OpJoyKeyFlags();
 	EventKeyFlags(event, &key, &flags);
 	TranslateKey(key, flags);
-	xPlatform::Handler()->OnKey(key, flags);
+	Handler()->OnKey(key, flags);
 	key > 0 ? event->accept() : event->ignore();
 }
 //=============================================================================
@@ -133,7 +143,6 @@ void eControl::keyReleaseEvent(QKeyEvent* event)
 		event->ignore();
 		return;
 	}
-	using namespace xPlatform;
 	int key = 0;
 	dword flags = 0;
 	EventKeyFlags(event, &key, &flags);
@@ -154,19 +163,18 @@ void eControl::EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const
 		if(nsc >= 'A' && nsc <= 'Z')
 			*key = nsc;
 	}
-	if((event->nativeModifiers() & 0x2800) == 0x2800) *flags |= xPlatform::KF_ALT; // 'sym' key held down
-	if(event->modifiers()&Qt::CTRL)		*flags |= xPlatform::KF_ALT;
+	if((event->nativeModifiers() & 0x2800) == 0x2800) *flags |= KF_ALT; // 'sym' key held down
+	if(event->modifiers()&Qt::CTRL)		*flags |= KF_ALT;
 #else//Q_WS_S60
-	if(event->modifiers()&Qt::ALT)		*flags |= xPlatform::KF_ALT;
+	if(event->modifiers()&Qt::ALT)		*flags |= KF_ALT;
 #endif//Q_WS_S60
-	if(event->modifiers()&Qt::SHIFT)	*flags |= xPlatform::KF_SHIFT;
+	if(event->modifiers()&Qt::SHIFT)	*flags |= KF_SHIFT;
 }
 //=============================================================================
 //	eControl::TranslateKey
 //-----------------------------------------------------------------------------
 void eControl::TranslateKey(int& key, dword& flags) const
 {
-	using namespace xPlatform;
 	switch(key)
 	{
 	case Qt::Key_Shift:		key = 'c';	break;
@@ -271,5 +279,8 @@ void eControl::TranslateKey(int& key, dword& flags) const
 	if(key > 127 || key < 32)
 		key = 0;
 }
+
+}
+//namespace xPlatform
 
 #endif//USE_QT

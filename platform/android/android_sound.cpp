@@ -20,18 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef _ANDROID
 
-#include "../../tools/options.h"
 #include "../../options_common.h"
 
 namespace xPlatform
 {
 
-static xOptions::eOption<int>* op_sound = NULL;
-static int OpSound() { return op_sound ? *op_sound : (int)S_AY; }
-
 void InitSound()
 {
-	op_sound = xOptions::eOption<int>::Find("sound");
 }
 void DoneSound()
 {

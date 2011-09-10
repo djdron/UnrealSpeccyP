@@ -9,12 +9,6 @@ SOURCES += ../../speccy.cpp \
 	../../z80/z80_op_tables.cpp \
 	../../z80/z80_opcodes.cpp \
 	../../z80/z80.cpp \
-	../../ui/ui_list.cpp \
-	../../ui/ui_dialog.cpp \
-	../../ui/ui_desktop.cpp \
-	../../ui/ui_control.cpp \
-	../../ui/ui_button.cpp \
-	../../ui/ui.cpp \
 	../../tools/tinyxml/tinyxmlparser.cpp \
 	../../tools/tinyxml/tinyxmlerror.cpp \
 	../../tools/tinyxml/tinyxml.cpp \
@@ -33,11 +27,6 @@ SOURCES += ../../speccy.cpp \
 	../../tools/zlib/adler32.c \
 	../../snapshot/snapshot.cpp \
 	../../snapshot/screenshot.cpp \
-	../../platform/custom_ui/ui_profiler.cpp \
-	../../platform/custom_ui/ui_menu.cpp \
-	../../platform/custom_ui/ui_main.cpp \
-	../../platform/custom_ui/ui_keyboard.cpp \
-	../../platform/custom_ui/ui_file_open.cpp \
 	../../platform/touch_ui/tui_keyboard.cpp \
 	../../platform/touch_ui/tui_joystick.cpp \
 	../../platform/platform.cpp \
@@ -61,7 +50,8 @@ SOURCES += ../../speccy.cpp \
 	../../platform/qt/io_select_qt.cpp \
 	../../platform/qt/qt_sound.cpp \
 	../../platform/qt/qt_window.cpp \
-	../../platform/qt/qt_control.cpp
+	../../platform/qt/qt_control.cpp \
+	../../platform/qt/qt_view.cpp
 
 HEADERS  += \
 	../../std_types.h \
@@ -77,12 +67,6 @@ HEADERS  += \
 	../../z80/z80_op_cb.h \
 	../../z80/z80_op.h \
 	../../z80/z80.h \
-	../../ui/ui_list.h \
-	../../ui/ui_dialog.h \
-	../../ui/ui_desktop.h \
-	../../ui/ui_control.h \
-	../../ui/ui_button.h \
-	../../ui/ui.h \
 	../../tools/tinyxml/tinyxml.h \
 	../../tools/tinyxml/tinystr.h \
 	../../tools/zlib/zutil.h \
@@ -99,10 +83,6 @@ HEADERS  += \
 	../../tools/zlib/crypt.h \
 	../../tools/zlib/crc32.h \
 	../../snapshot/snapshot.h \
-	../../platform/custom_ui/ui_menu.h \
-	../../platform/custom_ui/ui_main.h \
-	../../platform/custom_ui/ui_keyboard.h \
-	../../platform/custom_ui/ui_file_open.h \
 	../../platform/touch_ui/tui_keyboard.h \
 	../../platform/touch_ui/tui_joystick.h \
 	../../platform/linux/tick_gtod.h \
@@ -131,7 +111,8 @@ HEADERS  += \
 	../../tools/io_select.h \
 	../../platform/qt/qt_sound.h \
 	../../platform/qt/qt_window.h \
-	../../platform/qt/qt_control.h
+	../../platform/qt/qt_control.h \
+	../../platform/qt/qt_view.h
 
 RESOURCES += unreal_speccy_portable.qrc
 
@@ -143,7 +124,7 @@ MOBILITY =
 QMAKE_CXXFLAGS_WARN_ON  = -Wall
 QMAKE_CFLAGS_WARN_ON    = -Wall
 
-DEFINES += USE_QT USE_UI USE_CONFIG USE_ZIP USE_EXTERN_RESOURCES USE_TUI
+DEFINES += USE_QT USE_CONFIG USE_ZIP USE_EXTERN_RESOURCES USE_OPTIONS_COMMON USE_TUI
 
 symbian {
 	DEFINES += _POSIX

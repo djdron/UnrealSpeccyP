@@ -24,17 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <mdaaudiooutputstream.h>
 #include <e32std.h>
 
-#include "../../tools/options.h"
 #include "../../options_common.h"
 
 namespace xPlatform
 {
-
-static xOptions::eOption<int>* op_sound = NULL;
-static xOptions::eOption<int>* op_volume = NULL;
-
-static int OpVolume() { return op_volume ? *op_volume : (int)V_100; }
-static int OpSound() { return op_sound ? *op_sound : (int)S_AY; }
 
 class eAudio : public CBase, public MMdaAudioOutputStreamCallback
 {
@@ -172,8 +165,6 @@ static eAudio* audio = NULL;
 
 void InitSound()
 {
-	op_sound = xOptions::eOption<int>::Find("sound");
-	op_volume = xOptions::eOption<int>::Find("volume");
 	audio = new (ELeave) eAudio;
 	audio->ConstructL();
 }
