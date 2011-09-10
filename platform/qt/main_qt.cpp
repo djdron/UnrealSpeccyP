@@ -20,6 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QtGui/QApplication>
 #include <QFile>
+#ifdef Q_WS_S60
+#include <QSystemScreenSaver>
+#endif//Q_WS_S60
 #include "qt_window.h"
 #include "../../std_types.h"
 
@@ -62,11 +65,14 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 	InitResources();
 	eWindow w;
-#if defined(Q_WS_S60)
+#ifdef Q_WS_S60
+	QTM_USE_NAMESPACE
+	QSystemScreenSaver ss;
+	ss.setScreenSaverInhibit();
 	w.showMaximized();
-#else
+#else//Q_WS_S60
 	w.show();
-#endif
+#endif//Q_WS_S60
 	return a.exec();
 }
 
