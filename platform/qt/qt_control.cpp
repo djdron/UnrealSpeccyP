@@ -206,7 +206,6 @@ void eControl::TranslateKey(int& key, dword& flags) const
 	case '*':	key = '8';		break;
 	case '(':	key = '9';		break;
 	case ')':	key = '0';		break;
-	case Qt::Key_Yes:
 	case Qt::Key_Escape:
 	case '~':
 	case '`':	key = 'm';		break;
