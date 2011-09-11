@@ -110,19 +110,44 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 		gsnd->addAction(asnd_tape);
 	}
 
-	QAction* atape_toggle = new QAction(tr("&Start/stop tape"), this);
-	connect(atape_toggle, SIGNAL(triggered()), this, SLOT(OnTapeToggle()));
-	dmenu->addAction(atape_toggle);
+	QAction* atape_fast = new QAction(tr("&Fast mode"), this);
+	{
+		QMenu* tmenu = dmenu->addMenu(tr("&Tape"));
+		QAction* atape_toggle = new QAction(tr("&Start/stop"), this);
+		connect(atape_toggle, SIGNAL(triggered()), this, SLOT(OnTapeToggle()));
+		tmenu->addAction(atape_toggle);
 
-	QAction* atape_fast = new QAction(tr("&Fast tape"), this);
-	atape_fast->setCheckable(true);
-	connect(atape_fast, SIGNAL(triggered()), this, SLOT(OnTapeFast()));
-	dmenu->addAction(atape_fast);
+		atape_fast->setCheckable(true);
+		connect(atape_fast, SIGNAL(triggered()), this, SLOT(OnTapeFast()));
+		tmenu->addAction(atape_fast);
+	}
 
 	QAction* areset = new QAction(tr("&Reset"), this);
 	areset->setShortcuts(QKeySequence::New);
 	connect(areset, SIGNAL(triggered()), this, SLOT(OnReset()));
 	dmenu->addAction(areset);
+
+#ifdef Q_WS_S60
+	QAction* askip_none = new QAction(tr("&None"), this);
+	QAction* askip_2 = new QAction(tr("2"), this);
+	QAction* askip_4 = new QAction(tr("4"), this);
+	{
+		QMenu* smenu = dmenu->addMenu(tr("Skip &frames"));
+		askip_none->setCheckable(true);
+		askip_2->setCheckable(true);
+		askip_4->setCheckable(true);
+		connect(askip_none, SIGNAL(triggered()), this, SLOT(OnSkipNone()));
+		connect(askip_2, SIGNAL(triggered()), this, SLOT(OnSkip2()));
+		connect(askip_4, SIGNAL(triggered()), this, SLOT(OnSkip4()));
+		smenu->addAction(askip_none);
+		smenu->addAction(askip_2);
+		smenu->addAction(askip_4);
+		QActionGroup* gkip = new QActionGroup(this);
+		gkip->addAction(askip_none);
+		gkip->addAction(askip_2);
+		gkip->addAction(askip_4);
+	}
+#endif//Q_WS_S60
 
 	QAction* aexit = new QAction(tr("E&xit"), this);
 	aexit->setShortcuts(QKeySequence::Quit);
@@ -153,8 +178,21 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 	case S_TAPE:		asnd_tape->setChecked(true);		break;
 	default: break;
 	}
-	xOptions::eOptionBool* o = (xOptions::eOptionBool*)xOptions::eOptionB::Find("fast tape");
-	atape_fast->setChecked(o && *o);
+	xOptions::eOptionBool* ft = (xOptions::eOptionBool*)xOptions::eOptionB::Find("fast tape");
+	atape_fast->setChecked(ft && *ft);
+#ifdef Q_WS_S60
+	xOptions::eOptionInt* sf = (xOptions::eOptionInt*)xOptions::eOptionB::Find("skip frames");
+	if(sf)
+	{
+		switch(*sf)
+		{
+		case 0:			askip_none->setChecked(true);		break;
+		case 1:			askip_2->setChecked(true);			break;
+		case 2:			askip_4->setChecked(true);			break;
+		default: break;
+		}
+	}
+#endif//Q_WS_S60
 }
 //=============================================================================
 //	eWindow::OnOpenFile
@@ -231,6 +269,19 @@ void eWindow::OnTapeFast()
 	xOptions::eOptionBool* o = (xOptions::eOptionBool*)xOptions::eOptionB::Find("fast tape");
 	SAFE_CALL(o)->Change();
 }
+#ifdef Q_WS_S60
+//=============================================================================
+//	eWindow::SetSkipFrames
+//-----------------------------------------------------------------------------
+void eWindow::SetSkipFrames(int sf)
+{
+	xOptions::eOptionInt* o = (xOptions::eOptionInt*)xOptions::eOptionB::Find("skip frames");
+	SAFE_CALL(o)->Set(sf);
+}
+void eWindow::OnSkipNone()	{ SetSkipFrames(0);	}
+void eWindow::OnSkip2()		{ SetSkipFrames(1);	}
+void eWindow::OnSkip4()		{ SetSkipFrames(2);	}
+#endif//Q_WS_S60
 
 }
 //namespace xPlatform

@@ -22,11 +22,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QPainter>
 #include "qt_view.h"
 #include "../platform.h"
+#include "../../tools/options.h"
 #include "../../options_common.h"
 #include "../../ui/ui.h"
 
 namespace xPlatform
 {
+
+#ifdef Q_WS_S60
+static struct eOptionSkipFrames : public xOptions::eOptionInt
+{
+	eOptionSkipFrames() { Set(1); }
+	virtual const char* Name() const { return "skip frames"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "none", "2", "4", NULL };
+		return values;
+	}
+	virtual int Order() const { return 3; }
+} op_skip_frames;
+#endif//Q_WS_S60
 
 //=============================================================================
 //	eView::eView
@@ -140,9 +155,10 @@ void eView::timerEvent(QTimerEvent* event)
 {
 	Handler()->OnLoop();
 	UpdateSound();
-#ifdef Q_WS_S60 // skip frames
-	static int x = 0;
-	if(++x % 5 == 0)
+#ifdef Q_WS_S60
+	static int frame = 0;
+	int s = op_skip_frames ? (1 << (int)op_skip_frames + 1) : 1;
+	if(++frame % s == 0)
 #endif//Q_WS_S60
 	{
 		UpdateScreen(screen.bits());

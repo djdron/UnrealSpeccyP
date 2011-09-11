@@ -54,6 +54,13 @@ private slots:
 	void OnTapeToggle();
 	void OnTapeFast();
 
+#ifdef Q_WS_S60
+	void OnSkipNone();
+	void OnSkip2();
+	void OnSkip4();
+	void SetSkipFrames(int sf);
+#endif//Q_WS_S60
+
 protected:
 	eView*		view;
 	eControl*	control;
