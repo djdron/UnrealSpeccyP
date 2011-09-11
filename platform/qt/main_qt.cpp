@@ -69,7 +69,11 @@ int main(int argc, char *argv[])
 	QTM_USE_NAMESPACE
 	QSystemScreenSaver ss;
 	ss.setScreenSaverInhibit();
-	w.showMaximized();
+	Qt::WindowFlags f = w.windowFlags();
+	f |= Qt::WindowSoftkeysVisibleHint;
+	f &= ~Qt::WindowSoftkeysRespondHint;
+	w.setWindowFlags(f);
+	w.showFullScreen();
 #else//Q_WS_S60
 	w.show();
 #endif//Q_WS_S60
