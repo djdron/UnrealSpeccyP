@@ -155,11 +155,11 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 	menu->addAction(aexit);
 
 	QWidget* w = new QWidget;
-	QLayout* l = new QVBoxLayout(w);
-	l->setMargin(0);
-	l->setSpacing(0);
-	l->addWidget(view = new eView);
-	l->addWidget(control = new eControl);
+	layout = new QVBoxLayout(w);
+	layout->setMargin(0);
+	layout->setSpacing(0);
+	layout->addWidget(view = new eView);
+	layout->addWidget(control = new eControl);
 	setCentralWidget(w);
 	control->setFocus();
 
@@ -210,6 +210,26 @@ void eWindow::OnOpenFile()
 
 	if(!name.isEmpty())
 		Handler()->OnOpenFile(name.toUtf8().data());
+}
+//=============================================================================
+//	eWindow::eventFilter
+//-----------------------------------------------------------------------------
+bool eWindow::eventFilter(QObject* receiver, QEvent* event)
+{
+	if(event->type() == QEvent::Resize && receiver == this)
+	{
+		QResizeEvent* r = (QResizeEvent*)event;
+		bool l = r->size().width() > r->size().height();
+		view->LandscapeMode(l);
+		control->LandscapeMode(l);
+		view->updateGeometry();
+		control->updateGeometry();
+		if(l)
+			layout->removeWidget(control);
+		else
+			layout->addWidget(control);
+	}
+	return false;
 }
 //=============================================================================
 //	eWindow::OnReset

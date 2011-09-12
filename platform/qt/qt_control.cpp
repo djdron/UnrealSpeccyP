@@ -41,11 +41,10 @@ static struct eOptionUseKeyboard : public xOptions::eOptionBool
 //=============================================================================
 //	eControl::eControl
 //-----------------------------------------------------------------------------
-eControl::eControl(QWidget* parent) : QWidget(parent)
+eControl::eControl(QWidget* parent) : QWidget(parent), landscape_mode(false)
 {
 	keyboard.load(":/image/keyboard.png");
 	joystick.load(":/image/joystick.png");
-	setFixedSize(keyboard.size());
 	setAttribute(Qt::WA_NoSystemBackground, true);
 	setAttribute(Qt::WA_AcceptTouchEvents);
 	setContextMenuPolicy(Qt::NoContextMenu);
@@ -112,6 +111,8 @@ bool eControl::event(QEvent* event)
 //-----------------------------------------------------------------------------
 void eControl::paintEvent(QPaintEvent* event)
 {
+	if(landscape_mode)
+		return;
 	QPainter painter(this);
 	painter.fillRect(keyboard.rect(), Qt::black);
 	painter.drawImage(QPointF(0, 0), op_use_keyboard ? keyboard : joystick);
@@ -278,6 +279,11 @@ void eControl::TranslateKey(int& key, dword& flags) const
 	if(key > 127 || key < 32)
 		key = 0;
 }
+//=============================================================================
+//	eControl::sizeHint
+//-----------------------------------------------------------------------------
+QSize eControl::sizeHint() const { return landscape_mode ? QSize(0, 0) : keyboard.size(); }
+QSize eControl::minimumSizeHint() const { return landscape_mode ? QSize(0, 0) : keyboard.size(); }
 
 }
 //namespace xPlatform

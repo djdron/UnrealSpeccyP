@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 	InitResources();
 	eWindow w;
+	a.installEventFilter(&w);
 #ifdef Q_WS_S60
 	QTM_USE_NAMESPACE
 	QSystemScreenSaver ss;

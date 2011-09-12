@@ -62,8 +62,12 @@ private slots:
 #endif//Q_WS_S60
 
 protected:
+	bool eventFilter(QObject* receiver, QEvent* event);
+
+protected:
 	eView*		view;
 	eControl*	control;
+	QLayout*	layout;
 };
 
 }

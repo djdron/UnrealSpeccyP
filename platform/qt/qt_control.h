@@ -32,12 +32,15 @@ class eControl : public QWidget
 public:
 	eControl(QWidget* parent = NULL);
 	void			ToggleKeyboard();
+	void			LandscapeMode(bool on) { landscape_mode = on; }
 
 protected:
 	virtual bool	event (QEvent* event);
 	virtual void	paintEvent(QPaintEvent* event);
 	virtual void	keyPressEvent(QKeyEvent* event);
 	virtual void	keyReleaseEvent(QKeyEvent* event);
+	virtual QSize	sizeHint() const;
+	virtual QSize	minimumSizeHint() const;
 
 	void			EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const;
 	void			TranslateKey(int& key, dword& flags) const;
@@ -45,6 +48,7 @@ protected:
 
 	QImage			keyboard;
 	QImage			joystick;
+	bool			landscape_mode;
 };
 
 }

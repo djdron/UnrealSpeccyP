@@ -127,14 +127,14 @@ symbian {
 	CONFIG += mobility
 	MOBILITY += systeminfo
 	DEFINES += _POSIX
-	TARGET.UID3 = 0xe0ae1b49
+	TARGET.UID3 = 0xa89fac37
 	# TARGET.CAPABILITY +=
 	TARGET.EPOCSTACKSIZE = 0x14000
 	TARGET.EPOCHEAPSIZE = 0x800000 0x800000
 	ICON = unreal_speccy_portable.svg
 	my_deployment.pkg_prerules =	"%{\"djdron\"}"\
 									":\"djdron\""\
-									"$${LITERAL_HASH}{\"Unreal Speccy Portable\"}, (0xe0ae1b49), 0, 0, 26, TYPE=SA"
+									"$${LITERAL_HASH}{\"Unreal Speccy Portable\"}, (0xa89fac37), 0, 0, 26, TYPE=SA"
 	my_deployment.pkg_postrules =	"\"..\\..\\README\"-\"\", FT, TC"\
 									"\"..\\..\\LICENSE\"-\"\", FT, TA"
 	DEPLOYMENT += my_deployment

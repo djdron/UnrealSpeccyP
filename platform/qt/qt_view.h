@@ -40,13 +40,16 @@ public:
 	eView(QWidget* parent = NULL);
 	~eView();
 
+	void			LandscapeMode(bool on) {}
+
 protected:
 	virtual void	paintEvent(QPaintEvent* event);
 	virtual void	timerEvent(QTimerEvent* event);
+	virtual QSize	sizeHint() const;
+	virtual QSize	minimumSizeHint() const;
 
 	void			UpdateScreen(uchar* data) const;
 	void			UpdateSound();
-
 protected:
 	QImage			screen;
 	QAudioOutput*	audio;

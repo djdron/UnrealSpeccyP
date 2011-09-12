@@ -50,7 +50,6 @@ eView::eView(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Format
 {
 	OpLastFile("/");
 	Handler()->OnInit();
-	setFixedSize(screen.size());
 	startTimer(10);
 	QAudioFormat fmt;
 	fmt.setFrequency(44100);
@@ -62,7 +61,6 @@ eView::eView(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Format
 	audio = new QAudioOutput(fmt, this);
 	stream = audio->start();
 }
-
 //=============================================================================
 //	eView::~eView
 //-----------------------------------------------------------------------------
@@ -70,7 +68,11 @@ eView::~eView()
 {
 	Handler()->OnDone();
 }
-
+//=============================================================================
+//	eView::sizeHint
+//-----------------------------------------------------------------------------
+QSize eView::sizeHint() const { return screen.size(); }
+QSize eView::minimumSizeHint() const { return screen.size(); }
 //=============================================================================
 //	eCachedColors
 //-----------------------------------------------------------------------------
@@ -145,7 +147,8 @@ void eView::UpdateSound()
 void eView::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
-	painter.drawImage(QPointF(0, 0), screen);
+	QPoint p((width() - screen.width())/2, (height() - screen.height())/2);
+	painter.drawImage(p, screen);
 }
 
 //=============================================================================
