@@ -58,6 +58,7 @@ private slots:
 	void OnSkipNone();
 	void OnSkip2();
 	void OnSkip4();
+protected:
 	void SetSkipFrames(int sf);
 #endif//Q_WS_S60
 

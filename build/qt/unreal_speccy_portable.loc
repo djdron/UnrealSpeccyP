@@ -1,0 +1,7 @@
+#ifdef LANGUAGE_SC
+#define STRING_r_short_caption "USP"
+#define STRING_r_caption "Unreal Speccy Portable"
+#else
+#define STRING_r_short_caption "USP"
+#define STRING_r_caption "Unreal Speccy Portable"
+#endif
