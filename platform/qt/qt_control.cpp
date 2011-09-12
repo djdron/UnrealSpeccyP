@@ -47,6 +47,7 @@ eControl::eControl(QWidget* parent) : QWidget(parent), landscape_mode(false)
 	joystick.load(":/image/joystick.png");
 	setAttribute(Qt::WA_NoSystemBackground, true);
 	setAttribute(Qt::WA_AcceptTouchEvents);
+	setFocusPolicy(Qt::StrongFocus);
 	setContextMenuPolicy(Qt::NoContextMenu);
 }
 //=============================================================================
