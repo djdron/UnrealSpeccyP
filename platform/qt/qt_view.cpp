@@ -48,6 +48,7 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 //-----------------------------------------------------------------------------
 eView::eView(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Format_RGB32)
 {
+	setAttribute(Qt::WA_NoSystemBackground, true);
 	OpLastFile("/");
 	Handler()->OnInit();
 	startTimer(10);
