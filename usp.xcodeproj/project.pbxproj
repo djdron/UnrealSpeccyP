@@ -7,30 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5C1FB1D5119DE5A1003F1D22 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1FB1D4119DE5A1003F1D22 /* main.cpp */; };
 		5C1FB1D6119DE5A1003F1D22 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1FB1D4119DE5A1003F1D22 /* main.cpp */; };
 		5C75A00411C2BB580011E0F7 /* snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00211C2BB580011E0F7 /* snapshot.cpp */; };
-		5C75A00511C2BB580011E0F7 /* snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00211C2BB580011E0F7 /* snapshot.cpp */; };
 		5C75A01311C2BB760011E0F7 /* ui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00711C2BB760011E0F7 /* ui.cpp */; };
 		5C75A01411C2BB760011E0F7 /* ui_button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00911C2BB760011E0F7 /* ui_button.cpp */; };
 		5C75A01511C2BB760011E0F7 /* ui_control.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00B11C2BB760011E0F7 /* ui_control.cpp */; };
 		5C75A01611C2BB760011E0F7 /* ui_desktop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00D11C2BB760011E0F7 /* ui_desktop.cpp */; };
 		5C75A01711C2BB760011E0F7 /* ui_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00F11C2BB760011E0F7 /* ui_dialog.cpp */; };
 		5C75A01811C2BB760011E0F7 /* ui_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A01111C2BB760011E0F7 /* ui_list.cpp */; };
-		5C75A01911C2BB760011E0F7 /* ui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00711C2BB760011E0F7 /* ui.cpp */; };
-		5C75A01A11C2BB760011E0F7 /* ui_button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00911C2BB760011E0F7 /* ui_button.cpp */; };
-		5C75A01B11C2BB760011E0F7 /* ui_control.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00B11C2BB760011E0F7 /* ui_control.cpp */; };
-		5C75A01C11C2BB760011E0F7 /* ui_desktop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00D11C2BB760011E0F7 /* ui_desktop.cpp */; };
-		5C75A01D11C2BB760011E0F7 /* ui_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A00F11C2BB760011E0F7 /* ui_dialog.cpp */; };
-		5C75A01E11C2BB760011E0F7 /* ui_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A01111C2BB760011E0F7 /* ui_list.cpp */; };
 		5C75A02811C2BBAA0011E0F7 /* ui_file_open.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A02011C2BBAA0011E0F7 /* ui_file_open.cpp */; };
 		5C75A02911C2BBAA0011E0F7 /* ui_keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A02211C2BBAA0011E0F7 /* ui_keyboard.cpp */; };
 		5C75A02A11C2BBAA0011E0F7 /* ui_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A02411C2BBAA0011E0F7 /* ui_main.cpp */; };
 		5C75A02B11C2BBAA0011E0F7 /* ui_menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A02611C2BBAA0011E0F7 /* ui_menu.cpp */; };
-		5C75A02C11C2BBAA0011E0F7 /* ui_file_open.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A02011C2BBAA0011E0F7 /* ui_file_open.cpp */; };
-		5C75A02D11C2BBAA0011E0F7 /* ui_keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A02211C2BBAA0011E0F7 /* ui_keyboard.cpp */; };
-		5C75A02E11C2BBAA0011E0F7 /* ui_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A02411C2BBAA0011E0F7 /* ui_main.cpp */; };
-		5C75A02F11C2BBAA0011E0F7 /* ui_menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A02611C2BBAA0011E0F7 /* ui_menu.cpp */; };
 		5C75A05711C2BBFC0011E0F7 /* options.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A03411C2BBFC0011E0F7 /* options.cpp */; };
 		5C75A05811C2BBFC0011E0F7 /* tinystr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A03711C2BBFC0011E0F7 /* tinystr.cpp */; };
 		5C75A05911C2BBFC0011E0F7 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A03911C2BBFC0011E0F7 /* tinyxml.cpp */; };
@@ -48,30 +36,10 @@
 		5C75A06511C2BBFC0011E0F7 /* uncompr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A05011C2BBFC0011E0F7 /* uncompr.c */; };
 		5C75A06611C2BBFC0011E0F7 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A05111C2BBFC0011E0F7 /* unzip.c */; };
 		5C75A06711C2BBFC0011E0F7 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A05511C2BBFC0011E0F7 /* zutil.c */; };
-		5C75A06811C2BBFC0011E0F7 /* options.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A03411C2BBFC0011E0F7 /* options.cpp */; };
-		5C75A06911C2BBFC0011E0F7 /* tinystr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A03711C2BBFC0011E0F7 /* tinystr.cpp */; };
-		5C75A06A11C2BBFC0011E0F7 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A03911C2BBFC0011E0F7 /* tinyxml.cpp */; };
-		5C75A06B11C2BBFC0011E0F7 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A03B11C2BBFC0011E0F7 /* tinyxmlerror.cpp */; };
-		5C75A06C11C2BBFC0011E0F7 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A03C11C2BBFC0011E0F7 /* tinyxmlparser.cpp */; };
-		5C75A06D11C2BBFC0011E0F7 /* adler32.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A03E11C2BBFC0011E0F7 /* adler32.c */; };
-		5C75A06E11C2BBFC0011E0F7 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A03F11C2BBFC0011E0F7 /* crc32.c */; };
-		5C75A06F11C2BBFC0011E0F7 /* deflate.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A04211C2BBFC0011E0F7 /* deflate.c */; };
-		5C75A07011C2BBFC0011E0F7 /* infback.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A04411C2BBFC0011E0F7 /* infback.c */; };
-		5C75A07111C2BBFC0011E0F7 /* inffast.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A04511C2BBFC0011E0F7 /* inffast.c */; };
-		5C75A07211C2BBFC0011E0F7 /* inflate.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A04811C2BBFC0011E0F7 /* inflate.c */; };
-		5C75A07311C2BBFC0011E0F7 /* inftrees.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A04A11C2BBFC0011E0F7 /* inftrees.c */; };
-		5C75A07411C2BBFC0011E0F7 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A04C11C2BBFC0011E0F7 /* ioapi.c */; };
-		5C75A07511C2BBFC0011E0F7 /* trees.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A04E11C2BBFC0011E0F7 /* trees.c */; };
-		5C75A07611C2BBFC0011E0F7 /* uncompr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A05011C2BBFC0011E0F7 /* uncompr.c */; };
-		5C75A07711C2BBFC0011E0F7 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A05111C2BBFC0011E0F7 /* unzip.c */; };
-		5C75A07811C2BBFC0011E0F7 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A05511C2BBFC0011E0F7 /* zutil.c */; };
 		5C75A0AD11C2BF190011E0F7 /* options_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A0AC11C2BF190011E0F7 /* options_common.cpp */; };
-		5C75A0AE11C2BF190011E0F7 /* options_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75A0AC11C2BF190011E0F7 /* options_common.cpp */; };
 		5C7E10E3119EF4D800C8A7BC /* res in Resources */ = {isa = PBXBuildFile; fileRef = 5C7E10D7119EF4D800C8A7BC /* res */; };
 		5C80605B11DFB470009B9B6A /* ui_profiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C80605A11DFB470009B9B6A /* ui_profiler.cpp */; };
-		5C80605C11DFB470009B9B6A /* ui_profiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C80605A11DFB470009B9B6A /* ui_profiler.cpp */; };
 		5C80606D11DFB4E1009B9B6A /* screenshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C80606C11DFB4E1009B9B6A /* screenshot.cpp */; };
-		5C80606E11DFB4E1009B9B6A /* screenshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C80606C11DFB4E1009B9B6A /* screenshot.cpp */; };
 		5C80607E11DFB525009B9B6A /* png.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607011DFB524009B9B6A /* png.c */; };
 		5C80607F11DFB525009B9B6A /* pngerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607311DFB524009B9B6A /* pngerror.c */; };
 		5C80608011DFB525009B9B6A /* pngget.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607411DFB524009B9B6A /* pngget.c */; };
@@ -82,16 +50,6 @@
 		5C80608511DFB525009B9B6A /* pngwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607B11DFB524009B9B6A /* pngwrite.c */; };
 		5C80608611DFB525009B9B6A /* pngwtran.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607C11DFB524009B9B6A /* pngwtran.c */; };
 		5C80608711DFB525009B9B6A /* pngwutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607D11DFB524009B9B6A /* pngwutil.c */; };
-		5C80608811DFB525009B9B6A /* png.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607011DFB524009B9B6A /* png.c */; };
-		5C80608911DFB525009B9B6A /* pngerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607311DFB524009B9B6A /* pngerror.c */; };
-		5C80608A11DFB525009B9B6A /* pngget.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607411DFB524009B9B6A /* pngget.c */; };
-		5C80608B11DFB525009B9B6A /* pngmem.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607511DFB524009B9B6A /* pngmem.c */; };
-		5C80608C11DFB525009B9B6A /* pngset.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607711DFB524009B9B6A /* pngset.c */; };
-		5C80608D11DFB525009B9B6A /* pngtrans.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607811DFB524009B9B6A /* pngtrans.c */; };
-		5C80608E11DFB525009B9B6A /* pngwio.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607A11DFB524009B9B6A /* pngwio.c */; };
-		5C80608F11DFB525009B9B6A /* pngwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607B11DFB524009B9B6A /* pngwrite.c */; };
-		5C80609011DFB525009B9B6A /* pngwtran.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607C11DFB524009B9B6A /* pngwtran.c */; };
-		5C80609111DFB525009B9B6A /* pngwutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C80607D11DFB524009B9B6A /* pngwutil.c */; };
 		5C87D59511A1F5B500CC595A /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57711A1F5B500CC595A /* draw.cpp */; };
 		5C87D59611A1F5B500CC595A /* vsync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57811A1F5B500CC595A /* vsync.cpp */; };
 		5C87D59811A1F5B500CC595A /* io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57B11A1F5B500CC595A /* io.cpp */; };
@@ -99,31 +57,6 @@
 		5C87D59A11A1F5B500CC595A /* oal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58211A1F5B500CC595A /* oal.cpp */; };
 		5C87D59B11A1F5B500CC595A /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58311A1F5B500CC595A /* platform.cpp */; };
 		5C87D5A011A1F5B500CC595A /* main_wx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58F11A1F5B500CC595A /* main_wx.cpp */; };
-		5C87D5A611A1F5B500CC595A /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57711A1F5B500CC595A /* draw.cpp */; };
-		5C87D5A711A1F5B500CC595A /* vsync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57811A1F5B500CC595A /* vsync.cpp */; };
-		5C87D5A911A1F5B500CC595A /* io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D57B11A1F5B500CC595A /* io.cpp */; };
-		5C87D5AA11A1F5B500CC595A /* mac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58011A1F5B500CC595A /* mac.cpp */; };
-		5C87D5AB11A1F5B500CC595A /* oal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58211A1F5B500CC595A /* oal.cpp */; };
-		5C87D5AC11A1F5B500CC595A /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58311A1F5B500CC595A /* platform.cpp */; };
-		5C87D5B111A1F5B500CC595A /* main_wx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87D58F11A1F5B500CC595A /* main_wx.cpp */; };
-		5CA77296119DE44A000C0142 /* device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77208119DE448000C0142 /* device.cpp */; };
-		5CA77297119DE44A000C0142 /* fdd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7720B119DE448000C0142 /* fdd.cpp */; };
-		5CA77298119DE44A000C0142 /* wd1793.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7720D119DE448000C0142 /* wd1793.cpp */; };
-		5CA77299119DE44A000C0142 /* kempston_joy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77210119DE448000C0142 /* kempston_joy.cpp */; };
-		5CA7729A119DE44A000C0142 /* kempston_mouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77212119DE448000C0142 /* kempston_mouse.cpp */; };
-		5CA7729B119DE44A000C0142 /* keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77214119DE448000C0142 /* keyboard.cpp */; };
-		5CA7729C119DE44A000C0142 /* tape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77216119DE448000C0142 /* tape.cpp */; };
-		5CA7729D119DE44A000C0142 /* memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77218119DE448000C0142 /* memory.cpp */; };
-		5CA7729E119DE44A000C0142 /* ay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7721B119DE448000C0142 /* ay.cpp */; };
-		5CA7729F119DE44A000C0142 /* beeper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7721D119DE448000C0142 /* beeper.cpp */; };
-		5CA772A0119DE44A000C0142 /* device_sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7721F119DE448000C0142 /* device_sound.cpp */; };
-		5CA772A1119DE44A000C0142 /* ula.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77221119DE448000C0142 /* ula.cpp */; };
-		5CA772B0119DE44A000C0142 /* speccy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7724A119DE449000C0142 /* speccy.cpp */; };
-		5CA772B1119DE44A000C0142 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7724F119DE449000C0142 /* log.cpp */; };
-		5CA772B2119DE44A000C0142 /* profiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77251119DE449000C0142 /* profiler.cpp */; };
-		5CA772B6119DE44A000C0142 /* z80.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77265119DE449000C0142 /* z80.cpp */; };
-		5CA772B7119DE44A000C0142 /* z80_op_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7726E119DE449000C0142 /* z80_op_tables.cpp */; };
-		5CA772B8119DE44A000C0142 /* z80_opcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77270119DE449000C0142 /* z80_opcodes.cpp */; };
 		5CA77318119DE44A000C0142 /* device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77208119DE448000C0142 /* device.cpp */; };
 		5CA77319119DE44A000C0142 /* fdd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7720B119DE448000C0142 /* fdd.cpp */; };
 		5CA7731A119DE44A000C0142 /* wd1793.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA7720D119DE448000C0142 /* wd1793.cpp */; };
@@ -144,18 +77,6 @@
 		5CA77344119DE44A000C0142 /* z80_opcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA77270119DE449000C0142 /* z80_opcodes.cpp */; };
 		5CD2CF2F11A03E39007A7F80 /* unreal_speccy_portable.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5CD2CF2E11A03E39007A7F80 /* unreal_speccy_portable.icns */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		8DD76F690486A84900D96B5E /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		5C050F64119F2CDF003EE1DB /* unreal_speccy_portable-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "unreal_speccy_portable-Info.plist"; path = "build/mac/unreal_speccy_portable-Info.plist"; sourceTree = "<group>"; };
@@ -295,18 +216,10 @@
 		5CA7726F119DE449000C0142 /* z80_op_tables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = z80_op_tables.h; sourceTree = "<group>"; };
 		5CA77270119DE449000C0142 /* z80_opcodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = z80_opcodes.cpp; sourceTree = "<group>"; };
 		5CD2CF2E11A03E39007A7F80 /* unreal_speccy_portable.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = unreal_speccy_portable.icns; path = build/mac/unreal_speccy_portable.icns; sourceTree = "<group>"; };
-		8DD76F6C0486A84900D96B5E /* usp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = usp; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		5CA765F6119DD606000C0142 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8DD76F660486A84900D96B5E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -331,7 +244,6 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76F6C0486A84900D96B5E /* usp */,
 				5CA765F8119DD606000C0142 /* unreal_speccy_portable.app */,
 			);
 			name = Products;
@@ -633,24 +545,6 @@
 			productReference = 5CA765F8119DD606000C0142 /* unreal_speccy_portable.app */;
 			productType = "com.apple.product-type.application";
 		};
-		8DD76F620486A84900D96B5E /* usp */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "usp" */;
-			buildPhases = (
-				8DD76F640486A84900D96B5E /* Sources */,
-				8DD76F660486A84900D96B5E /* Frameworks */,
-				8DD76F690486A84900D96B5E /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = usp;
-			productInstallPath = "$(HOME)/bin";
-			productName = usp;
-			productReference = 8DD76F6C0486A84900D96B5E /* usp */;
-			productType = "com.apple.product-type.tool";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -670,7 +564,6 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8DD76F620486A84900D96B5E /* usp */,
 				5CA765F7119DD606000C0142 /* unreal_speccy_portable */,
 			);
 		};
@@ -763,110 +656,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8DD76F640486A84900D96B5E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				5CA77296119DE44A000C0142 /* device.cpp in Sources */,
-				5CA77297119DE44A000C0142 /* fdd.cpp in Sources */,
-				5CA77298119DE44A000C0142 /* wd1793.cpp in Sources */,
-				5CA77299119DE44A000C0142 /* kempston_joy.cpp in Sources */,
-				5CA7729A119DE44A000C0142 /* kempston_mouse.cpp in Sources */,
-				5CA7729B119DE44A000C0142 /* keyboard.cpp in Sources */,
-				5CA7729C119DE44A000C0142 /* tape.cpp in Sources */,
-				5CA7729D119DE44A000C0142 /* memory.cpp in Sources */,
-				5CA7729E119DE44A000C0142 /* ay.cpp in Sources */,
-				5CA7729F119DE44A000C0142 /* beeper.cpp in Sources */,
-				5CA772A0119DE44A000C0142 /* device_sound.cpp in Sources */,
-				5CA772A1119DE44A000C0142 /* ula.cpp in Sources */,
-				5CA772B0119DE44A000C0142 /* speccy.cpp in Sources */,
-				5CA772B1119DE44A000C0142 /* log.cpp in Sources */,
-				5CA772B2119DE44A000C0142 /* profiler.cpp in Sources */,
-				5CA772B6119DE44A000C0142 /* z80.cpp in Sources */,
-				5CA772B7119DE44A000C0142 /* z80_op_tables.cpp in Sources */,
-				5CA772B8119DE44A000C0142 /* z80_opcodes.cpp in Sources */,
-				5C1FB1D5119DE5A1003F1D22 /* main.cpp in Sources */,
-				5C87D5A611A1F5B500CC595A /* draw.cpp in Sources */,
-				5C87D5A711A1F5B500CC595A /* vsync.cpp in Sources */,
-				5C87D5A911A1F5B500CC595A /* io.cpp in Sources */,
-				5C87D5AA11A1F5B500CC595A /* mac.cpp in Sources */,
-				5C87D5AB11A1F5B500CC595A /* oal.cpp in Sources */,
-				5C87D5AC11A1F5B500CC595A /* platform.cpp in Sources */,
-				5C87D5B111A1F5B500CC595A /* main_wx.cpp in Sources */,
-				5C75A00511C2BB580011E0F7 /* snapshot.cpp in Sources */,
-				5C75A01911C2BB760011E0F7 /* ui.cpp in Sources */,
-				5C75A01A11C2BB760011E0F7 /* ui_button.cpp in Sources */,
-				5C75A01B11C2BB760011E0F7 /* ui_control.cpp in Sources */,
-				5C75A01C11C2BB760011E0F7 /* ui_desktop.cpp in Sources */,
-				5C75A01D11C2BB760011E0F7 /* ui_dialog.cpp in Sources */,
-				5C75A01E11C2BB760011E0F7 /* ui_list.cpp in Sources */,
-				5C75A02C11C2BBAA0011E0F7 /* ui_file_open.cpp in Sources */,
-				5C75A02D11C2BBAA0011E0F7 /* ui_keyboard.cpp in Sources */,
-				5C75A02E11C2BBAA0011E0F7 /* ui_main.cpp in Sources */,
-				5C75A02F11C2BBAA0011E0F7 /* ui_menu.cpp in Sources */,
-				5C75A06811C2BBFC0011E0F7 /* options.cpp in Sources */,
-				5C75A06911C2BBFC0011E0F7 /* tinystr.cpp in Sources */,
-				5C75A06A11C2BBFC0011E0F7 /* tinyxml.cpp in Sources */,
-				5C75A06B11C2BBFC0011E0F7 /* tinyxmlerror.cpp in Sources */,
-				5C75A06C11C2BBFC0011E0F7 /* tinyxmlparser.cpp in Sources */,
-				5C75A06D11C2BBFC0011E0F7 /* adler32.c in Sources */,
-				5C75A06E11C2BBFC0011E0F7 /* crc32.c in Sources */,
-				5C75A06F11C2BBFC0011E0F7 /* deflate.c in Sources */,
-				5C75A07011C2BBFC0011E0F7 /* infback.c in Sources */,
-				5C75A07111C2BBFC0011E0F7 /* inffast.c in Sources */,
-				5C75A07211C2BBFC0011E0F7 /* inflate.c in Sources */,
-				5C75A07311C2BBFC0011E0F7 /* inftrees.c in Sources */,
-				5C75A07411C2BBFC0011E0F7 /* ioapi.c in Sources */,
-				5C75A07511C2BBFC0011E0F7 /* trees.c in Sources */,
-				5C75A07611C2BBFC0011E0F7 /* uncompr.c in Sources */,
-				5C75A07711C2BBFC0011E0F7 /* unzip.c in Sources */,
-				5C75A07811C2BBFC0011E0F7 /* zutil.c in Sources */,
-				5C75A0AE11C2BF190011E0F7 /* options_common.cpp in Sources */,
-				5C80605C11DFB470009B9B6A /* ui_profiler.cpp in Sources */,
-				5C80606E11DFB4E1009B9B6A /* screenshot.cpp in Sources */,
-				5C80608811DFB525009B9B6A /* png.c in Sources */,
-				5C80608911DFB525009B9B6A /* pngerror.c in Sources */,
-				5C80608A11DFB525009B9B6A /* pngget.c in Sources */,
-				5C80608B11DFB525009B9B6A /* pngmem.c in Sources */,
-				5C80608C11DFB525009B9B6A /* pngset.c in Sources */,
-				5C80608D11DFB525009B9B6A /* pngtrans.c in Sources */,
-				5C80608E11DFB525009B9B6A /* pngwio.c in Sources */,
-				5C80608F11DFB525009B9B6A /* pngwrite.c in Sources */,
-				5C80609011DFB525009B9B6A /* pngwtran.c in Sources */,
-				5C80609111DFB525009B9B6A /* pngwutil.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1DEB923208733DC60010E9CD /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_NAME = usp;
-			};
-			name = Debug;
-		};
-		1DEB923308733DC60010E9CD /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_NAME = usp;
-			};
-			name = Release;
-		};
 		1DEB923608733DC60010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -878,7 +670,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
-				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH)";
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-I/usr/lib/wx/include/mac-unicode-debug-2.8",
@@ -932,7 +724,7 @@
 					"~/Downloads/wxMac-2.8.11/lib/wx/include/mac-unicode-release-static-2.8",
 				);
 				LIBRARY_SEARCH_PATHS = "~/Downloads/wxMac-2.8.11/lib";
-				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH)";
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-D_FILE_OFFSET_BITS=64",
@@ -1009,15 +801,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "usp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1DEB923208733DC60010E9CD /* Debug */,
-				1DEB923308733DC60010E9CD /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "usp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
