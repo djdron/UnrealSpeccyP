@@ -136,7 +136,7 @@ public class Main extends Activity
     {
     	switch(item.getItemId())
     	{
-    	case R.id.open_file:	startActivityForResult(new Intent(this, FileSelector.class), A_FILE_SELECTOR); return true;
+    	case R.id.open_file:	startActivityForResult(new Intent(this, FileOpen.class), A_FILE_SELECTOR); return true;
 		case R.id.save_state:	Emulator.the.SaveState(); 		return true;
 		case R.id.load_state:	Emulator.the.LoadState(); 		return true;
 		case R.id.reset:		Emulator.the.Reset(); 			return true;

@@ -37,5 +37,9 @@
     
     <string name="zoom">Zoom Mode</string><string name="zoom_none">None</string><string name="zoom_fill">Fill Screen</string><string name="filtering">Filtering</string>
     <string name="skip_frames">Skip Frames</string><string name="skip_frames_none">None</string><string name="skip_frames_2">2</string><string name="skip_frames_4">4</string><string name="use_sensor">Use Sensor</string><string name="use_sensor_desc">Control Via Orientation Sensor</string>
-    
+
+    <string name="file_system">File System</string>
+    <string name="vtrdos">VTRDOS</string>
+    <string name="wos">WOS</string>
+
 </resources>

@@ -36,12 +36,12 @@ public class Emulator
 	synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 	synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
 
-	synchronized native void	Open(final String file);
-	synchronized native String	GetLastFile();
+	synchronized public native void	Open(final String file);
+	synchronized public native String	GetLastFile();
 	synchronized native void	LoadState();
 	synchronized native void	SaveState();
 	synchronized native void	Reset();
-	synchronized native boolean	FileTypeSupported(final String name);
+	synchronized public native boolean	FileTypeSupported(final String name);
 
 	synchronized native int		GetOptionInt(final String name);
 	synchronized native void	SetOptionInt(final String name, int value);

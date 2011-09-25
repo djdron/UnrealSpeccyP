@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="10dp"
-    android:textSize="16sp" >
-</TextView>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:gravity="center_vertical"
+    android:padding="5dp">
+	<TextView android:id="@+id/textLine"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:textSize="16sp"/>
+	<TextView android:id="@+id/textLine2"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_below="@+id/textLine"
+		android:textSize="10sp"/>
+</RelativeLayout>
