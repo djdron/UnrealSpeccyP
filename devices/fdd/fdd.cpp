@@ -358,7 +358,7 @@ bool eFdd::ReadScl(const void* data, size_t data_size)
 bool eFdd::ReadTrd(const void* data, size_t data_size)
 {
 	CreateTrd();
-	for(int i = 0; i < TRD_SIZE; i += 0x100)
+	for(int i = 0; i < data_size; i += 0x100)
 	{
 		WriteSector(i >> 13, (i >> 12) & 1, ((i >> 8) & 0x0f) + 1, (const byte*)data + i);
 	}

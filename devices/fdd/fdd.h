@@ -116,8 +116,6 @@ protected:
 	bool ReadScl(const void* data, size_t data_size);
 	bool ReadTrd(const void* data, size_t data_size);
 
-	enum { TRD_SIZE = 655360 };
-
 protected:
 	qword	motor;	// 0 - not spinning, >0 - time when it'll stop
 	int		cyl;
