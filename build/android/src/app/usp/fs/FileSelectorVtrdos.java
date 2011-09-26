@@ -31,6 +31,8 @@ public class FileSelectorVtrdos extends FileSelector
 	private static State state = new State();
 	@Override
 	State State() { return state; }
+	@Override
+	boolean LongUpdate() { return PathLevel(State().current_path) >= 2; }
     @Override
 	public void onCreate(Bundle savedInstanceState)
 	{

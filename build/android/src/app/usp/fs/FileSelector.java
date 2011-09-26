@@ -24,10 +24,12 @@ import java.util.List;
 
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +45,16 @@ public abstract class FileSelector extends ListActivity
 	}
 	abstract State State();
 	List<FileSelectorSource.Item> Items() { return State().items; }
+	abstract boolean LongUpdate();
+
+	int PathLevel(final File path)
+	{
+		File p = path;
+		int l = 0;
+		while((p = p.getParentFile()) != null)
+			++l;
+		return l;
+	}
 
 	protected List<FileSelectorSource> sources = new ArrayList<FileSelectorSource>();
 	@Override
@@ -50,10 +62,18 @@ public abstract class FileSelector extends ListActivity
 	{
 		super.onResume();
 		if(Items().size() > 0)
-			setListAdapter(new MyListAdapter(this, Items()));
+		{
+			SetItems();
+			SelectItem(State().last_name);
+		}
 		else
-			Update();
-		SelectItem(State().last_name);
+		{
+			new UpdateAsync(this, State().last_name).execute();
+		}
+	}
+	private void SetItems()
+	{
+		setListAdapter(new MyListAdapter(this, new ArrayList<FileSelectorSource.Item>(Items())));
 	}
 	private void SelectItem(final String name)
 	{
@@ -79,9 +99,8 @@ public abstract class FileSelector extends ListActivity
 			if(s.GetItems(State().current_path, Items()))
 				break;
 		}
-		setListAdapter(new MyListAdapter(this, Items()));
 	}
-	
+
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id)
 	{
@@ -94,8 +113,7 @@ public abstract class FileSelector extends ListActivity
 			{
 				String name = "/" + State().current_path.getName();
 				State().current_path = parent;
-				Update();
-				SelectItem(name);
+				new UpdateAsync(this, name).execute();
 			}
 		}
 		else
@@ -103,19 +121,83 @@ public abstract class FileSelector extends ListActivity
 			if(f.startsWith("/"))
 			{
 				State().current_path = new File(State().current_path.getPath() + f);
-				Update();
+				new UpdateAsync(this, "").execute();
 			}
 			else
 			{
 				State().last_name = f;
-				FileSelectorSource.Item item = Items().get(position);
-				for(FileSelectorSource s : sources)
-				{
-					s.ApplyItem(item);
-					break;
-				}
-				finish();
+				new ApplyAsync(this, Items().get(position)).execute();
 			}
+		}
+	}
+	
+	private class ApplyAsync extends AsyncTask<Void, Void, Void>
+	{
+		private FileSelector owner;
+		FileSelectorSource.Item item;
+		ProgressDialog progress_dialog = null;
+		ApplyAsync(FileSelector _owner, FileSelectorSource.Item _item)
+		{
+			owner = _owner;
+			item = _item;
+		}
+		@Override
+		protected void onPreExecute()
+		{
+			if(LongUpdate())
+				progress_dialog = ProgressDialog.show(owner, getString(R.string.accessing_web), getString(R.string.downloading_image));
+		}
+		@Override
+		protected Void doInBackground(Void... args)
+		{
+			for(FileSelectorSource s : sources)
+			{
+				s.ApplyItem(item);
+				break;
+			}
+			return null;
+		}
+		@Override
+		protected void onPostExecute(Void r)
+		{
+			if(progress_dialog != null)
+				progress_dialog.cancel();
+			finish();
+		}
+	}
+
+	private class UpdateAsync extends AsyncTask<Void, Void, Void>
+	{
+		private FileSelector owner;
+		private String select_after_update;
+		ProgressDialog progress_dialog = null;
+		UpdateAsync(FileSelector _owner, final String _select_after_update)
+		{
+			owner = _owner;
+			select_after_update = _select_after_update;
+		}
+		@Override
+		protected void onPreExecute()
+		{
+			if(LongUpdate())
+				progress_dialog = ProgressDialog.show(owner, getString(R.string.accessing_web), getString(R.string.gathering_list));
+		}
+		@Override
+		protected Void doInBackground(Void... args)
+		{
+			Update();
+			return null;
+		}
+		@Override
+		protected void onPostExecute(Void r)
+		{
+			SetItems();
+			if(select_after_update.length() > 0)
+			{
+				SelectItem(select_after_update);
+			}
+			if(progress_dialog != null)
+				progress_dialog.cancel();
 		}
 	}
 	

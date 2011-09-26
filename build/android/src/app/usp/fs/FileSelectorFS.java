@@ -31,6 +31,7 @@ public class FileSelectorFS extends FileSelector
 	private static State state = new State();
 	@Override
 	State State() { return state; }
+	boolean LongUpdate() { return false; }
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
