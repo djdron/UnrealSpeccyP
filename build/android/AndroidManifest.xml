@@ -39,5 +39,6 @@
 		<activity android:name="app.usp.FileOpen" android:label="@string/open_file"></activity>
 		<activity android:name="app.usp.fs.FileSelectorFS" android:label="@string/file_selector"></activity>
 		<activity android:name="app.usp.fs.FileSelectorVtrdos" android:label="@string/file_selector"></activity>
+		<activity android:name="app.usp.fs.FileSelectorWOS" android:label="@string/file_selector"></activity>
     </application>
 </manifest>

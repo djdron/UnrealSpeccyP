@@ -111,8 +111,8 @@ public abstract class FileSelector extends ListActivity
 				FileSelectorSource.Item item = Items().get(position);
 				for(FileSelectorSource s : sources)
 				{
-					if(s.ApplyItem(item))
-						break;
+					s.ApplyItem(item);
+					break;
 				}
 				finish();
 			}

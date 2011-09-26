@@ -19,9 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package app.usp.fs;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,27 +43,19 @@ public class FileSelectorVtrdos extends FileSelector
 	{
 		private static final String VTRDOS_FS = "/sdcard/usp/vtrdos";
 		public String BaseURL() { return "http://vtrdos.ru"; }
+		public String HtmlExt() { return ".htm"; }
+		public String HtmlEncoding() { return "windows-1251"; }
 		public boolean ApplyItem(Item item)
 		{
 			try
 			{
 				String p = item.url;
 				File file = new File(VTRDOS_FS + p).getCanonicalFile();
-				File path = file.getParentFile();
-				path.mkdirs();
-				FileOutputStream os = new FileOutputStream(file);
-				URL url = new URL(BaseURL() + p);
-				InputStream is = url.openStream();
-				byte buffer[] = new byte[16384];
-				int r = 0;
-				while((r = is.read(buffer)) != -1)
+				if(LoadFile(BaseURL() + p, file))
 				{
-					os.write(buffer, 0, r);
+					Emulator.the.Open(file.getAbsolutePath());
+					return true;
 				}
-				is.close();
-				os.close();
-				Emulator.the.Open(file.getAbsolutePath());
-				return true;
 			}
 			catch(Exception e)
 			{

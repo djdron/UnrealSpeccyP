@@ -14,11 +14,12 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package app.usp.fs;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -47,6 +48,8 @@ abstract class FSSWeb extends FileSelectorSource
 {
 	abstract String Root();
 	abstract String BaseURL();
+	abstract String HtmlExt();
+	abstract String HtmlEncoding();
 	abstract String[] Items2();
 	abstract String[] Items2URLs();
 	abstract String[] Patterns();
@@ -91,39 +94,71 @@ abstract class FSSWeb extends FileSelectorSource
 		}
 		return true;
 	}
-	private void ParseURL(String _url, List<Item> items, final String _name)
+	protected boolean LoadFile(final String _url, final File _name)
 	{
 		try
 		{
-			URL url = new URL(BaseURL() + _url + ".htm");
-			Charset charset = Charset.forName("windows-1251");
-			CharsetDecoder decoder = charset.newDecoder();
+			File file = _name.getCanonicalFile();
+			File path = file.getParentFile();
+			path.mkdirs();
+			FileOutputStream os = new FileOutputStream(file);
+			URL url = new URL(_url);
 			InputStream is = url.openStream();
 			byte buffer[] = new byte[16384];
+			int r = -1;
+			while((r = is.read(buffer)) != -1)
+			{
+				os.write(buffer, 0, r);
+			}
+			is.close();
+			os.close();
+			return true;
+		}
+		catch(Exception e)
+		{
+		}
+		return false;
+	}
+	protected String LoadText(final String _url, final String _encoding)
+	{
+		try
+		{
+			Charset charset = Charset.forName(_encoding);
+			CharsetDecoder decoder = charset.newDecoder();
+			InputStream is = new URL(_url).openStream();
+			byte buffer[] = new byte[16384];
 			String s = "";
-			int r = 0;
+			int r = -1;
 			while((r = is.read(buffer)) != -1)
 			{
 				CharBuffer cb = decoder.decode(ByteBuffer.wrap(buffer, 0, r));
 				s += cb;
 			}
 			is.close();
-			for(String p : Patterns())
-			{
-				Pattern pt = Pattern.compile(p);
-				Matcher m = pt.matcher(s);
-				boolean ok = false;
-				while(m.find())
-				{
-					ok = true;
-					Get(items, m, _url, _name);
-				}
-				if(ok)
-					break;
-			}
+			return s;
 		}
 		catch(Exception e)
 		{
+		}
+		return null;
+	}
+	private void ParseURL(String _url, List<Item> items, final String _name)
+	{
+		String s = LoadText(BaseURL() + _url + HtmlExt(), HtmlEncoding());
+		if(s == null)
+			return;
+		for(String p : Patterns())
+		{
+			Pattern pt = Pattern.compile(p);
+			Matcher m = pt.matcher(s);
+			boolean ok = false;
+			while(m.find())
+			{
+				ok = true;
+				Get(items, m, _url, _name);
+			}
+			if(ok)
+				break;
 		}
 	}
 }
