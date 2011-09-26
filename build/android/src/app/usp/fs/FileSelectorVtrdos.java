@@ -32,13 +32,13 @@ public class FileSelectorVtrdos extends FileSelector
 	@Override
 	State State() { return state; }
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+	public void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		sources.add(new ParserGames());
 		sources.add(new ParserDemos());
 		sources.add(new ParserPress());
-    }
+	}
 	abstract class FSSVtrdos extends FSSWeb
 	{
 		private static final String VTRDOS_FS = "/sdcard/usp/vtrdos";

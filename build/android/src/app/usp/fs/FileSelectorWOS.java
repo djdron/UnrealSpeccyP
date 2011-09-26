@@ -34,13 +34,13 @@ public class FileSelectorWOS extends FileSelector
 	@Override
 	State State() { return state; }
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+	public void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		sources.add(new ParserGames());
 		sources.add(new ParserAdventures());
 		sources.add(new ParserUtilites());
-    }
+	}
 	abstract class FSSWOS extends FSSWeb
 	{
 		private static final String WOS_FS = "/sdcard/usp/wos";
