@@ -40,8 +40,10 @@ abstract class FileSelectorSource
 		String desc;
 		String url;
 	};
-	abstract public boolean GetItems(final File path, List<Item> items);
-	abstract public boolean ApplyItem(Item item);
+	enum GetItemsResult { OK, FAIL, UNABLE_CONNECT, INVALID_INFO }
+	abstract public GetItemsResult GetItems(final File path, List<Item> items);
+	enum ApplyResult { OK, FAIL, UNABLE_CONNECT1, UNABLE_CONNECT2, INVALID_INFO, NOT_AVAILABLE, UNSUPPORTED_FORMAT }
+	abstract public ApplyResult ApplyItem(Item item);
 }
 
 abstract class FSSWeb extends FileSelectorSource
@@ -54,13 +56,13 @@ abstract class FSSWeb extends FileSelectorSource
 	abstract String[] Items2URLs();
 	abstract String[] Patterns();
 	abstract void Get(List<Item> items, Matcher m, final String _url, final String _name);
-	public boolean GetItems(final File path, List<Item> items)
+	public GetItemsResult GetItems(final File path, List<Item> items)
 	{
 		File path_up = path.getParentFile();
 		if(path_up == null)
 		{
 			items.add(new Item(Root()));
-			return false;
+			return GetItemsResult.OK;
 		}
 		File r = path;
 		for(;;)
@@ -71,7 +73,7 @@ abstract class FSSWeb extends FileSelectorSource
 			r = p;
 		}
 		if(!r.toString().equals(Root()))
-			return false;
+			return GetItemsResult.OK;
 		items.add(new Item("/.."));
 		if(path_up.getParent() == null)
 		{
@@ -79,7 +81,7 @@ abstract class FSSWeb extends FileSelectorSource
 			{
 				items.add(new Item(i));
 			}
-			return true;
+			return GetItemsResult.OK;
 		}
 		int idx = 0;
 		String n = "/" + path.getName().toString();
@@ -87,12 +89,11 @@ abstract class FSSWeb extends FileSelectorSource
 		{
 			if(i.equals(n))
 			{
-				ParseURL(Items2URLs()[idx], items, n);
-				break;
+				return ParseURL(Items2URLs()[idx], items, n);
 			}
 			++idx;
 		}
-		return true;
+		return GetItemsResult.FAIL;
 	}
 	protected boolean LoadFile(final String _url, final File _name)
 	{
@@ -142,11 +143,11 @@ abstract class FSSWeb extends FileSelectorSource
 		}
 		return null;
 	}
-	private void ParseURL(String _url, List<Item> items, final String _name)
+	private GetItemsResult ParseURL(String _url, List<Item> items, final String _name)
 	{
 		String s = LoadText(BaseURL() + _url + HtmlExt(), HtmlEncoding());
 		if(s == null)
-			return;
+			return GetItemsResult.UNABLE_CONNECT;
 		for(String p : Patterns())
 		{
 			Pattern pt = Pattern.compile(p);
@@ -158,7 +159,8 @@ abstract class FSSWeb extends FileSelectorSource
 				Get(items, m, _url, _name);
 			}
 			if(ok)
-				break;
+				return GetItemsResult.OK;
 		}
+		return GetItemsResult.INVALID_INFO;
 	}
 }

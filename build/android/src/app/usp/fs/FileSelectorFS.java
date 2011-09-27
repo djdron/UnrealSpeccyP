@@ -56,7 +56,7 @@ public class FileSelectorFS extends FileSelector
 	}
 	class FSSFS extends FileSelectorSource
 	{
-		public boolean GetItems(final File path, List<Item> items)
+		public GetItemsResult GetItems(final File path, List<Item> items)
 		{
 			if(path.getParent() != null)
 			{
@@ -93,13 +93,12 @@ public class FileSelectorFS extends FileSelector
 				}
 				Collections.sort(items, new CmpNames());
 			}
-			return true;
+			return GetItemsResult.OK;
 		}
-		public boolean ApplyItem(Item item)
+		public ApplyResult ApplyItem(Item item)
 		{
 			File f = new File(State().current_path.getPath() + "/" + item.name);
-			Emulator.the.Open(f.getAbsolutePath());
-			return true;
+			return Emulator.the.Open(f.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 		}
 	}
 }

@@ -45,4 +45,13 @@
     <string name="accessing_web">Accessing web</string>
     <string name="downloading_image">Downloading image...</string>
     <string name="gathering_list">Gathering list...</string>
+    
+    <string name= "file_select_open_error">"Open error : "</string>
+    <string name= "file_select_update_error">"Update error : "</string>
+    <string name= "file_select_failed">failed</string>
+    <string name= "file_select_unable_connect1">unable to connect to server</string>
+    <string name= "file_select_unable_connect2">unable download</string>
+    <string name= "file_select_invalid_info">invalid info</string>
+    <string name= "file_select_not_available">not available</string>
+    <string name= "file_select_unsupported_format">unsupported format</string>
 </resources>

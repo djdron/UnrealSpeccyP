@@ -47,22 +47,20 @@ public class FileSelectorVtrdos extends FileSelector
 		public String BaseURL() { return "http://vtrdos.ru"; }
 		public String HtmlExt() { return ".htm"; }
 		public String HtmlEncoding() { return "windows-1251"; }
-		public boolean ApplyItem(Item item)
+		public ApplyResult ApplyItem(Item item)
 		{
 			try
 			{
 				String p = item.url;
 				File file = new File(VTRDOS_FS + p).getCanonicalFile();
-				if(LoadFile(BaseURL() + p, file))
-				{
-					Emulator.the.Open(file.getAbsolutePath());
-					return true;
-				}
+				if(!LoadFile(BaseURL() + p, file))
+					return ApplyResult.UNABLE_CONNECT2;
+				return Emulator.the.Open(file.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 			}
 			catch(Exception e)
 			{
 			}
-			return false;
+			return ApplyResult.FAIL;
 		}
 	}
 	class ParserGames extends FSSVtrdos

@@ -36,7 +36,7 @@ public class Emulator
 	synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 	synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
 
-	synchronized public native void	Open(final String file);
+	synchronized public native boolean	Open(final String file);
 	synchronized public native String	GetLastFile();
 	synchronized native void	LoadState();
 	synchronized native void	SaveState();

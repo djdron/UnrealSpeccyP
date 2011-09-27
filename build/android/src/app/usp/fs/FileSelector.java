@@ -29,11 +29,13 @@ import android.content.Context;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import app.usp.R;
+import app.usp.fs.FileSelectorSource.GetItemsResult;
 
 public abstract class FileSelector extends ListActivity
 {
@@ -46,6 +48,8 @@ public abstract class FileSelector extends ListActivity
 	abstract State State();
 	List<FileSelectorSource.Item> Items() { return State().items; }
 	abstract boolean LongUpdate();
+
+	private boolean async_task = false;
 
 	int PathLevel(final File path)
 	{
@@ -91,20 +95,14 @@ public abstract class FileSelector extends ListActivity
 			}
 		}
 	}
-	private void Update()
-	{
-		Items().clear();
-		for(FileSelectorSource s : sources)
-		{
-			if(s.GetItems(State().current_path, Items()))
-				break;
-		}
-	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id)
 	{
 		super.onListItemClick(l, v, position, id);
+		if(async_task)
+			return;
+
 		String f = Items().get(position).name;
 		if(f.equals("/.."))
 		{
@@ -130,8 +128,8 @@ public abstract class FileSelector extends ListActivity
 			}
 		}
 	}
-	
-	private class ApplyAsync extends AsyncTask<Void, Void, Void>
+
+	private class ApplyAsync extends AsyncTask<Void, Void, FileSelectorSource.ApplyResult>
 	{
 		private FileSelector owner;
 		FileSelectorSource.Item item;
@@ -144,29 +142,45 @@ public abstract class FileSelector extends ListActivity
 		@Override
 		protected void onPreExecute()
 		{
+			async_task = true;
 			if(LongUpdate())
 				progress_dialog = ProgressDialog.show(owner, getString(R.string.accessing_web), getString(R.string.downloading_image));
 		}
 		@Override
-		protected Void doInBackground(Void... args)
+		protected FileSelectorSource.ApplyResult doInBackground(Void... args)
 		{
 			for(FileSelectorSource s : sources)
 			{
-				s.ApplyItem(item);
-				break;
+				return s.ApplyItem(item);
 			}
-			return null;
+			return FileSelectorSource.ApplyResult.FAIL;
 		}
 		@Override
-		protected void onPostExecute(Void r)
+		protected void onPostExecute(FileSelectorSource.ApplyResult r)
 		{
 			if(progress_dialog != null)
 				progress_dialog.cancel();
+			String e = null;
+			switch(r)
+			{
+			case FAIL:					e = getString(R.string.file_select_failed);				break;
+			case UNABLE_CONNECT1:		e = getString(R.string.file_select_unable_connect1);	break;
+			case UNABLE_CONNECT2:		e = getString(R.string.file_select_unable_connect2);	break;
+			case INVALID_INFO:			e = getString(R.string.file_select_invalid_info);		break;
+			case NOT_AVAILABLE:			e = getString(R.string.file_select_not_available);		break;
+			case UNSUPPORTED_FORMAT:	e = getString(R.string.file_select_unsupported_format);	break;
+			}
+			if(e != null)
+			{
+				String me = getString(R.string.file_select_open_error) + e;
+				Toast.makeText(getApplicationContext(), me, Toast.LENGTH_LONG).show();
+			}
+			async_task = false;
 			finish();
 		}
 	}
 
-	private class UpdateAsync extends AsyncTask<Void, Void, Void>
+	private class UpdateAsync extends AsyncTask<Void, Void, GetItemsResult>
 	{
 		private FileSelector owner;
 		private String select_after_update;
@@ -179,17 +193,24 @@ public abstract class FileSelector extends ListActivity
 		@Override
 		protected void onPreExecute()
 		{
+			async_task = true;
 			if(LongUpdate())
 				progress_dialog = ProgressDialog.show(owner, getString(R.string.accessing_web), getString(R.string.gathering_list));
 		}
 		@Override
-		protected Void doInBackground(Void... args)
+		protected GetItemsResult doInBackground(Void... args)
 		{
-			Update();
-			return null;
+			Items().clear();
+			for(FileSelectorSource s : sources)
+			{
+				GetItemsResult r = s.GetItems(State().current_path, Items());
+				if(r != GetItemsResult.OK)
+					return r;
+			}
+			return GetItemsResult.OK;
 		}
 		@Override
-		protected void onPostExecute(Void r)
+		protected void onPostExecute(GetItemsResult r)
 		{
 			SetItems();
 			if(select_after_update.length() > 0)
@@ -198,6 +219,19 @@ public abstract class FileSelector extends ListActivity
 			}
 			if(progress_dialog != null)
 				progress_dialog.cancel();
+			String e = null;
+			switch(r)
+			{
+			case FAIL:					e = getString(R.string.file_select_failed);				break;
+			case UNABLE_CONNECT:		e = getString(R.string.file_select_unable_connect1);	break;
+			case INVALID_INFO:			e = getString(R.string.file_select_invalid_info);		break;
+			}
+			if(e != null)
+			{
+				String me = getString(R.string.file_select_update_error) + e;
+				Toast.makeText(getApplicationContext(), me, Toast.LENGTH_LONG).show();
+			}
+			async_task = false;
 		}
 	}
 	

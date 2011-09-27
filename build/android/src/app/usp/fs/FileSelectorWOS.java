@@ -19,10 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package app.usp.fs;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
@@ -50,21 +52,28 @@ public class FileSelectorWOS extends FileSelector
 		public String HtmlExt() { return ".html"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }
 		final static String FTP_URL = "ftp://ftp.worldofspectrum.org/pub/sinclair/";
-		public boolean ApplyItem(Item item)
+		public ApplyResult ApplyItem(Item item)
 		{
+			String s = LoadText("http://www.worldofspectrum.org/api/infoseek_select_json.cgi?id=" + item.url, HtmlEncoding());
+			if(s == null)
+				return ApplyResult.UNABLE_CONNECT1;
+			JSONObject desc = null;
 			try
 			{
-				String s = LoadText("http://www.worldofspectrum.org/api/infoseek_select_json.cgi?id=" + item.url, HtmlEncoding());
-				if(s == null)
-					return false;
-				JSONObject desc = new JSONObject(s);
-				if(!desc.getString("availability").equals("Available"))
-					return false;
-				JSONArray downl = desc.getJSONArray("downloads");
-				if(downl == null)
-					return false;
-				String url = null;
-				for(int i = 0; i < downl.length(); ++i)
+				desc = new JSONObject(s);
+			}
+			catch(JSONException e) { return ApplyResult.INVALID_INFO; }
+			JSONArray downl = null;
+			try
+			{
+				downl = desc.getJSONArray("downloads");
+			}
+			catch(JSONException e) { return ApplyResult.NOT_AVAILABLE; }
+
+			String url = null;
+			for(int i = 0; i < downl.length(); ++i)
+			{
+				try
 				{
 					JSONObject d  = downl.getJSONObject(i);
 					String l = d.getString("link");
@@ -74,22 +83,21 @@ public class FileSelectorWOS extends FileSelector
 						break;
 					}
 				}
-				if(url == null)
-					return false;
-				if(!url.startsWith(FTP_URL))
-					return false;
+				catch(JSONException e) {}
+			}
+			if(url == null)
+				return ApplyResult.NOT_AVAILABLE;
+			if(!url.startsWith(FTP_URL))
+				return ApplyResult.FAIL;
+			try
+			{
 				String p = url.substring(FTP_URL.length() - 1);
 				File f = new File(WOS_FS + p).getCanonicalFile();
-				if(LoadFile(url, f))
-				{
-					Emulator.the.Open(f.getAbsolutePath());
-					return true;
-				}
+				if(!LoadFile(url, f))
+					return ApplyResult.UNABLE_CONNECT2;
+				return Emulator.the.Open(f.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 			}
-			catch(Exception e)
-			{
-			}
-			return false;
+			catch(IOException e) { return ApplyResult.FAIL; }
 		}
 	}
 	abstract class FSSWOS1 extends FSSWOS

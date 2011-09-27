@@ -180,11 +180,12 @@ void Java_app_usp_Emulator_OnTouch(JNIEnv* env, jobject obj, jboolean keyboard, 
 		xPlatform::OnTouchJoy(x, y, down, pointer_id);
 }
 
-void Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
+jboolean Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
 {
     const char* file = env->GetStringUTFChars(jfile, NULL);
-    xPlatform::Handler()->OnOpenFile(file);
+    bool ok = xPlatform::Handler()->OnOpenFile(file);
     env->ReleaseStringUTFChars(jfile, file);
+    return ok;
 }
 jstring Java_app_usp_Emulator_GetLastFile(JNIEnv* env, jobject obj)
 {
