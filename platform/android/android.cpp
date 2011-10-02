@@ -24,13 +24,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../io.h"
 #include "../../options_common.h"
 #include "../../tools/options.h"
+#include "../../tools/profiler.h"
 #include "../touch_ui/tui_keyboard.h"
 #include "../touch_ui/tui_joystick.h"
+
+PROFILER_DECLARE(u_vid);
+PROFILER_DECLARE(u_aud);
+PROFILER_DECLARE(pro0);
+PROFILER_DECLARE(pro1);
+PROFILER_DECLARE(pro2);
+PROFILER_DECLARE(pro3);
 
 byte sos128[16384];
 byte sos48[16384];
 byte service[16384];
 byte dos513f[16384];
+byte spxtrm4f[2048];
 
 namespace xPlatform
 {
@@ -85,14 +94,6 @@ static struct eOptionUseKeyboard : public xOptions::eOptionBool
 	virtual int Order() const { return 5; }
 } op_use_keyboard;
 
-static void InitResources(const byte* rom0, const byte* rom1, const byte* rom2, const byte* rom3)
-{
-	memcpy(sos128,		rom0, sizeof(sos128));
-	memcpy(sos48,		rom1, sizeof(sos48));
-	memcpy(service,		rom2, sizeof(service));
-	memcpy(dos513f,		rom3, sizeof(dos513f));
-}
-
 static void Init(const char* path)
 {
 	const char* res = "/";
@@ -132,13 +133,22 @@ template<class T> static int SetOption(const char* name, const T& value)
 extern "C"
 {
 
-void Java_app_usp_Emulator_InitResources(JNIEnv* env, jobject obj, jobject rom0_buf, jobject rom1_buf, jobject rom2_buf, jobject rom3_buf)
+void Java_app_usp_Emulator_InitRom(JNIEnv* env, jobject obj, jint rom_id, jobject rom_buf)
 {
-	const byte* rom0 = (const byte*)env->GetDirectBufferAddress(rom0_buf);
-	const byte* rom1 = (const byte*)env->GetDirectBufferAddress(rom1_buf);
-	const byte* rom2 = (const byte*)env->GetDirectBufferAddress(rom2_buf);
-	const byte* rom3 = (const byte*)env->GetDirectBufferAddress(rom3_buf);
-	xPlatform::InitResources(rom0, rom1, rom2, rom3);
+	const byte* rom = (const byte*)env->GetDirectBufferAddress(rom_buf);
+	switch(rom_id)
+	{
+	case 0:	memcpy(sos128,	rom, sizeof(sos128));	break;
+	case 1:	memcpy(sos48,	rom, sizeof(sos48));	break;
+	case 2:	memcpy(service,	rom, sizeof(service));	break;
+	case 3:	memcpy(dos513f,	rom, sizeof(dos513f));	break;
+	}
+}
+
+void Java_app_usp_Emulator_InitFont(JNIEnv* env, jobject obj, jobject fnt_buf)
+{
+	const byte* fnt = (const byte*)env->GetDirectBufferAddress(fnt_buf);
+	memcpy(spxtrm4f, fnt, sizeof(spxtrm4f));
 }
 
 void Java_app_usp_Emulator_Init(JNIEnv* env, jobject obj, jstring jpath)
@@ -158,11 +168,13 @@ void Java_app_usp_Emulator_Update(JNIEnv* env, jobject obj)
 }
 void Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
 {
+	PROFILER_SECTION(u_vid);
 	uint16_t* buf = (uint16_t*)env->GetDirectBufferAddress(byte_buffer);
 	xPlatform::UpdateScreen(buf);
 }
 jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer)
 {
+	PROFILER_SECTION(u_aud);
 	byte* buf = (byte*)env->GetDirectBufferAddress(byte_buffer);
 	return xPlatform::UpdateSound(buf);
 }
@@ -265,6 +277,27 @@ jboolean Java_app_usp_Emulator_FileTypeSupported(JNIEnv* env, jobject obj, jstri
 	bool r = xPlatform::Handler()->FileTypeSupported(name);
     env->ReleaseStringUTFChars(jname, name);
     return r;
+}
+
+void Java_app_usp_Emulator_ProfilerBegin(JNIEnv* env, jobject obj, jint id)
+{
+	switch(id)
+	{
+	case 0: PROFILER_BEGIN(pro0);	break;
+	case 1: PROFILER_BEGIN(pro1);	break;
+	case 2: PROFILER_BEGIN(pro2);	break;
+	case 3: PROFILER_BEGIN(pro3);	break;
+	}
+}
+void Java_app_usp_Emulator_ProfilerEnd(JNIEnv* env, jobject obj, jint id)
+{
+	switch(id)
+	{
+	case 0: PROFILER_END(pro0);	break;
+	case 1: PROFILER_END(pro1);	break;
+	case 2: PROFILER_END(pro2);	break;
+	case 3: PROFILER_END(pro3);	break;
+	}
 }
 
 }

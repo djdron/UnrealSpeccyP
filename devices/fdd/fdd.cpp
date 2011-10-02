@@ -136,7 +136,7 @@ bool eFdd::Open(const char* type, const void* data, size_t data_size)
 void eFdd::Seek(int _cyl, int _side)
 {
 	cyl = _cyl;
-	side = _side;  
+	side = _side;
 	const int Z80FQ = 3500000;
 	const int FDD_RPS = 5; // rotation speed
 	ts_byte = Z80FQ / (Track().data_len * FDD_RPS);
@@ -358,7 +358,10 @@ bool eFdd::ReadScl(const void* data, size_t data_size)
 bool eFdd::ReadTrd(const void* data, size_t data_size)
 {
 	CreateTrd();
-	for(int i = 0; i < data_size; i += 0x100)
+	enum { TRD_SIZE = 655360 };
+	if(data_size > TRD_SIZE)
+		data_size = TRD_SIZE;
+	for(size_t i = 0; i < data_size; i += 0x100)
 	{
 		WriteSector(i >> 13, (i >> 12) & 1, ((i >> 8) & 0x0f) + 1, (const byte*)data + i);
 	}

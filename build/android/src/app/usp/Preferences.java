@@ -30,7 +30,6 @@ import android.preference.PreferenceScreen;
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
 	final static private String select_joystick_id = "joystick";
-	final static private String sound_source_id = "sound";
 	final static private String sound_chip_id = "sound chip";
 	final static private String sound_chip_stereo_id = "ay stereo";
 	final static private String select_drive_id = "drive";
@@ -43,7 +42,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static public String use_sensor_id = "use sensor";
 	final static public String use_keyboard_id = "use keyboard";
 	private ListPreference select_joystick;
-	private ListPreference sound_source;
 	private ListPreference sound_chip;
 	private ListPreference sound_chip_stereo;
 	private ListPreference select_drive;
@@ -60,7 +58,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
         select_joystick = (ListPreference)getPreferenceScreen().findPreference(select_joystick_id);
-        sound_source = (ListPreference)getPreferenceScreen().findPreference(sound_source_id);
         sound_chip = (ListPreference)getPreferenceScreen().findPreference(sound_chip_id);
         sound_chip_stereo = (ListPreference)getPreferenceScreen().findPreference(sound_chip_stereo_id);
         select_drive = (ListPreference)getPreferenceScreen().findPreference(select_drive_id);
@@ -75,10 +72,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private void UpdateDescs()
 	{
 		select_joystick.setSummary(select_joystick.getEntry());
-		sound_source.setSummary(sound_source.getEntry());
-		boolean is_AY = Emulator.the.GetOptionInt(sound_source_id) == 1; // AY
-		sound_chip.setSummary(sound_chip.getEntry());				sound_chip.setEnabled(is_AY);
-		sound_chip_stereo.setSummary(sound_chip_stereo.getEntry());	sound_chip_stereo.setEnabled(is_AY);
+		sound_chip.setSummary(sound_chip.getEntry());
+		sound_chip_stereo.setSummary(sound_chip_stereo.getEntry());
 		select_drive.setSummary(select_drive.getEntry());
 		switch(Emulator.the.TapeState())
 		{
@@ -94,7 +89,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	{
 		super.onResume();
 		select_joystick.setValueIndex(Emulator.the.GetOptionInt(select_joystick_id));
-		sound_source.setValueIndex(Emulator.the.GetOptionInt(sound_source_id));
 		sound_chip.setValueIndex(Emulator.the.GetOptionInt(sound_chip_id));
 		sound_chip_stereo.setValueIndex(Emulator.the.GetOptionInt(sound_chip_stereo_id));
 		select_drive.setValueIndex(Emulator.the.GetOptionInt(select_drive_id));
@@ -120,11 +114,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		if(key.equals(select_joystick_id))
 		{
 			Emulator.the.SetOptionInt(select_joystick_id, Integer.parseInt(select_joystick.getValue()));
-			UpdateDescs();
-		}
-		else if(key.equals(sound_source_id))
-		{
-			Emulator.the.SetOptionInt(sound_source_id, Integer.parseInt(sound_source.getValue()));
 			UpdateDescs();
 		}
 		else if(key.equals(sound_chip_id))

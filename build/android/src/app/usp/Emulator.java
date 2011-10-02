@@ -26,7 +26,8 @@ public class Emulator
 	{
 		System.loadLibrary("usp");
 	}
-	synchronized native void	InitResources(final ByteBuffer rom0, final ByteBuffer rom1, final ByteBuffer rom2, final ByteBuffer rom3);
+	synchronized native void	InitRom(final int rom_id, final ByteBuffer rom);
+	synchronized native void	InitFont(final ByteBuffer fnt);
 	synchronized native void	Init(final String path);
 	synchronized native void	Done();
 
@@ -51,6 +52,9 @@ public class Emulator
 
 	synchronized native int		TapeState();
 	synchronized native void	TapeToggle();
+	
+	synchronized native void	ProfilerBegin(int id);
+	synchronized native void	ProfilerEnd(int id);
 
 	public static Emulator the = new Emulator();
 }

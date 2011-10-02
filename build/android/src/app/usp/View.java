@@ -32,34 +32,75 @@ import android.content.Context;
 
 public class View extends SurfaceView  implements Callback
 {
-	static final int WIDTH = 320;
-	static final int HEIGHT = 240;
-	private SurfaceHolder sh = null;
-	private Bitmap bmp = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.RGB_565);
-	private ByteBuffer buf_video = ByteBuffer.allocateDirect(WIDTH*HEIGHT*2);
-	private ByteBuffer buf_audio = ByteBuffer.allocateDirect(32768);
-	private static class Lock {};
-	private final Object lock_scr = new Lock();
-	private AudioTrack audio;
-	private byte[] aud = new byte[32768];
+	private class Video
+	{
+		static final int WIDTH = 320;
+		static final int HEIGHT = 240;
+		private Bitmap bmp = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.RGB_565);
+		private ByteBuffer buf_video = ByteBuffer.allocateDirect(WIDTH*HEIGHT*2);
+		private float scale = 1.0f;
+		private Paint paint_flags = null;
+		private int frame = 0;
+		private int skip_frames = 1;
+		final boolean Update()
+		{
+			++frame;
+			Emulator.the.Update();
+			final boolean update_video = (frame % skip_frames) == 0;
+			if(update_video)
+			{
+				Emulator.the.UpdateVideo(buf_video);
+				Emulator.the.ProfilerBegin(1);
+				buf_video.rewind();
+				bmp.copyPixelsFromBuffer(buf_video);
+				Emulator.the.ProfilerEnd(1);
+			}
+			return update_video;
+		}
+	}
+	private class Audio
+	{
+		Audio()
+		{
+			final int freq = 44100;
+			final int channels = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
+			final int format = AudioFormat.ENCODING_PCM_16BIT;
+			final int buf_size = AudioTrack.getMinBufferSize(freq, channels, format);
+			track = new AudioTrack(	AudioManager.STREAM_MUSIC,
+					freq, channels, format, buf_size*4,
+					AudioTrack.MODE_STREAM);
+			track.play();
+		}
+		void Update()
+		{
+			final int audio_bytes_ready = Emulator.the.UpdateAudio(bbuf);
+			if(audio_bytes_ready != 0)
+			{
+				Emulator.the.ProfilerBegin(0);
+				bbuf.rewind();
+				bbuf.get(buf);
+				track.write(buf, 0, audio_bytes_ready);
+				Emulator.the.ProfilerEnd(0);
+			}
+		}
+		private AudioTrack track;
+		private ByteBuffer bbuf = ByteBuffer.allocateDirect(32768);
+		private byte[] buf = new byte[32768];
+	}
+	private Audio audio = null;
+	private Video video = null;
 	private Thread thread = null;
 	private boolean thread_exit = false;
-	private float scale = 1.0f;
-	private Paint paint_flags = null;
-	private int frame = 0;
-	private int skip_frames = 1;
+	private static class Lock {};
+	private final Object lock_scr = new Lock();
+	private SurfaceHolder sh = null;
+
 	public View(Context context)
 	{
 		super(context);
 		getHolder().addCallback(this);
-		final int freq = 44100;
-		final int channels = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
-		final int format = AudioFormat.ENCODING_PCM_16BIT;
-		final int buf_size = AudioTrack.getMinBufferSize(freq, channels, format);
-		audio = new AudioTrack(	AudioManager.STREAM_MUSIC,
-								freq, channels, format, buf_size*4,
-								AudioTrack.MODE_STREAM);
-		audio.play();
+		audio = new Audio();
+		video = new Video();
 	}
 	private void StartRenderThread()
 	{
@@ -105,38 +146,26 @@ public class View extends SurfaceView  implements Callback
 	@Override
 	protected void onMeasure(int _w, int _h)
 	{
-		int w = (int)(WIDTH*scale);
-		int h = (int)(HEIGHT*scale);
+		int w = (int)(Video.WIDTH*video.scale);
+		int h = (int)(Video.HEIGHT*video.scale);
 		setMeasuredDimension(w, h);
 	}
 	private void Draw()
 	{
-		++frame;
-		Emulator.the.Update();
-		final boolean update_video = (frame % skip_frames) == 0;
-		if(update_video)
-		{
-			Emulator.the.UpdateVideo(buf_video);
-			buf_video.rewind();
-			bmp.copyPixelsFromBuffer(buf_video);
-		}
-		final int audio_bytes_ready = Emulator.the.UpdateAudio(buf_audio);
-		if(audio_bytes_ready != 0)
-		{
-			buf_audio.rewind();
-			buf_audio.get(aud);
-			audio.write(aud, 0, audio_bytes_ready);
-		}
+		final boolean update_video = video.Update();
+		audio.Update();
 		if(update_video) synchronized(lock_scr)
 		{
 			if(sh != null)
 			{
+				Emulator.the.ProfilerBegin(2);
 				Canvas c = sh.lockCanvas();
 				c.save();
-				c.scale(scale, scale);
-				c.drawBitmap(bmp, 0, 0, paint_flags);
+				c.scale(video.scale, video.scale);
+				c.drawBitmap(video.bmp, 0, 0, video.paint_flags);
 				c.restore();
 				sh.unlockCanvasAndPost(c);
+				Emulator.the.ProfilerEnd(2);
 			}
 		}
 	}
@@ -146,30 +175,30 @@ public class View extends SurfaceView  implements Callback
 	{
 		if(sf != 0)
 		{
-			skip_frames = (1 << sf) + 1;
+			video.skip_frames = (1 << sf) + 1;
 		}
 		else
-			skip_frames = 1;
+			video.skip_frames = 1;
 	}
 	public void SetZoom(int zoom, int w, int h)
 	{
 		if(zoom != 0)
 		{
-			final float xs = ((float)w)/WIDTH;
-			final float ys = ((float)h)/HEIGHT;
-			scale = xs < ys ? xs : ys;
+			final float xs = ((float)w)/Video.WIDTH;
+			final float ys = ((float)h)/Video.HEIGHT;
+			video.scale = xs < ys ? xs : ys;
 		}
 		else
-			scale = 1.0f;
+			video.scale = 1.0f;
 	}
 	public void SetFiltering(boolean on)
 	{
 		if(on)
 		{
-			if(paint_flags == null)
-				paint_flags = new Paint(Paint.FILTER_BITMAP_FLAG);
+			if(video.paint_flags == null)
+				video.paint_flags = new Paint(Paint.FILTER_BITMAP_FLAG);
 		}
 		else
-			paint_flags = null;
+			video.paint_flags = null;
 	}
 }

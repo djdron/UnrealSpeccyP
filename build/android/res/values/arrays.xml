@@ -12,16 +12,6 @@
             <item>2</item>
             <item>3</item>
         </string-array>
-        <string-array name="sound_source_names">
-            <item>@string/sound_source_beeper</item>
-            <item>@string/sound_source_ay</item>
-            <item>@string/sound_source_tape</item>
-        </string-array>
-        <string-array name="sound_source_values">
-            <item>0</item>
-            <item>1</item>
-            <item>2</item>
-        </string-array>
         <string-array name="sound_chip_names">
             <item>@string/sound_chip_ay</item>
             <item>@string/sound_chip_ym</item>

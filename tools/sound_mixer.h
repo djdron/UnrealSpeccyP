@@ -16,38 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../platform.h"
+#ifndef __SOUND_MIXER_H__
+#define __SOUND_MIXER_H__
 
-#ifdef _ANDROID
+#include "../std_types.h"
 
-#include "../../tools/sound_mixer.h"
+#pragma once
 
-namespace xPlatform
+class eSoundMixer
 {
+public:
+	eSoundMixer() : ready(0) {}
+	void	Update(byte* ext_buf = NULL);
+	dword	Ready() const { return ready; }
+	const void*	Ptr() const { return buffer; }
+	void	Use(dword size, byte* ext_buf = NULL);
 
-void InitSound()
-{
-}
-void DoneSound()
-{
-}
-static eSoundMixer sound_mixer;
-int UpdateSound(byte* buf)
-{
-	sound_mixer.Update(buf);
-	int res = 0;
-	dword size = sound_mixer.Ready();
-	if(size > (44100*2*2/50)*3)
-	{
-		res = size;
-		if(res > 32768)
-			res = 32768;
-		sound_mixer.Use(res, buf);
-	}
-	return res;
-}
+protected:
+	enum { BUF_SIZE = 65536 };
+	byte	buffer[BUF_SIZE];
+	dword	ready;
+};
 
-}
-//namespace xPlatform
-
-#endif//_ANDROID
+#endif//__SOUND_MIXER_H__

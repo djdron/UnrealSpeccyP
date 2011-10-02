@@ -14,10 +14,6 @@
     <string name="preferences">Preferences</string>
     <string name="pref_control">Controls</string>
     <string name="pref_sound">Sound</string>
-    <string name="sound_source">Sound Source</string>
-    <string name="sound_source_ay">AY</string>
-    <string name="sound_source_tape">Tape</string>
-    <string name="sound_source_beeper">Beeper</string>
     <string name="sound_chip">Sound Chip Type</string>
     <string name="sound_chip_ay">AY</string>
     <string name="sound_chip_ym">YM</string>
