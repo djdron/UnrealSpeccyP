@@ -24,22 +24,17 @@ import java.nio.ByteBuffer;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.TableLayout;
-import android.widget.TableRow;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 
 public class Main extends Activity
 {
-	private TableLayout layout;
-	private TableRow row1, row2;
-	private app.usp.View view;
+	private RelativeLayout layout;
+	private app.usp.ViewGLES view;
 	private Control control;
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -52,16 +47,22 @@ public class Main extends Activity
 		Emulator.the.InitFont(BinRes(R.raw.spxtrm4f));
 		Emulator.the.Init(getFilesDir().getAbsolutePath());
 		Context c = getApplicationContext();
-		view = new app.usp.View(c);
+		view = new app.usp.ViewGLES(c);
+		view.setId(1);
 		control = new Control(c);
-		layout = new TableLayout(c);
-		row1 = new TableRow(c);
-		row2 = new TableRow(c);
-		row1.setGravity(Gravity.CENTER);
-		row2.setGravity(Gravity.CENTER);
-		layout.setGravity(Gravity.BOTTOM);
+		control.setId(2);
+		layout = new RelativeLayout(c);
+		RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+		RelativeLayout.LayoutParams p2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+		p1.addRule(RelativeLayout.ABOVE, control.getId());
+		p1.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		p2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		p2.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		layout.addView(view, p1);
+		layout.addView(control, p2);
 		setContentView(layout);
-		UpdateOrientation(getResources().getConfiguration());
+		control.requestFocus();
+		view.setKeepScreenOn(true);
 		String file = Uri.parse(getIntent().toUri(0)).getPath();
 		if(file.length() != 0)
 		{
@@ -75,36 +76,6 @@ public class Main extends Activity
 		Emulator.the.Done();
 		super.onDestroy();
     	android.os.Process.killProcess(android.os.Process.myPid());
-	}
-	private void UpdateOrientation(Configuration config)
-	{
-		row1.removeAllViews();
-		row2.removeAllViews();
-		layout.removeAllViews();
-
-		DisplayMetrics dm = getResources().getDisplayMetrics();
-		int w = dm.widthPixels;
-		int h = dm.heightPixels;
-		final int zoom = Emulator.the.GetOptionInt(Preferences.select_zoom_id);
-		view.SetFiltering(Emulator.the.GetOptionBool(Preferences.filtering_id));
-		view.SetSkipFrames(Emulator.the.GetOptionInt(Preferences.select_skip_frames_id));
-		if(config.orientation == Configuration.ORIENTATION_LANDSCAPE)
-		{
-			view.SetZoom(zoom, w, h);
-			row1.addView(control, new TableRow.LayoutParams());
-			row1.addView(view, new TableRow.LayoutParams());
-			layout.addView(row1);
-		}
-		else
-		{
-			view.SetZoom(zoom, w, h);
-			row1.addView(view, new TableRow.LayoutParams());
-			row2.addView(control, new TableRow.LayoutParams());
-			layout.addView(row1);
-			layout.addView(row2);
-		}
-		control.requestFocus();
-		view.setKeepScreenOn(true);
 	}
     @Override
 	protected void onResume()
@@ -120,12 +91,6 @@ public class Main extends Activity
 		view.OnPause();
 		control.OnPause();
 		super.onPause();
-	}
-    @Override
-	public void onConfigurationChanged(Configuration newConfig)
-	{
-		super.onConfigurationChanged(newConfig);
-		UpdateOrientation(newConfig);
 	}
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -148,14 +113,6 @@ public class Main extends Activity
 		case R.id.quit:			Exit(); 						return true;
     	}
     	return super.onOptionsItemSelected(item);
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        if(requestCode == A_PREFERENCES)
-        {
-        	UpdateOrientation(getResources().getConfiguration());
-        }
     }
     final private void Exit()
     {

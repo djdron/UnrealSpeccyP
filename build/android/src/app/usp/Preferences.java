@@ -37,11 +37,10 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static private String tape_fast_id = "fast tape";
 	final static private String mode_48k_id = "mode 48k";
 	final static public String select_zoom_id = "zoom";
-	final static public String filtering_id = "filtering";
-	final static public String select_skip_frames_id = "skip frames";
 	final static public String use_sensor_id = "use sensor";
 	final static public String use_keyboard_id = "use keyboard";
 	private ListPreference select_joystick;
+	private CheckBoxPreference use_sensor;
 	private ListPreference sound_chip;
 	private ListPreference sound_chip_stereo;
 	private ListPreference select_drive;
@@ -49,9 +48,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private CheckBoxPreference tape_fast;
 	private CheckBoxPreference mode_48k;
 	private ListPreference select_zoom;
-	private CheckBoxPreference filtering;
-	private ListPreference select_skip_frames;
-	private CheckBoxPreference use_sensor;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -65,8 +61,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         tape_fast = (CheckBoxPreference)getPreferenceScreen().findPreference(tape_fast_id);
         mode_48k = (CheckBoxPreference)getPreferenceScreen().findPreference(mode_48k_id);
         select_zoom = (ListPreference)getPreferenceScreen().findPreference(select_zoom_id);
-        filtering = (CheckBoxPreference)getPreferenceScreen().findPreference(filtering_id);
-        select_skip_frames = (ListPreference)getPreferenceScreen().findPreference(select_skip_frames_id);
         use_sensor = (CheckBoxPreference)getPreferenceScreen().findPreference(use_sensor_id);
 	}
 	private void UpdateDescs()
@@ -82,7 +76,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		case 2:	tape.setSummary(R.string.tape_started);	tape.setEnabled(true);	break;
 		}
 		select_zoom.setSummary(select_zoom.getEntry());
-        select_skip_frames.setSummary(select_skip_frames.getEntry());
 	}
 	@Override
 	protected void onResume()
@@ -95,9 +88,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		tape_fast.setChecked(Emulator.the.GetOptionBool(tape_fast_id));
 		mode_48k.setChecked(Emulator.the.GetOptionBool(mode_48k_id));
 		select_zoom.setValueIndex(Emulator.the.GetOptionInt(select_zoom_id));
-		filtering.setChecked(Emulator.the.GetOptionBool(filtering_id));
-		int v = Emulator.the.GetOptionInt(select_skip_frames_id);
-		select_skip_frames.setValueIndex(v);
 		use_sensor.setChecked(Emulator.the.GetOptionBool(use_sensor_id));
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		UpdateDescs();
@@ -144,16 +134,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		else if(key.equals(select_zoom_id))
 		{
 			Emulator.the.SetOptionInt(select_zoom_id, Integer.parseInt(select_zoom.getValue()));
-			UpdateDescs();
-		}
-		else if(key.equals(filtering_id))
-		{
-			Emulator.the.SetOptionBool(filtering_id, filtering.isChecked());
-			UpdateDescs();
-		}
-		else if(key.equals(select_skip_frames_id))
-		{
-			Emulator.the.SetOptionInt(select_skip_frames_id, Integer.parseInt(select_skip_frames.getValue()));
 			UpdateDescs();
 		}
 		else if(key.equals(use_sensor_id))

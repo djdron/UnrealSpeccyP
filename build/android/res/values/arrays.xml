@@ -52,11 +52,9 @@
             <item>3</item>
         </string-array>
         <string-array name="zoom_names">
-            <item>@string/zoom_none</item><item>@string/zoom_fill</item>
+            <item>@string/zoom_none</item><item>@string/zoom_fill</item><item>@string/zoom_small_border</item><item>@string/zoom_no_border</item>
         </string-array>
         <string-array name="zoom_values">
-            <item>0</item><item>1</item>
+            <item>0</item><item>1</item><item>2</item><item>3</item>
         </string-array>
-        <string-array name="skip_frames_names"><item>@string/skip_frames_none</item><item>@string/skip_frames_2</item><item>@string/skip_frames_4</item></string-array>
-        <string-array name="skip_frames_values"><item>0</item><item>1</item><item>2</item></string-array>
     </resources>

@@ -10,7 +10,7 @@
             <Preference android:title="@string/tape" android:key="tape"></Preference><CheckBoxPreference android:title="@string/tape_fast" android:summary="@string/tape_fast_desc" android:key="fast tape"></CheckBoxPreference><CheckBoxPreference android:title="@string/mode_48k" android:key="mode 48k"></CheckBoxPreference>
             
         </PreferenceCategory><PreferenceCategory android:title="@string/pref_view">
-            <ListPreference android:entries="@array/zoom_names" android:entryValues="@array/zoom_values" android:key="zoom" android:title="@string/zoom"></ListPreference><CheckBoxPreference android:key="filtering" android:title="@string/filtering"></CheckBoxPreference><ListPreference android:entries="@array/skip_frames_names" android:entryValues="@array/skip_frames_values" android:title="@string/skip_frames" android:key="skip frames"></ListPreference>
+            <ListPreference android:entries="@array/zoom_names" android:entryValues="@array/zoom_values" android:key="zoom" android:title="@string/zoom"></ListPreference>
         </PreferenceCategory>
         
         

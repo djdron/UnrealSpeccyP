@@ -55,30 +55,11 @@ static struct eOptionZoom : public xOptions::eOptionInt
 	virtual const char* Name() const { return "zoom"; }
 	virtual const char** Values() const
 	{
-		static const char* values[] = { "none", "fill", NULL };
+		static const char* values[] = { "none", "fill", "small border", "no border", NULL };
 		return values;
 	}
 	virtual int Order() const { return 1; }
 } op_zoom;
-
-static struct eOptionFiltering : public xOptions::eOptionBool
-{
-	eOptionFiltering() { Set(false); }
-	virtual const char* Name() const { return "filtering"; }
-	virtual int Order() const { return 2; }
-} op_filtering;
-
-static struct eOptionSkipFrames : public xOptions::eOptionInt
-{
-	eOptionSkipFrames() { Set(0); }
-	virtual const char* Name() const { return "skip frames"; }
-	virtual const char** Values() const
-	{
-		static const char* values[] = { "none", "2", "4", NULL };
-		return values;
-	}
-	virtual int Order() const { return 3; }
-} op_skip_frames;
 
 static struct eOptionUseSensor : public xOptions::eOptionBool
 {
