@@ -75,6 +75,7 @@ public class ViewGLES extends GLSurfaceView
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)
 		{
+			Emulator.the.ProfilerBegin(2);
 		    gl.glClearColor(0, 0, 0, 0);
 			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 			gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
@@ -99,12 +100,12 @@ public class ViewGLES extends GLSurfaceView
 			gl.glDisable(GL10.GL_DITHER);
 			gl.glDisable(GL10.GL_LIGHTING);
 			gl.glDisable(GL10.GL_BLEND);
-			gl.glHint(GL10.GL_LINE_SMOOTH_HINT, GL10.GL_NICEST);
 			gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 		}
 		@Override
 		public void onDrawFrame(GL10 gl)
 		{
+			Emulator.the.ProfilerEnd(2);
 			Emulator.the.Update();
 			Emulator.the.UpdateVideo(buf_video);
 
@@ -118,6 +119,7 @@ public class ViewGLES extends GLSurfaceView
 			Emulator.the.ProfilerEnd(1);
 
 			audio.Update();
+			Emulator.the.ProfilerBegin(2);
 		}
 		@Override
 		public void onSurfaceChanged(GL10 gl, int w, int h)
