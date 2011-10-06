@@ -75,30 +75,45 @@ public class ViewGLES extends GLSurfaceView
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)
 		{
+		    gl.glClearColor(0, 0, 0, 0);
 			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-			gl.glVertexPointer(2, GL10.GL_FLOAT, 0, v);
 			gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, uv);
+
+			gl.glGenTextures(1, textures, 0);
+			gl.glEnable(GL10.GL_TEXTURE_2D);
+		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
+
+			final int TEX_WIDTH = 512;
+			final int TEX_HEIGHT = 256;
+			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, null);
+			gl.glMatrixMode(GL10.GL_TEXTURE);
+			gl.glLoadIdentity();
+			gl.glScalef(((float)WIDTH)/TEX_WIDTH, ((float)HEIGHT)/TEX_HEIGHT, 1.0f);
 
 			gl.glMatrixMode(GL10.GL_PROJECTION);
 			gl.glLoadIdentity();
 			gl.glOrthof(-0.5f, +0.5f, +0.5f, -0.5f, -1.0f, 1.0f);
 
-			gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			gl.glGenTextures(1, textures, 0);
-			gl.glEnable(GL10.GL_TEXTURE_2D);
-			gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
+			gl.glShadeModel(GL10.GL_FLAT);
+			gl.glDisable(GL10.GL_DEPTH_TEST);
+			gl.glDisable(GL10.GL_DITHER);
+			gl.glDisable(GL10.GL_LIGHTING);
+			gl.glDisable(GL10.GL_BLEND);
+			gl.glHint(GL10.GL_LINE_SMOOTH_HINT, GL10.GL_NICEST);
+			gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 		}
 		@Override
 		public void onDrawFrame(GL10 gl)
 		{
 			Emulator.the.Update();
-
 			Emulator.the.UpdateVideo(buf_video);
-			buf_video.rewind();
+
 			Emulator.the.ProfilerBegin(1);
-		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGB, 320, 240, 0, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, buf_video);
+		    gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+			gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, buf_video);
+			gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			gl.glVertexPointer(2, GL10.GL_FLOAT, 0, v);
+			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, uv);
 		    gl.glDrawElements(GL10.GL_TRIANGLES, 2 * 3, GL10.GL_UNSIGNED_BYTE, t);
 			Emulator.the.ProfilerEnd(1);
 
@@ -107,10 +122,6 @@ public class ViewGLES extends GLSurfaceView
 		@Override
 		public void onSurfaceChanged(GL10 gl, int w, int h)
 		{
-		    gl.glViewport(0, 0, w, h);
-		    gl.glClearColor(0, 0, 0, 0);
-		    gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		    
 			boolean filtering;
 		    float sx, sy;
 		    final int zoom_mode = Emulator.the.GetOptionInt(Preferences.select_zoom_id);
@@ -138,18 +149,19 @@ public class ViewGLES extends GLSurfaceView
 			float z = 1.0f;
 			switch(zoom_mode)
 			{
-			case 2:	z = 304.0f/256.0f;	break; //small border
+			case 2:	z = 300.0f/256.0f;	break; //small border
 			case 3:	z = 320.0f/256.0f;	break; //no border
 			}
 		    sx *= z;
 		    sy *= z;
+
+		    gl.glViewport(0, 0, w, h);
 		    gl.glMatrixMode(GL10.GL_MODELVIEW);
 		    gl.glLoadIdentity();
 		    gl.glScalef(sx, sy, 1.0f);
 
 			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
 			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
-			gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 		}
 	}
 	private class Audio
