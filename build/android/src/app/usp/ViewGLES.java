@@ -130,21 +130,23 @@ public class ViewGLES extends GLSurfaceView
 			switch(zoom_mode)
 			{
 			case 0: // 1:1 mode
+			    filtering = false;
 			    sx = ((float)WIDTH) / w;
 			    sy = ((float)HEIGHT) / h;
-			    filtering = false;
 				break;
 			default: // fill screen & others
 			    filtering = true;
-				if(w > h)
+				final float a = ((float)w)/h;
+				final float a43 = ((float)4)/3;
+				if(a > a43)
 				{
-					sx = ((float)h)/w*4/3;
+					sx = a43/a;
 					sy = 1.0f;
 				}
 				else
 				{
 					sx = 1.0f;
-					sy = ((float)w)/h*3/4;
+					sy = a/a43;
 				}
 				break;
 			}
