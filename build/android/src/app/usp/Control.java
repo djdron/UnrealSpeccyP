@@ -53,13 +53,10 @@ public class Control extends ImageView implements SensorEventListener
 		window_manager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
 		display = window_manager.getDefaultDisplay();
 
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inScaled = false;
-		keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard, options);
-		keyboard.setDensity(Bitmap.DENSITY_NONE);
-		joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick, options);
-		joystick.setDensity(Bitmap.DENSITY_NONE);
+		keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard);
+		joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
 		keyboard_active = Emulator.the.GetOptionBool(Preferences.use_keyboard_id);
+		setAdjustViewBounds(true);
 		setImageBitmap(keyboard_active ? keyboard : joystick);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
@@ -69,7 +66,7 @@ public class Control extends ImageView implements SensorEventListener
 		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
 			setMeasuredDimension(0, 0);
 		else
-			setMeasuredDimension(keyboard.getWidth(), keyboard.getHeight());
+			super.onMeasure(w, h);
 	}
 	private final char TranslateKey(int keyCode)
 	{

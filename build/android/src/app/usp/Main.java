@@ -52,8 +52,8 @@ public class Main extends Activity
 		control = new Control(c);
 		control.setId(2);
 		layout = new RelativeLayout(c);
-		RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-		RelativeLayout.LayoutParams p2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+		RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+		RelativeLayout.LayoutParams p2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		p1.addRule(RelativeLayout.ABOVE, control.getId());
 		p1.addRule(RelativeLayout.CENTER_HORIZONTAL);
 		p2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
