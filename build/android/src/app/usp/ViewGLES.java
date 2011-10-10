@@ -109,9 +109,11 @@ public class ViewGLES extends GLSurfaceView
 			Emulator.the.Update();
 			Emulator.the.UpdateVideo(buf_video);
 
+			Emulator.the.ProfilerBegin(3);
+			gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, buf_video);
+			Emulator.the.ProfilerEnd(3);
 			Emulator.the.ProfilerBegin(1);
 		    gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-			gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, buf_video);
 			gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 			gl.glVertexPointer(2, GL10.GL_FLOAT, 0, v);
 			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, uv);
