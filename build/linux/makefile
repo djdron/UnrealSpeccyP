@@ -41,7 +41,7 @@ $(C_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.c
 	$(C) $(CFLAGS) -o $@ $<
 
 $(BIN_TARGET): $(CXX_OBJS) $(C_OBJS)
-	$(CXX) $(LFLAGS) $^ -o$(BIN_TARGET)
+	$(CXX) $^ $(LFLAGS) -o$(BIN_TARGET)
 
 build: mkdirs $(BIN_TARGET)
 
