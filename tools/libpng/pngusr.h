@@ -285,4 +285,25 @@
 #define png_save_int_32 my_png_save_int_32
 #define png_save_uint_16 my_png_save_uint_16
 
+#define png_zalloc my_png_zalloc
+#define png_zfree my_png_zfree
+#define png_check_IHDR my_png_check_IHDR
+#define png_info_destroy my_png_info_destroy
+#define png_calculate_crc my_png_calculate_crc
+#define png_reset_crc my_png_reset_crc
+#define png_create_struct my_png_create_struct
+#define png_destroy_struct my_png_destroy_struct
+#define png_write_destroy my_png_write_destroy
+#define png_write_data my_png_write_data
+#define png_default_write_data my_png_default_write_data
+#define png_write_start_row my_png_write_start_row
+#define png_write_PLTE my_png_write_PLTE
+#define png_write_tRNS my_png_write_tRNS
+#define png_write_IEND my_png_write_IEND
+#define png_write_IDAT my_png_write_IDAT
+#define png_write_IHDR my_png_write_IHDR
+#define png_write_finish_row my_png_write_finish_row
+#define png_write_find_filter my_png_write_find_filter
+#define png_do_write_transformations my_png_do_write_transformations
+
 #endif /* MINWRPNGCONF_H */

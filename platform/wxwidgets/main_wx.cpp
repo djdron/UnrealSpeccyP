@@ -749,13 +749,13 @@ class App: public wxApp
 	{
 		static const wxCmdLineEntryDesc g_cmdLineDesc[] =
 		{
-			{ wxCMD_LINE_SWITCH, wxT("h"), wxT("help"), wxT("displays help on the command line parameters"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
-			{ wxCMD_LINE_PARAM, NULL, NULL, wxT("input file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
-			{ wxCMD_LINE_SWITCH, wxT("t"), wxT("true_speed"), wxT("true speed (50Hz) mode"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
-			{ wxCMD_LINE_SWITCH, wxT("m"), wxT("mode_48k"), wxT("mode 48k"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
-			{ wxCMD_LINE_SWITCH, wxT("f"), wxT("full_screen"), wxT("full screen mode"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
-			{ wxCMD_LINE_OPTION, wxT("s"), wxT("size"), wxT("window size (in percent)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
-			{ wxCMD_LINE_OPTION, wxT("j"), wxT("joystick"), wxT("use joystick (kempston, cursor, qaop, sinclair2)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_SWITCH, _("h"), _("help"), _("displays help on the command line parameters"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
+			{ wxCMD_LINE_PARAM, NULL, NULL, _("input file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_SWITCH, _("t"), _("true_speed"), _("true speed (50Hz) mode"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_SWITCH, _("m"), _("mode_48k"), _("mode 48k"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_SWITCH, _("f"), _("full_screen"), _("full screen mode"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_OPTION, _("s"), _("size"), _("window size (in percent)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_OPTION, _("j"), _("joystick"), _("use joystick (kempston, cursor, qaop, sinclair2)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_NONE }
 		};
 		parser.SetDesc(g_cmdLineDesc);

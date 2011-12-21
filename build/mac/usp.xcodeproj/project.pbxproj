@@ -672,11 +672,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = _MAC;
-				GCC_VERSION = 4.0;
+				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
-				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH)";
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-I/usr/lib/wx/include/mac-unicode-debug-2.8",
@@ -709,7 +709,7 @@
 					"-liconv",
 				);
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
 			name = Debug;
 		};
@@ -717,25 +717,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
-				DEAD_CODE_STRIPPING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = _MAC;
-				GCC_THREADSAFE_STATICS = NO;
-				GCC_VERSION = 4.0;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
+				GCC_VERSION = 4.2;
 				HEADER_SEARCH_PATHS = (
-					"~/Downloads/wxMac-2.8.11/include",
-					"~/Downloads/wxMac-2.8.11/lib/wx/include/mac-unicode-release-static-2.8",
+					"~/Downloads/wxWidgets-2.9.3/include",
+					"~/Downloads/wxWidgets-2.9.3/build-cocoa/lib/wx/include/osx_cocoa-unicode-static-2.9",
 				);
-				LIBRARY_SEARCH_PATHS = "~/Downloads/wxMac-2.8.11/lib";
-				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH)";
+				LIBRARY_SEARCH_PATHS = "~/Downloads/wxWidgets-2.9.3/build-cocoa/lib";
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-D_FILE_OFFSET_BITS=64",
-					"-D_LARGE_FILES",
+					"-D__WXOSX_COCOA__",
 					"-D__WXMAC__",
+					"-D__WXOSX__",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -754,13 +752,15 @@
 					AGL,
 					"-framework",
 					OpenAL,
-					"-lwx_macu_gl-2.8",
-					"-lwx_macu_core-2.8",
-					"-lwx_base_carbonu-2.8",
+					"-lwxpng-2.9",
+					"-lwx_baseu-2.9",
+					"-lwx_osx_cocoau_gl-2.9",
+					"-lwx_osx_cocoau_core-2.9",
+					"-lwx_osx_cocoau_adv-2.9",
+					"-lwx_osx_cocoau_aui-2.9",
 					"-liconv",
 				);
-				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Release;
 		};
