@@ -1,5 +1,3 @@
-EPOCROOT = /home/djdron/symbian-sdks/s60_30
-CC_INSTALL_PATH = /home/djdron/csl-gcc
 ACTIVE_PERL = perl
 PATH := $(CC_INSTALL_PATH)/bin:$(PATH)
 
@@ -34,7 +32,7 @@ preGCCE:
   CFLAGS += -fexceptions -march=armv5t -mapcs -pipe -nostdinc -c -msoft-float -O3 \
 	-MD $(REL_MACRO) -include $(EPOCROOT)/epoc32/include/gcce/gcce.h
   LD_EXE_FLAGS = -L$(CC_INSTALL_PATH)/arm-none-symbianelf/lib \
-	-L$(CC_INSTALL_PATH)/lib/gcc/arm-none-symbianelf/4.4.1 --target1-abs \
+	-L$(CC_INSTALL_PATH)/lib/gcc/arm-none-symbianelf/4.6.1 --target1-abs \
 	--no-undefined -nostdlib -shared -Ttext 0x8000 -Tdata 0x400000 \
 	--default-symver -soname $(PROJECT_NAME){000a0000}[$(UID3)].exe \
 	--entry _E32Startup -u _E32Startup \
@@ -43,14 +41,14 @@ preGCCE:
 	$(patsubst %.lib,$(RAL)/%.dso,$(SYSLIBRARY)) \
 	$(RAU)/usrt2_2.lib $(RAL)/dfpaeabi.dso $(RAL)/dfprvct2_2.dso \
 	$(RAL)/drtaeabi.dso $(RAL)/scppnwdl.dso $(RAL)/drtrvct2_2.dso \
-	-lsupc++ -lgcc
+	-lsupc++ -lgcc_eh
 
 preALL:
   CFLAGS += $(UNICODE_MACRO) $(TARGET_MACRO) $(SYMBIAN_MACRO) $(S60_MACRO) \
 	$(EXE_MACRO) $(addprefix -D ,$(PRJ_MACRO)) \
-	-D__PRODUCT_INCLUDE__=$(OS_HRH) -I $(VARIANT) \
+	-D__PRODUCT_INCLUDE__="<$(OS_HRH)>" -I $(VARIANT) \
 	$(addprefix -I ,$(USERINCLUDE)) $(addprefix -I ,$(SYSINCLUDE)) \
-	-I $(CC_INSTALL_PATH)/lib/gcc/arm-none-symbianelf/4.4.1/include
+	-I $(CC_INSTALL_PATH)/lib/gcc/arm-none-symbianelf/4.6.1/include
   CXXFLAGS = $(CFLAGS) -Wno-ctor-dtor-privacy -x c++ $(CPP_MACRO)
   CXX_OBJS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$(CXXSRCS))
   CXX_DEPS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.d,$(CXXSRCS))

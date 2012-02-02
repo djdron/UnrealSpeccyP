@@ -104,7 +104,8 @@ public:
 		assert(f);
 		size_t size = 8 * 256;
 		data = new byte[size];
-		assert(fread(data, 1, size, f) == size);
+		size_t readed = fread(data, 1, size, f);
+		assert(readed == size);
 		fclose(f);
 #endif//USE_EMBEDDED_RESOURCES
 	}
