@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -60,14 +60,14 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 	virtual const char* Name() const { return "skip frames"; }
 	virtual const char** Values() const
 	{
-		static const char* values[] = { "off", "2", "4", "8", NULL };
+		static const char* values[] = { "off", "1", "2", "4", "8", NULL };
 		return values;
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(0, 4, next);
+		eOptionInt::Change(0, 5, next);
 	}
-	int Values(int id) const { static const int vals[] = { 0, 2, 4, 8 }; return vals[id]; }
+	int Values(int id) const { static const int vals[] = { 0, 1, 2, 4, 8 }; return vals[id]; }
 	virtual int Order() const { return 1; }
 } op_skip_frames;
 
@@ -101,6 +101,13 @@ static struct eOptionKeyboard : public xOptions::eOptionInt
 	}
 	virtual int Order() const { return 4; }
 } op_keyboard;
+
+static struct eOptionNoBorder : public xOptions::eOptionBool
+{
+	eOptionNoBorder() { Set(false); }
+	virtual const char* Name() const { return "no border"; }
+	virtual int Order() const { return 5; }
+} op_no_border;
 
 
 void InitSound();
@@ -261,6 +268,34 @@ void TDCControl::Draw(const TRect& /*aRect*/) const
 		gc.BitBlt(TPoint(dx/2, dy/2), bitmap, rb);
 	}
 }
+
+#define BLEND_UI_PIXELH(op) \
+c_ui = *data_ui++; \
+c = color_cache[*op]; \
+*tex++ = BGRX((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b); \
+
+#define BLEND_UI_LINEH \
+for(int x = 0; x < 64; ++x) \
+{ \
+	BLEND_UI_PIXELH(data++); \
+	BLEND_UI_PIXELH(data++); \
+	BLEND_UI_PIXELH(data++); \
+	BLEND_UI_PIXELH(data); \
+	BLEND_UI_PIXELH(data++); \
+} \
+data += 64; \
+
+#define COPY_LINEH \
+for(int x = 0; x < 64; ++x) \
+{ \
+	*tex++ = color_cache[*data++]; \
+	*tex++ = color_cache[*data++]; \
+	*tex++ = color_cache[*data++]; \
+	*tex++ = color_cache[*data]; \
+	*tex++ = color_cache[*data++]; \
+} \
+data += 64; \
+
 void TDCControl::Draw(bool horizontal) const
 {
 	PROFILER_SECTION(draw);
@@ -271,20 +306,53 @@ void TDCControl::Draw(bool horizontal) const
 
 	if(horizontal)
 	{
-		if(data_ui)
+		if(op_no_border)
 		{
-			for(int i = 0; i < 320*240; ++i)
+			data += 24*320 + 32; // top left corner without border
+			if(data_ui)
 			{
-				xUi::eRGBAColor c_ui = *data_ui++;
-				xUi::eRGBAColor c = color_cache[*data++];
-				*tex++ = BGRX((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b);
+				xUi::eRGBAColor c_ui;
+				xUi::eRGBAColor c;
+				for(int y = 0; y < 48; ++y)
+				{
+					for(int y1 = 0; y1 < 4; ++y1)
+					{
+						BLEND_UI_LINEH;
+					}
+					data -= 320;
+					BLEND_UI_LINEH;
+				}
+			}
+			else
+			{
+				for(int y = 0; y < 48; ++y)
+				{
+					for(int y1 = 0; y1 < 4; ++y1)
+					{
+						COPY_LINEH;
+					}
+					data -= 320;
+					COPY_LINEH;
+				}
 			}
 		}
 		else
 		{
-			for(int i = 0; i < 320*240; ++i)
+			if(data_ui)
 			{
-				*tex++ = color_cache[*data++];
+				xUi::eRGBAColor c_ui;
+				xUi::eRGBAColor c;
+				for(int i = 0; i < 320*240; ++i)
+				{
+					BLEND_UI_PIXELH(data++);
+				}
+			}
+			else
+			{
+				for(int i = 0; i < 320*240; ++i)
+				{
+					*tex++ = color_cache[*data++];
+				}
 			}
 		}
 	}

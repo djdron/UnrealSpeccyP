@@ -2,7 +2,7 @@
 &EN
 
 ;Header
-#{"Unreal Speccy Portable"}, (0xA89FAC37), 0, 0, 13,TYPE=SA
+#{"Unreal Speccy Portable"}, (0xA89FAC37), 0, 0, 30,TYPE=SA
 
 ;Localised Vendor name
 %{"Vendor"}
