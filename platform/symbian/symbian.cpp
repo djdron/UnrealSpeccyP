@@ -296,6 +296,35 @@ for(int x = 0; x < 64; ++x) \
 } \
 data += 64; \
 
+#define BLEND_UI_PIXELV(op) \
+c_ui = *d_ui; \
+c = color_cache[*d]; \
+*tex++ = BGRX((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b); \
+op; \
+d_ui -= 320; \
+
+#define BLEND_UI_LINEV \
+for(int x = 0; x < 48; ++x) \
+{ \
+	BLEND_UI_PIXELV(d -= 320); \
+	BLEND_UI_PIXELV(d -= 320); \
+	BLEND_UI_PIXELV(d -= 320); \
+	BLEND_UI_PIXELV(;); \
+	BLEND_UI_PIXELV(d -= 320); \
+} \
+tex += 320-240; \
+
+#define COPY_LINEV \
+for(int x = 0; x < 48; ++x) \
+{ \
+	*tex++ = color_cache[*d]; d -= 320; \
+	*tex++ = color_cache[*d]; d -= 320; \
+	*tex++ = color_cache[*d]; d -= 320; \
+	*tex++ = color_cache[*d]; \
+	*tex++ = color_cache[*d]; d -= 320; \
+} \
+tex += 320-240; \
+
 void TDCControl::Draw(bool horizontal) const
 {
 	PROFILER_SECTION(draw);
@@ -349,8 +378,15 @@ void TDCControl::Draw(bool horizontal) const
 			}
 			else
 			{
-				for(int i = 0; i < 320*240; ++i)
+				for(int i = 0; i < 320*30; ++i)
 				{
+					*tex++ = color_cache[*data++];
+					*tex++ = color_cache[*data++];
+					*tex++ = color_cache[*data++];
+					*tex++ = color_cache[*data++];
+					*tex++ = color_cache[*data++];
+					*tex++ = color_cache[*data++];
+					*tex++ = color_cache[*data++];
 					*tex++ = color_cache[*data++];
 				}
 			}
@@ -358,34 +394,80 @@ void TDCControl::Draw(bool horizontal) const
 	}
 	else
 	{
-		if(data_ui)
+		if(op_no_border)
 		{
-			for(int j = 0; j < 320; j++)
+			if(data_ui)
 			{
-				byte* d = data + 320*239 + j;
-				dword* d_ui = data_ui + 320*239 + j;
-				for(int i = 0; i < 240; ++i)
+				xUi::eRGBAColor c_ui;
+				xUi::eRGBAColor c;
+				int l = -1, l1 = 0;
+				for(int y = 0; y < 64; ++y)
 				{
-					xUi::eRGBAColor c_ui = *d_ui;
-					xUi::eRGBAColor c = color_cache[*d];
-					*tex++ = BGRX((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b);
-					d -= 320;
-					d_ui -= 320;
+					for(int y1 = 0; y1 < 4; ++y1)
+					{
+						++l;
+						byte* d = data + 320*215 + l + 32;
+						dword* d_ui = data_ui + 320*239 + l1;
+						BLEND_UI_LINEV;
+						++l1;
+					}
+					byte* d = data + 320*215 + l + 32;
+					dword* d_ui = data_ui + 320*239 + l1;
+					BLEND_UI_LINEV;
+					++l1;
 				}
-				tex += 320-240;
+			}
+			else
+			{
+				int l = -1;
+				for(int y = 0; y < 64; ++y)
+				{
+					for(int y1 = 0; y1 < 4; ++y1)
+					{
+						++l;
+						byte* d = data + 320*215 + l + 32;
+						COPY_LINEV;
+					}
+					byte* d = data + 320*215 + l + 32;
+					COPY_LINEV;
+				}
 			}
 		}
 		else
 		{
-			for(int j = 0; j < 320; j++)
+			if(data_ui)
 			{
-				byte* d = data + 320*239 + j;
-				for(int i = 0; i < 240; ++i)
+				xUi::eRGBAColor c_ui;
+				xUi::eRGBAColor c;
+				for(int j = 0; j < 320; j++)
 				{
-					*tex++ = color_cache[*d];
-					d -= 320;
+					byte* d = data + 320*239 + j;
+					dword* d_ui = data_ui + 320*239 + j;
+					for(int i = 0; i < 240; ++i)
+					{
+						BLEND_UI_PIXELV(d -= 320);
+					}
+					tex += 320-240;
 				}
-				tex += 320-240;
+			}
+			else
+			{
+				for(int j = 0; j < 320; j++)
+				{
+					byte* d = data + 320*239 + j;
+					for(int i = 0; i < 30; ++i)
+					{
+						*tex++ = color_cache[*d]; d -= 320;
+						*tex++ = color_cache[*d]; d -= 320;
+						*tex++ = color_cache[*d]; d -= 320;
+						*tex++ = color_cache[*d]; d -= 320;
+						*tex++ = color_cache[*d]; d -= 320;
+						*tex++ = color_cache[*d]; d -= 320;
+						*tex++ = color_cache[*d]; d -= 320;
+						*tex++ = color_cache[*d]; d -= 320;
+					}
+					tex += 320-240;
+				}
 			}
 		}
 	}
@@ -474,10 +556,13 @@ static char TranslateKey(const TKeyEvent& aKeyEvent, dword& flags)
 	    	return aKeyEvent.iScanCode;
 		switch(aKeyEvent.iScanCode)
 		{
-		case EStdKeyLeftFunc:		return 'k';
+		case EStdKeyLeftFunc:
+		case EStdKeyRightFunc:		return 'k';
 		case EStdKeyEnter:			return 'e';
 		case EStdKeyLeftShift:
 		case EStdKeyRightShift:		return 'c';
+		case EStdKeyLeftCtrl:
+		case EStdKeyRightCtrl:		return 's';
 		case EStdKeySpace:			return ' ';
 		}
 	}
