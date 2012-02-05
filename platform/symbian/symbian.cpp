@@ -556,8 +556,8 @@ static char TranslateKey(const TKeyEvent& aKeyEvent, dword& flags)
 	    	return aKeyEvent.iScanCode;
 		switch(aKeyEvent.iScanCode)
 		{
-		case EStdKeyLeftFunc:
-		case EStdKeyRightFunc:		return 'k';
+		case EStdKeyLeftFunc:		return 'k';
+		case EStdKeyRightFunc:		return 's';
 		case EStdKeyEnter:			return 'e';
 		case EStdKeyLeftShift:
 		case EStdKeyRightShift:		return 'c';
