@@ -547,6 +547,8 @@ static char TranslateKey(const TKeyEvent& aKeyEvent, dword& flags)
 	}
 	if(keyboard == eOptionKeyboard::KT_FULL)
 	{
+		if(aKeyEvent.iModifiers&EModifierFunc)
+			flags |= KF_ALT;
 		if(aKeyEvent.iScanCode >= '0' && aKeyEvent.iScanCode <= '9')
 	    	return aKeyEvent.iScanCode;
 	}
