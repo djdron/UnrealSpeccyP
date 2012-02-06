@@ -161,13 +161,12 @@ public class Control extends ImageView implements SensorEventListener
 	}
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		final int pidx = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-		final int pid = event.getPointerId(pidx);
-		final float x = event.getX(pid)/getWidth();
-		final float y = event.getY(pid)/getHeight();
-		final int a = event.getAction() & MotionEvent.ACTION_MASK;
+		final int pidx = event.getActionIndex();
+		final float x = event.getX(pidx)/getWidth();
+		final float y = event.getY(pidx)/getHeight();
+		final int a = event.getActionMasked();
 		final boolean down = a == MotionEvent.ACTION_DOWN || a == MotionEvent.ACTION_POINTER_DOWN || a == MotionEvent.ACTION_MOVE;
-		Emulator.the.OnTouch(keyboard_active, x, y, down, pid);
+		Emulator.the.OnTouch(keyboard_active, x, y, down, event.getPointerId(pidx));
 		return true;
 	}
 	public void OnResume()
