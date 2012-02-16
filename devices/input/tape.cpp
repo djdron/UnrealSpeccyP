@@ -22,15 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../memory.h"
 #include "tape.h"
 
-static inline word Word(const byte* ptr)
-{
-	return ptr[0] | word(ptr[1]) << 8;
-}
-static inline dword Dword(const byte* ptr)
-{
-	return ptr[0] | dword(ptr[1]) << 8 | dword(ptr[2]) << 16 | dword(ptr[3]) << 24;
-}
-
 //=============================================================================
 //	eTape::Init
 //-----------------------------------------------------------------------------

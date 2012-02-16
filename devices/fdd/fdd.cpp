@@ -128,7 +128,9 @@ bool eFdd::Open(const char* type, const void* data, size_t data_size)
 		return ReadTrd(data, data_size);
 	if(!strcmp(type, "scl"))
 		return ReadScl(data, data_size);
-	return true;
+//	if(!strcmp(type, "fdi"))
+//		return ReadFdi(data, data_size);
+	return false;
 }
 //=============================================================================
 //	eFdd::Seek
@@ -144,7 +146,7 @@ void eFdd::Seek(int _cyl, int _side)
 // data misalignment on ARM fighting functions
 static inline word SectorDataW(eUdi::eTrack::eSector* s, size_t offset)
 {
-	return s->data[offset] | word(s->data[offset + 1]) << 8;
+	return Word(s->data + offset);
 }
 static inline void SectorDataW(eUdi::eTrack::eSector* s, size_t offset, word d)
 {
@@ -198,7 +200,7 @@ void eFdd::Format()
 		WriteBlock(pos, 0, 12);			//sync
 		WriteBlock(pos, 0xa1, 3, true);	//id am
 		Write(pos++, 0xfe);
-		eUdi::eTrack::eSector& sec = Track().sectors[i];
+		eUdi::eTrack::eSector& sec = Sector(i);
 		sec.id = Track().data + pos;
 		Write(pos++, cyl);
 		Write(pos++, side);
@@ -262,7 +264,7 @@ eUdi::eTrack::eSector* eFdd::GetSector(int cyl, int side, int sec)
 	Seek(cyl, side);
 	for(int i = 0; i < Track().sectors_amount; ++i)
 	{
-		eUdi::eTrack::eSector& s = Track().sectors[i];
+		eUdi::eTrack::eSector& s = Sector(i);
 		if(s.Sec() == sec && s.Len() == 256)
 		{
 			return &s;
@@ -366,4 +368,49 @@ bool eFdd::ReadTrd(const void* data, size_t data_size)
 		WriteSector(i >> 13, (i >> 12) & 1, ((i >> 8) & 0x0f) + 1, (const byte*)data + i);
 	}
 	return true;
+}
+//=============================================================================
+//	eFdd::ReadFdi
+//-----------------------------------------------------------------------------
+bool eFdd::ReadFdi(const void* data, size_t data_size)
+{
+/*	const byte* buf = (const byte*)data;
+	SAFE_DELETE(disk);
+	disk = new eUdi(buf[4], buf[6]);
+
+	const byte* trk = buf + 0x0E + Word(buf + 0x0C);
+	const byte* dat = buf + Word(buf + 0x0A);
+
+	for(dword cyl = 0; cyl < buf[4]; ++cyl)
+	{
+		for(dword side = 0; side < buf[6]; ++side)
+		{
+			Seek(cyl, side);
+			const byte* t0 = dat + Dword(trk);
+			dword ns = trk[6];
+			trk += 7;
+			for(dword s = 0; s < ns; ++s)
+			{
+				typedef eUdi::eTrack::eSector eSector;
+				eSector& sec = Sector(s);
+				memcpy(sec.id, trk, 4);
+				sec.id[eSector::ID_C1] = 0;
+				if(trk[4] & 0x40)
+					sec.data = NULL;
+				else
+				{
+					sec.data = t0 + Word(trk + 5);
+					if(sec.data + 128 > buf + data_size)
+						return false;
+					sec.id[eSector::ID_C1] = (trk[4] & (1 << (trk[3] & 3))) ? 0 : 2;
+				}
+				trk += 7;
+			}
+			sec.id[eSector::ID_SIDE] = ns;
+			Format();
+		}
+	}
+	return true;
+*/
+	return false;
 }

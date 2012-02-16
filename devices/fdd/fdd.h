@@ -23,8 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-static inline word WordBE(const byte* ptr) { return word(ptr[0]) << 8 | ptr[1]; }
-
 //*****************************************************************************
 //	eUdi
 //-----------------------------------------------------------------------------
@@ -51,12 +49,12 @@ public:
 		struct eSector
 		{
 			eSector() : id(NULL), data(NULL) {}
-			enum eId { ID_CYL = 0, ID_SIDE, ID_SEC, ID_LEN, ID_AMOUNT };
+			enum eId { ID_CYL = 0, ID_SIDE, ID_SEC, ID_LEN, ID_CRC, ID_C1 = ID_CRC + 2, ID_C2 };
 			int Cyl() const		{ return id[ID_CYL]; }
 			int Side() const	{ return id[ID_SIDE]; }
 			int Sec() const		{ return id[ID_SEC]; }
 			int Len() const		{ return 128 << (id[ID_LEN] & 3); }
-			word IdCrc() const	{ return WordBE(id + ID_AMOUNT); }
+			word IdCrc() const	{ return WordBE(id + ID_CRC); }
 			word DataCrc() const{ return WordBE(data + Len()); }
 			byte*	id;
 			byte*	data;
@@ -65,9 +63,6 @@ public:
 		int		sectors_amount;
 	};
 	eTrack& Track(int cyl, int side) { return tracks[cyl][side]; }
-
-protected:
-	void 	UpdateTrack(int cyl, int side);
 
 protected:
 	int		cyls;
@@ -115,6 +110,7 @@ protected:
 	bool AddFile(const byte* hdr, const byte* data);
 	bool ReadScl(const void* data, size_t data_size);
 	bool ReadTrd(const void* data, size_t data_size);
+	bool ReadFdi(const void* data, size_t data_size);
 
 protected:
 	qword	motor;	// 0 - not spinning, >0 - time when it'll stop
