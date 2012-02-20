@@ -462,6 +462,10 @@ static struct eFileTypeSCL : public eFileTypeTRD
 {
 	virtual const char* Type() { return "scl"; }
 } ft_scl;
+static struct eFileTypeFDI : public eFileTypeTRD
+{
+	virtual const char* Type() { return "fdi"; }
+} ft_fdi;
 
 static struct eFileTypeTAP : public eFileType
 {

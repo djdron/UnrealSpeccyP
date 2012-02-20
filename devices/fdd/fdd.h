@@ -49,7 +49,7 @@ public:
 		struct eSector
 		{
 			eSector() : id(NULL), data(NULL) {}
-			enum eId { ID_CYL = 0, ID_SIDE, ID_SEC, ID_LEN, ID_CRC, ID_C1 = ID_CRC + 2, ID_C2 };
+			enum eId { ID_CYL = 0, ID_SIDE, ID_SEC, ID_LEN, ID_CRC };
 			int Cyl() const		{ return id[ID_CYL]; }
 			int Side() const	{ return id[ID_SIDE]; }
 			int Sec() const		{ return id[ID_SEC]; }
@@ -104,8 +104,6 @@ protected:
 			Track().Write(pos++, v, marker);
 		}
 	}
-	void Format();
-	void FormatTrd();
 	void CreateTrd();
 	bool AddFile(const byte* hdr, const byte* data);
 	bool ReadScl(const void* data, size_t data_size);
