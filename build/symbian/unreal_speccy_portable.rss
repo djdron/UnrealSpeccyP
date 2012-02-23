@@ -106,7 +106,7 @@ RESOURCE FILESELECTIONDIALOG r_file_selection_dialog
 		{
 			filter_type = EFilenameFilter;
 			filter_style = EInclusiveFilter;
-			filter_data = { "*.sna", "*.z80", "*.trd", "*.scl", "*.tap", "*.csw", "*.tzx", "*.zip" };
+			filter_data = { "*.sna", "*.z80", "*.trd", "*.scl", "*.fdi", "*.tap", "*.csw", "*.tzx", "*.zip" };
 		}
 	};
 }
