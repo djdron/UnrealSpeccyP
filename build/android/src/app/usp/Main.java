@@ -34,7 +34,7 @@ import android.content.Intent;
 public class Main extends Activity
 {
 	private RelativeLayout layout;
-	private app.usp.ViewGLES view;
+	private ViewGLES view;
 	private Control control;
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -47,7 +47,7 @@ public class Main extends Activity
 		Emulator.the.InitFont(BinRes(R.raw.spxtrm4f));
 		Emulator.the.Init(getFilesDir().getAbsolutePath());
 		Context c = getApplicationContext();
-		view = new app.usp.ViewGLES(c);
+		view = new ViewGLES(c);
 		view.setId(1);
 		control = new Control(c);
 		control.setId(2);

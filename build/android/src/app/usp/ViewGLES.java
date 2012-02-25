@@ -21,12 +21,7 @@ package app.usp;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-
-import android.media.AudioTrack;
-import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.content.Context;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLSurfaceView;
@@ -169,35 +164,6 @@ public class ViewGLES extends GLSurfaceView
 			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
 			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
 		}
-	}
-	private class Audio
-	{
-		Audio()
-		{
-			final int freq = 44100;
-			final int channels = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
-			final int format = AudioFormat.ENCODING_PCM_16BIT;
-			final int buf_size = AudioTrack.getMinBufferSize(freq, channels, format);
-			track = new AudioTrack(	AudioManager.STREAM_MUSIC,
-					freq, channels, format, buf_size*4,
-					AudioTrack.MODE_STREAM);
-			track.play();
-		}
-		void Update()
-		{
-			final int audio_bytes_ready = Emulator.the.UpdateAudio(bbuf);
-			if(audio_bytes_ready != 0)
-			{
-				Emulator.the.ProfilerBegin(0);
-				bbuf.rewind();
-				bbuf.get(buf);
-				track.write(buf, 0, audio_bytes_ready);
-				Emulator.the.ProfilerEnd(0);
-			}
-		}
-		private AudioTrack track;
-		private ByteBuffer bbuf = ByteBuffer.allocateDirect(32768);
-		private byte[] buf = new byte[32768];
 	}
 	private Audio audio = null;
 	private Video video = null;

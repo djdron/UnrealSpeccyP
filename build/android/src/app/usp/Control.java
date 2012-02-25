@@ -20,27 +20,15 @@ package app.usp;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.Surface;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 
-public class Control extends ImageView implements SensorEventListener
+public class Control extends ImageView
 {
-	static final float SENSOR_THRESHOLD = 1.0f;
-
-	private Sensor accelerometer;
-	private SensorManager sensor_manager;
-	private WindowManager window_manager;
-    private Display display;
+	private ControlSensor sensor;
     private Bitmap keyboard;
     private Bitmap joystick;
     private boolean keyboard_active = false;
@@ -48,14 +36,11 @@ public class Control extends ImageView implements SensorEventListener
 	public Control(Context context)
 	{
 		super(context);
-		sensor_manager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
-		accelerometer = sensor_manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		window_manager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-		display = window_manager.getDefaultDisplay();
 
 		keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard);
 		joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
 		keyboard_active = Emulator.the.GetOptionBool(Preferences.use_keyboard_id);
+		sensor = new ControlSensor(context);
 		setAdjustViewBounds(true);
 		setImageBitmap(keyboard_active ? keyboard : joystick);
 		setFocusable(true);
@@ -169,48 +154,6 @@ public class Control extends ImageView implements SensorEventListener
 		Emulator.the.OnTouch(keyboard_active, x, y, down, event.getPointerId(pidx));
 		return true;
 	}
-	public void OnResume()
-	{
-		if(Emulator.the.GetOptionBool(Preferences.use_sensor_id))
-			sensor_manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-	}
-	public void OnPause()
-	{
-		if(Emulator.the.GetOptionBool(Preferences.use_sensor_id))
-			sensor_manager.unregisterListener(this);
-	}
-	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy)
-	{
-	}
-	@Override
-	public void onSensorChanged(SensorEvent event)
-	{
-		if(event.sensor.getType() != Sensor.TYPE_ACCELEROMETER)
-            return;
-		float sx = 0, sy = 0; 
-		switch(display.getRotation())
-		{
-		case Surface.ROTATION_0:
-			sx = -event.values[0];
-			sy = event.values[1];
-			break;
-		case Surface.ROTATION_90:
-			sx = event.values[1];
-			sy = event.values[0];
-			break;
-		case Surface.ROTATION_180:
-			sx = event.values[0];
-			sy = -event.values[1];
-            break;
-		case Surface.ROTATION_270:
-			sx = -event.values[1];
-			sy = -event.values[0];
-			break;
-		}
-		Emulator.the.OnKey('r', sx > +SENSOR_THRESHOLD, false, false);
-		Emulator.the.OnKey('l', sx < -SENSOR_THRESHOLD, false, false);
-		Emulator.the.OnKey('d', sy > +SENSOR_THRESHOLD, false, false);
-		Emulator.the.OnKey('u', sy < -SENSOR_THRESHOLD, false, false);
-	}
+	public void OnResume()	{ sensor.Install(); }
+	public void OnPause()	{ sensor.Uninstall(); }
 }
