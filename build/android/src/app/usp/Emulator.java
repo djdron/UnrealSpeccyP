@@ -34,8 +34,8 @@ public class Emulator
 	synchronized native void	Update();
 	synchronized native void	UpdateVideo(ByteBuffer buf);
 	synchronized native int		UpdateAudio(ByteBuffer buf);
-	synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
-	synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
+	public synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
+	public synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
 
 	synchronized public native boolean	Open(final String file);
 	synchronized public native String	GetLastFile();
@@ -46,8 +46,8 @@ public class Emulator
 
 	synchronized native int		GetOptionInt(final String name);
 	synchronized native void	SetOptionInt(final String name, int value);
-	synchronized native boolean	GetOptionBool(final String name);
-	synchronized native void	SetOptionBool(final String name, boolean value);
+	public synchronized native boolean GetOptionBool(final String name);
+	public synchronized native void	SetOptionBool(final String name, boolean value);
 	synchronized native void	StoreOptions();
 
 	synchronized native int		TapeState();

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package app.usp;
+package app.usp.ctl;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -26,6 +26,8 @@ import android.hardware.SensorManager;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
+import app.usp.Emulator;
+import app.usp.Preferences;
 
 public class ControlSensor implements SensorEventListener 
 {

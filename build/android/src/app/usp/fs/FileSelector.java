@@ -35,7 +35,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import app.usp.R;
-import app.usp.fs.FileSelectorSource.GetItemsResult;
 
 public abstract class FileSelector extends ListActivity
 {
@@ -180,7 +179,7 @@ public abstract class FileSelector extends ListActivity
 		}
 	}
 
-	private class UpdateAsync extends AsyncTask<Void, Void, GetItemsResult>
+	private class UpdateAsync extends AsyncTask<Void, Void, FileSelectorSource.GetItemsResult>
 	{
 		private FileSelector owner;
 		private String select_after_update;
@@ -198,19 +197,19 @@ public abstract class FileSelector extends ListActivity
 				progress_dialog = ProgressDialog.show(owner, getString(R.string.accessing_web), getString(R.string.gathering_list));
 		}
 		@Override
-		protected GetItemsResult doInBackground(Void... args)
+		protected FileSelectorSource.GetItemsResult doInBackground(Void... args)
 		{
 			Items().clear();
 			for(FileSelectorSource s : sources)
 			{
-				GetItemsResult r = s.GetItems(State().current_path, Items());
-				if(r != GetItemsResult.OK)
+				FileSelectorSource.GetItemsResult r = s.GetItems(State().current_path, Items());
+				if(r != FileSelectorSource.GetItemsResult.OK)
 					return r;
 			}
-			return GetItemsResult.OK;
+			return FileSelectorSource.GetItemsResult.OK;
 		}
 		@Override
-		protected void onPostExecute(GetItemsResult r)
+		protected void onPostExecute(FileSelectorSource.GetItemsResult r)
 		{
 			SetItems();
 			if(select_after_update.length() > 0)

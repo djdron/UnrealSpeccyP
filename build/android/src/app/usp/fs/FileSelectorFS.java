@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import android.os.Bundle;
-import app.usp.*;
+import app.usp.Emulator;
 
 public class FileSelectorFS extends FileSelector
 {

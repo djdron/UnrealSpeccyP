@@ -22,50 +22,77 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import android.content.Context;
+import android.content.res.Configuration;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLSurfaceView;
+import app.usp.ctl.ControlController;
+import app.usp.ctl.ControlTouch;
 
 public class ViewGLES extends GLSurfaceView
 {
-	private class Video implements Renderer
+	public class Quad
+	{
+		Quad()
+		{
+			final float vertices[] =
+			{
+				-0.5f, -0.5f,
+				+0.5f, -0.5f,
+				+0.5f, +0.5f,
+				-0.5f, +0.5f
+			};
+			v = ByteBuffer.allocateDirect(vertices.length*4).
+					order(ByteOrder.nativeOrder()).asFloatBuffer();
+			v.put(vertices).rewind();
+			final float uv_coords[] =
+			{
+				0, 0,
+				1, 0,
+				1, 1,
+				0, 1
+			};
+			uv = ByteBuffer.allocateDirect(uv_coords.length*4).
+					order(ByteOrder.nativeOrder()).asFloatBuffer();
+			uv.put(uv_coords).rewind();
+			final byte triangles[] =
+			{
+				0, 1, 2,
+				0, 2, 3,
+			};
+			t = ByteBuffer.allocateDirect(triangles.length);
+			t.put(triangles).rewind();
+		}
+		public void Draw(GL10 gl)
+		{
+			gl.glVertexPointer(2, GL10.GL_FLOAT, 0, v);
+			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, uv);
+		    gl.glDrawElements(GL10.GL_TRIANGLES, 2 * 3, GL10.GL_UNSIGNED_BYTE, t);
+		}
+		FloatBuffer v = null;
+		FloatBuffer uv = null;
+		ByteBuffer t = null;
+	}
+	private class Video extends ControlTouch implements Renderer
 	{
 		static final int WIDTH = 320;
 		static final int HEIGHT = 240;
+		static final int TEX_WIDTH = 512;
+		static final int TEX_HEIGHT = 256;
+
 		private ByteBuffer buf_video = ByteBuffer.allocateDirect(WIDTH*HEIGHT*2);
-		int[] textures = new int[1];
-		private final float vertices[] =
+		private int[] textures = new int[1];
+		private Quad quad = new Quad();
+		private ControlController controller = new ControlController(150);
+		private int width = 0;
+		private int height = 0;
+		boolean filtering = false;
+		private float scale_x = 1.0f;
+		private float scale_y = 1.0f;
+		public void OnTouch(float x, float y, boolean down, int pid)
 		{
-			-0.5f, -0.5f,
-			+0.5f, -0.5f,
-			+0.5f, +0.5f,
-			-0.5f, +0.5f
-		};
-		private final float uv_coords[] =
-		{
-			0, 0,
-			1, 0,
-			1, 1,
-			0, 1
-		};
-		FloatBuffer v = null;
-		FloatBuffer uv = null;
-		private final byte triangles[] =
-		{
-			0, 1, 2,
-			0, 2, 3,
-		};
-		ByteBuffer t = null;
-		Video()
-		{
-			v = ByteBuffer.allocateDirect(vertices.length*4).
-				order(ByteOrder.nativeOrder()).asFloatBuffer();
-			v.put(vertices).rewind();
-			uv = ByteBuffer.allocateDirect(uv_coords.length*4).
-				order(ByteOrder.nativeOrder()).asFloatBuffer();
-			uv.put(uv_coords).rewind();
-			t = ByteBuffer.allocateDirect(triangles.length);
-			t.put(triangles).rewind();
+			controller.OnTouch(x, height - y, down, pid);
 		}
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)
@@ -77,14 +104,11 @@ public class ViewGLES extends GLSurfaceView
 
 			gl.glGenTextures(1, textures, 0);
 			gl.glEnable(GL10.GL_TEXTURE_2D);
-		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
 
-			final int TEX_WIDTH = 512;
-			final int TEX_HEIGHT = 256;
+		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
 			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, null);
-			gl.glMatrixMode(GL10.GL_TEXTURE);
-			gl.glLoadIdentity();
-			gl.glScalef(((float)WIDTH)/TEX_WIDTH, ((float)HEIGHT)/TEX_HEIGHT, 1.0f);
+			
+			controller.Init(gl);
 
 			gl.glMatrixMode(GL10.GL_PROJECTION);
 			gl.glLoadIdentity();
@@ -94,7 +118,6 @@ public class ViewGLES extends GLSurfaceView
 			gl.glDisable(GL10.GL_DEPTH_TEST);
 			gl.glDisable(GL10.GL_DITHER);
 			gl.glDisable(GL10.GL_LIGHTING);
-			gl.glDisable(GL10.GL_BLEND);
 			gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 		}
 		@Override
@@ -104,15 +127,29 @@ public class ViewGLES extends GLSurfaceView
 			Emulator.the.Update();
 			Emulator.the.UpdateVideo(buf_video);
 
+			// write video buffer data to texture
 			Emulator.the.ProfilerBegin(3);
+		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
 			gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, buf_video);
 			Emulator.the.ProfilerEnd(3);
+
 			Emulator.the.ProfilerBegin(1);
+			// draw emulator screen 
 		    gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 			gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			gl.glVertexPointer(2, GL10.GL_FLOAT, 0, v);
-			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, uv);
-		    gl.glDrawElements(GL10.GL_TRIANGLES, 2 * 3, GL10.GL_UNSIGNED_BYTE, t);
+		    gl.glViewport(0, 0, width, height);
+		    gl.glMatrixMode(GL10.GL_MODELVIEW);
+		    gl.glLoadIdentity();
+		    gl.glScalef(scale_x, scale_y, 1.0f);
+			gl.glMatrixMode(GL10.GL_TEXTURE);
+			gl.glLoadIdentity();
+			gl.glScalef(((float)WIDTH)/TEX_WIDTH, ((float)HEIGHT)/TEX_HEIGHT, 1.0f);
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
+			gl.glDisable(GL10.GL_BLEND);
+			quad.Draw(gl);
+
+			controller.Draw(gl, quad);
 			Emulator.the.ProfilerEnd(1);
 
 			audio.Update();
@@ -121,15 +158,16 @@ public class ViewGLES extends GLSurfaceView
 		@Override
 		public void onSurfaceChanged(GL10 gl, int w, int h)
 		{
-			boolean filtering;
-		    float sx, sy;
+			width = w;
+			height = h;
+			filtering = false;
 		    final int zoom_mode = Emulator.the.GetOptionInt(Preferences.select_zoom_id);
 			switch(zoom_mode)
 			{
 			case 0: // 1:1 mode
 			    filtering = false;
-			    sx = ((float)WIDTH) / w;
-			    sy = ((float)HEIGHT) / h;
+			    scale_x = ((float)WIDTH) / w;
+			    scale_y = ((float)HEIGHT) / h;
 				break;
 			default: // fill screen & others
 			    filtering = true;
@@ -137,13 +175,13 @@ public class ViewGLES extends GLSurfaceView
 				final float a43 = ((float)4)/3;
 				if(a > a43)
 				{
-					sx = a43/a;
-					sy = 1.0f;
+					scale_x = a43/a;
+					scale_y = 1.0f;
 				}
 				else
 				{
-					sx = 1.0f;
-					sy = a/a43;
+					scale_x = 1.0f;
+					scale_y = a/a43;
 				}
 				break;
 			}
@@ -153,16 +191,8 @@ public class ViewGLES extends GLSurfaceView
 			case 2:	z = 300.0f/256.0f;	break; //small border
 			case 3:	z = 320.0f/256.0f;	break; //no border
 			}
-		    sx *= z;
-		    sy *= z;
-
-		    gl.glViewport(0, 0, w, h);
-		    gl.glMatrixMode(GL10.GL_MODELVIEW);
-		    gl.glLoadIdentity();
-		    gl.glScalef(sx, sy, 1.0f);
-
-			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
-			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
+			scale_x *= z;
+			scale_y *= z;
 		}
 	}
 	private Audio audio = null;
@@ -175,6 +205,14 @@ public class ViewGLES extends GLSurfaceView
 		audio = new Audio();
 		video = new Video();
 		setRenderer(video);
+		setOnTouchListener(video);
+	}
+	protected void onMeasure(int w, int h)
+	{
+		super.onMeasure(w, h);
+		final boolean a = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+		video.controller.Active(a);
+		setFocusableInTouchMode(a);
 	}
 	public void OnResume()	{ onResume(); }
 	public void OnPause()	{ onPause(); }

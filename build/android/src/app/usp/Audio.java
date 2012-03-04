@@ -49,7 +49,7 @@ public class Audio
 			Emulator.the.ProfilerEnd(0);
 		}
 	}
-	private AudioTrack track;
+	private AudioTrack track = null;
 	private ByteBuffer bbuf = ByteBuffer.allocateDirect(32768);
 	private byte[] buf = new byte[32768];
 }
