@@ -19,6 +19,7 @@
                 <category android:name="android.intent.category.BROWSABLE"></category>
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.SCL"></data>
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.TRD"></data>
+                <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.FDI"></data>
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.SNA"></data>
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.Z80"></data>
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.TZX"></data>
@@ -27,6 +28,7 @@
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.ZIP"></data>
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.scl"></data>
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.trd"></data>
+                <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.fdi"></data>
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.sna"></data>
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.z80"></data>
                 <data android:host="*" android:scheme="file" android:mimeType="*/*" android:pathPattern=".*\\.tzx"></data>
