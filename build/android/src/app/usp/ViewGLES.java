@@ -84,12 +84,16 @@ public class ViewGLES extends GLSurfaceView
 		private ByteBuffer buf_video = ByteBuffer.allocateDirect(WIDTH*HEIGHT*2);
 		private int[] textures = new int[1];
 		private Quad quad = new Quad();
-		private ControlController controller = new ControlController(150);
+		private ControlController controller = null;
 		private int width = 0;
 		private int height = 0;
 		boolean filtering = false;
 		private float scale_x = 1.0f;
 		private float scale_y = 1.0f;
+		Video(int size)
+		{
+			controller = new ControlController(size);
+		}
 		public void OnTouch(float x, float y, boolean down, int pid)
 		{
 			controller.OnTouch(x, height - y, down, pid);
@@ -149,7 +153,7 @@ public class ViewGLES extends GLSurfaceView
 			gl.glDisable(GL10.GL_BLEND);
 			quad.Draw(gl);
 
-			controller.Draw(gl, quad);
+			controller.Draw(gl, quad, width);
 			Emulator.the.ProfilerEnd(1);
 
 			audio.Update();
@@ -203,7 +207,7 @@ public class ViewGLES extends GLSurfaceView
 		super(context);
 		setEGLConfigChooser(false);
 		audio = new Audio();
-		video = new Video();
+		video = new Video((int)(context.getResources().getDisplayMetrics().density*150));
 		setRenderer(video);
 		setOnTouchListener(video);
 	}

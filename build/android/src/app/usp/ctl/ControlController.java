@@ -31,9 +31,10 @@ import app.usp.ViewGLES;
 public class ControlController
 {
 	private final int size;
-	private final int ptr_size;
+	private final float scale_pot;
 	private boolean active = false;
 	private long touch_time = 0;
+	private long touch_joy_time = 0;
 	private float dir_x = 0.0f;
 	private float dir_y = 0.0f;
 	private int pid_joy = -1;
@@ -41,21 +42,34 @@ public class ControlController
 	private int[] textures = new int[2];
 	private Bitmap joy_area = null;
 	private Bitmap joy_ptr = null;
+	
+	static int NextPot(int v)
+	{
+		--v;
+		v |= (v >> 1);
+		v |= (v >> 2);
+		v |= (v >> 4);
+		v |= (v >> 8);
+		v |= (v >> 16);
+		return ++v;
+	}
 
 	public ControlController(int _size)
 	{
 		size = _size;
-		ptr_size = (int)(size*0.4f);
+		final int ptr_size = (int)(size*0.4f);
+		final int size_pot = NextPot(size);
+		scale_pot = ((float)size)/size_pot;
 
 	    Paint paint = new Paint();
 	    paint.setAntiAlias(true);
 
-        joy_area = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        joy_area = Bitmap.createBitmap(size_pot, size_pot, Bitmap.Config.ARGB_8888);
 	    Canvas canvas = new Canvas(joy_area);
         paint.setColor(Color.GRAY);
 	    canvas.drawCircle(size*0.5f, size*0.5f, size*0.45f, paint);
 
-        joy_ptr = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        joy_ptr = Bitmap.createBitmap(size_pot, size_pot, Bitmap.Config.ARGB_8888);
 	    canvas = new Canvas(joy_ptr);
         paint.setColor(Color.GRAY);
 	    canvas.drawCircle(size*0.5f, size*0.5f, ptr_size*0.5f, paint);
@@ -75,6 +89,7 @@ public class ControlController
 		touch_time = SystemClock.uptimeMillis();
 		if(down && x < size*1.3f && y < size*1.3f)
 		{
+			touch_joy_time = touch_time;
 			pid_joy = pointer_id;
 			float dx = x - size/2;
 			float dy = y - size/2;
@@ -104,7 +119,7 @@ public class ControlController
 			Emulator.the.OnKey('f', down, false, false);
 		}
 	}
-	public void Draw(GL10 gl, ViewGLES.Quad quad)
+	public void Draw(GL10 gl, ViewGLES.Quad quad, int width)
 	{
 		if(!active)
 			return;
@@ -115,7 +130,8 @@ public class ControlController
 			dir_y = 0;
 			return;
 		}
-		if(pid_joy < 0 && passed_time > 30)
+		final long passed_joy_time = SystemClock.uptimeMillis() - touch_joy_time;
+		if(pid_joy < 0 && passed_joy_time > 30)
 		{
 			dir_x *= 0.5f;
 			dir_y *= 0.5f;
@@ -128,6 +144,7 @@ public class ControlController
 	    gl.glViewport(0, 0, size, size);
 		gl.glMatrixMode(GL10.GL_TEXTURE);
 	    gl.glLoadIdentity();
+	    gl.glScalef(scale_pot, scale_pot, 1.0f);
 	    gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
@@ -141,6 +158,12 @@ public class ControlController
 	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[1]);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
+		quad.Draw(gl);
+		
+	    gl.glViewport(width - size, 0, size, size);
+	    gl.glMatrixMode(GL10.GL_MODELVIEW);
+		gl.glLoadIdentity();
+		gl.glTranslatef(0.15f, 0.15f, 0.0f);
 		quad.Draw(gl);
 	}
 	public void Active(boolean on)
@@ -159,7 +182,7 @@ public class ControlController
 		else if(!active && on)
 		{
 			if(touch_time == 0)
-				touch_time = SystemClock.uptimeMillis();
+				touch_time = touch_joy_time = SystemClock.uptimeMillis();
 		}
 		active = on;
 	}
