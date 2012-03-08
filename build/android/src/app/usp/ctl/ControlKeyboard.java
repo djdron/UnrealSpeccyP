@@ -21,6 +21,7 @@ package app.usp.ctl;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -56,8 +57,16 @@ public class ControlKeyboard
 
 	public ControlKeyboard(Context context)
 	{
-		width = context.getResources().getDisplayMetrics().widthPixels;
-		height = context.getResources().getDisplayMetrics().heightPixels;
+		if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+		{
+			width = context.getResources().getDisplayMetrics().widthPixels;
+			height = context.getResources().getDisplayMetrics().heightPixels;
+		}
+		else
+		{
+			width = context.getResources().getDisplayMetrics().heightPixels;
+			height = context.getResources().getDisplayMetrics().widthPixels;
+		}
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inScaled = false;
 		Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.keyboard, options);

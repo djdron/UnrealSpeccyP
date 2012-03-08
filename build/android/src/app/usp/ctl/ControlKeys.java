@@ -24,7 +24,12 @@ import app.usp.Emulator;
 
 public class ControlKeys implements View.OnKeyListener
 {
-	private final char TranslateKey(int keyCode)
+	private class KeyModifiers
+	{
+		boolean shift;
+		boolean alt;
+	}
+	private final char TranslateKey(final int keyCode, KeyModifiers m)
 	{
 		switch(keyCode)
 		{
@@ -83,16 +88,34 @@ public class ControlKeys implements View.OnKeyListener
 //		case KeyEvent.KEYCODE_BACK:				return 'k';
 		case KeyEvent.KEYCODE_CALL:				return 'e';
 		case KeyEvent.KEYCODE_CAMERA:			return ' ';
+		case KeyEvent.KEYCODE_DEL:
+			m.shift = true;
+			return '0';
+		case KeyEvent.KEYCODE_COMMA:
+			m.alt = true;
+			return 'N';
+		case KeyEvent.KEYCODE_PERIOD:
+			m.alt = true;
+			return 'M';
+		case KeyEvent.KEYCODE_SLASH:
+			m.alt = true;
+			return 'V';
+		default:
+			return 0;
 		}
-		return 0;
 	}
 	@Override
     public boolean onKey(View v, int keyCode, KeyEvent event)
 	{
-		final char k = TranslateKey(keyCode);
-		if(k == 0)
-			return false;
-		Emulator.the.OnKey(k, event.getAction() == KeyEvent.ACTION_DOWN, event.isShiftPressed(), event.isAltPressed());
+		KeyModifiers m = new KeyModifiers();
+		m.shift = event.isShiftPressed();
+		m.alt = event.isAltPressed();
+		final boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
+		final char k = TranslateKey(keyCode, m);
+		if(down)
+			Emulator.the.OnKey(k, true, m.shift, m.alt);
+		else
+			Emulator.the.OnKey(k, false, false, false);
 		return true;
     }
 }
