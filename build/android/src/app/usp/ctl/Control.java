@@ -27,6 +27,7 @@ import android.graphics.BitmapFactory;
 import app.usp.Emulator;
 import app.usp.Preferences;
 import app.usp.R;
+import app.usp.ViewGLES;
 
 public class Control extends ImageView
 {
@@ -34,10 +35,12 @@ public class Control extends ImageView
     private Bitmap keyboard;
     private Bitmap joystick;
     private boolean keyboard_active = false;
+    private ViewGLES view = null;
 
-	public Control(Context context)
+	public Control(Context context, ViewGLES _view)
 	{
 		super(context);
+		view = _view;
 
 		keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard);
 		joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
@@ -62,6 +65,7 @@ public class Control extends ImageView
 			keyboard_active = !keyboard_active;
 			Emulator.the.SetOptionBool(Preferences.use_keyboard_id, keyboard_active);
 			setImageBitmap(keyboard_active ? keyboard : joystick);
+			view.OnControlsToggle();
 			return true;
 		}
 		return false;

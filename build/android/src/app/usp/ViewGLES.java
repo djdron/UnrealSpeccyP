@@ -28,6 +28,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLSurfaceView;
 import app.usp.ctl.ControlController;
+import app.usp.ctl.ControlKeyboard;
 import app.usp.ctl.ControlTouch;
 
 public class ViewGLES extends GLSurfaceView
@@ -84,19 +85,22 @@ public class ViewGLES extends GLSurfaceView
 		private ByteBuffer buf_video = ByteBuffer.allocateDirect(WIDTH*HEIGHT*2);
 		private int[] textures = new int[1];
 		private Quad quad = new Quad();
-		private ControlController controller = null;
+		private ControlController control_controller = null;
+		private ControlKeyboard control_keyboard = null;
 		private int width = 0;
 		private int height = 0;
 		boolean filtering = false;
 		private float scale_x = 1.0f;
 		private float scale_y = 1.0f;
-		Video(int size)
+		Video(Context context)
 		{
-			controller = new ControlController(size);
+			control_controller = new ControlController(context);
+			control_keyboard = new ControlKeyboard(context);
 		}
 		public void OnTouch(float x, float y, boolean down, int pid)
 		{
-			controller.OnTouch(x, height - y, down, pid);
+			control_controller.OnTouch(x, height - y, down, pid);
+			control_keyboard.OnTouch(x, y, down, pid);
 		}
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)
@@ -112,7 +116,8 @@ public class ViewGLES extends GLSurfaceView
 		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
 			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, null);
 			
-			controller.Init(gl);
+			control_controller.Init(gl);
+			control_keyboard.Init(gl);
 
 			gl.glMatrixMode(GL10.GL_PROJECTION);
 			gl.glLoadIdentity();
@@ -153,7 +158,8 @@ public class ViewGLES extends GLSurfaceView
 			gl.glDisable(GL10.GL_BLEND);
 			quad.Draw(gl);
 
-			controller.Draw(gl, quad, width);
+			control_controller.Draw(gl, quad, width);
+			control_keyboard.Draw(gl, quad);
 			Emulator.the.ProfilerEnd(1);
 
 			audio.Update();
@@ -207,17 +213,24 @@ public class ViewGLES extends GLSurfaceView
 		super(context);
 		setEGLConfigChooser(false);
 		audio = new Audio();
-		video = new Video((int)(context.getResources().getDisplayMetrics().density*150));
+		video = new Video(context);
 		setRenderer(video);
 		setOnTouchListener(video);
 	}
 	protected void onMeasure(int w, int h)
 	{
 		super.onMeasure(w, h);
-		final boolean a = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
-		video.controller.Active(a);
-		setFocusableInTouchMode(a);
+		setFocusableInTouchMode(InLandscapeMode());
+		OnControlsToggle();
 	}
+	protected boolean InLandscapeMode() { return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE; }
 	public void OnResume()	{ onResume(); }
 	public void OnPause()	{ onPause(); }
+	public void OnControlsToggle()
+	{
+		final boolean a = InLandscapeMode();
+		final boolean k = Emulator.the.GetOptionBool(Preferences.use_keyboard_id);
+		video.control_controller.Active(a && !k);
+		video.control_keyboard.Active(a && k);
+	}
 }

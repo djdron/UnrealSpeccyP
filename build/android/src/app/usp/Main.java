@@ -50,7 +50,7 @@ public class Main extends Activity
 		Context c = getApplicationContext();
 		view = new ViewGLES(c);
 		view.setId(1);
-		control = new Control(c);
+		control = new Control(c, view);
 		control.setId(2);
 		layout = new RelativeLayout(c);
 		RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);

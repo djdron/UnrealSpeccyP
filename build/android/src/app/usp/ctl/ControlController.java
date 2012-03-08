@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package app.usp.ctl;
 
 import javax.microedition.khronos.opengles.GL10;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -54,9 +56,9 @@ public class ControlController
 		return ++v;
 	}
 
-	public ControlController(int _size)
+	public ControlController(Context context)
 	{
-		size = _size;
+		size = (int)(context.getResources().getDisplayMetrics().density*150);
 		final int ptr_size = (int)(size*0.4f);
 		final int size_pot = NextPot(size);
 		scale_pot = ((float)size)/size_pot;
@@ -181,8 +183,7 @@ public class ControlController
 		}
 		else if(!active && on)
 		{
-			if(touch_time == 0)
-				touch_time = touch_joy_time = SystemClock.uptimeMillis();
+			touch_time = touch_joy_time = SystemClock.uptimeMillis();
 		}
 		active = on;
 	}
