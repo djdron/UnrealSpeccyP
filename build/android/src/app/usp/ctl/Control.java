@@ -47,7 +47,7 @@ public class Control extends ImageView
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		setImageBitmap(keyboard_active ? keyboard : joystick);
-		setOnKeyListener(new ControlKeyboard());
+		setOnKeyListener(new ControlKeys());
 		setOnTouchListener(new ControlTouch() {
 			public void OnTouch(float x, float y, boolean down, int pid)
 			{

@@ -22,7 +22,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import app.usp.Emulator;
 
-public class ControlKeyboard implements View.OnKeyListener
+public class ControlKeys implements View.OnKeyListener
 {
 	private final char TranslateKey(int keyCode)
 	{
