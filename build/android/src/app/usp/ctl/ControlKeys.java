@@ -110,9 +110,10 @@ public class ControlKeys implements View.OnKeyListener
 		KeyModifiers m = new KeyModifiers();
 		m.shift = event.isShiftPressed();
 		m.alt = event.isAltPressed();
-		final boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
 		final char k = TranslateKey(keyCode, m);
-		if(down)
+		if(k == 0)
+			return false;
+		if(event.getAction() == KeyEvent.ACTION_DOWN)
 			Emulator.the.OnKey(k, true, m.shift, m.alt);
 		else
 			Emulator.the.OnKey(k, false, false, false);
