@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Unreal Speccy Portable</title>
+
+  <script type="text/javascript">
+    module = null;
+    statusText = 'unknown';
+
+    function moduleDidLoad()
+    {
+      module = document.getElementById('unreal_speccy_portable');
+      updateStatus('module_ok');
+    }
+
+    // Handle a message coming from the NaCl module.
+    function handleMessage(m)
+    {
+		updateStatus(m.data);
+    	if(m.data == 'resources_ok')
+    		module.postMessage('run');
+    }
+
+    function pageDidLoad()
+    {
+      if(module == null)
+        updateStatus('loading...');
+      else
+        updateStatus();
+    }
+
+    function updateStatus(opt_message)
+    {
+      if(opt_message)
+        statusText = opt_message;
+      var status = document.getElementById('status');
+      if(status)
+      {
+        status.innerHTML = statusText;
+      }
+    }
+  </script>
+</head>
+<body onload="pageDidLoad()">
+
+<p>
+  <div id="listener">
+    <script type="text/javascript">
+      var listener = document.getElementById('listener')
+      listener.addEventListener('load', moduleDidLoad, true);
+      listener.addEventListener('message', handleMessage, true);
+    </script>
+
+    <embed name="nacl_module"
+           id="unreal_speccy_portable"
+           width=640 height=480
+           src="unreal_speccy_portable.nmf"
+           type="application/x-nacl" />
+  </div>
+
+</p>
+<div id="status"></div>
+</body>
+</html>
