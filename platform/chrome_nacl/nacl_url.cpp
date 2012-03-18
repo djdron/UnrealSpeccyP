@@ -30,6 +30,7 @@ eURLLoader::eURLLoader(pp::Instance* _instance, const string& _url, eCallback* c
 {
 	url_request.SetURL(url);
 	url_request.SetMethod("GET");
+//	url_request.SetProperty(PP_URLREQUESTPROPERTY_ALLOWCROSSORIGINREQUESTS, pp::Var(true));
 	pp::CompletionCallback cc = cc_factory.NewRequiredCallback(&eURLLoader::OnOpen);
 	url_loader.Open(url_request, cc);
 }

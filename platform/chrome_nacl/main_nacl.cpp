@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "nacl_gl_context.h"
 #include "nacl_url.h"
+#include "nacl_sound.h"
 #include "../gles2/gles2.h"
 #include "../platform.h"
 #include "../../options_common.h"
@@ -57,13 +58,13 @@ protected:
 	void	TranslateKey(int& key, dword& flags);
 	void	Draw();
 	void	Update();
-	static void	_Update(void* data, int32_t) { ((eUSPInstance*)data)->Update(); }
-
+	static void	_Update(void* data, int32_t) { static_cast<eUSPInstance*>(data)->Update(); }
 protected:
 	eGLContext* gl_context;
 	eGLES2* gles2;
 	pp::Size size;
 	bool inited;
+	eAudio audio;
 };
 
 eUSPInstance::eUSPInstance(PP_Instance instance)
@@ -86,6 +87,7 @@ eUSPInstance::~eUSPInstance()
 bool eUSPInstance::Init(uint32_t argc, const char* argn[], const char* argv[])
 {
 	LoadResources(this);
+	audio.Init(this);
 	return true;
 }
 
@@ -99,15 +101,18 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 		xPlatform::Handler()->OnInit();
 		inited = true;
 		Update();
+		audio.Play();
 		PostMessage("ready");
-//		new eURLLoader(this, "image/RAVEN1.ZIP", this);
+		new eURLLoader(this, "image/_EXOLON.SCL", this);
 	}
 }
+
 void eUSPInstance::OnURLLoadOk(const std::string& url, const char* buffer, size_t size)
 {
 	PostMessage("file_open_ok");
 	Handler()->OnOpenFile(url.c_str(), buffer, size);
 }
+
 void eUSPInstance::OnURLLoadFail(const std::string& url)
 {
 	PostMessage("file_open_failed");
@@ -115,8 +120,9 @@ void eUSPInstance::OnURLLoadFail(const std::string& url)
 
 void eUSPInstance::Update()
 {
-	pp::Module::Get()->core()->CallOnMainThread(20, pp::CompletionCallback(_Update, this));
+	pp::Module::Get()->core()->CallOnMainThread(17, pp::CompletionCallback(_Update, this));
 	Handler()->OnLoop();
+	audio.Update();
 	Draw();
 }
 

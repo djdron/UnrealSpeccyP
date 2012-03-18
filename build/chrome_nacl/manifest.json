@@ -6,11 +6,8 @@
     "128": "unreal_speccy_portable.png"
   },
   "app": {
-    "urls": [
-      "http://localhost/unreal_speccy_portable/"
-    ],
     "launch": {
-      "web_url": "http://localhost/unreal_speccy_portable/"
+      "local_path": "unreal_speccy_portable.html"
     }
   }
 }
