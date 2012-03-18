@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ppapi/gles2/gl2ext_ppapi.h"
 
 #include "nacl_gl_context.h"
+#include "nacl_url.h"
 #include "../gles2/gles2.h"
 #include "../platform.h"
 #include "../../options_common.h"
@@ -40,7 +41,7 @@ namespace xPlatform
 
 void LoadResources(pp::Instance* i);
 
-class eUSPInstance : public pp::Instance
+class eUSPInstance : public pp::Instance, public eURLLoader::eCallback
 {
 public:
 	eUSPInstance(PP_Instance instance);
@@ -49,6 +50,8 @@ public:
 	virtual void HandleMessage(const pp::Var& _m);
 	virtual void DidChangeView(const pp::Rect& position, const pp::Rect& clip);
 	virtual bool HandleInputEvent(const pp::InputEvent& event);
+	virtual void OnURLLoadOk(const std::string& url, const char* buffer, size_t size);
+	virtual void OnURLLoadFail(const std::string& url);
 
 protected:
 	void	TranslateKey(int& key, dword& flags);
@@ -97,7 +100,17 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 		inited = true;
 		Update();
 		PostMessage("ready");
+//		new eURLLoader(this, "image/RAVEN1.ZIP", this);
 	}
+}
+void eUSPInstance::OnURLLoadOk(const std::string& url, const char* buffer, size_t size)
+{
+	PostMessage("file_open_ok");
+	Handler()->OnOpenFile(url.c_str(), buffer, size);
+}
+void eUSPInstance::OnURLLoadFail(const std::string& url)
+{
+	PostMessage("file_open_failed");
 }
 
 void eUSPInstance::Update()
