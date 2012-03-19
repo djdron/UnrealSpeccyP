@@ -109,8 +109,8 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 		return;
 	if(m.length() > 5 && m.substr(0, 4) == "open")
 	{
-		PostMessage("opening...");
-		new eURLLoader(this, "image/" + m.substr(5), this);
+		string url = m.substr(5);
+		new eURLLoader(this, url, this);
 	}
 	else if(m == "reset")
 	{

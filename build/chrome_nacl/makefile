@@ -12,15 +12,15 @@ SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml tools/libpng snapshot ui platf
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
-CXX = x86_64-nacl-g++
-C = x86_64-nacl-gcc
+CXX = i686-nacl-g++
+C = i686-nacl-gcc
 DIST_PATH = $(OBJ_BASE)
 OBJ_PATH = $(OBJ_BASE)
 CXX_OBJS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$(CXXSRCS))
 CXX_DEPS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.d,$(CXXSRCS))
 C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
-BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME).nexe
+BIN_TARGET = $(PROJECT_NAME).nexe
 
 CXXFLAGS = -D_CHROME_NACL -DUSE_GLES2 -DUSE_PNG -DUSE_CONFIG -DUSE_ZIP -DUSE_EXTERN_RESOURCES -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0
 CFLAGS = -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0

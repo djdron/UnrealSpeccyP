@@ -31,9 +31,9 @@
 
 	function onOpen()
 	{
-	    var image_name = document.getElementById("image_name");
-	    var value = image_name.children[image_name.selectedIndex].value;
-	    module.postMessage('open:' + value);
+        updateStatus('opening...');
+	    var image_name = document.getElementById("image_name").value;
+	    module.postMessage('open:' + image_name);
 	}
 	function onReset()
 	{
@@ -69,23 +69,13 @@
            type="application/x-nacl" />
   </div>
   <div id="selector">
-	<select id="image_name">
-        <option value="_EXOLON.SNA">Exolon</option>
-        <option value="ADVENT6.TRD">Adventurer 6</option>
-        <option value="BORN_0F.ZIP">Born Dead 0F</option>
-        <option value="BORN_10.ZIP">Born Dead 10</option>
-        <option value="ZX-FORM4.ZIP">ZX-Format 4</option>
-        <option value="ZXFORM7O.ZIP">ZX-Format 7</option>
-        <option value="EYEACHE-.SCL">Eye Ache</option>
-        <option value="EYEACHE2.TRD">Eye Ache 2</option>
-        <option value="SHOCKPEN.ZIP">Shock for Pentagon</option>
-        <option value="SP17.TRD">Spectrophon 17</option>
-        <option value="illusion_test.sna">Illusion</option>
-	</select>
+	<small>Copy & paste file URL from <a href="http://vtrdos.ru">vtrdos.ru</a> here, then click "Open"</small>
+	<br />
+	<input type="text" id="image_name" />
 	<button onclick="onOpen()">Open</button>
 	<button onclick="onReset()">Reset</button>
   </div>
 </p>
-<div id="status"></div>
+<h6><div id="status"></div></h6>
 </body>
 </html>
