@@ -103,19 +103,30 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 		Update();
 		audio.Play();
 		PostMessage("ready");
-		new eURLLoader(this, "image/_EXOLON.SCL", this);
+//		new eURLLoader(this, "image/BORN_10.ZIP", this);
+	}
+	if(!inited)
+		return;
+	if(m.length() > 5 && m.substr(0, 4) == "open")
+	{
+		PostMessage("opening...");
+		new eURLLoader(this, "image/" + m.substr(5), this);
+	}
+	else if(m == "reset")
+	{
+		Handler()->OnAction(A_RESET);
 	}
 }
 
 void eUSPInstance::OnURLLoadOk(const std::string& url, const char* buffer, size_t size)
 {
-	PostMessage("file_open_ok");
+	PostMessage("open ok");
 	Handler()->OnOpenFile(url.c_str(), buffer, size);
 }
 
 void eUSPInstance::OnURLLoadFail(const std::string& url)
 {
-	PostMessage("file_open_failed");
+	PostMessage("open failed");
 }
 
 void eUSPInstance::Update()
