@@ -1,7 +1,13 @@
 SRC_PATH = ../..
-OBJ_BASE = Release
 
-PROJECT_NAME = unreal_speccy_portable
+ifdef X86
+PLATFORM = _x86_32
+else
+PLATFORM = _x86_64
+endif
+OBJ_BASE = Release$(PLATFORM)
+
+PROJECT_NAME = unreal_speccy_portable$(PLATFORM)
 SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml tools/libpng snapshot ui platform platform/custom_ui platform/chrome_nacl platform/gles2 devices devices/fdd devices/input devices/sound 
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
@@ -19,6 +25,16 @@ BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME).nexe
 CXXFLAGS = -D_CHROME_NACL -DUSE_GLES2 -DUSE_PNG -DUSE_CONFIG -DUSE_ZIP -DUSE_EXTERN_RESOURCES -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0
 CFLAGS = -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0
 LFLAGS = -s -lppapi -lppapi_cpp -lppapi_gles2
+
+ifdef X86
+CXXFLAGS := $(CXXFLAGS) -m32
+CFLAGS := $(CFLAGS) -m32
+LFLAGS := $(LFLAGS) -m32
+else
+CXXFLAGS := $(CXXFLAGS) -m64
+CFLAGS := $(CFLAGS) -m64
+LFLAGS := $(LFLAGS) -m64
+endif
 
 all: build
 
