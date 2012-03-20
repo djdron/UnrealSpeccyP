@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "nacl_sound.h"
 #include "../gles2/gles2.h"
 #include "../platform.h"
+#include "../../tools/options.h"
 #include "../../options_common.h"
 
 #include <GLES2/gl2.h>
@@ -103,14 +104,22 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 		Update();
 		audio.Play();
 		PostMessage("ready");
-//		new eURLLoader(this, "image/BORN_10.ZIP", this);
 	}
 	if(!inited)
 		return;
-	if(m.length() > 5 && m.substr(0, 4) == "open")
+	static const string open("open:");
+	static const string joystick("joystick:");
+	if(m.length() > open.length() && m.substr(0, open.length()) == open)
 	{
-		string url = m.substr(5);
+		string url = m.substr(open.length());
 		new eURLLoader(this, url, this);
+	}
+	else if(m.length() > joystick.length() && m.substr(0, joystick.length()) == joystick)
+	{
+		using namespace xOptions;
+		string joy = m.substr(joystick.length());
+		eOption<int>* op_joy = eOption<int>::Find("joystick");
+		SAFE_CALL(op_joy)->Value(joy.c_str());
 	}
 	else if(m == "reset")
 	{

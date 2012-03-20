@@ -8,7 +8,7 @@ endif
 OBJ_BASE = Release$(PLATFORM)
 
 PROJECT_NAME = unreal_speccy_portable$(PLATFORM)
-SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml tools/libpng snapshot ui platform platform/custom_ui platform/chrome_nacl platform/gles2 devices devices/fdd devices/input devices/sound 
+SRCFOLDERS = . z80 tools tools/zlib snapshot platform platform/chrome_nacl platform/gles2 devices devices/fdd devices/input devices/sound 
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
@@ -22,7 +22,7 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(PROJECT_NAME).nexe
 
-CXXFLAGS = -D_CHROME_NACL -DUSE_GLES2 -DUSE_PNG -DUSE_CONFIG -DUSE_ZIP -DUSE_EXTERN_RESOURCES -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0
+CXXFLAGS = -D_CHROME_NACL -DUSE_GLES2 -DUSE_ZIP -DUSE_EXTERN_RESOURCES -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0
 CFLAGS = -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0
 LFLAGS = -s -lppapi -lppapi_cpp -lppapi_gles2
 
