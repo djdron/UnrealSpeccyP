@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ppapi/cpp/input_event.h"
 #include "ppapi/cpp/completion_callback.h"
 #include "ppapi/cpp/fullscreen.h"
+#include "ppapi/cpp/mouse_lock.h"
 #include "ppapi/gles2/gl2ext_ppapi.h"
 
 #include "nacl_gl_context.h"
@@ -44,7 +45,7 @@ namespace xPlatform
 
 void LoadResources(pp::Instance* i);
 
-class eUSPInstance : public pp::Instance, public eURLLoader::eCallback
+class eUSPInstance : public pp::Instance, public pp::MouseLock, public eURLLoader::eCallback
 {
 public:
 	eUSPInstance(PP_Instance instance);
@@ -55,26 +56,35 @@ public:
 	virtual bool HandleInputEvent(const pp::InputEvent& event);
 	virtual void OnURLLoadOk(const std::string& url, const char* buffer, size_t size);
 	virtual void OnURLLoadFail(const std::string& url);
+	virtual void MouseLockLost();
 
 protected:
+	bool 	SpecialKeyDown(const pp::KeyboardInputEvent event);
 	void	TranslateKey(int& key, dword& flags);
 	void	Draw();
-	void	Update();
-	static void	_Update(void* data, int32_t) { static_cast<eUSPInstance*>(data)->Update(); }
+
+	//callbacks
+	void	Update(int32_t result = 0);
+	void	DidLockMouse(int32_t result);
+
 protected:
 	eGLContext* gl_context;
 	eGLES2* gles2;
 	pp::Size size;
-	bool inited;
 	eAudio audio;
 	pp::Fullscreen full_screen;
+	pp::CompletionCallbackFactory<eUSPInstance> callback;
+	bool inited;
+	bool mouse_locked;
 };
 
 eUSPInstance::eUSPInstance(PP_Instance instance)
-	: pp::Instance(instance), gl_context(NULL), gles2(NULL), size(0, 0), inited(false)
-	, full_screen(this)
+	: pp::Instance(instance), pp::MouseLock(this)
+	, gl_context(NULL), gles2(NULL), size(0, 0)
+	, full_screen(this), callback(this)
+	, inited(false), mouse_locked(false)
 {
-    RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE | PP_INPUTEVENT_CLASS_WHEEL);
+    RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE);
 	RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
 }
 
@@ -141,9 +151,9 @@ void eUSPInstance::OnURLLoadFail(const std::string& url)
 	PostMessage("open failed");
 }
 
-void eUSPInstance::Update()
+void eUSPInstance::Update(int32_t result)
 {
-	pp::Module::Get()->core()->CallOnMainThread(17, pp::CompletionCallback(_Update, this));
+	pp::Module::Get()->core()->CallOnMainThread(17, callback.NewRequiredCallback(&eUSPInstance::Update));
 	Handler()->OnLoop();
 	audio.Update();
 	Draw();
@@ -163,6 +173,16 @@ void eUSPInstance::DidChangeView(const pp::Rect& position, const pp::Rect& clip)
 	gl_context->Invalidate();
 	gl_context->Resize(size);
 	Draw();
+}
+
+void eUSPInstance::DidLockMouse(int32_t result)
+{
+	mouse_locked = result == PP_OK;
+}
+
+void eUSPInstance::MouseLockLost()
+{
+	mouse_locked = false;
 }
 
 void eUSPInstance::Draw()
@@ -281,6 +301,27 @@ void eUSPInstance::TranslateKey(int& key, dword& flags)
 		key = 0;
 }
 
+bool eUSPInstance::SpecialKeyDown(const pp::KeyboardInputEvent event)
+{
+	int key = event.GetKeyCode();
+	enum { K_F12 = 123 };
+	if(key == K_F12)
+	{
+		Handler()->OnAction(A_RESET);
+		return true;
+	}
+	else if(key == 'F' && event.GetModifiers()&PP_INPUTEVENT_MODIFIER_CONTROLKEY)
+	{
+		full_screen.SetFullscreen(!full_screen.IsFullscreen());
+		if(!mouse_locked)
+		{
+			LockMouse(callback.NewRequiredCallback(&eUSPInstance::DidLockMouse));
+		}
+		return true;
+	}
+	return false;
+}
+
 bool eUSPInstance::HandleInputEvent(const pp::InputEvent& ev)
 {
 	switch(ev.GetType())
@@ -288,23 +329,18 @@ bool eUSPInstance::HandleInputEvent(const pp::InputEvent& ev)
 	case PP_INPUTEVENT_TYPE_KEYDOWN:
 		{
 			pp::KeyboardInputEvent event(ev);
+			if(SpecialKeyDown(event))
+				return true;
 			int key = event.GetKeyCode();
-			enum { K_F12 = 123 };
-			if(key == K_F12)
-			{
-				Handler()->OnAction(A_RESET);
-				return true;
-			}
-			else if(key == 'F' && event.GetModifiers()&PP_INPUTEVENT_MODIFIER_CONTROLKEY)
-			{
-				full_screen.SetFullscreen(!full_screen.IsFullscreen());
-				return true;
-			}
 			dword flags = KF_DOWN|OpJoyKeyFlags();
 			if(event.GetModifiers()&PP_INPUTEVENT_MODIFIER_ALTKEY)		flags |= KF_ALT;
 			if(event.GetModifiers()&PP_INPUTEVENT_MODIFIER_SHIFTKEY)	flags |= KF_SHIFT;
 			TranslateKey(key, flags);
-			Handler()->OnKey(key, flags);
+			if(key || flags)
+			{
+				Handler()->OnKey(key, flags);
+				return true;
+			}
 		}
 		break;
 	case PP_INPUTEVENT_TYPE_KEYUP:
@@ -315,13 +351,35 @@ bool eUSPInstance::HandleInputEvent(const pp::InputEvent& ev)
 			if(event.GetModifiers()&PP_INPUTEVENT_MODIFIER_ALTKEY)		flags |= KF_ALT;
 			if(event.GetModifiers()&PP_INPUTEVENT_MODIFIER_SHIFTKEY)	flags |= KF_SHIFT;
 			TranslateKey(key, flags);
-			Handler()->OnKey(key, OpJoyKeyFlags());
+			if(key || flags)
+			{
+				Handler()->OnKey(key, OpJoyKeyFlags());
+				return true;
+			}
+		}
+		break;
+	case PP_INPUTEVENT_TYPE_MOUSEMOVE:
+		if(mouse_locked)
+		{
+			pp::MouseInputEvent event(ev);
+			pp::Point delta = event.GetMovement();
+			Handler()->OnMouse(MA_MOVE, delta.x(), -delta.y());
+			return true;
+		}
+		break;
+	case PP_INPUTEVENT_TYPE_MOUSEDOWN:
+	case PP_INPUTEVENT_TYPE_MOUSEUP:
+		if(mouse_locked)
+		{
+			pp::MouseInputEvent event(ev);
+			Handler()->OnMouse(MA_BUTTON, event.GetButton() == PP_INPUTEVENT_MOUSEBUTTON_RIGHT, ev.GetType() == PP_INPUTEVENT_TYPE_MOUSEDOWN);
+			return true;
 		}
 		break;
 	default:
 		break;
 	}
-	return true;
+	return false;
 }
 
 }
