@@ -27,13 +27,11 @@ byte sos128[16384];
 byte sos48[16384];
 byte service[16384];
 byte dos513f[16384];
-byte spxtrm4f[2048];
 
 static const string rom_sos128	= "res/rom/sos128.rom";
 static const string rom_sos48	= "res/rom/sos48.rom";
 static const string rom_service	= "res/rom/service.rom";
 static const string rom_dos513f	= "res/rom/dos513f.rom";
-static const string font_spxtrm4f = "res/font/spxtrm4f.fnt";
 
 namespace xPlatform
 {
@@ -47,7 +45,6 @@ public:
 		new eURLLoader(instance, rom_sos48, this);
 		new eURLLoader(instance, rom_service, this);
 		new eURLLoader(instance, rom_dos513f, this);
-		new eURLLoader(instance, font_spxtrm4f, this);
 	}
 protected:
 	virtual void OnURLLoadOk(const string& url, const char* buffer, size_t size)
@@ -57,7 +54,6 @@ protected:
 		else if(url == rom_sos48		&& size == sizeof(sos48))	{ memcpy(sos48,		buffer, sizeof(sos48));		ok = true; }
 		else if(url == rom_service		&& size == sizeof(service))	{ memcpy(service,	buffer, sizeof(service));	ok = true; }
 		else if(url == rom_dos513f		&& size == sizeof(dos513f))	{ memcpy(dos513f,	buffer, sizeof(dos513f));	ok = true; }
-		else if(url == font_spxtrm4f	&& size == sizeof(spxtrm4f)){ memcpy(spxtrm4f,	buffer, sizeof(spxtrm4f));	ok = true; }
 		if(ok)
 			++resources_ok;
 		else
@@ -71,7 +67,7 @@ protected:
 	}
 	void OnURLLoaded()
 	{
-		if(resources_failed + resources_ok < 5)
+		if(resources_failed + resources_ok < 4)
 			return;
 		if(resources_failed)
 			instance->PostMessage("resources_failed");

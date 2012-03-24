@@ -4,11 +4,11 @@
   <title>Unreal Speccy Portable</title>
 
   <script type="text/javascript">
-    module = null;
-    statusText = 'unknown';
+	module = null;
+	statusText = 'unknown';
 
     function moduleDidLoad()
-    {
+	{
 		module = document.getElementById('unreal_speccy_portable');
 		updateStatus('module_ok');
 	}
@@ -102,7 +102,7 @@
   </div>
   <small>
   <div>
-	Copy & paste file URL from <a href="http://vtrdos.ru" target="_blank">vtrdos.ru</a> here, then click "Open", LMB in view & press ENTER
+	Copy & paste file URL from <a href="http://vtrdos.ru" target="_blank">vtrdos.ru</a> here, then click "Open", focus view (LMB) & press ENTER
 	<br />
 	<input type="text" id="image_name" size="50" />
 	<button onclick="onOpen()">Open</button>
@@ -114,6 +114,8 @@
 	  <option value="qaop">QAOP</option>
 	  <option value="cursor">Cursor</option>
 	</select>
+	<br /><br />
+	When emulator view focused, press F12 to reset, Ctrl+F to enter full screen mode.
   </div>
   </small>
 </p>

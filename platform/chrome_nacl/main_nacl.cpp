@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ppapi/cpp/rect.h"
 #include "ppapi/cpp/input_event.h"
 #include "ppapi/cpp/completion_callback.h"
+#include "ppapi/cpp/fullscreen.h"
 #include "ppapi/gles2/gl2ext_ppapi.h"
 
 #include "nacl_gl_context.h"
@@ -66,10 +67,12 @@ protected:
 	pp::Size size;
 	bool inited;
 	eAudio audio;
+	pp::Fullscreen full_screen;
 };
 
 eUSPInstance::eUSPInstance(PP_Instance instance)
 	: pp::Instance(instance), gl_context(NULL), gles2(NULL), size(0, 0), inited(false)
+	, full_screen(this)
 {
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE | PP_INPUTEVENT_CLASS_WHEEL);
 	RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
@@ -286,6 +289,17 @@ bool eUSPInstance::HandleInputEvent(const pp::InputEvent& ev)
 		{
 			pp::KeyboardInputEvent event(ev);
 			int key = event.GetKeyCode();
+			enum { K_F12 = 123 };
+			if(key == K_F12)
+			{
+				Handler()->OnAction(A_RESET);
+				return true;
+			}
+			else if(key == 'F' && event.GetModifiers()&PP_INPUTEVENT_MODIFIER_CONTROLKEY)
+			{
+				full_screen.SetFullscreen(!full_screen.IsFullscreen());
+				return true;
+			}
 			dword flags = KF_DOWN|OpJoyKeyFlags();
 			if(event.GetModifiers()&PP_INPUTEVENT_MODIFIER_ALTKEY)		flags |= KF_ALT;
 			if(event.GetModifiers()&PP_INPUTEVENT_MODIFIER_SHIFTKEY)	flags |= KF_SHIFT;
@@ -297,9 +311,6 @@ bool eUSPInstance::HandleInputEvent(const pp::InputEvent& ev)
 		{
 			pp::KeyboardInputEvent event(ev);
 			int key = event.GetKeyCode();
-			enum { K_F12 = 123 };
-			if(key == K_F12)
-				Handler()->OnAction(A_RESET);
 			dword flags = 0;
 			if(event.GetModifiers()&PP_INPUTEVENT_MODIFIER_ALTKEY)		flags |= KF_ALT;
 			if(event.GetModifiers()&PP_INPUTEVENT_MODIFIER_SHIFTKEY)	flags |= KF_SHIFT;

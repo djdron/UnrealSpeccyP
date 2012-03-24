@@ -219,8 +219,16 @@ void eGLES2Impl::Draw(int _w, int _h)
 
 	UpdateScreen(buf_video);
 
-	glViewport(0, 0, _w, _h);
+	int w = _w;
+	int h = _h;
+	if(float(w)/h > 4.0f/3.0f)
+		w = float(_h)*4/3;
+	else
+		h = float(_w)*3/4;
+	GLint filter = w % 320 ? GL_LINEAR : GL_NEAREST;
+
 	glClear(GL_COLOR_BUFFER_BIT);
+	glViewport((_w - w)/2, (_h - h)/2, w, h);
 
 	GLfloat proj[16];
 	SetOrtho(proj, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f);
@@ -232,8 +240,8 @@ void eGLES2Impl::Draw(int _w, int _h)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buf_video);
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(u_texture, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
 	glVertexAttribPointer(a_position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
