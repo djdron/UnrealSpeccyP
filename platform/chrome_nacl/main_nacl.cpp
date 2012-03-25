@@ -90,6 +90,8 @@ eUSPInstance::eUSPInstance(PP_Instance instance)
 
 eUSPInstance::~eUSPInstance()
 {
+	if(inited)
+		Handler()->OnDone();
 	if(gl_context)
 	{
 		gl_context->MakeCurrent(this);

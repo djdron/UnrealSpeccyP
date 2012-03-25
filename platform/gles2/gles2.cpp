@@ -107,7 +107,6 @@ eGLES2Impl::eGLES2Impl() : shader_program(0), a_position(0), a_texcoord(0), u_vp
 	u_vp_matrix = glGetUniformLocation(shader_program, "u_vp_matrix");
 	u_texture = glGetUniformLocation(shader_program, "u_texture");
 
-	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, textures);
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
@@ -235,7 +234,6 @@ void eGLES2Impl::Draw(int _w, int _h)
 
 	glUseProgram(shader_program);
 
-	glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buf_video);
 	glActiveTexture(GL_TEXTURE0);
