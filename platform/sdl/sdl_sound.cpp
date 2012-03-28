@@ -79,7 +79,10 @@ bool InitAudio()
 	audio.freq = 44100;
 	audio.channels = 2;
 	audio.format = AUDIO_S16SYS;
-	audio.samples = 4096;
+#ifndef SDL_AUDIO_SAMPLES
+#define SDL_AUDIO_SAMPLES 4096
+#endif//SDL_AUDIO_SAMPLES
+	audio.samples = SDL_AUDIO_SAMPLES;
 	audio.callback = AudioCallback;
 	if(SDL_OpenAudio(&audio, NULL) < 0)
 		return false;

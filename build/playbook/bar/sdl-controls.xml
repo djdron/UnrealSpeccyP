@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<emulation version="1">
+
+<dpad x="2" y="120" width="80" height="80">
+<label x="0" y="0" width="80" height="80" image="dpad.png"/>
+</dpad>
+
+
+<key x="2" y="2" width="32" height="32" sym="27" scancode="27">
+<label x="0" y="0" width="32" height="32" image ="speccy48.png"/>
+</key> 
+
+<key x="0" y="40" width="32" height="32" sym="117" scancode="117">
+<label x="0" y="0" width="32" height="24" image="speccy128.png"/>
+</key>
+
+<key x="370" y="80" width="32" height="32" sym="13" scancode="13">
+<label x="0" y="0" width="32" height="32" image="enter_key.png"/>
+</key>
+
+<key x="80" y="210" width="240" height="16" sym="32" scancode="31"/>
+
+<key x="336" y="0" width="32" height="32" sym="49" scancode="49">
+<label x="0" y="0" width="32" height="32" image="1_key.png"/>
+</key>
+
+<key x="370" y="0" width="32" height="32" sym="48" scancode="48">
+<label x="0" y="0" width="32" height="32" image="0_key.png"/>
+</key>
+
+<key x="370" y="34" width="32" height="32" sym="51" scancode="51">
+<label x="0" y="0" width="32" height="32" image="3_key.png"/>
+</key>
+
+<key x="370" y="120" width="32" height="32" sym="39" scancode="39">
+<label x="0" y="0" width="32" height="32" image="p_key.png"/>
+</key>
+
+</emulation>

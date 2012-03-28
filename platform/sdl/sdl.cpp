@@ -38,7 +38,10 @@ void ProcessKey(SDL_Event& e);
 
 static bool Init()
 {
-	OpLastFile("/");
+#ifndef SDL_DEFAULT_FOLDER
+#define SDL_DEFAULT_FOLDER "/"
+#endif//SDL_DEFAULT_FOLDER
+	OpLastFile(SDL_DEFAULT_FOLDER);
 	Handler()->OnInit();
     if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0)
         return false;
