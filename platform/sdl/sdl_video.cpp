@@ -31,11 +31,7 @@ static SDL_Surface* offscreen = NULL;
 
 bool InitVideo()
 {
-#ifndef __QNXNTO__
     screen = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE);
-#else
-    screen = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE | SDL_HWPALETTE );
-#endif
     if(!screen)
         return false;
 	offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16,
@@ -81,9 +77,7 @@ color_cache;
 
 void UpdateScreen()
 {
-#ifndef __QNXNTO__
 	SDL_LockSurface(offscreen);
-#endif
 	byte* data = (byte*)Handler()->VideoData();
 	word* scr = (word*)offscreen->pixels;
 #ifdef USE_UI
@@ -116,9 +110,7 @@ void UpdateScreen()
 			scr += offscreen->pitch - 320*2;
 		}
 	}
-#ifndef __QNXNTO__
 	SDL_UnlockSurface(offscreen);
-#endif
 	SDL_BlitSurface(offscreen, NULL, screen, NULL);
 	SDL_Flip(screen);
 }
