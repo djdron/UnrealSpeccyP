@@ -37,7 +37,6 @@
     -->
     <author>t</author>
     <authorId>gYAAgOKRaqVbNM5ToziNoZFV720</authorId>
-    <splashscreen>speckeys_jpg.jpg</splashscreen>
     <description>ZX Spectrum emulator</description>
     
     <!--  Unique author ID assigned by signing authority. Required if using debug tokens. -->
@@ -50,10 +49,8 @@
     
     <!--  The category where the application appears. Either core.games or core.media. -->
     <category>core.games</category>
-    <asset path="media/zxspectrum.png">icon.png</asset>
     <asset path="libSDL12.so" type="Qnx/Elf">lib/libSDL12.so</asset>
-    <asset path="TouchControlOverlay.so}" type="Qnx/Elf">lib/libTouchControlOverlay.so</asset>
-    <asset path="src/res">res</asset>
+    <asset path="TouchControlOverlay.so" type="Qnx/Elf">lib/libTouchControlOverlay.so</asset>
     <asset path="sdl-controls.xml">sdl-controls.xml</asset>
     <asset path="media/dpad.png">dpad.png</asset>
     <asset path="media/zxspectrum.png">zxspectrum.png</asset>
@@ -75,9 +72,11 @@
     <asset entry="true" path="usp" type="Qnx/Elf">unreal_speccy_portable</asset>
     
     <!--  The icon for the application, which should be 86x86. -->
+    <!--
     <icon>
-        <image>zxspectrum.png</image>
+        <image>.png</image>
     </icon>
+    -->
     
     <!--  The splash screen that will appear when your application is launching. Should be 1024x600. -->
     <!-- <splashscreen></splashscreen> -->
