@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,19 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../std.h"
-#include "../speccy.h"
-
 #include "../platform/platform.h"
 
 #ifdef USE_PNG
 
+#include "../speccy.h"
 #include "../tools/libpng/png.h"
+#include "../file_type.h"
 
 namespace xScreenshot
 {
 
-static bool StorePNG(eSpeccy* speccy, FILE* png_file)
+static bool StorePNG(FILE* png_file)
 {
 	int width = 320, height = 240, bit_depth = 8, color_type = PNG_COLOR_TYPE_RGB;
 	png_uint_32 row_bytes = width*3;// 3 bytes (R, G, B) per pixel
@@ -88,17 +87,34 @@ static bool StorePNG(eSpeccy* speccy, FILE* png_file)
 	return true;
 }
 
-bool Store(eSpeccy* speccy, const char* file)
+bool Store(const char* file)
 {
 	FILE* f = fopen(file, "wb");
 	if(!f)
 		return false;
-	bool ok = StorePNG(speccy, f);
+	bool ok = StorePNG(f);
 	fclose(f);
 	return ok;
 }
 
 }
 //namespace xScreenshot
+
+namespace xPlatform
+{
+
+static struct eFileTypePNG : public eFileType
+{
+	virtual bool Open(const void* data, size_t data_size) { return false; }
+	virtual bool Store(const char* name)
+	{
+		return xScreenshot::Store(name);
+	}
+	virtual const char* Type() { return "png"; }
+	virtual bool AbleOpen() { return false; }
+} ft_png;
+
+}
+//namespace xPlatform
 
 #endif//USE_PNG
