@@ -73,7 +73,6 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 
 static struct eOptionRotateScreen : public xOptions::eOptionBool
 {
-	eOptionRotateScreen() { Set(false); }
 	virtual const char* Name() const { return "rotate screen"; }
 	virtual int Order() const { return 2; }
 } op_rotate_screen;
@@ -104,7 +103,6 @@ static struct eOptionKeyboard : public xOptions::eOptionInt
 
 static struct eOptionNoBorder : public xOptions::eOptionBool
 {
-	eOptionNoBorder() { Set(false); }
 	virtual const char* Name() const { return "no border"; }
 	virtual int Order() const { return 5; }
 } op_no_border;

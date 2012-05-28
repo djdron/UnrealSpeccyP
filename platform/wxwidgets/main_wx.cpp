@@ -57,6 +57,7 @@ static eOptions options;
 
 static struct eOptionTrueSpeed : public xOptions::eOptionBool
 {
+	eOptionTrueSpeed() { Set(true); }
 	virtual const char* Name() const { return "true speed"; }
 	virtual void Change(bool next = true)
 	{

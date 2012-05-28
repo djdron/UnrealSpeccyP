@@ -52,6 +52,14 @@ bool eWD1793::Open(const char* type, int drive, const void* data, size_t data_si
 	return fdds[drive].Open(type, data, data_size);
 }
 //=============================================================================
+//	eWD1793::BootExist
+//-----------------------------------------------------------------------------
+bool eWD1793::BootExist(int drive)
+{
+	assert(drive >= 0 && drive < FDD_COUNT);
+	return fdds[drive].BootExist();
+}
+//=============================================================================
 //	eWD1793::Crc
 //-----------------------------------------------------------------------------
 const word crc_initial = 0xcdb4;

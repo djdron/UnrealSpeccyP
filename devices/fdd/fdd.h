@@ -92,6 +92,7 @@ public:
 	bool DiskPresent() const	{ return disk != NULL; }
 	bool WriteProtect() const	{ return write_protect; }
 	bool Open(const char* type, const void* data, size_t data_size);
+	bool BootExist();
 
 protected:
 	word Crc(byte* src, int size) const;

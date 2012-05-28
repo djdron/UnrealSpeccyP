@@ -38,9 +38,9 @@ public:
 	void Reset();
 	void Update();
 
-	xZ80::eZ80* CPU() const { return cpu; }
-
-	eDevices& Devices() { return devices; }
+	xZ80::eZ80*	CPU() const { return cpu; }
+	eMemory*	Memory() const { return memory; }
+	eDevices&	Devices() { return devices; }
 	template<class D> D* Device() const { return devices.Get<D>(); }
 
 	qword T() const { return t_states; }

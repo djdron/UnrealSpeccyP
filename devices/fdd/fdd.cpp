@@ -133,6 +133,27 @@ bool eFdd::Open(const char* type, const void* data, size_t data_size)
 	return false;
 }
 //=============================================================================
+//	eFdd::BootExist
+//-----------------------------------------------------------------------------
+static const char* boot_sign = "boot    B";
+bool eFdd::BootExist()
+{
+	for(int i = 0; i < 9; ++i)
+	{
+		const eUdi::eTrack::eSector* s = GetSector(0, 0, i);
+		if(!s)
+			continue;
+		const byte* ptr = s->data;
+		const char* b = boot_sign;
+		for(; ptr = (const byte*)memchr(ptr, *b, s->Len() - (ptr - s->data)); ++b)
+		{
+			if(!*b)
+				return true;
+		}
+	}
+	return false;
+}
+//=============================================================================
 //	eFdd::Seek
 //-----------------------------------------------------------------------------
 void eFdd::Seek(int _cyl, int _side)

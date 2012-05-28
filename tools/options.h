@@ -64,15 +64,20 @@ protected:
 
 class eOptionInt : public eOption<int>
 {
+public:
+	eOptionInt() { Set(0); }
 protected:
 	void Change(int f, int l, bool next = true);
 	virtual const char*	Value() const;
 	virtual void Value(const char* v);
 };
 
-struct eOptionBool : public eOption<bool>
+class eOptionBool : public eOption<bool>
 {
+public:
+	eOptionBool() { Set(false); }
 	virtual void Change(bool next = true) { Set(!value); }
+protected:
 	virtual const char*	Value() const;
 	virtual void Value(const char* v);
 	virtual const char** Values() const;

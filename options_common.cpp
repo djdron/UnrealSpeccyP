@@ -172,7 +172,7 @@ static struct eOptionJoy : public xOptions::eOptionInt
 
 static struct eOptionDrive : public xOptions::eOptionInt
 {
-	eOptionDrive() { storeable = false; }
+	eOptionDrive() { storeable = false; Set(D_A); }
 	virtual const char* Name() const { return "drive"; }
 	virtual const char** Values() const
 	{

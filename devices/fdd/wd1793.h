@@ -40,6 +40,7 @@ public:
 	virtual void IoRead(word port, byte* v, int tact);
 	virtual void IoWrite(word port, byte v, int tact);
 	bool Open(const char* type, int drive, const void* data, size_t data_size);
+	bool BootExist(int drive);
 
 	static eDeviceId Id() { return D_WD1793; }
 	virtual dword IoNeed() const { return ION_WRITE|ION_READ; }

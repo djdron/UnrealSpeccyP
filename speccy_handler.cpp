@@ -40,9 +40,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
+class eMacro
+{
+public:
+	eMacro() : frame(-1) {}
+	virtual ~eMacro() {}
+	virtual bool Do() = 0;
+	virtual bool Update()
+	{
+		++frame;
+		return Do();
+	}
+protected:
+	int frame;
+};
+
 static struct eSpeccyHandler : public eHandler
 {
-	eSpeccyHandler() : speccy(NULL), video_paused(0) {}
+	eSpeccyHandler() : speccy(NULL), macro(NULL), video_paused(0) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit();
 	virtual void OnDone();
@@ -75,10 +90,14 @@ static struct eSpeccyHandler : public eHandler
 	virtual void VideoPaused(bool paused) {	paused ? ++video_paused : --video_paused; }
 
 	virtual bool FullSpeed() const { return speccy->CPU()->FastEmul(); }
+
+	void PlayMacro(eMacro* m) { SAFE_DELETE(macro); macro = m; }
+
 	eSpeccy* speccy;
 #ifdef USE_UI
 	xUi::eDesktop* ui_desktop;
 #endif//USE_UI
+	eMacro* macro;
 	int video_paused;
 
 	enum { SOUND_DEV_COUNT = 3 };
@@ -104,6 +123,7 @@ void eSpeccyHandler::OnInit()
 void eSpeccyHandler::OnDone()
 {
 	xOptions::Store();
+	SAFE_DELETE(macro);
 	SAFE_DELETE(speccy);
 #ifdef USE_UI
 	SAFE_DELETE(ui_desktop);
@@ -113,7 +133,14 @@ void eSpeccyHandler::OnDone()
 void eSpeccyHandler::OnLoop()
 {
 	if(FullSpeed() || !video_paused)
+	{
+		if(macro)
+		{
+			if(!macro->Update())
+				SAFE_DELETE(macro);
+		}
 		speccy->Update();
+	}
 #ifdef USE_UI
 	ui_desktop->Update();
 #endif//USE_UI
@@ -219,15 +246,24 @@ bool eSpeccyHandler::OnSaveFile(const char* name)
 
 static struct eOptionTapeFast : public xOptions::eOptionBool
 {
+	eOptionTapeFast() { Set(true); }
 	virtual const char* Name() const { return "fast tape"; }
 	virtual int Order() const { return 50; }
 } op_tape_fast;
+
+static struct eOptionAutoPlayImage : public xOptions::eOptionBool
+{
+	eOptionAutoPlayImage() { Set(true); }
+	virtual const char* Name() const { return "auto play image"; }
+	virtual int Order() const { return 55; }
+} op_auto_play_image;
 
 eActionResult eSpeccyHandler::OnAction(eAction action)
 {
 	switch(action)
 	{
 	case A_RESET:
+		SAFE_DELETE(macro);
 		speccy->Reset();
 		return AR_OK;
 	case A_TAPE_TOGGLE:
@@ -361,11 +397,50 @@ static struct eFileTypeSNA : public eFileTypeZ80
 	}
 	virtual const char* Type() { return "sna"; }
 } ft_sna;
+
+class eMacroDiskRun : public eMacro
+{
+	virtual bool Do()
+	{
+		switch(frame)
+		{
+		case 0:
+			sh.speccy->Reset();
+			break;
+		case 100:
+			sh.OnKey('e', KF_DOWN|KF_UI_SENDER);
+			break;
+		case 102:
+			sh.OnKey('e', KF_UI_SENDER);
+			break;
+		case 200:
+			sh.OnKey('e', KF_DOWN|KF_UI_SENDER);
+			break;
+		case 202:
+			sh.OnKey('e', KF_UI_SENDER);
+			return false;
+		}
+		return true;
+	}
+};
+
 static struct eFileTypeTRD : public eFileType
 {
 	virtual bool Open(const void* data, size_t data_size)
 	{
-		return sh.speccy->Device<eWD1793>()->Open(Type(), OpDrive(), data, data_size);
+		eWD1793* wd = sh.speccy->Device<eWD1793>();
+		bool ok = wd->Open(Type(), OpDrive(), data, data_size);
+		if(ok && op_auto_play_image)
+		{
+			if(wd->BootExist(OpDrive()))
+			{
+				sh.speccy->Reset();
+				sh.speccy->Memory()->SetPage(0, eMemory::P_ROM3); // tr-dos rom
+			}
+			else
+				sh.PlayMacro(new eMacroDiskRun);
+		}
+		return ok;
 	}
 	virtual const char* Type() { return "trd"; }
 } ft_trd;
@@ -378,11 +453,54 @@ static struct eFileTypeFDI : public eFileTypeTRD
 	virtual const char* Type() { return "fdi"; }
 } ft_fdi;
 
+class eMacroTapeLoad : public eMacro
+{
+	virtual bool Do()
+	{
+		switch(frame)
+		{
+		case 0:
+			sh.speccy->Reset();
+			sh.speccy->Memory()->SetPage(0, eMemory::P_ROM1); // 48-basic rom
+			break;
+		case 100:
+			sh.OnKey('J', KF_DOWN|KF_UI_SENDER);
+			break;
+		case 102:
+			sh.OnKey('J', KF_UI_SENDER);
+			sh.OnKey('P', KF_DOWN|KF_ALT|KF_UI_SENDER);
+			break;
+		case 104:
+			sh.OnKey('P', KF_UI_SENDER);
+			break;
+		case 110:
+			sh.OnKey('P', KF_DOWN|KF_ALT|KF_UI_SENDER);
+			break;
+		case 112:
+			sh.OnKey('P', KF_UI_SENDER);
+			break;
+		case 120:
+			sh.OnKey('e', KF_DOWN|KF_UI_SENDER);
+			break;
+		case 122:
+			sh.OnKey('e', KF_UI_SENDER);
+			sh.OnAction(A_TAPE_TOGGLE);
+			return false;
+		}
+		return true;
+	}
+};
+
 static struct eFileTypeTAP : public eFileType
 {
 	virtual bool Open(const void* data, size_t data_size)
 	{
-		return sh.speccy->Device<eTape>()->Open(Type(), data, data_size);
+		bool ok = sh.speccy->Device<eTape>()->Open(Type(), data, data_size);
+		if(ok && op_auto_play_image)
+		{
+			sh.PlayMacro(new eMacroTapeLoad);
+		}
+		return ok;
 	}
 	virtual const char* Type() { return "tap"; }
 } ft_tap;

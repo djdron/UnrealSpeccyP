@@ -51,7 +51,6 @@ int UpdateSound(byte* buf);
 
 static struct eOptionZoom : public xOptions::eOptionInt
 {
-	eOptionZoom() { Set(0); }
 	virtual const char* Name() const { return "zoom"; }
 	virtual const char** Values() const
 	{
@@ -63,7 +62,6 @@ static struct eOptionZoom : public xOptions::eOptionInt
 
 static struct eOptionUseSensor : public xOptions::eOptionBool
 {
-	eOptionUseSensor() { Set(false); }
 	virtual const char* Name() const { return "use sensor"; }
 	virtual int Order() const { return 4; }
 } op_use_sensor;
