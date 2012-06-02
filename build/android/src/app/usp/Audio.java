@@ -45,11 +45,12 @@ public class Audio
 			Emulator.the.ProfilerBegin(0);
 			bbuf.rewind();
 			bbuf.get(buf);
+			bbuf.rewind();
 			track.write(buf, 0, audio_bytes_ready);
 			Emulator.the.ProfilerEnd(0);
 		}
 	}
 	private AudioTrack track = null;
-	private ByteBuffer bbuf = ByteBuffer.allocateDirect(32768);
-	private byte[] buf = new byte[32768];
+	private ByteBuffer bbuf = ByteBuffer.allocateDirect(65536);
+	private byte[] buf = new byte[65536];
 }

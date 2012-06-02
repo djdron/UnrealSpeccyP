@@ -40,8 +40,6 @@ int UpdateSound(byte* buf)
 	if(size > (44100*2*2/50)*3)
 	{
 		res = size;
-		if(res > 32768)
-			res = 32768;
 		sound_mixer.Use(res, buf);
 	}
 	return res;
