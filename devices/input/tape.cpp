@@ -370,7 +370,7 @@ void eTape::ParseHardware(const byte* ptr)
 	if(!n)
 		return;
 	NamedCell("- HARDWARE TYPE ");
-	static char ids[] = "computer\0"
+	static const char ids[] = "computer\0"
 		"ZX Spectrum 16k\0"
 		"ZX Spectrum 48k, Plus\0"
 		"ZX Spectrum 48k ISSUE 1\0"

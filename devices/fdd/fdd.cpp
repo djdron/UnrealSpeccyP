@@ -145,7 +145,7 @@ bool eFdd::BootExist()
 			continue;
 		const byte* ptr = s->data;
 		const char* b = boot_sign;
-		for(; ptr = (const byte*)memchr(ptr, *b, s->Len() - (ptr - s->data)); ++b)
+		for(; (ptr = (const byte*)memchr(ptr, *b, s->Len() - (ptr - s->data))) != NULL; ++b)
 		{
 			if(!*b)
 				return true;

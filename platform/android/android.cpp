@@ -51,6 +51,7 @@ int UpdateSound(byte* buf);
 
 static struct eOptionZoom : public xOptions::eOptionInt
 {
+	eOptionZoom() { Set(2); }
 	virtual const char* Name() const { return "zoom"; }
 	virtual const char** Values() const
 	{
