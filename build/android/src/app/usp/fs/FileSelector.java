@@ -31,6 +31,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,13 @@ public abstract class FileSelector extends ListActivity
 	}
 
 	protected List<FileSelectorSource> sources = new ArrayList<FileSelectorSource>();
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		getListView().setFastScrollEnabled(true);
+	}
 	@Override
 	protected void onResume()
 	{
