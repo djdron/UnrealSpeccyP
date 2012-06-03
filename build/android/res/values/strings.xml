@@ -9,6 +9,8 @@
     <string name="joystick_cursor">Cursor</string>
     <string name="joystick_qaop">QAOP</string>
     <string name="joystick_sinclair2">Sinclair 2</string>
+    <string name="use_sensor">Use Sensor</string>
+    <string name="use_sensor_desc">Control Via Orientation Sensor</string>
     <string name="reset">Reset</string>
     <string name="quit">Quit</string>
     <string name="preferences">Preferences</string>
@@ -17,21 +19,38 @@
     <string name="sound_chip">Sound Chip Type</string>
     <string name="sound_chip_ay">AY</string>
     <string name="sound_chip_ym">YM</string>
-    <string name="sound_chip_stereo">Chip Stereo Mode</string><string name="sound_chip_stereo_abc">ABC</string>
+    <string name="sound_chip_stereo">Chip Stereo Mode</string>
+    <string name="sound_chip_stereo_abc">ABC</string>
     <string name="sound_chip_stereo_acb">ACB</string>
     <string name="sound_chip_stereo_bac">BAC</string>
     <string name="sound_chip_stereo_bca">BCA</string>
     <string name="sound_chip_stereo_cab">CAB</string>
     <string name="sound_chip_stereo_cba">CBA</string>
     <string name="sound_chip_stereo_mono">mono</string>
-    <string name="pref_peripherals">Peripherals</string><string name="pref_view">View</string>
+    <string name="pref_peripherals">Peripherals</string>
     
-    <string name="drive">Beta Disk Drive</string><string name="drive_a">A</string><string name="drive_b">B</string><string name="drive_c">C</string><string name="drive_d">D</string>
+    <string name="auto_play_image">Auto Launch Programs</string>
+    <string name="auto_play_image_desc">After Opening Files</string>
+    <string name="drive">Beta Disk Drive</string>
+    <string name="drive_a">A</string>
+    <string name="drive_b">B</string>
+    <string name="drive_c">C</string>
+    <string name="drive_d">D</string>
     <string name="mode_48k">Mode 48K</string>
-    <string name="file_selector">Select File</string><string name="tape">Tape</string>
-    <string name="tape_na">Not Available (open tape file first)</string><string name="tape_started">Started (press to stop)</string><string name="tape_stopped">Stopped (press to start)</string><string name="tape_fast">Fast Tape</string><string name="tape_fast_desc">Use Tape Traps</string>
+    <string name="file_selector">Select File</string>
+    <string name="tape">Tape</string>
+    <string name="tape_na">Not Available (open tape file first)</string>
+    <string name="tape_started">Started (press to stop)</string>
+    <string name="tape_stopped">Stopped (press to start)</string>
+    <string name="tape_fast">Fast Tape</string>
+    <string name="tape_fast_desc">Use Tape Traps</string>
     
-    <string name="zoom">Zoom Mode</string><string name="zoom_none">None</string><string name="zoom_fill">Fill Screen</string><string name="zoom_small_border">Small Border</string><string name="zoom_no_border">No Border</string><string name="use_sensor">Use Sensor</string><string name="use_sensor_desc">Control Via Orientation Sensor</string>
+    <string name="pref_view">View</string>
+    <string name="zoom">Zoom Mode</string>
+    <string name="zoom_none">None</string>
+    <string name="zoom_fill">Fill Screen</string>
+    <string name="zoom_small_border">Small Border</string>
+    <string name="zoom_no_border">No Border</string>
 
     <string name="file_system">File System</string>
     <string name="vtrdos">VTRDOS</string>

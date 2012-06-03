@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
     <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/preferences">
         <PreferenceCategory android:title="@string/pref_control">
-            <ListPreference android:entryValues="@array/joystick_values" android:entries="@array/joystick_names" android:title="@string/select_joystick" android:key="joystick"></ListPreference><CheckBoxPreference android:key="use sensor" android:title="@string/use_sensor" android:summary="@string/use_sensor_desc"></CheckBoxPreference>
-            
-        </PreferenceCategory><PreferenceCategory android:title="@string/pref_sound"><ListPreference android:title="@string/sound_chip" android:entryValues="@array/sound_chip_values" android:entries="@array/sound_chip_names" android:key="sound chip"></ListPreference>
+            <ListPreference android:entryValues="@array/joystick_values" android:entries="@array/joystick_names" android:title="@string/select_joystick" android:key="joystick"></ListPreference>
+            <CheckBoxPreference android:key="use sensor" android:title="@string/use_sensor" android:summary="@string/use_sensor_desc"></CheckBoxPreference>
+        </PreferenceCategory>
+        <PreferenceCategory android:title="@string/pref_sound">
+            <ListPreference android:title="@string/sound_chip" android:entryValues="@array/sound_chip_values" android:entries="@array/sound_chip_names" android:key="sound chip"></ListPreference>
             <ListPreference android:key="ay stereo" android:entryValues="@array/sound_chip_stereo_values" android:entries="@array/sound_chip_stereo_names" android:title="@string/sound_chip_stereo"></ListPreference>
-        </PreferenceCategory><PreferenceCategory android:title="@string/pref_peripherals">
+        </PreferenceCategory>
+        <PreferenceCategory android:title="@string/pref_peripherals">
+            <CheckBoxPreference android:title="@string/auto_play_image" android:summary="@string/auto_play_image_desc" android:key="auto play image"></CheckBoxPreference>
             <ListPreference android:title="@string/drive" android:key="drive" android:entryValues="@array/drive_values" android:entries="@array/drive_names"></ListPreference>
-            <Preference android:title="@string/tape" android:key="tape"></Preference><CheckBoxPreference android:title="@string/tape_fast" android:summary="@string/tape_fast_desc" android:key="fast tape"></CheckBoxPreference><CheckBoxPreference android:title="@string/mode_48k" android:key="mode 48k"></CheckBoxPreference>
-            
-        </PreferenceCategory><PreferenceCategory android:title="@string/pref_view">
+            <Preference android:title="@string/tape" android:key="tape"></Preference>
+            <CheckBoxPreference android:title="@string/tape_fast" android:summary="@string/tape_fast_desc" android:key="fast tape"></CheckBoxPreference>
+            <CheckBoxPreference android:title="@string/mode_48k" android:key="mode 48k"></CheckBoxPreference>
+        </PreferenceCategory>
+        <PreferenceCategory android:title="@string/pref_view">
             <ListPreference android:entries="@array/zoom_names" android:entryValues="@array/zoom_values" android:key="zoom" android:title="@string/zoom"></ListPreference>
         </PreferenceCategory>
-        
-        
     </PreferenceScreen>

@@ -32,6 +32,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static private String select_joystick_id = "joystick";
 	final static private String sound_chip_id = "sound chip";
 	final static private String sound_chip_stereo_id = "ay stereo";
+	final static private String auto_play_image_id = "auto play image";
 	final static private String select_drive_id = "drive";
 	final static private String tape_id = "tape";
 	final static private String tape_fast_id = "fast tape";
@@ -45,6 +46,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private ListPreference sound_chip_stereo;
 	private ListPreference select_drive;
 	private Preference tape;
+	private CheckBoxPreference auto_play_image;
 	private CheckBoxPreference tape_fast;
 	private CheckBoxPreference mode_48k;
 	private ListPreference select_zoom;
@@ -56,6 +58,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         select_joystick = (ListPreference)getPreferenceScreen().findPreference(select_joystick_id);
         sound_chip = (ListPreference)getPreferenceScreen().findPreference(sound_chip_id);
         sound_chip_stereo = (ListPreference)getPreferenceScreen().findPreference(sound_chip_stereo_id);
+        auto_play_image = (CheckBoxPreference)getPreferenceScreen().findPreference(auto_play_image_id);
         select_drive = (ListPreference)getPreferenceScreen().findPreference(select_drive_id);
         tape = (Preference)getPreferenceScreen().findPreference(tape_id);
         tape_fast = (CheckBoxPreference)getPreferenceScreen().findPreference(tape_fast_id);
@@ -84,6 +87,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		select_joystick.setValueIndex(Emulator.the.GetOptionInt(select_joystick_id));
 		sound_chip.setValueIndex(Emulator.the.GetOptionInt(sound_chip_id));
 		sound_chip_stereo.setValueIndex(Emulator.the.GetOptionInt(sound_chip_stereo_id));
+		auto_play_image.setChecked(Emulator.the.GetOptionBool(auto_play_image_id));
 		select_drive.setValueIndex(Emulator.the.GetOptionInt(select_drive_id));
 		tape_fast.setChecked(Emulator.the.GetOptionBool(tape_fast_id));
 		mode_48k.setChecked(Emulator.the.GetOptionBool(mode_48k_id));
@@ -114,6 +118,11 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		else if(key.equals(sound_chip_stereo_id))
 		{
 			Emulator.the.SetOptionInt(sound_chip_stereo_id, Integer.parseInt(sound_chip_stereo.getValue()));
+			UpdateDescs();
+		}
+		else if(key.equals(auto_play_image_id))
+		{
+			Emulator.the.SetOptionBool(auto_play_image_id, auto_play_image.isChecked());
 			UpdateDescs();
 		}
 		else if(key.equals(select_drive_id))
