@@ -101,10 +101,7 @@ public class ControlController
 				scale = 1.0f;
 			dx *= scale/dir_len;
 			dy *= scale/dir_len;
-			Emulator.the.OnKey('r', dx > +0.3f, false, false);
-			Emulator.the.OnKey('l', dx < -0.3f, false, false);
-			Emulator.the.OnKey('u', dy > +0.3f, false, false);
-			Emulator.the.OnKey('d', dy < -0.3f, false, false);
+			Control.UpdateJoystickKeys(dx < -0.3f, dx > +0.3f, dy > +0.3f, dy < -0.3f);
 			dir_x = dx;
 			dir_y = dy;
 		}

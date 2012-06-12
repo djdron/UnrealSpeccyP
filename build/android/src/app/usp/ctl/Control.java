@@ -79,4 +79,27 @@ public class Control extends ImageView
 	}
 	public void OnResume()	{ sensor.Install(); }
 	public void OnPause()	{ sensor.Uninstall(); }
+	
+	public static void UpdateJoystickKeys(final boolean left, final boolean right, final boolean up, final boolean down)
+	{
+		// release keys first
+		if(!left)
+			Emulator.the.OnKey('l', false, false, false);
+		if(!right)
+			Emulator.the.OnKey('r', false, false, false);
+		if(!up)
+			Emulator.the.OnKey('u', false, false, false);
+		if(!down)
+			Emulator.the.OnKey('d', false, false, false);
+
+		// then press keys
+		if(left)
+			Emulator.the.OnKey('l', true, false, false);
+		if(right)
+			Emulator.the.OnKey('r', true, false, false);
+		if(up)
+			Emulator.the.OnKey('u', true, false, false);
+		if(down)
+			Emulator.the.OnKey('d', true, false, false);
+	}
 }

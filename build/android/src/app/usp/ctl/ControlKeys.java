@@ -100,6 +100,7 @@ public class ControlKeys implements View.OnKeyListener
 		case KeyEvent.KEYCODE_SLASH:
 			m.alt = true;
 			return 'V';
+
 		case KeyEvent.KEYCODE_BUTTON_A:			return 'f';
 		case KeyEvent.KEYCODE_BUTTON_B:			return 'e';
 		case KeyEvent.KEYCODE_BUTTON_X:			return '1';

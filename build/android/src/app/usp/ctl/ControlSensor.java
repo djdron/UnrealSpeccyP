@@ -82,9 +82,6 @@ public class ControlSensor implements SensorEventListener
 			sy = -event.values[0];
 			break;
 		}
-		Emulator.the.OnKey('r', sx > +SENSOR_THRESHOLD, false, false);
-		Emulator.the.OnKey('l', sx < -SENSOR_THRESHOLD, false, false);
-		Emulator.the.OnKey('d', sy > +SENSOR_THRESHOLD, false, false);
-		Emulator.the.OnKey('u', sy < -SENSOR_THRESHOLD, false, false);
+		Control.UpdateJoystickKeys(sx < -SENSOR_THRESHOLD, sx > +SENSOR_THRESHOLD, sy < -SENSOR_THRESHOLD, sy > +SENSOR_THRESHOLD);
 	}
 }
