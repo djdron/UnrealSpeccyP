@@ -33,7 +33,7 @@ public class Audio
 		final int format = AudioFormat.ENCODING_PCM_16BIT;
 		final int buf_size = AudioTrack.getMinBufferSize(freq, channels, format);
 		track = new AudioTrack(	AudioManager.STREAM_MUSIC,
-				freq, channels, format, buf_size*4,
+				freq, channels, format, buf_size + 44100*2*2*5/50, // 5-frame additional size
 				AudioTrack.MODE_STREAM);
 		track.play();
 	}

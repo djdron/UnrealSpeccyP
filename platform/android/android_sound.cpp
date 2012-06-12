@@ -35,14 +35,9 @@ static eSoundMixer sound_mixer;
 int UpdateSound(byte* buf)
 {
 	sound_mixer.Update(buf);
-	int res = 0;
 	dword size = sound_mixer.Ready();
-	if(size > (44100*2*2/50)*3)
-	{
-		res = size;
-		sound_mixer.Use(res, buf);
-	}
-	return res;
+	sound_mixer.Use(size, buf);
+	return size;
 }
 
 }
