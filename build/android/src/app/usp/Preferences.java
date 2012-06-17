@@ -38,6 +38,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static private String tape_fast_id = "fast tape";
 	final static private String mode_48k_id = "mode 48k";
 	final static public String select_zoom_id = "zoom";
+	final static public String filtering_id = "filtering";
 	final static public String use_sensor_id = "use sensor";
 	final static public String use_keyboard_id = "use keyboard";
 	private ListPreference select_joystick;
@@ -50,6 +51,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private CheckBoxPreference tape_fast;
 	private CheckBoxPreference mode_48k;
 	private ListPreference select_zoom;
+	private CheckBoxPreference filtering;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -64,6 +66,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         tape_fast = (CheckBoxPreference)getPreferenceScreen().findPreference(tape_fast_id);
         mode_48k = (CheckBoxPreference)getPreferenceScreen().findPreference(mode_48k_id);
         select_zoom = (ListPreference)getPreferenceScreen().findPreference(select_zoom_id);
+        filtering = (CheckBoxPreference)getPreferenceScreen().findPreference(filtering_id);
         use_sensor = (CheckBoxPreference)getPreferenceScreen().findPreference(use_sensor_id);
 	}
 	private void UpdateDescs()
@@ -92,6 +95,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		tape_fast.setChecked(Emulator.the.GetOptionBool(tape_fast_id));
 		mode_48k.setChecked(Emulator.the.GetOptionBool(mode_48k_id));
 		select_zoom.setValueIndex(Emulator.the.GetOptionInt(select_zoom_id));
+		filtering.setChecked(Emulator.the.GetOptionBool(filtering_id));
 		use_sensor.setChecked(Emulator.the.GetOptionBool(use_sensor_id));
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		UpdateDescs();
@@ -148,7 +152,10 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		else if(key.equals(use_sensor_id))
 		{
 			Emulator.the.SetOptionBool(use_sensor_id, use_sensor.isChecked());
-			UpdateDescs();
+		}
+		else if(key.equals(filtering_id))
+		{
+			Emulator.the.SetOptionBool(filtering_id, filtering.isChecked());
 		}
 	}
 	@Override

@@ -61,6 +61,13 @@ static struct eOptionZoom : public xOptions::eOptionInt
 	virtual int Order() const { return 1; }
 } op_zoom;
 
+static struct eOptionFiltering : public xOptions::eOptionBool
+{
+	eOptionFiltering() { Set(true); }
+	virtual const char* Name() const { return "filtering"; }
+	virtual int Order() const { return 2; }
+} op_filtering;
+
 static struct eOptionUseSensor : public xOptions::eOptionBool
 {
 	virtual const char* Name() const { return "use sensor"; }

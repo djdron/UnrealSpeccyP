@@ -28,7 +28,7 @@
     <string name="sound_chip_stereo_cba">CBA</string>
     <string name="sound_chip_stereo_mono">mono</string>
     <string name="pref_peripherals">Peripherals</string>
-    
+
     <string name="auto_play_image">Auto Launch Programs</string>
     <string name="auto_play_image_desc">After Opening Files</string>
     <string name="drive">Beta Disk Drive</string>
@@ -44,13 +44,14 @@
     <string name="tape_stopped">Stopped (press to start)</string>
     <string name="tape_fast">Fast Tape</string>
     <string name="tape_fast_desc">Use Tape Traps</string>
-    
+
     <string name="pref_view">View</string>
     <string name="zoom">Zoom Mode</string>
     <string name="zoom_none">None</string>
     <string name="zoom_fill">Fill Screen</string>
     <string name="zoom_small_border">Small Border</string>
     <string name="zoom_no_border">No Border</string>
+    <string name="filtering">Filtering</string>
 
     <string name="file_system">File System</string>
     <string name="vtrdos">VTRDOS</string>
@@ -59,7 +60,7 @@
     <string name="accessing_web">Accessing web</string>
     <string name="downloading_image">Downloading image...</string>
     <string name="gathering_list">Gathering list...</string>
-    
+
     <string name= "file_select_open_error">"Open error : "</string>
     <string name= "file_select_update_error">"Update error : "</string>
     <string name= "file_select_failed">failed</string>

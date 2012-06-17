@@ -181,7 +181,7 @@ public class ViewGLES extends GLSurfaceView
 		{
 			width = w;
 			height = h;
-			filtering = false;
+			filtering = Emulator.the.GetOptionBool(Preferences.filtering_id);
 		    final int zoom_mode = Emulator.the.GetOptionInt(Preferences.select_zoom_id);
 			switch(zoom_mode)
 			{
@@ -191,7 +191,6 @@ public class ViewGLES extends GLSurfaceView
 			    scale_y = ((float)HEIGHT) / h;
 				break;
 			default: // fill screen & others
-			    filtering = true;
 				final float a = ((float)w)/h;
 				final float a43 = ((float)4)/3;
 				if(a > a43)
