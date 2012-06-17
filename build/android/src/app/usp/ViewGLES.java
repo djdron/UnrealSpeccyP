@@ -27,6 +27,7 @@ import android.content.res.Configuration;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLSurfaceView;
+import android.os.SystemClock;
 import app.usp.ctl.ControlController;
 import app.usp.ctl.ControlKeyboard;
 import app.usp.ctl.ControlTouch;
@@ -92,6 +93,7 @@ public class ViewGLES extends GLSurfaceView
 		boolean filtering = false;
 		private float scale_x = 1.0f;
 		private float scale_y = 1.0f;
+		private long last_time = 0;
 		Video(Context context)
 		{
 			control_controller = new ControlController(context);
@@ -164,6 +166,15 @@ public class ViewGLES extends GLSurfaceView
 
 			audio.Update();
 			Emulator.the.ProfilerBegin(2);
+			
+			final long FRAME_TIME = 20; // 20ms per frame - 50fps
+			final long passed_time = SystemClock.uptimeMillis() - last_time;
+			if(passed_time < FRAME_TIME)
+			{
+				try { Thread.sleep(FRAME_TIME - passed_time); }
+				catch (InterruptedException e) {}
+			}
+			last_time = SystemClock.uptimeMillis();
 		}
 		@Override
 		public void onSurfaceChanged(GL10 gl, int w, int h)
