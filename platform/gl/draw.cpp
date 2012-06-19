@@ -41,7 +41,11 @@ namespace xPlatform
 
 static dword tex[512*256];
 
+#ifdef USE_BIG_ENDIAN
+#define RGBX(r, g, b) (((r) << 24)|((g) << 16)|((b) << 8))
+#else//USE_BIG_ENDIAN
 #define RGBX(r, g, b) (((b) << 16)|((g) << 8)|(r))
+#endif//USE_BIG_ENDIAN
 
 //=============================================================================
 //	DrawGL
