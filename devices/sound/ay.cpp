@@ -176,15 +176,15 @@ void eAY::Write(dword timestamp, byte val)
 	{
 	case 0:
 	case 1:
-		fa = r.fA;
+		fa = SwapWord(&r.fA);
 		break;
 	case 2:
 	case 3:
-		fb = r.fB;
+		fb = SwapWord(&r.fB);
 		break;
 	case 4:
 	case 5:
-		fc = r.fC;
+		fc = SwapWord(&r.fC);
 		break;
 	case 6:
 		fn = val*2;
@@ -211,7 +211,7 @@ void eAY::Write(dword timestamp, byte val)
 		break;
 	case 11:
 	case 12:
-		fe = r.envT;
+		fe = SwapWord(&r.envT);
 		break;
 	case 13:
 		r13_reloaded = 1;
