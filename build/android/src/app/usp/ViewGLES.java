@@ -21,7 +21,6 @@ package app.usp;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -168,27 +167,14 @@ public class ViewGLES extends GLSurfaceView
 			audio.Update();
 			Emulator.the.ProfilerBegin(2);
 			
-			final long FRAME_TIME = 17000000; // 20ms per frame - 50fps minus some experimental delta?
-			final long passed_time = System.nanoTime() - last_time;
-			if(passed_time < FRAME_TIME)
+			final long FRAME_TIME = 17000000; // 20ms per frame - 50fps
+			while(System.nanoTime() - last_time < FRAME_TIME)
 			{
-				try { sleepNanos(FRAME_TIME - passed_time); } catch (InterruptedException e) {}
+				Thread.yield();
+//				java.util.concurrent.locks.LockSupport.parkNanos(1);
 			}
 			last_time = System.nanoTime();
 		}
-		private void sleepNanos(long nanoDuration) throws InterruptedException
-		{
-			final long end = System.nanoTime() + nanoDuration;
-			long timeLeft = nanoDuration;
-			do
-			{
-				Thread.sleep(timeLeft > 2000000 ? 1 : 0);
-				timeLeft = end - System.nanoTime();
-				if(Thread.interrupted())
-					throw new InterruptedException();
-			}
-			while(timeLeft > 0);
-		}		
 		@Override
 		public void onSurfaceChanged(GL10 gl, int w, int h)
 		{
