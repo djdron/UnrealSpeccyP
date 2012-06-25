@@ -76,6 +76,38 @@ public class ViewGLES extends GLSurfaceView
 		FloatBuffer uv = null;
 		ByteBuffer t = null;
 	}
+	private class SyncTimer
+	{
+		private long time_emulated = 0;
+		private long time_real = 0;
+		private long time_real_last = 0;
+		public void Sync()
+		{
+			time_real += System.nanoTime() - time_real_last;
+			final long TIME_FRAME = 20000000; // 20ms per frame - 50fps
+			time_emulated += TIME_FRAME;
+			final long TIME_DIFF = 30000000; // 30ms - sync diff
+			while(time_emulated - time_real > TIME_DIFF)
+			{
+				final long t = System.nanoTime();
+				try { Thread.sleep(1); } catch (InterruptedException e) {}
+				time_real += System.nanoTime() - t;
+			}
+			if(time_emulated - time_real < 0)
+			{
+				time_real = 0;
+				time_emulated = 0;
+			}
+			time_real_last = System.nanoTime();
+
+//			while(System.nanoTime() - last_time < FRAME_TIME)
+//			{
+//				Thread.yield();
+//				java.util.concurrent.locks.LockSupport.parkNanos(1);
+//			}
+//			last_time = System.nanoTime();
+		}
+	}
 	private class Video extends ControlTouch implements Renderer
 	{
 		static final int WIDTH = 320;
@@ -93,7 +125,7 @@ public class ViewGLES extends GLSurfaceView
 		boolean filtering = false;
 		private float scale_x = 1.0f;
 		private float scale_y = 1.0f;
-		private long last_time = 0;
+		private SyncTimer sync_timer = new SyncTimer();
 		Video(Context context)
 		{
 			control_controller = new ControlController(context);
@@ -166,14 +198,8 @@ public class ViewGLES extends GLSurfaceView
 
 			audio.Update();
 			Emulator.the.ProfilerBegin(2);
-			
-			final long FRAME_TIME = 17000000; // 20ms per frame - 50fps
-			while(System.nanoTime() - last_time < FRAME_TIME)
-			{
-				Thread.yield();
-//				java.util.concurrent.locks.LockSupport.parkNanos(1);
-			}
-			last_time = System.nanoTime();
+
+			sync_timer.Sync();
 		}
 		@Override
 		public void onSurfaceChanged(GL10 gl, int w, int h)
