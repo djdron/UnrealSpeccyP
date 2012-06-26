@@ -86,7 +86,7 @@ public class ViewGLES extends GLSurfaceView
 			time_real += System.nanoTime() - time_real_last;
 			final long TIME_FRAME = 20000000; // 20ms per frame - 50fps
 			time_emulated += TIME_FRAME;
-			final long TIME_DIFF = 30000000; // 30ms - sync diff
+			final long TIME_DIFF = 10000000; // 10ms - sync diff
 			while(time_emulated - time_real > TIME_DIFF)
 			{
 				final long t = System.nanoTime();
