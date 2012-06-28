@@ -52,6 +52,8 @@
     <string name="zoom_small_border">Small Border</string>
     <string name="zoom_no_border">No Border</string>
     <string name="filtering">Filtering</string>
+    <string name="av_timer_sync">A/V Sync By Timer</string>
+    <string name="av_timer_sync_desc">Smoother playback on some devices</string>
 
     <string name="file_system">File System</string>
     <string name="vtrdos">VTRDOS</string>

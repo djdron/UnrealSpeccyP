@@ -125,7 +125,7 @@ public class ViewGLES extends GLSurfaceView
 		boolean filtering = false;
 		private float scale_x = 1.0f;
 		private float scale_y = 1.0f;
-		private SyncTimer sync_timer = new SyncTimer();
+		private SyncTimer sync_timer = null;
 		Video(Context context)
 		{
 			control_controller = new ControlController(context);
@@ -199,7 +199,8 @@ public class ViewGLES extends GLSurfaceView
 			audio.Update();
 			Emulator.the.ProfilerBegin(2);
 
-			sync_timer.Sync();
+			if(sync_timer != null)
+				sync_timer.Sync();
 		}
 		@Override
 		public void onSurfaceChanged(GL10 gl, int w, int h)
@@ -207,6 +208,10 @@ public class ViewGLES extends GLSurfaceView
 			width = w;
 			height = h;
 			filtering = Emulator.the.GetOptionBool(Preferences.filtering_id);
+			if(Emulator.the.GetOptionBool(Preferences.av_timer_sync_id))
+				sync_timer = new SyncTimer();
+			else
+				sync_timer = null;
 		    final int zoom_mode = Emulator.the.GetOptionInt(Preferences.select_zoom_id);
 			switch(zoom_mode)
 			{

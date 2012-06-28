@@ -68,6 +68,12 @@ static struct eOptionFiltering : public xOptions::eOptionBool
 	virtual int Order() const { return 2; }
 } op_filtering;
 
+static struct eOptionAVTimerSync : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "av timer sync"; }
+	virtual int Order() const { return 3; }
+} op_av_timer_sync;
+
 static struct eOptionUseSensor : public xOptions::eOptionBool
 {
 	virtual const char* Name() const { return "use sensor"; }

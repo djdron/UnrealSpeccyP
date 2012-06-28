@@ -39,6 +39,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static private String mode_48k_id = "mode 48k";
 	final static public String select_zoom_id = "zoom";
 	final static public String filtering_id = "filtering";
+	final static public String av_timer_sync_id = "av timer sync";
 	final static public String use_sensor_id = "use sensor";
 	final static public String use_keyboard_id = "use keyboard";
 	private ListPreference select_joystick;
@@ -52,12 +53,14 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private CheckBoxPreference mode_48k;
 	private ListPreference select_zoom;
 	private CheckBoxPreference filtering;
+	private CheckBoxPreference av_timer_sync;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
         select_joystick = (ListPreference)getPreferenceScreen().findPreference(select_joystick_id);
+        use_sensor = (CheckBoxPreference)getPreferenceScreen().findPreference(use_sensor_id);
         sound_chip = (ListPreference)getPreferenceScreen().findPreference(sound_chip_id);
         sound_chip_stereo = (ListPreference)getPreferenceScreen().findPreference(sound_chip_stereo_id);
         auto_play_image = (CheckBoxPreference)getPreferenceScreen().findPreference(auto_play_image_id);
@@ -67,7 +70,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         mode_48k = (CheckBoxPreference)getPreferenceScreen().findPreference(mode_48k_id);
         select_zoom = (ListPreference)getPreferenceScreen().findPreference(select_zoom_id);
         filtering = (CheckBoxPreference)getPreferenceScreen().findPreference(filtering_id);
-        use_sensor = (CheckBoxPreference)getPreferenceScreen().findPreference(use_sensor_id);
+        av_timer_sync = (CheckBoxPreference)getPreferenceScreen().findPreference(av_timer_sync_id);
 	}
 	private void UpdateDescs()
 	{
@@ -88,6 +91,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	{
 		super.onResume();
 		select_joystick.setValueIndex(Emulator.the.GetOptionInt(select_joystick_id));
+		use_sensor.setChecked(Emulator.the.GetOptionBool(use_sensor_id));
 		sound_chip.setValueIndex(Emulator.the.GetOptionInt(sound_chip_id));
 		sound_chip_stereo.setValueIndex(Emulator.the.GetOptionInt(sound_chip_stereo_id));
 		auto_play_image.setChecked(Emulator.the.GetOptionBool(auto_play_image_id));
@@ -96,7 +100,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		mode_48k.setChecked(Emulator.the.GetOptionBool(mode_48k_id));
 		select_zoom.setValueIndex(Emulator.the.GetOptionInt(select_zoom_id));
 		filtering.setChecked(Emulator.the.GetOptionBool(filtering_id));
-		use_sensor.setChecked(Emulator.the.GetOptionBool(use_sensor_id));
+		av_timer_sync.setChecked(Emulator.the.GetOptionBool(av_timer_sync_id));
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		UpdateDescs();
 	}
@@ -125,38 +129,27 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			UpdateDescs();
 		}
 		else if(key.equals(auto_play_image_id))
-		{
 			Emulator.the.SetOptionBool(auto_play_image_id, auto_play_image.isChecked());
-			UpdateDescs();
-		}
 		else if(key.equals(select_drive_id))
 		{
 			Emulator.the.SetOptionInt(select_drive_id, Integer.parseInt(select_drive.getValue()));
 			UpdateDescs();
 		}
 		else if(key.equals(mode_48k_id))
-		{
 			Emulator.the.SetOptionBool(mode_48k_id, mode_48k.isChecked());
-			UpdateDescs();
-		}
 		else if(key.equals(tape_fast_id))
-		{
 			Emulator.the.SetOptionBool(tape_fast_id, tape_fast.isChecked());
-			UpdateDescs();
-		}
 		else if(key.equals(select_zoom_id))
 		{
 			Emulator.the.SetOptionInt(select_zoom_id, Integer.parseInt(select_zoom.getValue()));
 			UpdateDescs();
 		}
 		else if(key.equals(use_sensor_id))
-		{
 			Emulator.the.SetOptionBool(use_sensor_id, use_sensor.isChecked());
-		}
 		else if(key.equals(filtering_id))
-		{
 			Emulator.the.SetOptionBool(filtering_id, filtering.isChecked());
-		}
+		else if(key.equals(av_timer_sync_id))
+			Emulator.the.SetOptionBool(av_timer_sync_id, av_timer_sync.isChecked());
 	}
 	@Override
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
