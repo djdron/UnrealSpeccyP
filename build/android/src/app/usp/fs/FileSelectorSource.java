@@ -148,19 +148,19 @@ abstract class FSSWeb extends FileSelectorSource
 		String s = LoadText(BaseURL() + _url + HtmlExt(), HtmlEncoding());
 		if(s == null)
 			return GetItemsResult.UNABLE_CONNECT;
+		boolean ok = false;
 		for(String p : Patterns())
 		{
 			Pattern pt = Pattern.compile(p);
 			Matcher m = pt.matcher(s);
-			boolean ok = false;
 			while(m.find())
 			{
 				ok = true;
 				Get(items, m, _url, _name);
 			}
-			if(ok)
-				return GetItemsResult.OK;
 		}
+		if(ok)
+			return GetItemsResult.OK;
 		return GetItemsResult.INVALID_INFO;
 	}
 }
