@@ -155,7 +155,7 @@ void eUSPInstance::OnURLLoadFail(const std::string& url)
 
 void eUSPInstance::Update(int32_t result)
 {
-	pp::Module::Get()->core()->CallOnMainThread(17, callback.NewRequiredCallback(&eUSPInstance::Update));
+	pp::Module::Get()->core()->CallOnMainThread(17, callback.NewCallback(&eUSPInstance::Update));
 	Handler()->OnLoop();
 	audio.Update();
 	Draw();
@@ -317,7 +317,7 @@ bool eUSPInstance::SpecialKeyDown(const pp::KeyboardInputEvent event)
 		full_screen.SetFullscreen(!full_screen.IsFullscreen());
 		if(!mouse_locked)
 		{
-			LockMouse(callback.NewRequiredCallback(&eUSPInstance::DidLockMouse));
+			LockMouse(callback.NewCallback(&eUSPInstance::DidLockMouse));
 		}
 		return true;
 	}

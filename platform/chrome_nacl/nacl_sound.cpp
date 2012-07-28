@@ -27,7 +27,7 @@ namespace xPlatform
 
 void eAudio::Init(pp::Instance* instance)
 {
-	samples_count = pp::AudioConfig::RecommendSampleFrameCount(PP_AUDIOSAMPLERATE_44100, 2048);
+	samples_count = pp::AudioConfig::RecommendSampleFrameCount(instance, PP_AUDIOSAMPLERATE_44100, 2048);
 	pp::AudioConfig audio_config = pp::AudioConfig(instance, PP_AUDIOSAMPLERATE_44100, samples_count);
 	impl = pp::Audio(instance, audio_config, _GetData, this);
 }
