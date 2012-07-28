@@ -34,20 +34,28 @@ static struct eCachedColors
 	{
 		const byte brightness = 200;
 		const byte bright_intensity = 55;
-		for(int c = 0; c < 16; ++c)
+		for(int c1 = 0; c1 < 16; ++c1)
 		{
-			byte i = c&8 ? brightness + bright_intensity : brightness;
-			byte b = c&1 ? i : 0;
-			byte r = c&2 ? i : 0;
-			byte g = c&4 ? i : 0;
-			items[c] = BGR565(r, g, b);
-			items_shifted[c] = BGR565(r, g, b) << 16;
-			items_rgbx[c] = RGBX(r, g, b);
+			byte i1 = c1&8 ? brightness + bright_intensity : brightness;
+			byte b1 = c1&1 ? i1 : 0;
+			byte r1 = c1&2 ? i1 : 0;
+			byte g1 = c1&4 ? i1 : 0;
+			for(int c = 0; c < 16; ++c)
+			{
+				byte i = c&8 ? brightness + bright_intensity : brightness;
+				byte b = c&1 ? i : 0;
+				byte r = c&2 ? i : 0;
+				byte g = c&4 ? i : 0;
+				int x = c1*16 + c;
+				items[x] = BGR565(r, g, b) | (BGR565(r1, g1, b1) << 16);
+				items_shifted[x] = BGR565(r, g, b) << 16;
+				items_rgbx[x] = RGBX(r, g, b);
+			}
 		}
 	}
-	dword items[16];
-	dword items_shifted[16];
-	dword items_rgbx[16];
+	dword items[256];
+	dword items_shifted[256];
+	dword items_rgbx[256];
 }
 color_cache;
 
@@ -72,18 +80,18 @@ void UpdateScreen(word* scr)
 #endif//USE_UI
 	{
 		dword* scr1 = (dword*)scr;
+		dword* data1 = (dword*)data;
+		dword* cc = color_cache.items;
 		for(int y = 0; y < 240; ++y)
 		{
 			for(int x = 0; x < 320/8; ++x)
 			{
-				dword c = color_cache.items[*data++];
-				*scr1++ = c | color_cache.items_shifted[*data++];
-				c = color_cache.items[*data++];
-				*scr1++ = c | color_cache.items_shifted[*data++];
-				c = color_cache.items[*data++];
-				*scr1++ = c | color_cache.items_shifted[*data++];
-				c = color_cache.items[*data++];
-				*scr1++ = c | color_cache.items_shifted[*data++];
+				dword c1 = *data1++;
+				dword c2 = *data1++;
+				*scr1++ = cc[((c1&0x00000f00) >> 4)		| (c1&0x0000000f)];
+				*scr1++ = cc[((c1&0x0f000000) >> 20)	| ((c1&0x000f0000) >> 16)];
+				*scr1++ = cc[((c2&0x00000f00) >> 4)		| (c2&0x0000000f)];
+				*scr1++ = cc[((c2&0x0f000000) >> 20)	| ((c2&0x000f0000) >> 16)];
 			}
 		}
 	}

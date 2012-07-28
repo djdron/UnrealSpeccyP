@@ -149,7 +149,7 @@ public class ViewGLES extends GLSurfaceView
 
 		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
 			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, null);
-			
+
 			control_controller.Init(gl);
 			control_keyboard.Init(gl);
 
@@ -197,10 +197,11 @@ public class ViewGLES extends GLSurfaceView
 			Emulator.the.ProfilerEnd(1);
 
 			audio.Update();
-			Emulator.the.ProfilerBegin(2);
 
 			if(sync_timer != null)
 				sync_timer.Sync();
+
+			Emulator.the.ProfilerBegin(2);
 		}
 		@Override
 		public void onSurfaceChanged(GL10 gl, int w, int h)
