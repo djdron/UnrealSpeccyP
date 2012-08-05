@@ -2,33 +2,58 @@
 <html>
 <head>
   <title>Unreal Speccy Portable</title>
-
   <script type="text/javascript" src="unreal_speccy_portable.js"></script>
+  <style type="text/css">
+    #browser {
+      margin: 0px;
+	  padding: 2px;
+	  list-style-type: none;
+	  border-top: 0px;
+	  width: 240px;
+	  height: 480px;
+	  border: 1px solid #999;
+	  overflow: auto;
+    }
+	#browser li {
+	  font-size: 12px;
+      margin: 0px;
+	  padding: 0px;
+	  background-color: transparent;
+	  -webkit-user-select: none;
+	  user-select: none;
+	  cursor: default;
+	}
+  </style>
 </head>
 <body onload="pageDidLoad()">
 
 <p>
-  <div id="listener">
-    <script type="text/javascript">
-      var listener = document.getElementById('listener')
-      listener.addEventListener('load', moduleDidLoad, true);
-      listener.addEventListener('message', handleMessage, true);
-    </script>
+  <table>
+    <tr>
+      <td>
+          <div id="listener">
+            <script type="text/javascript">
+              var listener = document.getElementById('listener')
+              listener.addEventListener('load', moduleDidLoad, true);
+              listener.addEventListener('message', handleMessage, true);
+            </script>
 
-    <embed name="nacl_module"
-           id="unreal_speccy_portable"
-           width=640 height=480
-           src="unreal_speccy_portable.nmf"
-           type="application/x-nacl" />
-  </div>
+            <embed name="nacl_module"
+                   id="unreal_speccy_portable"
+                   width=640 height=480
+                   src="unreal_speccy_portable.nmf"
+                   type="application/x-nacl" />
+          </div>
+	  </td>
+	  <td>
+		<ul id="browser">
+		</ul>
+      </td>
+    </tr>
+  </table>
   <small>
   <div>
-	Copy & paste file URL from <a href="http://vtrdos.ru" target="_blank">vtrdos.ru</a> here, then click "Open", focus view (LMB) & press ENTER
-	<br />
-	<input type="text" id="image_name" size="50" />
-	<button onclick="onOpen()">Open</button>
 	<button onclick="onReset()">Reset</button>
-	<br />
 	Joystick: <select id="joystick" onchange="onJoystick()">
 	  <option value="kempston">Kempston</option>
 	  <option value="sinclair2">Sinclair 2</option>
@@ -37,6 +62,8 @@
 	</select>
 	<br /><br />
 	When emulator view is focused, press F12 to reset, Ctrl+F to enter full screen mode.
+	<br />
+	Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.
   </div>
   </small>
 </p>
