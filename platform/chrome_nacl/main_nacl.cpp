@@ -84,8 +84,6 @@ eUSPInstance::eUSPInstance(PP_Instance instance)
 	, full_screen(this), callback(this)
 	, inited(false), mouse_locked(false)
 {
-    RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE);
-	RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
 }
 
 eUSPInstance::~eUSPInstance()
@@ -102,6 +100,8 @@ eUSPInstance::~eUSPInstance()
 
 bool eUSPInstance::Init(uint32_t argc, const char* argn[], const char* argv[])
 {
+    RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE);
+	RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
 	LoadResources(this);
 	audio.Init(this);
 	return true;
@@ -314,11 +314,13 @@ bool eUSPInstance::SpecialKeyDown(const pp::KeyboardInputEvent event)
 	}
 	else if(key == 'F' && event.GetModifiers()&PP_INPUTEVENT_MODIFIER_CONTROLKEY)
 	{
-		full_screen.SetFullscreen(!full_screen.IsFullscreen());
-		if(!mouse_locked)
+		if(!full_screen.IsFullscreen())
 		{
+			full_screen.SetFullscreen(true);
 			LockMouse(callback.NewCallback(&eUSPInstance::DidLockMouse));
 		}
+		else
+			full_screen.SetFullscreen(false);
 		return true;
 	}
 	return false;

@@ -2,6 +2,13 @@ module = null;
 statusText = 'unknown';
 browser_path = "/";
 
+document.addEventListener('DOMContentLoaded', function () {
+	var listener = document.getElementById('listener')
+	listener.addEventListener('load', moduleDidLoad, true);
+	listener.addEventListener('message', handleMessage, true);
+	pageDidLoad();
+});
+
 function moduleDidLoad()
 {
 	module = document.getElementById('unreal_speccy_portable');

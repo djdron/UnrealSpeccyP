@@ -25,19 +25,12 @@
 	}
   </style>
 </head>
-<body onload="pageDidLoad()">
-
+<body>
 <p>
   <table>
     <tr>
       <td>
           <div id="listener">
-            <script type="text/javascript">
-              var listener = document.getElementById('listener')
-              listener.addEventListener('load', moduleDidLoad, true);
-              listener.addEventListener('message', handleMessage, true);
-            </script>
-
             <embed name="nacl_module"
                    id="unreal_speccy_portable"
                    width=640 height=480
