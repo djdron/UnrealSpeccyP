@@ -3,9 +3,11 @@ statusText = 'unknown';
 browser_path = "/";
 
 document.addEventListener('DOMContentLoaded', function () {
-	var listener = document.getElementById('listener')
+	var listener = document.getElementById('listener');
 	listener.addEventListener('load', moduleDidLoad, true);
 	listener.addEventListener('message', handleMessage, true);
+	document.getElementById('reset').addEventListener('click', onReset, true);
+	document.getElementById('joystick').addEventListener('change', onJoystick, true);
 	pageDidLoad();
 });
 

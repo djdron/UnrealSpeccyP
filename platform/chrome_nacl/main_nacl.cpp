@@ -317,7 +317,8 @@ bool eUSPInstance::SpecialKeyDown(const pp::KeyboardInputEvent event)
 		if(!full_screen.IsFullscreen())
 		{
 			full_screen.SetFullscreen(true);
-			LockMouse(callback.NewCallback(&eUSPInstance::DidLockMouse));
+			if(!mouse_locked)
+				LockMouse(callback.NewCallback(&eUSPInstance::DidLockMouse));
 		}
 		else
 			full_screen.SetFullscreen(false);
