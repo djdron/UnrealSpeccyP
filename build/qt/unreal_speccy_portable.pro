@@ -5,7 +5,6 @@ TEMPLATE = app
 
 SOURCES += ../../speccy.cpp \
 	../../options_common.cpp \
-	../../main.cpp \
 	../../z80/z80_op_tables.cpp \
 	../../z80/z80_opcodes.cpp \
 	../../z80/z80.cpp \
@@ -51,7 +50,10 @@ SOURCES += ../../speccy.cpp \
 	../../platform/qt/qt_sound.cpp \
 	../../platform/qt/qt_window.cpp \
 	../../platform/qt/qt_control.cpp \
-	../../platform/qt/qt_view.cpp
+	../../platform/qt/qt_view.cpp \
+    ../../speccy_handler.cpp \
+    ../../file_type.cpp \
+    ../../file_type_zip.cpp
 
 HEADERS  += \
 	../../std_types.h \
@@ -112,7 +114,8 @@ HEADERS  += \
 	../../platform/qt/qt_sound.h \
 	../../platform/qt/qt_window.h \
 	../../platform/qt/qt_control.h \
-	../../platform/qt/qt_view.h
+	../../platform/qt/qt_view.h \
+    ../../file_type.h
 
 RESOURCES += unreal_speccy_portable.qrc
 
