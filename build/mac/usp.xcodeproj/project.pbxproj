@@ -72,10 +72,12 @@
 		5C6525751428C7540060688D /* z80.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6525691428C7540060688D /* z80.cpp */; };
 		5C6525761428C7540060688D /* z80_op_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6525721428C7540060688D /* z80_op_tables.cpp */; };
 		5C6525771428C7540060688D /* z80_opcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6525741428C7540060688D /* z80_opcodes.cpp */; };
-		5C65257F1428C7880060688D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6525781428C7880060688D /* main.cpp */; };
 		5C6525801428C7880060688D /* options_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6525791428C7880060688D /* options_common.cpp */; };
 		5C6525811428C7880060688D /* speccy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C65257B1428C7880060688D /* speccy.cpp */; };
 		5C6525841428C8070060688D /* unreal_speccy_portable.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5C6525821428C8070060688D /* unreal_speccy_portable.icns */; };
+		5C9485ED15F0116100985CF2 /* file_type_zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485E915F0116100985CF2 /* file_type_zip.cpp */; };
+		5C9485EE15F0116100985CF2 /* file_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485EA15F0116100985CF2 /* file_type.cpp */; };
+		5C9485EF15F0116100985CF2 /* speccy_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485EC15F0116100985CF2 /* speccy_handler.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -206,7 +208,6 @@
 		5C6525721428C7540060688D /* z80_op_tables.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = z80_op_tables.cpp; sourceTree = "<group>"; };
 		5C6525731428C7540060688D /* z80_op_tables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = z80_op_tables.h; sourceTree = "<group>"; };
 		5C6525741428C7540060688D /* z80_opcodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = z80_opcodes.cpp; sourceTree = "<group>"; };
-		5C6525781428C7880060688D /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../main.cpp; sourceTree = SOURCE_ROOT; };
 		5C6525791428C7880060688D /* options_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = options_common.cpp; path = ../../options_common.cpp; sourceTree = SOURCE_ROOT; };
 		5C65257A1428C7880060688D /* options_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = options_common.h; path = ../../options_common.h; sourceTree = SOURCE_ROOT; };
 		5C65257B1428C7880060688D /* speccy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = speccy.cpp; path = ../../speccy.cpp; sourceTree = SOURCE_ROOT; };
@@ -215,6 +216,10 @@
 		5C65257E1428C7880060688D /* std.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = std.h; path = ../../std.h; sourceTree = SOURCE_ROOT; };
 		5C6525821428C8070060688D /* unreal_speccy_portable.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = unreal_speccy_portable.icns; sourceTree = "<group>"; };
 		5C6525831428C8070060688D /* unreal_speccy_portable-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "unreal_speccy_portable-Info.plist"; sourceTree = "<group>"; };
+		5C9485E915F0116100985CF2 /* file_type_zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_type_zip.cpp; path = ../../file_type_zip.cpp; sourceTree = SOURCE_ROOT; };
+		5C9485EA15F0116100985CF2 /* file_type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_type.cpp; path = ../../file_type.cpp; sourceTree = SOURCE_ROOT; };
+		5C9485EB15F0116100985CF2 /* file_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = file_type.h; path = ../../file_type.h; sourceTree = SOURCE_ROOT; };
+		5C9485EC15F0116100985CF2 /* speccy_handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = speccy_handler.cpp; path = ../../speccy_handler.cpp; sourceTree = SOURCE_ROOT; };
 		5CA765F8119DD606000C0142 /* unreal_speccy_portable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = unreal_speccy_portable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -520,7 +525,10 @@
 				5C6524691428C6440060688D /* platform */,
 				5C6524631428C61C0060688D /* snapshot */,
 				5C6524501428C5970060688D /* ui */,
-				5C6525781428C7880060688D /* main.cpp */,
+				5C9485E915F0116100985CF2 /* file_type_zip.cpp */,
+				5C9485EA15F0116100985CF2 /* file_type.cpp */,
+				5C9485EB15F0116100985CF2 /* file_type.h */,
+				5C9485EC15F0116100985CF2 /* speccy_handler.cpp */,
 				5C6525791428C7880060688D /* options_common.cpp */,
 				5C65257A1428C7880060688D /* options_common.h */,
 				5C65257B1428C7880060688D /* speccy.cpp */,
@@ -656,9 +664,11 @@
 				5C6525751428C7540060688D /* z80.cpp in Sources */,
 				5C6525761428C7540060688D /* z80_op_tables.cpp in Sources */,
 				5C6525771428C7540060688D /* z80_opcodes.cpp in Sources */,
-				5C65257F1428C7880060688D /* main.cpp in Sources */,
 				5C6525801428C7880060688D /* options_common.cpp in Sources */,
 				5C6525811428C7880060688D /* speccy.cpp in Sources */,
+				5C9485ED15F0116100985CF2 /* file_type_zip.cpp in Sources */,
+				5C9485EE15F0116100985CF2 /* file_type.cpp in Sources */,
+				5C9485EF15F0116100985CF2 /* speccy_handler.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
