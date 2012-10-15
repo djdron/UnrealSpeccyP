@@ -69,7 +69,7 @@ void eList::Update()
 		eRect cursor(sr.left, 0, sr.right, 0);
 		cursor.top = sr.top + (last_selected - page_begin) * FontSize().y;
 		cursor.bottom = cursor.top + FontSize().y;
-		DrawRect(cursor, background, 0x08ffffff);
+		DrawRect(cursor, background, COLOR_WHITE);
 		last_selected = selected;
 		if(selected < page_begin)
 		{
@@ -85,7 +85,7 @@ void eList::Update()
 		}
 		cursor.top = sr.top + (selected - page_begin) * FontSize().y;
 		cursor.bottom = cursor.top + FontSize().y;
-		DrawRect(cursor, CURSOR_COLOR, 0x08ffffff);
+		DrawRect(cursor, COLOR_CURSOR, COLOR_WHITE);
 	}
 	changed = false;
 }

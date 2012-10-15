@@ -31,7 +31,6 @@ namespace xUi
 class eButton : public eControl
 {
 	enum { MAX_TEXT_SIZE = 64 };
-	enum { PUSH_COLOR = 0x080000b0, PUSH_FOCUS_COLOR = 0x08800080 };
 	typedef eControl eInherited;
 public:
 	eButton() : pushed(false), triggered(false), last_pushed(false), last_key(0), highlight(true) { *text = '\0'; }

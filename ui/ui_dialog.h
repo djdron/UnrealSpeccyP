@@ -36,7 +36,7 @@ public:
 	virtual ~eDialog()
 	{
 		Clear();
-		DrawRect(bound, 0);
+		DrawRect(bound, COLOR_NONE);
 	}
 	void Insert(eControl* child);
 	void Clear()
@@ -53,7 +53,7 @@ public:
 	virtual bool OnKey(char key, dword flags);
 protected:
 	void ChooseFocus(char key);
-	enum { BACKGROUND_COLOR = 0x01202020 };
+
 protected:
 	eControl* childs[MAX_CHILDS + 1];
 	eControl* focused;

@@ -63,14 +63,14 @@ void UpdateScreen(word* scr)
 {
 	byte* data = (byte*)Handler()->VideoData();
 #ifdef USE_UI
-	dword* data_ui = (dword*)Handler()->VideoDataUI();
+	byte* data_ui = (byte*)Handler()->VideoDataUI();
 	if(data_ui)
 	{
 		for(int y = 0; y < 240; ++y)
 		{
 			for(int x = 0; x < 320; ++x)
 			{
-				xUi::eRGBAColor c_ui = *data_ui++;
+				xUi::eRGBAColor c_ui = xUi::palette[*data_ui++];
 				xUi::eRGBAColor c = color_cache.items_rgbx[*data++];
 				*scr++ = BGR565((c.r >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.b >> c_ui.a) + c_ui.b);
 			}

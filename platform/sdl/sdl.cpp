@@ -36,6 +36,11 @@ void UpdateAudio();
 void UpdateScreen();
 void ProcessKey(SDL_Event& e);
 
+#ifdef SDL_USE_JOYSTICK
+void ProcessJoy(SDL_Event& e);
+static SDL_Joystick* joystick = NULL;
+#endif//SDL_USE_JOYSTICK
+
 static bool Init()
 {
 #ifndef SDL_DEFAULT_FOLDER
@@ -43,8 +48,17 @@ static bool Init()
 #endif//SDL_DEFAULT_FOLDER
 	OpLastFile(SDL_DEFAULT_FOLDER);
 	Handler()->OnInit();
-    if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0)
+
+#ifndef SDL_USE_JOYSTICK
+	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0)
+		return false;
+#else//SDL_USE_JOYSTICK
+	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK) < 0)
         return false;
+	SDL_JoystickEventState(SDL_ENABLE);
+	joystick = SDL_JoystickOpen(0);
+#endif//SDL_USE_JOYSTICK
+
     sdl_inited = true;
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_WM_SetCaption(Handler()->WindowCaption(), NULL);
@@ -57,6 +71,13 @@ static bool Init()
 
 static void Done()
 {
+#ifdef SDL_USE_JOYSTICK
+	if(joystick)
+	{
+		SDL_JoystickClose(joystick);
+		joystick = NULL;
+	}
+#endif//SDL_USE_JOYSTICK
 	DoneAudio();
 	DoneVideo();
 	if(sdl_inited)
@@ -81,6 +102,12 @@ static void Loop()
 			case SDL_KEYUP:
 				ProcessKey(e);
 				break;
+#ifdef SDL_USE_JOYSTICK
+			case SDL_JOYBUTTONDOWN:
+			case SDL_JOYBUTTONUP:
+				ProcessJoy(e);
+				break;
+#endif//SDL_USE_JOYSTICK
 			default:
 				break;
 			}

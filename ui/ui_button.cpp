@@ -44,7 +44,7 @@ void eButton::Update()
 	{
 		changed = false;
 		eRect sr = ScreenBound();
-		DrawRect(sr, focused ? FOCUS_COLOR : background);
+		DrawRect(sr, focused ? COLOR_FOCUSED : background);
 		ePoint cen = sr.Beg() + ePoint(sr.Width() / 2, sr.Height() / 2);
 		ePoint t_half((strlen(text) * FontSize().x / 2), FontSize().y / 2);
 		eRect r(cen.x - t_half.x, cen.y - t_half.y, cen.x + t_half.x, cen.y + t_half.y);
@@ -53,13 +53,13 @@ void eButton::Update()
 	if(pushed != last_pushed)
 	{
 		last_pushed = pushed;
-		if(triggered && highlight)	DrawRect(ScreenBound(), focused ? PUSH_FOCUS_COLOR : PUSH_COLOR, 0x08ffffff);
-		else			DrawRect(ScreenBound(), focused ? FOCUS_COLOR : background, 0x08ffffff);
+		if(triggered && highlight)	DrawRect(ScreenBound(), focused ? COLOR_PUSHED_FOCUSED : COLOR_PUSHED, COLOR_WHITE);
+		else			DrawRect(ScreenBound(), focused ? COLOR_FOCUSED : background, COLOR_WHITE);
 		Notify(pushed ? N_PUSH : N_POP);
 	}
 	if(change_focus && triggered && highlight)
 	{
-		DrawRect(ScreenBound(), focused ? PUSH_FOCUS_COLOR : PUSH_COLOR, 0x08ffffff);
+		DrawRect(ScreenBound(), focused ? COLOR_PUSHED_FOCUSED : COLOR_PUSHED, COLOR_WHITE);
 	}
 }
 //=============================================================================

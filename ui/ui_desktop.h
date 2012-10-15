@@ -37,7 +37,7 @@ public:
 	{
 		_CreateFont(6, 6, "res/font/spxtrm4f.fnt");
 	}
-	dword* VideoData() const { return Focused() ? Screen() : NULL; }
+	byte* VideoData() const { return Focused() ? screen : NULL; }
 	bool Focused() const
 	{
 		eDialog* d = (eDialog*)Childs()[0];

@@ -34,7 +34,7 @@ namespace xUi
 class eControl
 {
 public:
-	eControl() : parent(NULL), changed(true), focused(false), last_focused(false), background(0), id(-1) {}
+	eControl() : parent(NULL), changed(true), focused(false), last_focused(false), background(COLOR_NONE), id(-1) {}
 	virtual ~eControl() {}
 	virtual void Init() {}
 	byte Id() const { return id; }
@@ -51,14 +51,14 @@ public:
 		}
 		return r;
 	}
-	xUi::eRGBAColor& Background() { return background; }
+	ePalettedColor& Background() { return background; }
 	virtual void Update()
 	{
 		if(changed || (focused != last_focused))
 		{
 			last_focused = focused;
-			if(focused)	DrawRect(ScreenBound(), FOCUS_COLOR, 0x08ffffff);
-			else		DrawRect(ScreenBound(), background, 0x08ffffff);
+			if(focused)	DrawRect(ScreenBound(), COLOR_FOCUSED, COLOR_WHITE);
+			else		DrawRect(ScreenBound(), background, COLOR_WHITE);
 		}
 	}
 	virtual bool OnKey(char key, dword flags) = 0;
@@ -68,14 +68,13 @@ protected:
 	{
 		SAFE_CALL(parent)->OnNotify(n, from);
 	}
-	enum { FOCUS_COLOR = 0x08008000 };
 protected:
 	eRect bound;
 	eControl* parent;
 	bool changed;
 	bool focused;
 	bool last_focused;
-	eRGBAColor background;
+	ePalettedColor background;
 	byte id;
 };
 

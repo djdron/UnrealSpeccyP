@@ -33,28 +33,33 @@ extern byte spxtrm4f[];
 namespace xUi
 {
 
-static dword screen[WIDTH*HEIGHT];
-dword* Screen() { return screen; }
+#ifdef UI_REAL_ALPHA
+
+eRGBAColor palette[] = { 0x00000000, 0xffffffff, 0xffb06000, 0x80202020, 0xff008000, 0xff0000b0, 0xff800080 };
+
+#else//UI_REAL_ALPHA
+
+eRGBAColor palette[] = { 0x00000000, 0x08ffffff, 0x08b06000, 0x01202020, 0x08008000, 0x080000b0, 0x08800080 };
+
+#endif//UI_REAL_ALPHA
+
+byte screen[WIDTH*HEIGHT];
 
 static struct eInit
 {
 	eInit() { memset(screen, 0, sizeof(screen)); }
 }init;
 
-static const eRGBAColor COLOR_WHITE(0x08ffffff);
-
-inline void DrawPixel(const ePoint& p, const eRGBAColor& c)
+inline void DrawPixel(const ePoint& p, ePalettedColor c)
 {
-	dword* dst = &screen[p.y*WIDTH + p.x];
-	*dst = c.rgba;
+	screen[p.y*WIDTH + p.x] = c;
 }
-inline void GetPixel(const ePoint& p, eRGBAColor* c)
+inline ePalettedColor GetPixel(const ePoint& p)
 {
-	dword* dst = &screen[p.y*WIDTH + p.x];
-	c->rgba = *dst;
+	return (ePalettedColor)screen[p.y*WIDTH + p.x];
 }
 
-void DrawRect(const eRect& r, const eRGBAColor& c)
+void DrawRect(const eRect& r, ePalettedColor c)
 {
 	ePoint p;
 	for(p.y = r.top; p.y < r.bottom; ++p.y)
@@ -66,16 +71,14 @@ void DrawRect(const eRect& r, const eRGBAColor& c)
 	}
 }
 
-void DrawRect(const eRect& r, const eRGBAColor& c, const eRGBAColor& key)
+void DrawRect(const eRect& r, ePalettedColor c, ePalettedColor key)
 {
 	ePoint p;
-	eRGBAColor src;
 	for(p.y = r.top; p.y < r.bottom; ++p.y)
 	{
 		for(p.x = r.left; p.x < r.right; ++p.x)
 		{
-			GetPixel(p, &src);
-			if(src.rgba != key.rgba)
+			if(GetPixel(p) != key)
 			{
 				DrawPixel(p, c);
 			}

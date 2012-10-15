@@ -50,7 +50,7 @@ byte eKeyboard::AllocateId(const char* key) const
 //-----------------------------------------------------------------------------
 void eKeyboard::Init()
 {
-	background = BACKGROUND_COLOR;
+	background = COLOR_BACKGROUND;
 	eRect r_dlg(ePoint(169, 70));
 	r_dlg.Move(ePoint(143, 8));
 	Bound() = r_dlg;

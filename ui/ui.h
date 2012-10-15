@@ -74,13 +74,16 @@ struct eRGBAColor
 	};
 };
 
-dword* Screen();
-void DrawRect(const eRect& r, const eRGBAColor& c);
-void DrawRect(const eRect& r, const eRGBAColor& c, const eRGBAColor& key);
-void BlendRect(const eRect& r, const eRGBAColor& c);
+enum ePalettedColor { COLOR_NONE, COLOR_WHITE, COLOR_CURSOR, COLOR_BACKGROUND, COLOR_FOCUSED, COLOR_PUSHED, COLOR_PUSHED_FOCUSED, PALETTE_SIZE };
+extern eRGBAColor palette[];
+
+extern byte screen[];
+void DrawRect(const eRect& r, ePalettedColor c);
+void DrawRect(const eRect& r, ePalettedColor c, ePalettedColor key);
 void DrawText(const eRect& r, const char* src);
 void _CreateFont(int _w, int _h, const char* fname);
 ePoint FontSize();
+
 }
 //namespace xUi
 

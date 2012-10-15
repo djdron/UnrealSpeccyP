@@ -31,7 +31,6 @@ namespace xUi
 class eList : public eControl
 {
 	enum { MAX_ITEMS = 2000 };
-	enum { CURSOR_COLOR = 0x08b06000 };
 	enum eNotify { N_SELECTED };
 public:
 	eList() : size(0), last_selected(-1), selected(-1), page_begin(0), page_size(0) { *items = NULL; }

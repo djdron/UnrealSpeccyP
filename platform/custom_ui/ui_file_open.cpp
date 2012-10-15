@@ -41,7 +41,7 @@ eFileOpenDialog::eFileOpenDialog(const char* _path) : list(NULL), selected(NULL)
 //-----------------------------------------------------------------------------
 void eFileOpenDialog::Init()
 {
-	background = BACKGROUND_COLOR;
+	background = COLOR_BACKGROUND;
 	eRect r(8, 8, 120, 180);
 	ePoint margin(6, 6);
 	Bound() = r;

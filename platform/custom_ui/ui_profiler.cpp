@@ -40,7 +40,7 @@ protected:
 };
 void eProfiler::Init()
 {
-	background = BACKGROUND_COLOR;
+	background = COLOR_BACKGROUND;
 	int cnt = 0;
 	for(xProfiler::eSection* s = xProfiler::eSection::First(); s; s = s->Next())
 	{

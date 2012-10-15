@@ -268,7 +268,7 @@ void TDCControl::Draw(const TRect& /*aRect*/) const
 }
 
 #define BLEND_UI_PIXELH(op) \
-c_ui = *data_ui++; \
+c_ui = xUi::palette[*data_ui++]; \
 c = color_cache[*op]; \
 *tex++ = BGRX((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b); \
 
@@ -295,7 +295,7 @@ for(int x = 0; x < 64; ++x) \
 data += 64; \
 
 #define BLEND_UI_PIXELV(op) \
-c_ui = *d_ui; \
+c_ui = xUi::palette[*d_ui]; \
 c = color_cache[*d]; \
 *tex++ = BGRX((c.b >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.r >> c_ui.a) + c_ui.b); \
 op; \
@@ -327,7 +327,7 @@ void TDCControl::Draw(bool horizontal) const
 {
 	PROFILER_SECTION(draw);
 	byte* data = (byte*)Handler()->VideoData();
-	dword* data_ui = (dword*)Handler()->VideoDataUI();
+	byte* data_ui = (byte*)Handler()->VideoDataUI();
 	bitmap->LockHeap();
 	dword* tex = (dword*)bitmap->DataAddress();
 
@@ -405,12 +405,12 @@ void TDCControl::Draw(bool horizontal) const
 					{
 						++l;
 						byte* d = data + 320*215 + l + 32;
-						dword* d_ui = data_ui + 320*239 + l1;
+						byte* d_ui = data_ui + 320*239 + l1;
 						BLEND_UI_LINEV;
 						++l1;
 					}
 					byte* d = data + 320*215 + l + 32;
-					dword* d_ui = data_ui + 320*239 + l1;
+					byte* d_ui = data_ui + 320*239 + l1;
 					BLEND_UI_LINEV;
 					++l1;
 				}
@@ -440,7 +440,7 @@ void TDCControl::Draw(bool horizontal) const
 				for(int j = 0; j < 320; j++)
 				{
 					byte* d = data + 320*239 + j;
-					dword* d_ui = data_ui + 320*239 + j;
+					byte* d_ui = data_ui + 320*239 + j;
 					for(int i = 0; i < 240; ++i)
 					{
 						BLEND_UI_PIXELV(d -= 320);

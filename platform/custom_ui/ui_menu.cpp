@@ -79,7 +79,7 @@ public:
 //-----------------------------------------------------------------------------
 void eMenu::Init()
 {
-	background = BACKGROUND_COLOR;
+	background = COLOR_BACKGROUND;
 	ePoint margin(6, 6);
 	eRect r_dlg(ePoint(130, 2*margin.y));
 	r_dlg.Move(ePoint(8, 8));
