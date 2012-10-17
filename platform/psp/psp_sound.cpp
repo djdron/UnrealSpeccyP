@@ -20,16 +20,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <pspaudio.h>
 #include <pspaudiolib.h>
+#include <pspkernel.h>
 #include "../platform.h"
 #include "../../tools/sound_mixer.h"
 
 namespace xPlatform
 {
 
+class eSimpleMutex
+{
+public:
+	eSimpleMutex(const char* name)
+	{
+		handle = sceKernelCreateSema(name, 0, 1, 1, 0);
+	}
+	~eSimpleMutex()
+	{
+		sceKernelDeleteSema(handle);
+	}
+	void Lock()
+	{
+		sceKernelWaitSema(handle, 1, 0);
+	}
+	void Unlock()
+	{
+		sceKernelSignalSema(handle, 1);
+	}
+protected:
+	SceUID handle;
+};
+
+class eAutoMutex
+{
+public:
+	eAutoMutex(eSimpleMutex& _m) : m(_m) { m.Lock(); }
+	~eAutoMutex() { m.Unlock(); }
+protected:
+	eSimpleMutex& m;
+};
+
+static eSimpleMutex sound_mutex("sound_mutex");
+
 static eSoundMixer sound_mixer;
 
 static void AudioCallback(void* buf, unsigned int length, void* userdata)
 {
+	eAutoMutex lock(sound_mutex);
 	length *= 4; // translate samples to bytes
 	if(length <= sound_mixer.Ready())
 	{
@@ -52,6 +88,7 @@ void InitAudio()
 
 void UpdateAudio()
 {
+	eAutoMutex lock(sound_mutex);
 	sound_mixer.Update();
 	static bool audio_filled = false;
 	bool audio_filled_new = sound_mixer.Ready() > 44100*2*2/50*7; // 7-frame data
