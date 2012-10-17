@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <pspaudiolib.h>
 #include "../platform.h"
 #include "../../tools/sound_mixer.h"
-#include "../../tools/options.h"
 
 namespace xPlatform
 {
@@ -47,16 +46,6 @@ static void AudioCallback(void* buf, unsigned int length, void* userdata)
 
 void InitAudio()
 {
-	using namespace xOptions;
-	struct eOptionBX : public eOptionB
-	{
-		void Unuse() { customizable = false; storeable = false; }
-	};
-	eOptionBX* o = (eOptionBX*)eOptionB::Find("sound");
-	SAFE_CALL(o)->Unuse();
-	o = (eOptionBX*)eOptionB::Find("volume");
-	SAFE_CALL(o)->Unuse();
-
 	pspAudioInit();
 	pspAudioSetChannelCallback(0, AudioCallback, NULL);
 }

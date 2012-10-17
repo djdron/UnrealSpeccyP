@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <pspctrl.h>
 #include "../io.h"
 #include "../platform.h"
+#include "../../options_common.h"
+#include "../../tools/options.h"
 
 PSP_MODULE_INFO("Unreal Speccy Portable", 0, 0, 37);
 PSP_HEAP_SIZE_KB(-1024);
@@ -62,15 +64,27 @@ void UpdateKeys();
 void Init(const char* app_path)
 {
 	setupCallbacks();
-	char app_dir[xIo::MAX_PATH_LEN];
 	char* pos = strrchr(app_path, '/');
 	if(pos)
 	{
+		char app_dir[xIo::MAX_PATH_LEN];
 		strncpy(app_dir, app_path, pos - app_path + 1);
 		app_dir[pos - app_path + 1] = '\0';
 		xIo::SetResourcePath(app_dir);
 		xIo::SetProfilePath(app_dir);
+		OpLastFile(app_dir);
 	}
+	using namespace xOptions;
+	struct eOptionBX : public eOptionB
+	{
+		void Unuse() { customizable = false; storeable = false; }
+	};
+	eOptionBX* o = (eOptionBX*)eOptionB::Find("sound");
+	SAFE_CALL(o)->Unuse();
+	o = (eOptionBX*)eOptionB::Find("volume");
+	SAFE_CALL(o)->Unuse();
+	o = (eOptionBX*)eOptionB::Find("quit");
+	SAFE_CALL(o)->Unuse();
 	Handler()->OnInit();
 	InitVideo();
 	InitAudio();

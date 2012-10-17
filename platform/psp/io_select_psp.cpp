@@ -55,7 +55,7 @@ const char* eFileSelect::Name() const { return impl->Name(); }
 bool eFileSelect::IsDir() const { return impl->IsDir(); }
 bool eFileSelect::IsFile() const { return impl->IsFile(); }
 
-bool PathIsRoot(const char* path) {	return !strcmp(path, "/"); }
+bool PathIsRoot(const char* path) {	return !strcmp(path, ResourcePath("")); }
 
 }
 //namespace xIo

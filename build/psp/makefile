@@ -6,19 +6,21 @@ SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml snapshot ui platform platform/
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
-CXX = psp-g++
-C = psp-gcc
+CXX		= psp-g++
+C		= psp-gcc
+BIN2C	= bin2c
 
 DIST_PATH = $(OBJ_BASE)
 OBJ_PATH = $(OBJ_BASE)
+RES_PATH = res
 CXX_OBJS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$(CXXSRCS))
 CXX_DEPS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.d,$(CXXSRCS))
 C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
-STD_OPTS  = -G0 -Wall -c -fmessage-length=0 -D_PSP_FW_VERSION=150 -I`psp-config --pspsdk-path`/include
-CXXFLAGS  = $(STD_OPTS) -fno-exceptions -fno-rtti -D_POSIX -D_PSP -DUSE_CONFIG -DUSE_ZIP -DUSE_UI -DUI_REAL_ALPHA
+STD_OPTS  = -G0 -Wall -c -fmessage-length=0 -D_PSP_FW_VERSION=150 -I`psp-config --pspsdk-path`/include -I.
+CXXFLAGS  = $(STD_OPTS) -fno-exceptions -fno-rtti -D_POSIX -D_PSP -DUSE_CONFIG -DUSE_ZIP -DUSE_UI -DUI_REAL_ALPHA -DUSE_EMBEDDED_RESOURCES
 CFLAGS    = $(STD_OPTS)
 LFLAGS    = -L`psp-config --pspsdk-path`/lib -lstdc++ -lc -lpspgu -lpspge -lpspaudiolib -lpspaudio -lpspdisplay -lpspctrl -lpspsdk -lpspuser -lpspkernel 
 
@@ -31,8 +33,8 @@ FIN_TARGET = $(PRX_TARGET)
 CXXFLAGS  := -g3 -O3 $(CXXFLAGS)
 CFLAGS    := -g3 -O3 $(CFLAGS)
 else
-CXXFLAGS  := -g0 -O3 $(CXXFLAGS) 
-CFLAGS    := -g0 -O3 $(CFLAGS) 
+CXXFLAGS  := -g0 -O3 $(CXXFLAGS)
+CFLAGS    := -g0 -O3 $(CFLAGS)
 LFLAGS    := -s $(LFLAGS)
 FIN_TARGET = $(FIX_TARGET)
 endif
@@ -47,6 +49,15 @@ mkdirs:
 	mkdir -p $(DIST_PATH)
 	mkdir -p $(foreach dir, $(SRCFOLDERS), $(OBJ_PATH)/$(dir))
 	
+res:
+	mkdir -p $(RES_PATH)/font
+	mkdir -p $(RES_PATH)/rom
+	$(BIN2C) $(SRC_PATH)/res/font/spxtrm4f.fnt	$(RES_PATH)/font/spxtrm4f.h spxtrm4f
+	$(BIN2C) $(SRC_PATH)/res/rom/sos128.rom		$(RES_PATH)/rom/sos128.h sos128
+	$(BIN2C) $(SRC_PATH)/res/rom/sos48.rom		$(RES_PATH)/rom/sos48.h sos48
+	$(BIN2C) $(SRC_PATH)/res/rom/service.rom	$(RES_PATH)/rom/service.h service
+	$(BIN2C) $(SRC_PATH)/res/rom/dos513f.rom	$(RES_PATH)/rom/dos513f.h dos513f
+
 $(CXX_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
@@ -72,9 +83,10 @@ endif
 $(DIST_PATH)/EBOOT.PBP: $(DIST_PATH)/PARAM.SFO
 	pack-pbp $(DIST_PATH)/EBOOT.PBP $(DIST_PATH)/PARAM.SFO icon.png NULL NULL NULL NULL $(FIN_TARGET) NULL
 
-build: mkdirs $(DIST_PATH)/EBOOT.PBP
+build: mkdirs res $(DIST_PATH)/EBOOT.PBP
 
 clean:
+	rm -rf $(RES_PATH)
 	rm -rf $(CXX_OBJS)
 	rm -rf $(CXX_DEPS)
 	rm -rf $(C_OBJS)
@@ -88,4 +100,4 @@ endif
 	rm -rf $(DIST_PATH)/PARAM.SFO
 	rm -rf $(DIST_PATH)/EBOOT.PBP
 
-.PHONY: mkdirs clean build all
+.PHONY: mkdirs res clean build all
