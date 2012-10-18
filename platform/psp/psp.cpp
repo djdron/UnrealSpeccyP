@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../options_common.h"
 #include "../../tools/options.h"
 
-PSP_MODULE_INFO("Unreal Speccy Portable", 0, 0, 37);
+PSP_MODULE_INFO("Unreal Speccy Portable", 0, 0, 38);
 PSP_HEAP_SIZE_KB(-1024);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
 
