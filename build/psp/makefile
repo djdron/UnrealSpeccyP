@@ -78,7 +78,7 @@ $(DIST_PATH)/PARAM.SFO: $(PRX_TARGET)
 else
 $(DIST_PATH)/PARAM.SFO: $(FIX_TARGET)
 endif
-	mksfo 'Unreal Speccy Portable' $(DIST_PATH)/PARAM.SFO
+	mksfo 'Unreal Speccy Portable 0.0.38' $(DIST_PATH)/PARAM.SFO
 
 $(DIST_PATH)/EBOOT.PBP: $(DIST_PATH)/PARAM.SFO
 	pack-pbp $(DIST_PATH)/EBOOT.PBP $(DIST_PATH)/PARAM.SFO icon.png NULL NULL NULL NULL $(FIN_TARGET) NULL
