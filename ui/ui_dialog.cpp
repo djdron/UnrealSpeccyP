@@ -67,23 +67,30 @@ void eDialog::ChooseFocus(char key)
 	if(!focused)
 		return;
 	ePoint org = focused->Bound().Beg();
+	ePoint size = ePoint(Bound().Width(), Bound().Height());
 	eControl* f = NULL;
 	ePoint fp;
 	for(int i = 0; i < MAX_CHILDS; ++i)
 	{
 		if(!childs[i])
 			break;
-		const ePoint& p = childs[i]->Bound().Beg();
+		ePoint p = childs[i]->Bound().Beg();
 		if(((key == 'l' || key == 'r') && p.y != org.y)
 			|| ((key == 'u' || key == 'd') && p.x != org.x))
 			continue;
+		ePoint base = childs[i]->Bound().Beg();
 		if((key == 'l' && p.x < org.x && (!f || p.x > fp.x))
 			|| (key == 'r' && p.x > org.x && (!f || p.x < fp.x))
 			|| (key == 'u' && p.y < org.y && (!f || p.y > fp.y))
-			|| (key == 'd' && p.y > org.y && (!f || p.y < fp.y)))
+			|| (key == 'd' && p.y > org.y && (!f || p.y < fp.y))
+			|| (p = base + ePoint(-size.x, 0), key == 'l' && p.x < org.x && (!f || p.x > fp.x))
+			|| (p = base + ePoint(size.x, 0), key == 'r' && p.x > org.x && (!f || p.x < fp.x))
+			|| (p = base + ePoint(0, -size.y), key == 'u' && p.y < org.y && (!f || p.y > fp.y))
+			|| (p = base + ePoint(0, size.y), key == 'd' && p.y > org.y && (!f || p.y < fp.y)))
 		{
 			f = childs[i];
-			fp = f->Bound().Beg();
+			fp = p;
+			continue;
 		}
 	}
 	if(f)
