@@ -87,6 +87,74 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="3"
+				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include"
+				PreprocessorDefinitions="_WINDOWS"
+				ExceptionHandling="1"
+				BufferSecurityCheck="false"
+				FloatingPointModel="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_lib"
+				SubSystem="2"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
 			OutputDirectory="$(SolutionDir)Windows Mobile 5.0 Pocket PC SDK (ARMV4I)\$(ConfigurationName)"
 			IntermediateDirectory="Windows Mobile 5.0 Pocket PC SDK (ARMV4I)\$(ConfigurationName)"
@@ -167,74 +235,6 @@
 				AdditionalFiles=""
 			/>
 			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="3"
-				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include"
-				PreprocessorDefinitions="_WINDOWS"
-				ExceptionHandling="1"
-				BufferSecurityCheck="false"
-				FloatingPointModel="2"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib"
-				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_lib"
-				SubSystem="2"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 		<Configuration
@@ -508,6 +508,10 @@
 			Name="platform"
 			>
 			<File
+				RelativePath=".\platform\endian.h"
+				>
+			</File>
+			<File
 				RelativePath=".\platform\io.cpp"
 				>
 			</File>
@@ -567,6 +571,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\platform\dingoo\dingoo_file_association.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\platform\dingoo\dingoo_keys.cpp"
 					>
 				</File>
@@ -604,6 +612,10 @@
 				>
 				<File
 					RelativePath=".\platform\symbian\division.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\symbian\io_select_symbian.cpp"
 					>
 				</File>
 				<File
@@ -684,6 +696,218 @@
 				</File>
 				<File
 					RelativePath=".\platform\custom_ui\ui_profiler.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="android"
+				>
+				<File
+					RelativePath=".\platform\android\android.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\android\android_keys.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\android\android_sound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\android\android_video.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="chrome_nacl"
+				>
+				<File
+					RelativePath=".\platform\chrome_nacl\main_nacl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\chrome_nacl\nacl_gl_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\chrome_nacl\nacl_gl_context.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\chrome_nacl\nacl_resources.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\chrome_nacl\nacl_sound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\chrome_nacl\nacl_sound.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\chrome_nacl\nacl_url.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\chrome_nacl\nacl_url.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="gles2"
+				>
+				<File
+					RelativePath=".\platform\gles2\gles2.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\gles2\gles2.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\gles2\gles2_shader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\gles2\gles2_shader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\gles2\gles2_x.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="mac"
+				>
+				<File
+					RelativePath=".\platform\mac\mac.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="playbook"
+				>
+				<File
+					RelativePath=".\platform\playbook\playbook.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="psp"
+				>
+				<File
+					RelativePath=".\platform\psp\io_select_psp.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\psp\psp.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\psp\psp_keys.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\psp\psp_sound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\psp\psp_video.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="qt"
+				>
+				<File
+					RelativePath=".\platform\qt\io_select_qt.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\qt\main_qt.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\qt\qt_control.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\qt\qt_control.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\qt\qt_sound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\qt\qt_sound.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\qt\qt_view.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\qt\qt_view.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\qt\qt_window.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\qt\qt_window.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="sdl"
+				>
+				<File
+					RelativePath=".\platform\sdl\sdl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\sdl\sdl_keys.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\sdl\sdl_keys_dingoo.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\sdl\sdl_keys_psp.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\sdl\sdl_sound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\sdl\sdl_video.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="touch_ui"
+				>
+				<File
+					RelativePath=".\platform\touch_ui\tui_joystick.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\touch_ui\tui_joystick.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\touch_ui\tui_keyboard.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\touch_ui\tui_keyboard.h"
 					>
 				</File>
 			</Filter>
@@ -789,6 +1013,14 @@
 			</File>
 			<File
 				RelativePath=".\tools\profiler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tools\sound_mixer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\tools\sound_mixer.h"
 				>
 			</File>
 			<File
@@ -1013,7 +1245,15 @@
 			</Filter>
 		</Filter>
 		<File
-			RelativePath=".\main.cpp"
+			RelativePath=".\file_type.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\file_type.h"
+			>
+		</File>
+		<File
+			RelativePath=".\file_type_zip.cpp"
 			>
 		</File>
 		<File
@@ -1045,6 +1285,10 @@
 					Name="VCCustomBuildTool"
 				/>
 			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\speccy_handler.cpp"
+			>
 		</File>
 		<File
 			RelativePath=".\std.h"
