@@ -137,7 +137,7 @@ void eVideo::Update()
 {
 	PROFILER_SECTION(draw);
 	byte* src = (byte*)Handler()->VideoData();
-	dword* src_ui = (dword*)Handler()->VideoDataUI();
+	byte* src_ui = (byte*)Handler()->VideoDataUI();
 	word* dst = frame;
 	UpdateRayOptions();
 	int mirr = ray_sync ? ray_mirror : 0;
@@ -157,7 +157,7 @@ void eVideo::Update()
 		{
 			for(int offs = offs_base; offs != int_end; offs += int_step)
 			{
-				xUi::eRGBAColor c_ui = src_ui[offs];
+				xUi::eRGBAColor c_ui = xUi::palette[src_ui[offs]];
 				xUi::eRGBAColor c = colors888[src[offs]];
 				*dst++ = BGR565((c.r >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.b >> c_ui.a) + c_ui.b);
 			}
