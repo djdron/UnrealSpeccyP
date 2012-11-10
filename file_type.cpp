@@ -25,17 +25,14 @@ namespace xPlatform
 
 eFileType* eFileType::FindByName(const char* name)
 {
-	char type[xIo::MAX_PATH_LEN];
 	int l = strlen(name);
 	if(!l)
-	{
-		*type = '\0';
-		return Find(type);
-	}
+		return NULL;
 	const char* ext = name + l;
 	while(ext >= name && *ext != '.')
 		--ext;
 	++ext;
+	char type[xIo::MAX_PATH_LEN];
 	char* t = type;
 	while(*ext)
 	{

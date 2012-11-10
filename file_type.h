@@ -34,10 +34,12 @@ struct eFileType : public eList<eFileType>
 	virtual const char* Type() = 0;
 	static eFileType* Find(const char* type)
 	{
-		eFileType* t = First();
-		for(; t && strcmp(t->Type(), type) != 0; t = t->Next())
-		{}
-		return t;
+		for(eFileType* t = First(); t; t = t->Next())
+		{
+			if(strcmp(t->Type(), type) == 0)
+				return t;
+		}
+		return NULL;
 	}
 	static eFileType* FindByName(const char* name);
 };

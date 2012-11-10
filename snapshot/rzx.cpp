@@ -40,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform/platform.h"
 #include "../platform/io.h"
 #include "../tools/stream_memory.h"
+#include "../options_common.h"
 #include "rzx.h"
 
 #ifdef USE_ZIP
@@ -244,7 +245,7 @@ int eRZX::eImpl::rzx_seek_irb()
 	long fpos;
 	while(!done)
 	{
-		if(file->Read(block.buff, 5) < 1)
+		if(file->Read(block.buff, 5) < 5)
 			return FINISHED;
 		block.type = block.buff[0];
 		block.length = block.buff[1]+256*block.buff[2]+65536*block.buff[3]+16777216*block.buff[4];
@@ -254,11 +255,11 @@ int eRZX::eImpl::rzx_seek_irb()
 		{
 		case RZXBLK_SNAP:
 			{
+				file->Read(block.buff, 12);
 				char snap_filename[xIo::MAX_PATH_LEN];
 				if(!(block.buff[0] & 0x01))
 				{
 					/* embedded snap */
-					file->Read(block.buff, 12);
 #ifdef USE_ZIP
 					bool compressed = (block.buff[0] & 0x02) != 0;
 					fpos = file->Pos();
@@ -295,9 +296,18 @@ int eRZX::eImpl::rzx_seek_irb()
 				{
 					/* external snap, read descriptor */
 					file->Read(&block.buff[12], block.length - 17);
-					strcpy(snap_filename, (const char*)block.buff + 16);
-					if(!handler->RZX_OnOpenSnapshot(snap_filename, NULL, 0))
-						return UNSUPPORTED;
+					const char* snap_fullname = (const char*)block.buff + 16;
+					if(!handler->RZX_OnOpenSnapshot(snap_fullname, NULL, 0))
+					{
+						// trying to open snapshot from the same folder where .rzx placed
+						int l = strlen(snap_fullname);
+						while(l >= 0 && snap_fullname[l] != '/' && snap_fullname[l] != '\\')
+							--l;
+						strcpy(snap_filename, xPlatform::OpLastFolder());
+						strcat(snap_filename, snap_fullname + l + 1);
+						if(!handler->RZX_OnOpenSnapshot(snap_filename, NULL, 0))
+							return UNSUPPORTED;
+					}
 				}
 			}
 			break;
