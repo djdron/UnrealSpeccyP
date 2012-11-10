@@ -145,7 +145,7 @@ void eTape::StopTape()
 	tape.play_pointer = 0;
 	tape.edge_change = 0x7FFFFFFFFFFFFFFFLL;
 	tape.tape_bit = -1;
-	speccy->CPU()->FastEmul(NULL);
+	speccy->CPU()->HandlerStep(NULL);
 }
 //=============================================================================
 //	eTape::ResetTape
@@ -156,7 +156,7 @@ void eTape::ResetTape()
 	tape.play_pointer = 0;
 	tape.edge_change = 0x7FFFFFFFFFFFFFFFLL;
 	tape.tape_bit = -1;
-	speccy->CPU()->FastEmul(NULL);
+	speccy->CPU()->HandlerStep(NULL);
 }
 //=============================================================================
 //	eTape::StartTape
@@ -176,7 +176,7 @@ void eTape::StartTape()
 //-----------------------------------------------------------------------------
 void eTape::CloseTape()
 {
-	speccy->CPU()->FastEmul(NULL);
+	speccy->CPU()->HandlerStep(NULL);
 	if(tape_image)
 	{
 		free(tape_image);
@@ -902,18 +902,18 @@ namespace xZ80
 class eZ80_FastTape: public xZ80::eZ80
 {
 public:
-	void EmulEdge();
-	void EmulTrap();
-	void Emul()
+	void StepEdge();
+	void StepTrap();
+	void Step()
 	{
-		EmulTrap();
-		EmulEdge();
+		StepTrap();
+		StepEdge();
 	}
 };
 //=============================================================================
-//	eZ80_FastTape::EmulEdge
+//	eZ80_FastTape::StepEdge
 //-----------------------------------------------------------------------------
-void eZ80_FastTape::EmulEdge()
+void eZ80_FastTape::StepEdge()
 {
 	byte p0 = memory->Read(pc + 0);
 	byte p1 = memory->Read(pc + 1);
@@ -1074,9 +1074,9 @@ void eZ80_FastTape::EmulEdge()
 	}
 }
 //=============================================================================
-//	eZ80_FastTape::EmulTrap
+//	eZ80_FastTape::StepTrap
 //-----------------------------------------------------------------------------
-void eZ80_FastTape::EmulTrap()
+void eZ80_FastTape::StepTrap()
 {
 	if((pc & 0xFFFF) != 0x056B)
 		return;
@@ -1153,10 +1153,12 @@ void eZ80_FastTape::EmulTrap()
 }
 //namespace xZ80
 
-//=============================================================================
-//	FastTapeEmul
-//-----------------------------------------------------------------------------
-void FastTapeEmul(xZ80::eZ80* z80)
+static class eFastTapeEmul : public xZ80::eZ80::eHandlerStep
 {
-	((xZ80::eZ80_FastTape*)z80)->Emul();
-}
+	virtual void Z80_Step(xZ80::eZ80* z80)
+	{
+		((xZ80::eZ80_FastTape*)z80)->Step();
+	}
+} fte;
+
+xZ80::eZ80::eHandlerStep* fast_tape_emul = &fte;

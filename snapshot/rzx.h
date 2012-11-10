@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,23 +16,32 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__IO_H__
-#define	__IO_H__
+#ifndef __RZX_H__
+#define __RZX_H__
 
-#pragma once
+#include "../std_types.h"
 
-namespace xIo
+class eRZX
 {
+public:
+	enum eError { OK, NOTFOUND, INVALID, FINISHED, UNSUPPORTED, NOMEMORY, SYNCLOST };
 
-enum { MAX_PATH_LEN = 1024 };
+	eRZX();
+	~eRZX();
 
-void SetResourcePath(const char* resource_path);
-const char* ResourcePath(const char* path);
+	class eHandler
+	{
+	public:
+		virtual bool RZX_OnOpenSnapshot(const char* name, const void* data, size_t data_size) = 0;
+	};
 
-void SetProfilePath(const char* profile_path);
-const char* ProfilePath(const char* path);
+	eError Open(const void* data, size_t data_size, eHandler* handler);
+	eError Update(int* icount);
+	eError IoRead(byte* data);
 
-}
-//namespace xIo
+private:
+	class eImpl;
+	eImpl* impl;
+};
 
-#endif//__IO_H__
+#endif//__RZX_H__

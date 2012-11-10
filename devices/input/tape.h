@@ -20,11 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __TAPE_H__
 
 #include "../sound/device_sound.h"
+#include "../../z80/z80.h"
 
 #pragma once
 
 class eSpeccy;
-namespace xZ80 { class eZ80; class eZ80_FastTape; }
+namespace xZ80 { class eZ80_FastTape; }
 
 class eTape : public eDeviceSound
 {
@@ -102,6 +103,6 @@ protected:
 	dword appendable;
 };
 
-void FastTapeEmul(xZ80::eZ80* z80);
+extern xZ80::eZ80::eHandlerStep* fast_tape_emul;
 
 #endif//__TAPE_H__

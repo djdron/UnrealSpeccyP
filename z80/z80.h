@@ -72,9 +72,6 @@ enum eFlags
 	SF = 0x80
 };
 
-class eZ80;
-typedef void (*eFastEmul)(eZ80* z80);
-
 //*****************************************************************************
 //	eZ80
 //-----------------------------------------------------------------------------
@@ -83,13 +80,26 @@ class eZ80
 public:
 	eZ80(eMemory* m, eDevices* d, dword frame_tacts = 0);
 	void Reset();
-	void Update(int int_len, int* nmi_pending);
+	void Update(int int_len, int* nmi_pending, int* fetches);
 
 	dword FrameTacts() const { return frame_tacts; }
 	dword T() const { return t; }
 
-	void FastEmul(eFastEmul f_emul) { fast_emul = f_emul; }
-	bool FastEmul() const { return fast_emul != NULL; }
+	class eHandlerIo
+	{
+	public:
+		virtual byte Z80_IoRead(word port, int tact) = 0;
+	};
+	void HandlerIo(eHandlerIo* h) { handler.io = h; }
+	eHandlerIo* HandlerIo() const { return handler.io; }
+
+	class eHandlerStep
+	{
+	public:
+		virtual void Z80_Step(eZ80* z80) = 0;
+	};
+	void HandlerStep(eHandlerStep* h) { handler.step = h; }
+	eHandlerStep* HandlerStep() const { return handler.step; }
 
 protected:
 	void Int();
@@ -98,7 +108,8 @@ protected:
 	void StepF();
 	byte Fetch()
 	{
-		r_low++;// = (cpu->r & 0x80) + ((cpu->r+1) & 0x7F);
+		++fetches;
+		++r_low;// = (cpu->r & 0x80) + ((cpu->r+1) & 0x7F);
 		t += 4;
 		return Read(pc++);
 	}
@@ -131,13 +142,20 @@ protected:
 	eUla*		ula;
 	eDevices*	devices;
 
-	eFastEmul	fast_emul;
+	struct eHandler
+	{
+		eHandler() : io(NULL), step(NULL) {}
+		eHandlerIo*	io;
+		eHandlerStep* step;
+	};
+	eHandler handler;
 
 	int		t;
 	int		im;
 	int		eipos;
 	int		haltpos;
 	int		frame_tacts;  // t-states per frame
+	int		fetches;
 
 	DECLARE_REG16(pc, pc_l, pc_h)
 	DECLARE_REG16(sp, sp_l, sp_h)

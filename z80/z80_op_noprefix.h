@@ -494,6 +494,7 @@ void Op76() { // halt
 	unsigned int st = (frame_tacts - t-1)/4+1;
 	t += 4*st;
 	r_low += st;
+	fetches += st;
 }
 void Op77() { // ld (hl),a
 	t += 3;

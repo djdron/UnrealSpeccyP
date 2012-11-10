@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools/options.h"
 #include "options_common.h"
 #include "file_type.h"
+#include "snapshot/rzx.h"
 
 namespace xPlatform
 {
@@ -55,9 +56,9 @@ protected:
 	int frame;
 };
 
-static struct eSpeccyHandler : public eHandler
+static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ80::eZ80::eHandlerIo
 {
-	eSpeccyHandler() : speccy(NULL), macro(NULL), video_paused(0) {}
+	eSpeccyHandler() : speccy(NULL), macro(NULL), replay(NULL), video_paused(0) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit();
 	virtual void OnDone();
@@ -80,6 +81,7 @@ static struct eSpeccyHandler : public eHandler
 		return t && t->AbleOpen();
 	}
 	virtual bool OnOpenFile(const char* name, const void* data, size_t data_size);
+	bool OpenFile(const char* name, const void* data, size_t data_size);
 	virtual bool OnSaveFile(const char* name);
 	virtual eActionResult OnAction(eAction action);
 
@@ -89,15 +91,33 @@ static struct eSpeccyHandler : public eHandler
 	virtual void AudioDataUse(int source, dword size) { sound_dev[source]->AudioDataUse(size); }
 	virtual void VideoPaused(bool paused) {	paused ? ++video_paused : --video_paused; }
 
-	virtual bool FullSpeed() const { return speccy->CPU()->FastEmul(); }
+	virtual bool FullSpeed() const { return speccy->CPU()->HandlerStep() != NULL; }
 
 	void PlayMacro(eMacro* m) { SAFE_DELETE(macro); macro = m; }
+	virtual bool RZX_OnOpenSnapshot(const char* name, const void* data, size_t data_size) { return OpenFile(name, data, data_size); }
+	virtual byte Z80_IoRead(word port, int tact)
+	{
+		byte r = 0xff;
+		eRZX::eError e = replay->IoRead(&r);
+		if(e != eRZX::OK)
+			Replay(NULL);
+		return r;
+	}
+	void Replay(eRZX* r)
+	{
+		speccy->CPU()->HandlerIo(NULL);
+		SAFE_DELETE(replay);
+		replay = r;
+		if(replay)
+			speccy->CPU()->HandlerIo(this);
+	}
 
 	eSpeccy* speccy;
 #ifdef USE_UI
 	xUi::eDesktop* ui_desktop;
 #endif//USE_UI
 	eMacro* macro;
+	eRZX* replay;
 	int video_paused;
 
 	enum { SOUND_DEV_COUNT = 3 };
@@ -124,6 +144,7 @@ void eSpeccyHandler::OnDone()
 {
 	xOptions::Store();
 	SAFE_DELETE(macro);
+	SAFE_DELETE(replay);
 	SAFE_DELETE(speccy);
 #ifdef USE_UI
 	SAFE_DELETE(ui_desktop);
@@ -139,7 +160,20 @@ void eSpeccyHandler::OnLoop()
 			if(!macro->Update())
 				SAFE_DELETE(macro);
 		}
-		speccy->Update();
+		if(replay)
+		{
+			int icount = 0;
+			if(replay->Update(&icount) == eRZX::OK)
+			{
+				speccy->Update(&icount);
+			}
+			else
+			{
+				Replay(NULL);
+			}
+		}
+		else
+			speccy->Update(NULL);
 	}
 #ifdef USE_UI
 	ui_desktop->Update();
@@ -210,6 +244,10 @@ void eSpeccyHandler::OnMouse(eMouseAction action, byte a, byte b)
 bool eSpeccyHandler::OnOpenFile(const char* name, const void* data, size_t data_size)
 {
 	OpLastFile(name);
+	return OpenFile(name, data, data_size);
+}
+bool eSpeccyHandler::OpenFile(const char* name, const void* data, size_t data_size)
+{
 	eFileType* t = eFileType::FindByName(name);
 	if(!t)
 		return false;
@@ -263,6 +301,7 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 	switch(action)
 	{
 	case A_RESET:
+		SAFE_DELETE(replay);
 		SAFE_DELETE(macro);
 		speccy->Reset();
 		return AR_OK;
@@ -274,9 +313,9 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 			if(!tape->Started())
 			{
 				if(op_tape_fast)
-					speccy->CPU()->FastEmul(FastTapeEmul);
+					speccy->CPU()->HandlerStep(fast_tape_emul);
 				else
-					speccy->CPU()->FastEmul(NULL);
+					speccy->CPU()->HandlerStep(NULL);
 				tape->Start();
 			}
 			else
@@ -380,6 +419,26 @@ void SetupSoundChip()
 	ay->SetChip(chip == eOptionSoundChip::SC_AY ? eAY::CHIP_AY : eAY::CHIP_YM);
 	ay->SetVolumes(0x7FFF, chip == eOptionSoundChip::SC_AY ? SNDR_VOL_AY : SNDR_VOL_YM, sndr_pan);
 }
+
+static struct eFileTypeRZX : public eFileType
+{
+	virtual bool Open(const void* data, size_t data_size)
+	{
+		eRZX* rzx = new eRZX;
+		if(rzx->Open(data, data_size, &sh) == eRZX::OK)
+		{
+			sh.Replay(rzx);
+			return true;
+		}
+		else
+		{
+			sh.Replay(NULL);
+			SAFE_DELETE(rzx);
+		}
+		return false;
+	}
+	virtual const char* Type() { return "rzx"; }
+} ft_rzx;
 
 static struct eFileTypeZ80 : public eFileType
 {

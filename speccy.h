@@ -36,7 +36,7 @@ public:
 	virtual ~eSpeccy();
 
 	void Reset();
-	void Update();
+	void Update(int* fetches = NULL);
 
 	xZ80::eZ80*	CPU() const { return cpu; }
 	eMemory*	Memory() const { return memory; }

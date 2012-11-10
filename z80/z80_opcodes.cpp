@@ -38,7 +38,7 @@ void eZ80::IoWrite(word port, byte v)
 //-----------------------------------------------------------------------------
 byte eZ80::IoRead(word port) const
 {
-	return devices->IoRead(port, t);
+	return handler.io ? handler.io->Z80_IoRead(port, t) : devices->IoRead(port, t);
 }
 //=============================================================================
 //	eZ80::Write

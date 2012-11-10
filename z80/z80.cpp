@@ -31,9 +31,8 @@ namespace xZ80
 //-----------------------------------------------------------------------------
 eZ80::eZ80(eMemory* _m, eDevices* _d, dword _frame_tacts)
 	: memory(_m), rom(_d->Get<eRom>()), ula(_d->Get<eUla>()), devices(_d)
-	, fast_emul(NULL)
 	, t(0), im(0), eipos(0), haltpos(0)
-	, frame_tacts(_frame_tacts)
+	, frame_tacts(_frame_tacts), fetches(0)
 {
 	pc = sp = ir = memptr = ix = iy = 0;
 	bc = de = hl = af = alt.bc = alt.de = alt.hl = alt.af = 0;
@@ -59,6 +58,8 @@ eZ80::eZ80(eMemory* _m, eDevices* _d, dword _frame_tacts)
 //-----------------------------------------------------------------------------
 void eZ80::Reset()
 {
+	handler.step = NULL;
+	handler.io = NULL;
 	int_flags = 0;
 	ir = 0;
 	im = 0;
@@ -77,8 +78,7 @@ inline byte eZ80::Read(word addr) const
 void eZ80::StepF()
 {
 	rom->Read(pc);
-	if(fast_emul)
-		fast_emul(this);
+	SAFE_CALL(handler.step)->Z80_Step(this);
 	(this->*normal_opcodes[Fetch()])();
 }
 //=============================================================================
@@ -92,8 +92,14 @@ void eZ80::Step()
 //=============================================================================
 //	eZ80::Update
 //-----------------------------------------------------------------------------
-void eZ80::Update(int int_len, int* nmi_pending)
+void eZ80::Update(int int_len, int* nmi_pending, int* _fetches)
 {
+	fetches = 0;
+	if(_fetches)
+	{
+		t = 0;
+		eipos = -1;
+	}
 	if(!iff1 && halted)
 		return;
 	haltpos = 0;
@@ -109,8 +115,16 @@ void eZ80::Update(int int_len, int* nmi_pending)
 		if(halted)
 			break;
 	}
+	if(_fetches)
+	{
+		while(fetches < *_fetches)
+		{
+			Step();
+		}
+		return;
+	}
 	eipos = -1;
-	if(fast_emul)
+	if(handler.step)
 	{
 		while(t < frame_tacts)
 		{

@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 typedef	unsigned long long int qword;
 typedef	unsigned int		dword;
-typedef unsigned short		word;
+typedef unsigned short	word;
 typedef unsigned char		byte;
 
 enum eZeroValue { ZERO };

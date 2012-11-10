@@ -492,10 +492,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	{
 		wxFileDialog fd(this, wxFileSelectorPromptStr, wxConvertMB2WX(OpLastFolder()));
 		fd.SetWildcard(
-				L"Supported files|*.sna;*.z80;*.trd;*.scl;*.tap;*.csw;*.tzx;*.zip;"
-								L"*.SNA;*.Z80;*.TRD;*.SCL;*.TAP;*.CSW;*.TZX;*.ZIP|"
+				L"Supported files|*.sna;*.z80;*.rzx;*.trd;*.scl;*.fdi;*.tap;*.csw;*.tzx;*.zip;"
+								L"*.SNA;*.Z80;*.RZX;*.TRD;*.SCL;*.FDI;*.TAP;*.CSW;*.TZX;*.ZIP|"
 				L"All files|*.*|"
 				L"Snapshot files (*.sna;*.z80)|*.sna;*.z80;*.SNA;*.Z80|"
+				L"Replay files (*.rzx)|*.rzx;*.RZX|"
 				L"Disk images (*.trd;*.scl)|*.trd;*.scl;*.TRD;*.SCL|"
 				L"Tape files (*.tap;*.csw;*.tzx)|*.tap;*.csw;*.tzx;*.TAP;*.CSW;*.TZX|"
 				L"ZIP archives (*.zip)|*.zip;*.ZIP"
