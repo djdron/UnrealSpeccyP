@@ -490,7 +490,6 @@ void Op75() { // ld (hl),l
 }
 void Op76() { // halt
 	halted = 1;
-	haltpos = t;
 	unsigned int st = (frame_tacts - t-1)/4+1;
 	t += 4*st;
 	r_low += st;

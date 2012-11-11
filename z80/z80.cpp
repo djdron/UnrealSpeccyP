@@ -31,7 +31,7 @@ namespace xZ80
 //-----------------------------------------------------------------------------
 eZ80::eZ80(eMemory* _m, eDevices* _d, dword _frame_tacts)
 	: memory(_m), rom(_d->Get<eRom>()), ula(_d->Get<eUla>()), devices(_d)
-	, t(0), im(0), eipos(0), haltpos(0)
+	, t(0), im(0), eipos(0)
 	, frame_tacts(_frame_tacts), fetches(0)
 {
 	pc = sp = ir = memptr = ix = iy = 0;
@@ -94,15 +94,21 @@ void eZ80::Step()
 //-----------------------------------------------------------------------------
 void eZ80::Update(int int_len, int* nmi_pending, int* _fetches)
 {
-	fetches = 0;
-	if(_fetches)
-	{
-		t = 0;
-		eipos = -1;
-	}
 	if(!iff1 && halted)
 		return;
-	haltpos = 0;
+	if(_fetches)
+	{
+		fetches = 0;
+		t = 0;
+		eipos = -1;
+		while(fetches < *_fetches)
+		{
+			Step();
+		}
+		if(iff1 && t != eipos)
+			Int();
+		return;
+	}
 	// INT check separated from main Z80 loop to improve emulation speed
 	while(t < int_len)
 	{
@@ -114,14 +120,6 @@ void eZ80::Update(int int_len, int* nmi_pending, int* _fetches)
 		Step();
 		if(halted)
 			break;
-	}
-	if(_fetches)
-	{
-		while(fetches < *_fetches)
-		{
-			Step();
-		}
-		return;
 	}
 	eipos = -1;
 	if(handler.step)

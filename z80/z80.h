@@ -153,7 +153,6 @@ protected:
 	int		t;
 	int		im;
 	int		eipos;
-	int		haltpos;
 	int		frame_tacts;  // t-states per frame
 	int		fetches;
 
