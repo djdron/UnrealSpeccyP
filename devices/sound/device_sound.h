@@ -29,7 +29,7 @@ union SNDSAMPLE
 	struct { word left, right; } ch; // or left/right separately
 };
 
-const dword SNDR_DEFAULT_SYSTICK_RATE = 3500000; // ZX-Spectrum Z80 clock
+const dword SNDR_DEFAULT_SYSTICK_RATE = 71680 * 50; // ZX-Spectrum Z80 clock
 const dword SNDR_DEFAULT_SAMPLE_RATE = 44100;
 
 //=============================================================================
@@ -53,7 +53,7 @@ public:
 
 protected:
 	dword mix_l, mix_r;
-	SNDSAMPLE* dstpos, * dst_start;
+	SNDSAMPLE* dstpos;
 	dword clock_rate, sample_rate;
 
 	SNDSAMPLE buffer[BUFFER_LEN];

@@ -38,7 +38,8 @@ const dword TICK_F = (1<<TICK_FF);
 //-----------------------------------------------------------------------------
 void eDeviceSound::FrameStart()
 {
-	base_tick = tick;
+	dword dt = tick % (sample_rate * TICK_F / 50); //prev frame rest
+	base_tick = tick - dt;
 }
 //=============================================================================
 //	eDeviceSound::Update
@@ -79,7 +80,7 @@ dword eDeviceSound::AudioDataReady()
 void eDeviceSound::AudioDataUse(dword size)
 {
 	assert(size == AudioDataReady());
-	dstpos = dst_start = buffer;
+	dstpos = buffer;
 }
 //=============================================================================
 //	eDeviceSound::SetTimings
@@ -90,7 +91,7 @@ void eDeviceSound::SetTimings(dword _clock_rate, dword _sample_rate)
 	sample_rate = _sample_rate;
 
 	tick = base_tick = 0;
-	dstpos = dst_start = buffer;
+	dstpos = buffer;
 }
 
 static dword filter_diff[TICK_F*2];
@@ -129,7 +130,7 @@ void eDeviceSound::Flush(dword endtick)
 		dstpos++;
 		if(dstpos - buffer >= BUFFER_LEN)
 		{
-			dstpos = dst_start = buffer;
+			dstpos = buffer;
 		}
 
 		scale = filter_sum_half_u - filter_diff[tick & (TICK_F-1)];
@@ -153,7 +154,7 @@ void eDeviceSound::Flush(dword endtick)
 				dstpos++;
 				if(dstpos - buffer >= BUFFER_LEN)
 				{
-					dstpos = dst_start = buffer;
+					dstpos = buffer;
 				}
 
 				tick += TICK_F;
