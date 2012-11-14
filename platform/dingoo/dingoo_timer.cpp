@@ -28,7 +28,7 @@ namespace xPlatform
 
 class eTimer
 {
-	enum { CHANNEL = 3, REFRESH_LATENCY = CFG_EXTAL / 4 / 50 };
+	enum { CHANNEL = 0, REFRESH_LATENCY = CFG_EXTAL / 4 / 50 };
 public:
 	eTimer()
 	{

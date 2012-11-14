@@ -31,119 +31,210 @@ PROFILER_DECLARE(draw);
 PROFILER_DECLARE(flip);
 
 void* g_pGameDecodeBuf = NULL;
+extern "C" void* sys_get_ccpmp_config();
 
 namespace xPlatform
 {
 
-enum eRayMirror { RS_FIRST, RS_NONE = RS_FIRST, RS_MIRROR_H, RS_MIRROR_V, RS_MIRROR_HV, RS_LAST };
+enum eRayMirror { RM_FIRST, RM_NONE = RM_FIRST, RM_H, RM_V, RM_HV, RM_LAST };
 
-static struct eOptionRayMirror : public xOptions::eOptionInt
+struct eOptionRayMirror : public xOptions::eOptionInt
 {
 	virtual const char* Name() const { return "ray mirror"; }
 	virtual const char** Values() const
 	{
-		static const char* values[] = { "hv", "v", "h", "n", NULL };
+		static const char* values[] = { "n", "h", "v", "hv", NULL };
 		return values;
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(RS_FIRST, RS_LAST, next);
+		eOptionInt::Change(RM_FIRST, RM_LAST, next);
 	}
 	virtual int Order() const { return 75; }
-} op_ray_mirror;
+};
 
-static struct eOptionRaySync : public xOptions::eOptionBool
+struct eOptionRaySync : public xOptions::eOptionBool
 {
 	virtual const char* Name() const { return "ray sync"; }
 	virtual int Order() const { return 76; }
-} op_ray_sync;
+};
+
+static eOptionRaySync& OpRaySync() { static eOptionRaySync ors; return ors; }
+static eOptionRayMirror& OpRayMirror() { static eOptionRayMirror orm; return orm; }
+
+class eLcd
+{
+public:
+	virtual void Reset() = 0;
+	virtual void RaySync(bool on) = 0;
+protected:
+	void Set(word reg, int v1 = -1, int v2 = -1, int v3 = -1, int v4 = -1)
+	{
+		enum { PIN_RS_N = 32 * 2 + 19 };
+		__gpio_clear_pin(PIN_RS_N);
+		REG_SLCD_DATA = SLCD_DATA_RS_COMMAND|reg;
+		while(REG_SLCD_STATE&SLCD_STATE_BUSY);
+		__gpio_set_pin(PIN_RS_N);
+		const int* vs[] = { &v1, &v2, &v3, &v4 };
+		for(int i = 0; i < 4 && *vs[i] != -1; ++i)
+		{
+			REG_SLCD_DATA = SLCD_DATA_RS_DATA|(word)*vs[i];
+			while(REG_SLCD_STATE&SLCD_STATE_BUSY);
+		}
+	}
+};
+
+class eLcd9325 : public eLcd
+{
+public:
+	virtual void Reset()
+	{
+		for(int i = 0; i < 5; ++i) //wait for lcd reset
+			Set(R_RESET, (1 << 4)|(1 << 5)|(1 << 8));
+		Set(R_RESET, 3|(1 << 4)|(1 << 5)|(1 << 8));
+		Set(R_GRAM_WRITE);
+	}
+	virtual void RaySync(bool on)
+	{
+		bool mh = OpRayMirror()&RM_H;
+		bool mv = OpRayMirror()&RM_V;
+		word entry = on ? 0x1070 : 0x1048|(!mv ? 1 << 4 : 0)|(!mh ? 1 << 5 : 0);
+		Set(R_ENTRY, entry);
+		Set(R_PORCHES, Porches(on));
+		Set(R_FRAME_RATE, FrameRate(on));
+		Set(R_GRAM_HADDR, on || !mv ? 0 : 239);
+		Set(R_GRAM_VADDR, on || !mh ? 0 : 319);
+		Set(R_GRAM_WRITE);
+	}
+protected:
+	virtual word Porches(bool ray_sync) const { return ray_sync ? 0x0909 : 0x0207; }
+	virtual word FrameRate(bool ray_sync) const { return ray_sync ? 0x4 : 0xd; }
+	enum eRegister { R_ENTRY = 0x03, R_RESET = 0x07, R_PORCHES = 0x08
+		, R_GRAM_HADDR = 0x20, R_GRAM_VADDR = 0x21, R_GRAM_WRITE = 0x22, R_FRAME_RATE = 0x2b };
+};
+
+class eLcd9331 : public eLcd9325
+{
+protected:
+	virtual word Porches(bool ray_sync) const { return ray_sync ? 0x0909 : 0x0202; }
+	virtual word FrameRate(bool ray_sync) const { return ray_sync ? 0x8 : 0xd; }
+};
+
+class eLcd9338 : public eLcd
+{
+public:
+	virtual void Reset()
+	{
+		for(int i = 0; i < 5; ++i) //wait for lcd reset
+			Set(R_OFF);
+		Set(R_ON);
+		Set(R_MEMORY_WRITE);
+	}
+	virtual void RaySync(bool on)
+	{
+		bool mh = OpRayMirror()&RM_H;
+		bool mv = OpRayMirror()&RM_V;
+		word access = on ? 0x08 : 0x28|(mv ? 1 << 6 : 0)|(mh ? 1 << 7 : 0);
+		Set(R_MEMORY_ACCESS, access);
+		word vblank = on ? 0x0808 : 0x0202;
+		Set(R_PORCHES, vblank >> 8, vblank&0xff, 0x0a, 0x14);
+		word frame_rate = on ? 0x0112 : 0x0011;
+		Set(R_FRAME_RATE, frame_rate >> 8, frame_rate&0xff);
+		word column = on ? 239 : 319;
+		word page = on ? 319 : 239;
+		Set(R_COLUMN_ADDR, 0, 0, column >> 8, column&0xff);
+		Set(R_PAGE_ADDR, 0, 0, page >> 8, page&0xff);
+		Set(R_MEMORY_WRITE);
+	}
+protected:
+	enum eRegister { R_OFF = 0x28, R_ON = 0x29, R_COLUMN_ADDR = 0x2a
+		, R_PAGE_ADDR = 0x2b, R_MEMORY_WRITE = 0x2c, R_MEMORY_ACCESS = 0x36
+		, R_FRAME_RATE = 0xb1, R_PORCHES = 0xb5 };
+};
 
 class eVideo
 {
 public:
-	eVideo() : frame(NULL), ray_mirror(0), ray_sync(false)
-	{
-		frame = (word*)_lcd_get_frame();
-		for(int c = 0; c < 16; ++c)
-		{
-			byte i = c&8 ? BRIGHTNESS + BRIGHT_INTENSITY : BRIGHTNESS;
-			byte b = c&1 ? i : 0;
-			byte r = c&2 ? i : 0;
-			byte g = c&4 ? i : 0;
-			colors888[c] = xUi::eRGBAColor(r, g, b).rgba;
-			colors565[c] = BGR565(r, g, b);
-		}
-	}
+	eVideo();
 	~eVideo()
 	{
 		if(ray_sync)
-			RaySync(RaySyncRestoreEntry());
+			SAFE_CALL(lcd)->RaySync(false);
+		SAFE_DELETE(lcd);
 	}
 	void Flip();
 	void Update();
 protected:
-	void Set(dword cmd, int data = -1);
-	enum { BRIGHTNESS = 190, BRIGHT_INTENSITY = 65 };
 	inline dword BGR565(byte r, byte g, byte b) const { return (((r&~7) << 8)|((g&~3) << 3)|(b >> 3)); }
-	void	UpdateRayOptions();
-	void	RaySync(dword entry);
-	dword	RaySyncRestoreEntry() const { return 0x1048|((((~ray_mirror&2) >> 1)|((~ray_mirror&1) << 1)) << 4); }
+	void UpdateRayOptions();
 protected:
-	word*	frame;
-	word	colors565[16];
-	dword	colors888[16];
-	int		ray_mirror;
-	bool	ray_sync;
-};
+	word colors565[16];
+	dword colors888[16];
+	bool ray_sync;
+	int frame_counter;
+	eLcd* lcd;
+	word* frame;
+} video;
 
-void eVideo::Set(dword cmd, int data)
+eVideo::eVideo() : ray_sync(false), frame_counter(0), lcd(NULL), frame(NULL)
 {
-	// SLCD related GPIO pins for the Dingoo A320
-	const int pin_rs_n = 32*2+19;	// port 2 pin 19: RS# (register select, active low)
-
-	__gpio_clear_pin(pin_rs_n);
-	REG_SLCD_DATA = SLCD_DATA_RS_COMMAND|(cmd&0xffff);
-	while(REG_SLCD_STATE&SLCD_STATE_BUSY);
-	__gpio_set_pin(pin_rs_n);
-	if(data == -1)
-		return;
-	REG_SLCD_DATA = SLCD_DATA_RS_DATA|(data&0xffff);
-	while(REG_SLCD_STATE&SLCD_STATE_BUSY);
+	for(int c = 0; c < 16; ++c)
+	{
+		enum { BRIGHTNESS = 190, BRIGHT_INTENSITY = 65 };
+		byte i = c&8 ? BRIGHTNESS + BRIGHT_INTENSITY : BRIGHTNESS;
+		byte b = c&1 ? i : 0;
+		byte r = c&2 ? i : 0;
+		byte g = c&4 ? i : 0;
+		colors888[c] = xUi::eRGBAColor(r, g, b).rgba;
+		colors565[c] = BGR565(r, g, b);
+	}
+	enum { LCD_NAME_OFFSET = 72 };
+	const char* lcd_name = (const char*)sys_get_ccpmp_config() + LCD_NAME_OFFSET;
+	for(int i = 0; i < 32; ++i)
+	{
+		if(!strncmp(&lcd_name[i], "9325", 4))		{ lcd = new eLcd9325; break; }
+		else if(!strncmp(&lcd_name[i], "9331", 4))	{ lcd = new eLcd9331; break; }
+		else if(!strncmp(&lcd_name[i], "9338", 4))	{ lcd = new eLcd9338; break; }
+	}
+	if(lcd)
+	{
+		OpRaySync();
+		OpRayMirror();
+	}
+	frame = (word*)_lcd_get_frame();
 }
 void eVideo::Flip()
 {
 	PROFILER_SECTION(flip);
-	__dcache_writeback_all();
+	if(ray_sync)
+	{
+		frame_counter &= 1;
+		if(!frame_counter++)
+		{
+			SAFE_CALL(lcd)->Reset();
+		}
+	}
 	_lcd_set_frame();
-}
-void eVideo::RaySync(dword entry)
-{
-	Set(0x2b, 0x000d);	//max refresh rate
-	Set(0x03, entry);	//entry mode
-	Set(0x20, 0);
-	Set(0x21, 0);
-	Set(0x22);			//write to GRAM
 }
 void eVideo::UpdateRayOptions()
 {
-	ray_mirror = 3 - op_ray_mirror;
-	if(ray_sync != op_ray_sync)
+	if(lcd && ray_sync != OpRaySync())
 	{
-		ray_sync = op_ray_sync;
-		RaySync(ray_sync ? 0x1070 : RaySyncRestoreEntry());
+		ray_sync = OpRaySync();
+		SAFE_CALL(lcd)->RaySync(ray_sync);
 	}
 }
 void eVideo::Update()
 {
 	PROFILER_SECTION(draw);
-	byte* src = (byte*)Handler()->VideoData();
-	byte* src_ui = (byte*)Handler()->VideoDataUI();
+	const byte* src = (const byte*)Handler()->VideoData();
+	const byte* src_ui = (const byte*)Handler()->VideoDataUI();
 	word* dst = frame;
 	UpdateRayOptions();
-	int mirr = ray_sync ? ray_mirror : 0;
-	bool mirr_h = mirr & 1;
-	bool mirr_v = mirr & 2;
-	int offs_base = !ray_sync ? 0 : mirr_h ? 319 : 0;
+	int mirr = ray_sync ? OpRayMirror() : 0;
+	bool mirr_h = mirr&RM_H;
+	bool mirr_v = mirr&RM_V;
+	int offs_base = mirr_h ? 319 : 0;
 	int ext_step = !ray_sync ? 320 : mirr_h ? -1 : 1;
 	int int_step = !ray_sync ? 1 : mirr_v ? -320 : 320;
 	int ext_end = !ray_sync ? 320*240 : mirr_h ? -1 : 320;
@@ -151,19 +242,7 @@ void eVideo::Update()
 	offs_base += mirr_v ? 320*239 : 0;
 	ext_end += mirr_v ? 320*239 : 0;
 	int_end += mirr_h ? 319 : 0;
-	if(src_ui)
-	{
-		for(; offs_base != ext_end; offs_base += ext_step, int_end += ext_step)
-		{
-			for(int offs = offs_base; offs != int_end; offs += int_step)
-			{
-				xUi::eRGBAColor c_ui = xUi::palette[src_ui[offs]];
-				xUi::eRGBAColor c = colors888[src[offs]];
-				*dst++ = BGR565((c.r >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.b >> c_ui.a) + c_ui.b);
-			}
-		}
-	}
-	else
+	if(!src_ui)
 	{
 		for(; offs_base != ext_end; offs_base += ext_step, int_end += ext_step)
 		{
@@ -172,15 +251,26 @@ void eVideo::Update()
 				*dst++ = colors565[src[offs]];
 			}
 		}
+		return;
+	}
+	for(; offs_base != ext_end; offs_base += ext_step, int_end += ext_step)
+	{
+		for(int offs = offs_base; offs != int_end; offs += int_step)
+		{
+			xUi::eRGBAColor c_ui = xUi::palette[src_ui[offs]];
+			xUi::eRGBAColor c = colors888[src[offs]];
+			*dst++ = BGR565((c.r >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.b >> c_ui.a) + c_ui.b);
+		}
 	}
 }
 
 void UpdateVideo()
 {
-	static eVideo video;
+	while(!__dmac_channel_transmit_end_detected(0));
 	video.Update();
-	video.Flip();
+	__dcache_writeback_all();
 }
+void FlipVideo() { video.Flip(); }
 
 }
 //namespace xPlatform

@@ -43,18 +43,17 @@ void Done()
 	Handler()->OnDone();
 }
 
-void WaitTimer();
-void UpdateKeys();
-void UpdateSound();
 void UpdateVideo();
+void FlipVideo();
+void UpdateAudio();
+void UpdateKeys();
 
 void Loop()
 {
 	while(!OpQuit() && _sys_judge_event(NULL) >= 0)
 	{
-		if(!Handler()->FullSpeed())
-			WaitTimer();
-		UpdateSound();
+		UpdateAudio(); //sync by audio
+		FlipVideo();
 		UpdateKeys();
 		Handler()->OnLoop();
 		UpdateVideo();

@@ -50,16 +50,16 @@ protected:
 
 void eAudio::Update()
 {
-	if(OpVolume() != volume)
+	bool ui_enabled = Handler()->VideoDataUI();
+	if((!ui_enabled && OpVolume() != volume) || (ui_enabled && volume))
 	{
-		volume = OpVolume();
+		volume = !ui_enabled ? OpVolume() : 0;
 		SetVolume(volume * 3);
 	}
 	for(int i = Handler()->AudioSources(); --i >= 0;)
 	{
 		dword size = Handler()->AudioDataReady(i);
-		bool ui_enabled = Handler()->VideoDataUI();
-		if(i == OpSound() && !ui_enabled && !Handler()->FullSpeed())
+		if(i == OpSound() && !Handler()->FullSpeed())
 		{
 			waveout_write(handle, (char*)Handler()->AudioData(i), size);
 		}
@@ -67,7 +67,7 @@ void eAudio::Update()
 	}
 }
 
-void UpdateSound() { static eAudio audio; audio.Update(); }
+void UpdateAudio() { static eAudio audio; audio.Update(); }
 
 }
 //namespace xPlatform
