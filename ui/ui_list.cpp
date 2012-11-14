@@ -108,15 +108,19 @@ void eList::Item(const char* item)
 //-----------------------------------------------------------------------------
 void eList::Selected(int s)
 {
-	if(s >= size)
+	if(!size)
+	{
+		selected = -1;
+		return;
+	}
+	if(s == -1 && s == selected - 1)	
+		selected = size - 1;
+	else if(s == size && s == selected + 1)
+		selected = 0;
+	else if(s >= size)
 		selected = size - 1;
 	else if(s <= 0)
-	{
-		if(size)
-			selected = 0;
-		else
-			selected = -1;
-	}
+		selected = 0;
 	else
 		selected = s;
 }
