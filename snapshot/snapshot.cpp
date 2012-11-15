@@ -82,18 +82,18 @@ bool eZ80Accessor::SetState(const eSnapshot_SNA* s, size_t buf_size)
 	if(!sna48 && !sna128)
 		return false;
 
-	alt.af = SwapWord(&s->alt_af);
-	alt.bc = SwapWord(&s->alt_bc);
-	alt.de = SwapWord(&s->alt_de);
-	alt.hl = SwapWord(&s->alt_hl);
-	af = SwapWord(&s->af);
-	bc = SwapWord(&s->bc);
-	de = SwapWord(&s->de);
-	hl = SwapWord(&s->hl);
-	ix = SwapWord(&s->ix);
-	iy = SwapWord(&s->iy);
-	sp = SwapWord(&s->sp);
-	pc = SwapWord(&s->pc);
+	alt.af = SwapWord(s->alt_af);
+	alt.bc = SwapWord(s->alt_bc);
+	alt.de = SwapWord(s->alt_de);
+	alt.hl = SwapWord(s->alt_hl);
+	af = SwapWord(s->af);
+	bc = SwapWord(s->bc);
+	de = SwapWord(s->de);
+	hl = SwapWord(s->hl);
+	ix = SwapWord(s->ix);
+	iy = SwapWord(s->iy);
+	sp = SwapWord(s->sp);
+	pc = SwapWord(s->pc);
 	i = s->i;
 	r_low = s->r;
 	r_hi = s->r & 0x80;
@@ -138,18 +138,18 @@ size_t eZ80Accessor::StoreState(eSnapshot_SNA* s)
 	s->i = i; s->r = (r_low & 0x7F)+r_hi; s->im = im;
 	s->iff1 = iff1 ? 0xFF : 0;
 
-	SwapEndian(&s->alt_af);
-	SwapEndian(&s->alt_bc);
-	SwapEndian(&s->alt_de);
-	SwapEndian(&s->alt_hl);
-	SwapEndian(&s->af);
-	SwapEndian(&s->bc);
-	SwapEndian(&s->de);
-	SwapEndian(&s->hl);
-	SwapEndian(&s->ix);
-	SwapEndian(&s->iy);
-	SwapEndian(&s->sp);
-	SwapEndian(&s->pc);
+	SwapEndian(s->alt_af);
+	SwapEndian(s->alt_bc);
+	SwapEndian(s->alt_de);
+	SwapEndian(s->alt_hl);
+	SwapEndian(s->af);
+	SwapEndian(s->bc);
+	SwapEndian(s->de);
+	SwapEndian(s->hl);
+	SwapEndian(s->ix);
+	SwapEndian(s->iy);
+	SwapEndian(s->sp);
+	SwapEndian(s->pc);
 
 	byte p7FFD = memory->Page(3) - eMemory::P_RAM0;
 	if(!devices->Get<eUla>()->FirstScreen())
@@ -198,8 +198,7 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 	word reg_pc = s->pc;
 	if(reg_pc == 0)
 	{ // 2.01
-		word len = s->len;
-		SwapEndian(&len);
+		word len = SwapWord(s->len);
 		ptr += 2 + len;
 		reg_pc = s->newpc;
 		while(ptr < (byte*)s + buf_size)
@@ -248,10 +247,10 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 		model48k = true;
 	}
 	a = s->a, f = s->f;
-	bc = SwapWord(&s->bc), de = SwapWord(&s->de), hl = SwapWord(&s->hl);
-	alt.bc = SwapWord(&s->bc1), alt.de = SwapWord(&s->de1), alt.hl = SwapWord(&s->hl1);
+	bc = SwapWord(s->bc), de = SwapWord(s->de), hl = SwapWord(s->hl);
+	alt.bc = SwapWord(s->bc1), alt.de = SwapWord(s->de1), alt.hl = SwapWord(s->hl1);
 	alt.a = s->a1, alt.f = s->f1;
-	pc = SwapWord(&reg_pc), sp = SwapWord(&s->sp); ix = SwapWord(&s->ix), iy = SwapWord(&s->iy);
+	pc = SwapWord(reg_pc), sp = SwapWord(s->sp); ix = SwapWord(s->ix), iy = SwapWord(s->iy);
 
 	i = s->i, r_low = s->r & 0x7F;
 	r_hi = ((flags & 1) << 7);

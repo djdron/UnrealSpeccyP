@@ -23,17 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //#define USE_BIG_ENDIAN
 
-inline word swap_byte_order(const word& v) { return (v >> 8) | (v << 8); }
+inline word swap_byte_order(word v) { return (v >> 8) | (v << 8); }
 
 #ifdef USE_BIG_ENDIAN
 
-inline word SwapWord(const word* v)		{ return swap_byte_order(*v); }
-inline void SwapEndian(word* v)			{ *v = swap_byte_order(*v); }
+inline word SwapWord(word v)		{ return swap_byte_order(v); }
+inline void SwapEndian(word& v)		{ v = swap_byte_order(v); }
 
 #else//USE_BIG_ENDIAN
 
-inline word SwapWord(const word* v)		{ return *v; }
-inline void SwapEndian(word* v)			{}
+inline word SwapWord(word v)		{ return v; }
+inline void SwapEndian(word& v)		{}
 
 #endif//USE_BIG_ENDIAN
 
