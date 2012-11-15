@@ -927,6 +927,14 @@
 				RelativePath=".\snapshot\snapshot.h"
 				>
 			</File>
+			<File
+				RelativePath=".\snapshot\rzx.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\snapshot\rzx.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="ui"

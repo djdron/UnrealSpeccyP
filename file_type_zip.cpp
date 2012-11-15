@@ -116,7 +116,7 @@ bool eFileTypeZIP::Open(const void* data, size_t data_size)
 	return ok;
 }
 
-#endif//USE_ZIP
-
 }
 //namespace xPlatform
+
+#endif//USE_ZIP
