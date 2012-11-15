@@ -182,7 +182,7 @@
 				ExecutionBucket="7"
 				Optimization="0"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="_WIN_MOBILE;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
+				PreprocessorDefinitions="_WIN_MOBILE;USE_ZIP;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				WarningLevel="3"
@@ -265,7 +265,7 @@
 				ExecutionBucket="7"
 				Optimization="3"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="_WIN_MOBILE;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
+				PreprocessorDefinitions="_WIN_MOBILE;USE_ZIP;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
 				WarningLevel="3"
 			/>
 			<Tool
@@ -916,6 +916,14 @@
 			Name="snapshot"
 			>
 			<File
+				RelativePath=".\snapshot\rzx.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\snapshot\rzx.h"
+				>
+			</File>
+			<File
 				RelativePath=".\snapshot\screenshot.cpp"
 				>
 			</File>
@@ -925,14 +933,6 @@
 			</File>
 			<File
 				RelativePath=".\snapshot\snapshot.h"
-				>
-			</File>
-			<File
-				RelativePath=".\snapshot\rzx.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\snapshot\rzx.h"
 				>
 			</File>
 		</Filter>

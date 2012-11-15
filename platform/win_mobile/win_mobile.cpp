@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <aygshell.h>
 #pragma comment(lib, "aygshell.lib") 
 
+#include "../../tools/options.h"
+#include "../../options_common.h"
 #include "../io.h"
 
 namespace xPlatform
@@ -214,8 +216,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static HDC hdc_mem = NULL;
 	static HBITMAP bmp_mem = NULL;
 	static word* tex = NULL;
+	static HMENU main_menu = NULL;
 	static HMENU joy_menu = NULL;
-	static dword key_flags = KF_CURSOR|KF_KEMPSTON;
 
 	enum eTimerId { TM_UPDATE = 1 };
 	enum eCommandId
@@ -225,6 +227,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		IDM_RESET,
 		IDM_TAPE_TOGGLE, IDM_TAPE_FAST_TOGGLE,
 		IDM_JOY_KEMPSTON, IDM_JOY_CURSOR, IDM_JOY_QAOP, IDM_JOY_SINCLAIR2
+	};
+	struct eUpdateJoyMenu
+	{
+		eUpdateJoyMenu()
+		{
+			CheckMenuItem(joy_menu, IDM_JOY_KEMPSTON, MF_BYCOMMAND|(OpJoystick() == J_KEMPSTON ? MF_CHECKED : MF_UNCHECKED));
+			CheckMenuItem(joy_menu, IDM_JOY_CURSOR, MF_BYCOMMAND|(OpJoystick() == J_CURSOR ? MF_CHECKED : MF_UNCHECKED));
+			CheckMenuItem(joy_menu, IDM_JOY_QAOP, MF_BYCOMMAND|(OpJoystick() == J_QAOP ? MF_CHECKED : MF_UNCHECKED));
+			CheckMenuItem(joy_menu, IDM_JOY_SINCLAIR2, MF_BYCOMMAND|(OpJoystick() == J_SINCLAIR2 ? MF_CHECKED : MF_UNCHECKED));
+		}
 	};
 
 	switch(message)
@@ -243,7 +255,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				ofn.lpstrFile = file;
 				ofn.nMaxFile = 1024;
 				ofn.lpstrInitialDir = resource_path;
-				ofn.lpstrFilter = L"All supported formats\0*.sna;*.tap;*.tzx;*.trd;*.scl\0\0";
+				ofn.lpstrFilter = L"All supported formats\0*.sna;*.z80;*.rzx;*.tap;*.csw;*.tzx;*.trd;*.scl;*.fdi;*.zip\0\0";
 				ofn.Flags = OFN_PATHMUSTEXIST;
 				if(GetOpenFileName(&ofn))
 				{
@@ -257,7 +269,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			Handler()->OnAction(A_TAPE_TOGGLE);
 			break;
 		case IDM_TAPE_FAST_TOGGLE:
-			Handler()->OnAction(A_TAPE_FAST_TOGGLE);
+			{
+				using namespace xOptions;
+				eOption<bool>* op_tape_fast = eOption<bool>::Find("fast tape");
+				SAFE_CALL(op_tape_fast)->Change();
+				bool tape_fast = op_tape_fast && *op_tape_fast;
+				CheckMenuItem(main_menu, IDM_TAPE_FAST_TOGGLE, MF_BYCOMMAND|(tape_fast ? MF_CHECKED : MF_UNCHECKED));
+			}
 			break;
 		case IDM_RESET:
 			Handler()->OnAction(A_RESET);
@@ -266,41 +284,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
 			break;
 		case IDM_JOY_KEMPSTON:
-			key_flags ^= KF_KEMPSTON;
-			CheckMenuItem(joy_menu, IDM_JOY_KEMPSTON, MF_BYCOMMAND|(key_flags&KF_KEMPSTON ? MF_CHECKED : MF_UNCHECKED));
+			OpJoystick(J_KEMPSTON);
+			eUpdateJoyMenu();
 			break;
 		case IDM_JOY_CURSOR:
-			key_flags ^= KF_CURSOR;
-			CheckMenuItem(joy_menu, IDM_JOY_CURSOR, MF_BYCOMMAND|(key_flags&KF_CURSOR? MF_CHECKED : MF_UNCHECKED));
+			OpJoystick(J_CURSOR);
+			eUpdateJoyMenu();
 			break;
 		case IDM_JOY_QAOP:
-			key_flags ^= KF_QAOP;
-			CheckMenuItem(joy_menu, IDM_JOY_QAOP, MF_BYCOMMAND|(key_flags&KF_QAOP? MF_CHECKED : MF_UNCHECKED));
+			OpJoystick(J_QAOP);
+			eUpdateJoyMenu();
 			break;
 		case IDM_JOY_SINCLAIR2:
-			key_flags ^= KF_SINCLAIR2;
-			CheckMenuItem(joy_menu, IDM_JOY_SINCLAIR2, MF_BYCOMMAND|(key_flags&KF_SINCLAIR2? MF_CHECKED : MF_UNCHECKED));
+			OpJoystick(J_SINCLAIR2);
+			eUpdateJoyMenu();
 			break;
 		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	case WM_CREATE:
 		{
 			HMENU menu = CreateMenu();
-			HMENU p = CreatePopupMenu();
-			AppendMenu(menu, MF_STRING|MF_POPUP, (UINT)p, TEXT("File"));
-			AppendMenu(p, MF_STRING, IDM_OPEN_FILE, TEXT("Open"));
-			AppendMenu(p, MF_STRING, IDM_TAPE_TOGGLE, TEXT("Start/stop tape"));
-			AppendMenu(p, MF_STRING, IDM_TAPE_FAST_TOGGLE, TEXT("Fast tape"));
+			main_menu = CreatePopupMenu();
+			AppendMenu(menu, MF_STRING|MF_POPUP, (UINT)main_menu, TEXT("File"));
+			AppendMenu(main_menu, MF_STRING, IDM_OPEN_FILE, TEXT("Open"));
+			AppendMenu(main_menu, MF_STRING, IDM_TAPE_TOGGLE, TEXT("Start/stop tape"));
+			xOptions::eOption<bool>* op_tape_fast = xOptions::eOption<bool>::Find("fast tape");
+			AppendMenu(main_menu, MF_STRING|(op_tape_fast && *op_tape_fast ? MF_CHECKED : 0), IDM_TAPE_FAST_TOGGLE, TEXT("Fast tape"));
 
 			joy_menu = CreatePopupMenu();
-			AppendMenu(joy_menu, MF_STRING|((key_flags&KF_KEMPSTON) ? MF_CHECKED : 0), IDM_JOY_KEMPSTON, TEXT("Kempston"));
-			AppendMenu(joy_menu, MF_STRING|((key_flags&KF_CURSOR) ? MF_CHECKED : 0), IDM_JOY_CURSOR, TEXT("Cursor"));
-			AppendMenu(joy_menu, MF_STRING|((key_flags&KF_QAOP) ? MF_CHECKED : 0), IDM_JOY_QAOP, TEXT("QAOP"));
-			AppendMenu(joy_menu, MF_STRING|((key_flags&KF_SINCLAIR2) ? MF_CHECKED : 0), IDM_JOY_SINCLAIR2, TEXT("Sinclair2"));
+			AppendMenu(joy_menu, MF_STRING, IDM_JOY_KEMPSTON, TEXT("Kempston"));
+			AppendMenu(joy_menu, MF_STRING, IDM_JOY_CURSOR, TEXT("Cursor"));
+			AppendMenu(joy_menu, MF_STRING, IDM_JOY_QAOP, TEXT("QAOP"));
+			AppendMenu(joy_menu, MF_STRING, IDM_JOY_SINCLAIR2, TEXT("Sinclair2"));
+			eUpdateJoyMenu();
 
-			AppendMenu(p, MF_STRING|MF_POPUP, (UINT)joy_menu, TEXT("Joystick"));
-			AppendMenu(p, MF_STRING, IDM_RESET, TEXT("Reset"));
-			AppendMenu(p, MF_STRING, IDM_EXIT, TEXT("Exit"));
+			AppendMenu(main_menu, MF_STRING|MF_POPUP, (UINT)joy_menu, TEXT("Joystick"));
+			AppendMenu(main_menu, MF_STRING, IDM_RESET, TEXT("Reset"));
+			AppendMenu(main_menu, MF_STRING, IDM_EXIT, TEXT("Exit"));
 			SHMENUBARINFO mbi;
 			memset(&mbi, 0, sizeof(SHMENUBARINFO));
 			mbi.cbSize     = sizeof(SHMENUBARINFO);
@@ -381,7 +401,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			int vk_key = (int)wParam;
 			char key = 0;
-			dword flags = KF_DOWN|key_flags;
+			dword flags = KF_DOWN|OpJoyKeyFlags();
 			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
 			if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
 			TranslateKey(vk_key, key, flags);
@@ -398,7 +418,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if(GetKeyState(VK_MENU))	flags |= KF_ALT;
 			if(GetKeyState(VK_SHIFT))	flags |= KF_SHIFT;
 			TranslateKey(vk_key, key, flags);
-			Handler()->OnKey(key, key_flags);
+			Handler()->OnKey(key, OpJoyKeyFlags());
 			Handler()->OnLoop();
 		}
 		break;
