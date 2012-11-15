@@ -98,14 +98,14 @@ void eZ80::Update(int int_len, int* nmi_pending, int* _fetches)
 		return;
 	if(_fetches)
 	{
-		fetches = 0;
+		fetches = *_fetches;
 		t = 0;
 		eipos = -1;
-		while(fetches < *_fetches)
+		while(fetches > 0)
 		{
 			Step();
 		}
-		if(iff1 && t != eipos)
+		if(iff1)
 			Int();
 		return;
 	}

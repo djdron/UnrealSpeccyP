@@ -145,8 +145,8 @@ inline void DDFD(byte opcode)
 		memptr = ptr;
 		// DDCBnnXX,FDCBnnXX increment R by 2, not 3!
 		opcode = Fetch();
+		++fetches;
 		--r_low;
-		--fetches;
 		byte v = (this->*logic_ix_opcodes[opcode])(Read(ptr));
 		if((opcode & 0xC0) == 0x40) { t += 8; return; } // bit n,rm
 

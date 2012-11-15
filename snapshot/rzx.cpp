@@ -60,6 +60,7 @@ public:
 	eError Open(const void* data, size_t data_size, eHandler* handler);
 	eError Update(int* icount);
 	eError IoRead(byte* data);
+	eError CheckSync() const { return INcount == INmax ? OK : SYNCLOST; }
 
 private:
 	class eStream : public xIo::eStreamMemory
@@ -455,3 +456,4 @@ eRZX::~eRZX() { delete impl; }
 eRZX::eError eRZX::Open(const void* data, size_t data_size, eHandler* handler) { return impl->Open(data, data_size, handler); }
 eRZX::eError eRZX::Update(int* icount) { return impl->Update(icount); }
 eRZX::eError eRZX::IoRead(byte* data) { return impl->IoRead(data); }
+eRZX::eError eRZX::CheckSync() const { return impl->CheckSync(); }

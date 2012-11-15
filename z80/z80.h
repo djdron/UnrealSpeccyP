@@ -108,7 +108,7 @@ protected:
 	void StepF();
 	byte Fetch()
 	{
-		++fetches;
+		--fetches;
 		++r_low;// = (cpu->r & 0x80) + ((cpu->r+1) & 0x7F);
 		t += 4;
 		return Read(pc++);

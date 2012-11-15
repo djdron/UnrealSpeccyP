@@ -166,6 +166,8 @@ void eSpeccyHandler::OnLoop()
 			if(replay->Update(&icount) == eRZX::OK)
 			{
 				speccy->Update(&icount);
+//				if(replay->CheckSync() == eRZX::SYNCLOST)
+//					Replay(NULL);
 			}
 			else
 			{

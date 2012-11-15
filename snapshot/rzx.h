@@ -38,6 +38,7 @@ public:
 	eError Open(const void* data, size_t data_size, eHandler* handler);
 	eError Update(int* icount);
 	eError IoRead(byte* data);
+	eError CheckSync() const;
 
 private:
 	class eImpl;
