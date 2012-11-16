@@ -107,6 +107,7 @@ void eZ80::Update(int int_len, int* nmi_pending, int* _fetches)
 		}
 		if(iff1)
 			Int();
+		fetches = 0;
 		return;
 	}
 	// INT check separated from main Z80 loop to improve emulation speed
