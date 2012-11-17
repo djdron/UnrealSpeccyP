@@ -99,7 +99,11 @@ public:
 	}
 	virtual void OnPaint(wxPaintEvent& event)
 	{
-		wxPaintDC(this);
+		wxPaintDC dc(this);
+		Paint(dc);
+	}
+	void Paint(wxDC& dc)
+	{
 		int w, h;
 		GetClientSize(&w, &h);
 		SetCurrent();
@@ -122,7 +126,10 @@ public:
 		}
 		Handler()->OnLoop();
 		OnLoopSound();
-		Refresh(false);
+		{
+			wxClientDC dc(this);
+			Paint(dc);
+		}
 		if(!Handler()->FullSpeed())
 			wxMilliSleep(3);
 		event.RequestMore();
