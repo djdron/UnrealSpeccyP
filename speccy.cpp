@@ -90,9 +90,11 @@ void eSpeccy::Update(int* fetches)
 	}
 	{
 		PROFILER_SECTION(frame);
-		cpu->Update(int_len, &nmi_pending, fetches);
+		if(fetches)
+			cpu->Replay(*fetches);
+		else
+			cpu->Update(int_len, &nmi_pending);
 	}
-	dword t = cpu->FrameTacts() + cpu->T();
 	{
 		PROFILER_SECTION(dev);
 		devices.FrameUpdate();
@@ -102,7 +104,7 @@ void eSpeccy::Update(int* fetches)
 		if(fetches)
 			devices.FrameEnd(cpu->T());
 		else
-			devices.FrameEnd(t);
+			devices.FrameEnd(cpu->FrameTacts() + cpu->T());
 	}
 	if(fetches)
 		t_states += cpu->T();

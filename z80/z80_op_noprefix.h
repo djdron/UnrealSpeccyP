@@ -492,7 +492,7 @@ void Op76() { // halt
 	halted = 1;
 	unsigned int st = (frame_tacts - t-1)/4+1;
 	t += 4*st;
-	if(fetches)
+	if(handler.io) // replay is active
 	{
 		r_low += fetches;
 		fetches = 0;

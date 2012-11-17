@@ -80,7 +80,8 @@ class eZ80
 public:
 	eZ80(eMemory* m, eDevices* d, dword frame_tacts = 0);
 	void Reset();
-	void Update(int int_len, int* nmi_pending, int* fetches);
+	void Update(int int_len, int* nmi_pending);
+	void Replay(int fetches);
 
 	dword FrameTacts() const { return frame_tacts; }
 	dword T() const { return t; }
@@ -153,8 +154,8 @@ protected:
 	int		t;
 	int		im;
 	int		eipos;
-	int		frame_tacts;  // t-states per frame
-	int		fetches;
+	int		frame_tacts; 	// t-states per frame
+	int		fetches;		// .rzx replay fetches
 
 	DECLARE_REG16(pc, pc_l, pc_h)
 	DECLARE_REG16(sp, sp_l, sp_h)

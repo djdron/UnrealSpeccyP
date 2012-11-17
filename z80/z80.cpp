@@ -92,24 +92,10 @@ void eZ80::Step()
 //=============================================================================
 //	eZ80::Update
 //-----------------------------------------------------------------------------
-void eZ80::Update(int int_len, int* nmi_pending, int* _fetches)
+void eZ80::Update(int int_len, int* nmi_pending)
 {
 	if(!iff1 && halted)
 		return;
-	if(_fetches)
-	{
-		fetches = *_fetches;
-		t = 0;
-		eipos = -1;
-		while(fetches > 0)
-		{
-			Step();
-		}
-		if(iff1)
-			Int();
-		fetches = 0;
-		return;
-	}
 	// INT check separated from main Z80 loop to improve emulation speed
 	while(t < int_len)
 	{
@@ -148,6 +134,22 @@ void eZ80::Update(int int_len, int* nmi_pending, int* _fetches)
 	}
 	t -= frame_tacts;
 	eipos -= frame_tacts;
+}
+//=============================================================================
+//	eZ80::Replay
+//-----------------------------------------------------------------------------
+void eZ80::Replay(int _fetches)
+{
+	fetches = _fetches;
+	t = 0;
+	eipos = -1;
+	while(fetches > 0)
+	{
+		Step();
+	}
+	if(iff1)
+		Int();
+	fetches = 0;
 }
 //=============================================================================
 //	eZ80::Int
