@@ -504,7 +504,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 				L"All files|*.*|"
 				L"Snapshot files (*.sna;*.z80)|*.sna;*.z80;*.SNA;*.Z80|"
 				L"Replay files (*.rzx)|*.rzx;*.RZX|"
-				L"Disk images (*.trd;*.scl)|*.trd;*.scl;*.TRD;*.SCL|"
+				L"Disk images (*.trd;*.scl;*.fdi)|*.trd;*.scl;*.fdi;*.TRD;*.SCL;*.FDI|"
 				L"Tape files (*.tap;*.csw;*.tzx)|*.tap;*.csw;*.tzx;*.TAP;*.CSW;*.TZX|"
 				L"ZIP archives (*.zip)|*.zip;*.ZIP"
 			);
