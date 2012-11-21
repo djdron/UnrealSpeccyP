@@ -165,6 +165,7 @@ int eRZX::eImpl::rzx_pclose()
 {
 	if(zbuf != 0)
 	{
+		inflateEnd(&zs);
 		free(zbuf);
 		zbuf = 0;
 	}
@@ -175,6 +176,7 @@ int eRZX::eImpl::rzx_popen(long offset)
 {
 	int err;
 	memset(&zs, 0, sizeof(zs));
+	assert(!zbuf);
 	zbuf = (byte*) malloc(ZBUFLEN);
 	zs.next_in = zbuf;
 	err = inflateInit2(&zs,15);
