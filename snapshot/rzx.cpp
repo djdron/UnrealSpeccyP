@@ -124,7 +124,7 @@ private:
 	byte* zbuf;
 	int rzx_pread(byte* buffer, int len);
 	int rzx_pclose();
-	int rzx_popen(long offset);
+	int rzx_popen();
 #endif//USE_ZIP
 	int rzx_scan();
 	void rzx_close_irb();
@@ -134,13 +134,6 @@ private:
 
 
 /* ======================================================================== */
-
-
-#define LLO(x) (byte)(x&0xFF)
-#define LHI(x) (byte)((x&0xFF00)>>8)
-#define HLO(x) (byte)((x&0xFF0000)>>16)
-#define HHI(x) (byte)((x&0xFF000000)>>24)
-
 
 #ifdef USE_ZIP
 int eRZX::eImpl::rzx_pread(byte *buffer, int len)
@@ -172,7 +165,7 @@ int eRZX::eImpl::rzx_pclose()
 	return 0;
 }
 
-int eRZX::eImpl::rzx_popen(long offset)
+int eRZX::eImpl::rzx_popen()
 {
 	int err;
 	memset(&zs, 0, sizeof(zs));
@@ -183,7 +176,6 @@ int eRZX::eImpl::rzx_popen(long offset)
 	zs.avail_out = ZBUFLEN;
 	if(err != Z_OK)
 		return -1;
-	file->Seek(offset);
 	return 0;
 }
 #endif//USE_ZIP
@@ -266,7 +258,7 @@ int eRZX::eImpl::rzx_seek_irb()
 #ifdef USE_ZIP
 					bool compressed = (block.buff[0] & 0x02) != 0;
 					fpos = file->Pos();
-					rzx_popen(fpos);
+					rzx_popen();
 #endif
 					strcpy(snap_filename, (const char*)block.buff + 4);
 					size_t snap_size = block.buff[8]+256*block.buff[9]+65536*block.buff[10]+16777216*block.buff[11];
@@ -334,7 +326,7 @@ int eRZX::eImpl::rzx_seek_irb()
 #else//USE_ZIP
 			{
 				fpos = file->Pos();
-				rzx_popen(fpos);
+				rzx_popen();
 			}
 #endif
 			return OK;
@@ -420,27 +412,25 @@ eRZX::eError eRZX::eImpl::Update(int* icount)
 		rzx_pread(block.buff, 4);
 	else
 #endif
-	file->Read(block.buff, 4);
+		file->Read(block.buff, 4);
 	(*icount) = block.buff[0] + 256 * block.buff[1];
 	INmax = block.buff[2] + 256 * block.buff[3];
 
 	/* update the input array */
-#ifdef USE_ZIP
-	if(INmax && (INmax != 0xFFFF))
+	if(INmax != 0xFFFF)
 	{
-		if(status & RZX_PACK)
-			rzx_pread(inputbuffer, INmax);
-		else
-			file->Read(inputbuffer, INmax);
+		if(INmax)
+		{
+#ifdef USE_ZIP
+			if(status & RZX_PACK)
+				rzx_pread(inputbuffer, INmax);
+			else
+#endif//USE_ZIP
+				file->Read(inputbuffer, INmax);
+		}
 	}
 	else
 		INmax = INold;
-#else
-	if(INmax && (INmax != 0xFFFF))
-		file->Read(inputbuffer, INmax);
-	else
-		INmax = INold;
-#endif
 	INcount = 0;
 	--framecount;
 	return OK;
