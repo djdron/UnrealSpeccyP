@@ -1043,6 +1043,10 @@
 				RelativePath=".\tools\time.h"
 				>
 			</File>
+			<File
+				RelativePath=".\tools\type_registrator.h"
+				>
+			</File>
 			<Filter
 				Name="zlib"
 				>
