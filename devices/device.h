@@ -31,7 +31,7 @@ public:
 	virtual ~eDevice() {}
 	virtual void Init() {}
 	virtual void Reset() {}
-	virtual void FrameStart() {}
+	virtual void FrameStart(dword tacts) {}
 	virtual void FrameUpdate() {}
 	virtual void FrameEnd(dword tacts) {}
 
@@ -75,7 +75,7 @@ public:
 			(*dl++)->IoWrite(port, v, tact);
 	}
 
-	void FrameStart();
+	void FrameStart(dword tacts);
 	void FrameUpdate();
 	void FrameEnd(dword tacts);
 

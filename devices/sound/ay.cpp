@@ -80,10 +80,11 @@ const dword MULT_C_1 = 14; // fixed point precision for 'system tick -> ay tick'
 //=============================================================================
 //	eAY::FrameStart
 //-----------------------------------------------------------------------------
-void eAY::FrameStart()
+void eAY::FrameStart(dword tacts)
 {
 	r13_reloaded = 0;
-	eInherited::FrameStart();
+	t = tacts * chip_clock_rate / system_clock_rate;
+	eInherited::FrameStart(t);
 }
 //=============================================================================
 //	eAY::FrameEnd
@@ -96,7 +97,6 @@ void eAY::FrameEnd(dword tacts)
 	eInherited::FrameEnd(t);
 	passed_clk_ticks += tacts;
 	passed_chip_ticks += t;
-	t = 0;
 }
 //=============================================================================
 //	eAY::Flush

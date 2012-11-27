@@ -36,10 +36,10 @@ const dword TICK_F = (1<<TICK_FF);
 //=============================================================================
 //	eDeviceSound::FrameStart
 //-----------------------------------------------------------------------------
-void eDeviceSound::FrameStart()
+void eDeviceSound::FrameStart(dword tacts)
 {
-	dword dt = tick % (sample_rate * TICK_F / 50); //prev frame rest
-	base_tick = tick - dt;
+	dword endtick = (tacts * (qword)sample_rate * TICK_F) / clock_rate; //prev frame rest
+	base_tick = tick - endtick;
 }
 //=============================================================================
 //	eDeviceSound::Update

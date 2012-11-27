@@ -89,7 +89,7 @@ public:
 	void SetVolumes(dword global_vol, const SNDCHIP_VOLTAB *voltab, const SNDCHIP_PANTAB *stereo);
 
 	virtual void Reset() { _Reset(); }
-	virtual void FrameStart();
+	virtual void FrameStart(dword tacts);
 	virtual void FrameEnd(dword tacts);
 
 	static eDeviceId Id() { return D_AY; }

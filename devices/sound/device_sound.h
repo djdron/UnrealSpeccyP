@@ -41,7 +41,7 @@ public:
 	eDeviceSound();
 	void SetTimings(dword clock_rate, dword sample_rate);
 
-	virtual void FrameStart();
+	virtual void FrameStart(dword tacts);
 	virtual void FrameEnd(dword tacts);
 	virtual void Update(dword tact, dword l, dword r);
 

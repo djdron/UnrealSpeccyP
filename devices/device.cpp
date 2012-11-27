@@ -103,11 +103,11 @@ void eDevices::Reset()
 //=============================================================================
 //	eDevices::FrameStart
 //-----------------------------------------------------------------------------
-void eDevices::FrameStart()
+void eDevices::FrameStart(dword tacts)
 {
 	for(int i = 0; i < D_COUNT; ++i)
 	{
-		items[i]->FrameStart();
+		items[i]->FrameStart(tacts);
 	}
 }
 //=============================================================================
