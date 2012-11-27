@@ -104,6 +104,7 @@ const dword filter_sum_half_u = (dword)(filter_sum_half * 0x10000);
 //-----------------------------------------------------------------------------
 void eDeviceSound::Flush(dword endtick)
 {
+	assert(tick <= endtick);
 	dword scale;
 	if(!((endtick ^ tick) & ~(TICK_F-1)))
 	{
