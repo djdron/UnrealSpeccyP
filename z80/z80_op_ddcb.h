@@ -144,12 +144,14 @@ inline void DDFD(byte opcode)
 		ptr = ((op1 == 0xDD) ? ix : iy) + (signed char)Read(pc++);
 		memptr = ptr;
 		// DDCBnnXX,FDCBnnXX increment R by 2, not 3!
-		opcode = Fetch();
-		++fetches;
-		--r_low;
+		opcode = Read(pc++);
+		t += 4;
 		byte v = (this->*logic_ix_opcodes[opcode])(Read(ptr));
-		if((opcode & 0xC0) == 0x40) { t += 8; return; } // bit n,rm
-
+		if((opcode & 0xC0) == 0x40)// bit n,rm
+		{
+			t += 8;
+			return;
+		}
 		// select destination register for shift/res/set
 		(this->*reg_offset[opcode & 7]) = v; // ???
 		Write(ptr, v);
