@@ -52,7 +52,8 @@ res:
 	mkdir -p $(RES_PATH)/font
 	mkdir -p $(RES_PATH)/rom
 	$(BIN2H) $(SRC_PATH)/res/font/spxtrm4f.fnt	$(RES_PATH)/font/spxtrm4f
-	$(BIN2H) $(SRC_PATH)/res/rom/sos128.rom		$(RES_PATH)/rom/sos128
+	$(BIN2H) $(SRC_PATH)/res/rom/sos128_0.rom	$(RES_PATH)/rom/sos128_0
+	$(BIN2H) $(SRC_PATH)/res/rom/sos128_1.rom	$(RES_PATH)/rom/sos128_1
 	$(BIN2H) $(SRC_PATH)/res/rom/sos48.rom		$(RES_PATH)/rom/sos48
 	$(BIN2H) $(SRC_PATH)/res/rom/service.rom	$(RES_PATH)/rom/service
 	$(BIN2H) $(SRC_PATH)/res/rom/dos513f.rom	$(RES_PATH)/rom/dos513f
