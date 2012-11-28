@@ -21,14 +21,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "memory.h"
 
 #ifdef USE_EMBEDDED_RESOURCES
-#include "res/rom/sos128.h"
+#include "res/rom/sos128_0.h"
+#include "res/rom/sos128_1.h"
 #include "res/rom/sos48.h"
 #include "res/rom/service.h"
 #include "res/rom/dos513f.h"
 #endif//USE_EMBEDDED_RESOURCES
 
 #ifdef USE_EXTERN_RESOURCES
-extern byte sos128[];
+extern byte sos128_0[];
+extern byte sos128_1[];
 extern byte sos48[];
 extern byte service[];
 extern byte dos513f[];
@@ -89,15 +91,17 @@ void eRom::LoadRom(int page, const char* rom)
 void eRom::Init()
 {
 #if defined(USE_EMBEDDED_RESOURCES) || defined(USE_EXTERN_RESOURCES)
-	memcpy(memory->Get(ROM_128), sos128,	eMemory::PAGE_SIZE);
-	memcpy(memory->Get(ROM_SOS), sos48,		eMemory::PAGE_SIZE);
-	memcpy(memory->Get(ROM_SYS), service,	eMemory::PAGE_SIZE);
-	memcpy(memory->Get(ROM_DOS), dos513f,	eMemory::PAGE_SIZE);
+	memcpy(memory->Get(ROM_128_0),	sos128_0,	eMemory::PAGE_SIZE);
+	memcpy(memory->Get(ROM_128_1),	sos128_1,	eMemory::PAGE_SIZE);
+	memcpy(memory->Get(ROM_48),		sos48,		eMemory::PAGE_SIZE);
+	memcpy(memory->Get(ROM_SYS),	service,	eMemory::PAGE_SIZE);
+	memcpy(memory->Get(ROM_DOS),	dos513f,	eMemory::PAGE_SIZE);
 #else//USE_EMBEDDED_RESOURCES
-	LoadRom(ROM_128, xIo::ResourcePath("res/rom/sos128.rom"));
-	LoadRom(ROM_SOS, xIo::ResourcePath("res/rom/sos48.rom"));
-	LoadRom(ROM_SYS, xIo::ResourcePath("res/rom/service.rom"));
-	LoadRom(ROM_DOS, xIo::ResourcePath("res/rom/dos513f.rom"));
+	LoadRom(ROM_128_0,	xIo::ResourcePath("res/rom/sos128_0.rom"));
+	LoadRom(ROM_128_1,	xIo::ResourcePath("res/rom/sos128_1.rom"));
+	LoadRom(ROM_48,		xIo::ResourcePath("res/rom/sos48.rom"));
+	LoadRom(ROM_SYS,	xIo::ResourcePath("res/rom/service.rom"));
+	LoadRom(ROM_DOS,	xIo::ResourcePath("res/rom/dos513f.rom"));
 #endif//USE_EMBEDDED_RESOURCES
 }
 //=============================================================================
@@ -105,7 +109,7 @@ void eRom::Init()
 //-----------------------------------------------------------------------------
 void eRom::Reset()
 {
-	page_selected = !mode_48k ? ROM_SYS : ROM_SOS;
+	page_selected = mode_48k ? ROM_48 : ROM_SYS;
 	memory->SetPage(0, page_selected);
 }
 //=============================================================================

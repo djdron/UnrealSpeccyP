@@ -444,7 +444,6 @@ public:
 		{
 			op_mode_48k->Set(options.mode_48k);
 			op_mode_48k->Apply();
-			Handler()->OnAction(A_RESET);
 		}
 		if(!options.joystick.empty())
 		{

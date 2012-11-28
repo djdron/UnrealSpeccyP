@@ -48,7 +48,7 @@ public:
 
 	enum ePage
 	{
-		P_ROM0 = 0, P_ROM1, P_ROM2, P_ROM3,
+		P_ROM0 = 0, P_ROM1, P_ROM2, P_ROM3, P_ROM4,
 		P_RAM0, P_RAM1, P_RAM2, P_RAM3,
 		P_RAM4, P_RAM5, P_RAM6, P_RAM7,
 		P_AMOUNT
@@ -77,29 +77,34 @@ public:
 	void Read(word addr)
 	{
 		byte pc_h = addr >> 8;
-		if(page_selected == ROM_SOS && (pc_h == 0x3d))
+		if(page_selected == ROM_SOS() && (pc_h == 0x3d))
 		{
 			page_selected = ROM_DOS;
 			memory->SetPage(0, page_selected);
 		}
 		else if(DosSelected() && (pc_h & 0xc0)) // pc > 0x3fff closes tr-dos
 		{
-			page_selected = ROM_SOS;
+			page_selected = ROM_SOS();
 			memory->SetPage(0, page_selected);
 		}
 	}
 	bool DosSelected() const { return page_selected == ROM_DOS; }
 	void Mode48k(bool on) { mode_48k = on; }
+	int ROM_SOS() const { return mode_48k ? ROM_48 : ROM_128_0; }
 
 	static eDeviceId Id() { return D_ROM; }
 	virtual dword IoNeed() const { return ION_WRITE; }
+	enum ePage
+	{
+		ROM_128_1	= eMemory::P_ROM0,
+		ROM_128_0	= eMemory::P_ROM1,
+		ROM_SYS		= eMemory::P_ROM2,
+		ROM_DOS		= eMemory::P_ROM3,
+		ROM_48		= eMemory::P_ROM4,
+	};
 protected:
 	void LoadRom(int page, const char* rom);
-	enum
-	{
-		ROM_128 = eMemory::P_ROM0, ROM_SOS = eMemory::P_ROM1,
-		ROM_SYS = eMemory::P_ROM2, ROM_DOS = eMemory::P_ROM3
-	};
+
 protected:
 	eMemory* memory;
 	int page_selected;

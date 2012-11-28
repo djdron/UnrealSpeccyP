@@ -35,7 +35,8 @@ PROFILER_DECLARE(pro1);
 PROFILER_DECLARE(pro2);
 PROFILER_DECLARE(pro3);
 
-byte sos128[16384];
+byte sos128_0[16384];
+byte sos128_1[16384];
 byte sos48[16384];
 byte service[16384];
 byte dos513f[16384];
@@ -131,10 +132,11 @@ void Java_app_usp_Emulator_InitRom(JNIEnv* env, jobject obj, jint rom_id, jobjec
 	const byte* rom = (const byte*)env->GetDirectBufferAddress(rom_buf);
 	switch(rom_id)
 	{
-	case 0:	memcpy(sos128,	rom, sizeof(sos128));	break;
-	case 1:	memcpy(sos48,	rom, sizeof(sos48));	break;
-	case 2:	memcpy(service,	rom, sizeof(service));	break;
-	case 3:	memcpy(dos513f,	rom, sizeof(dos513f));	break;
+	case 0:	memcpy(sos128_0,rom, sizeof(sos128_0));	break;
+	case 1:	memcpy(sos128_1,rom, sizeof(sos128_1));	break;
+	case 2:	memcpy(sos48,	rom, sizeof(sos48));	break;
+	case 3:	memcpy(service,	rom, sizeof(service));	break;
+	case 4:	memcpy(dos513f,	rom, sizeof(dos513f));	break;
 	}
 }
 

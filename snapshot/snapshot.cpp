@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../devices/ula.h"
 #include "../speccy.h"
 #include "../platform/endian.h"
+#include "../platform/platform.h"
 
 #include "snapshot.h"
 
@@ -67,13 +68,19 @@ struct eSnapshot_Z80
 };
 #pragma pack(pop)
 
-
 struct eZ80Accessor : public xZ80::eZ80
 {
 	bool SetState(const eSnapshot_SNA* s, size_t buf_size);
 	size_t StoreState(eSnapshot_SNA* s);
 	bool SetState(const eSnapshot_Z80* s, size_t buf_size);
 	void UnpackPage(byte* dst, int dstlen, byte* src, int srclen);
+	void SetupDevices(bool model48k)
+	{
+		devices->Get<eRom>()->Mode48k(model48k);
+		devices->Get<eRam>()->Mode48k(model48k);
+		devices->Get<eUla>()->Mode48k(model48k);
+		devices->Init();
+	}
 };
 bool eZ80Accessor::SetState(const eSnapshot_SNA* s, size_t buf_size)
 {
@@ -107,15 +114,16 @@ bool eZ80Accessor::SetState(const eSnapshot_SNA* s, size_t buf_size)
 	int p = sna48 ? 0 : (s->p7FFD & 7);
 	memcpy(memory->Get(eMemory::P_RAM0 + p), s->page, p_size);
 
+	SetupDevices(sna48);
 	if(sna48)
 	{
 		pc = memory->Read(sp) + 0x100 * memory->Read(sp+1);
 		sp += 2;
-		memory->SetPage(0, eMemory::P_ROM1);
+		memory->SetPage(0, eRom::ROM_48);
 		return true;
 	}
 	devices->IoWrite(0x7ffd, s->p7FFD, t);
-	memory->SetPage(0, s->trdos ? eMemory::P_ROM3 : eMemory::P_ROM1);
+	memory->SetPage(0, s->trdos ? eRom::ROM_DOS : eRom::ROM_128_0);
 	const byte* page = s->pages;
 	byte mapped = 0x24 | (1 << (s->p7FFD & 7));
 	for(int i = 0; i < 8; ++i)
@@ -190,7 +198,7 @@ size_t eZ80Accessor::StoreState(eSnapshot_SNA* s)
 }
 bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 {
-	bool model48k = (s->model < 3);
+	bool model48k = true;
 	byte flags = s->flags;
 	if(flags == 0xFF)
 		flags = 1;
@@ -198,23 +206,24 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 	word reg_pc = s->pc;
 	if(reg_pc == 0)
 	{ // 2.01
+		model48k = (s->model < 3);
 		word len = SwapWord(s->len);
 		ptr += 2 + len;
 		reg_pc = s->newpc;
+		byte* p48[] =
+		{
+			0, 0, 0, 0,
+			memory->Get(eMemory::P_RAM2), memory->Get(eMemory::P_RAM0), 0, 0,
+			memory->Get(eMemory::P_RAM5), 0, 0, 0
+		};
+		byte* p128[] =
+		{
+			0, 0, 0, memory->Get(eMemory::P_RAM0),
+			memory->Get(eMemory::P_RAM1), memory->Get(eMemory::P_RAM2), memory->Get(eMemory::P_RAM3), memory->Get(eMemory::P_RAM4),
+			memory->Get(eMemory::P_RAM5), memory->Get(eMemory::P_RAM6), memory->Get(eMemory::P_RAM7), 0
+		};
 		while(ptr < (byte*)s + buf_size)
 		{
-			byte* p48[] =
-			{
-				0, 0, 0, 0,
-				memory->Get(eMemory::P_RAM2), memory->Get(eMemory::P_RAM0), 0, 0,
-				memory->Get(eMemory::P_RAM5), 0, 0, 0
-			};
-			byte* p128[] =
-			{
-				0, 0, 0, memory->Get(eMemory::P_RAM0),
-				memory->Get(eMemory::P_RAM1), memory->Get(eMemory::P_RAM2), memory->Get(eMemory::P_RAM3), memory->Get(eMemory::P_RAM4),
-				memory->Get(eMemory::P_RAM5), memory->Get(eMemory::P_RAM6), memory->Get(eMemory::P_RAM7), 0
-			};
 			word len = ptr[0] | word(ptr[1]) << 8;
 			if(ptr[2] > 11)
 				return false;
@@ -244,7 +253,6 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 		memcpy(memory->Get(eMemory::P_RAM0), mem48 + 2*eMemory::PAGE_SIZE, eMemory::PAGE_SIZE);
 		if(flags&0x20)
 			delete[] mem48;
-		model48k = true;
 	}
 	a = s->a, f = s->f;
 	bc = SwapWord(s->bc), de = SwapWord(s->de), hl = SwapWord(s->hl);
@@ -258,7 +266,12 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 	devices->IoWrite(0xfe, pFE, t);
 	iff1 = s->iff1, iff2 = s->iff2; im = s->im & 3;
 	devices->IoWrite(0x7ffd, model48k ? 0x30 : s->p7FFD, t);
-	memory->SetPage(0, (model48k || (s->p7FFD & 0x10)) ? eMemory::P_ROM1 : eMemory::P_ROM0);
+	if(model48k)
+		memory->SetPage(0, eRom::ROM_48);
+	else
+		memory->SetPage(0, (s->p7FFD & 0x10) ? eRom::ROM_128_0 : eRom::ROM_128_1);
+
+	SetupDevices(model48k);
 	return true;
 }
 void eZ80Accessor::UnpackPage(byte* dst, int dstlen, byte* src, int srclen)
@@ -284,7 +297,7 @@ void eZ80Accessor::UnpackPage(byte* dst, int dstlen, byte* src, int srclen)
 
 bool Load(eSpeccy* speccy, const char* type, const void* data, size_t data_size)
 {
-	speccy->Reset();
+	xPlatform::Handler()->OnAction(xPlatform::A_RESET);
 	speccy->Devices().FrameStart(0);
 	eZ80Accessor* z80 = (eZ80Accessor*)speccy->CPU();
 	bool ok = false;

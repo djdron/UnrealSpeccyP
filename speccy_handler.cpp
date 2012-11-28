@@ -352,7 +352,7 @@ static struct eOption48K : public xOptions::eOptionBool
 			sh.speccy->Device<eRom>()->Mode48k(self);
 			sh.speccy->Device<eRam>()->Mode48k(self);
 			sh.speccy->Device<eUla>()->Mode48k(self);
-			sh.speccy->Devices().Init();
+			Handler()->OnAction(A_RESET);
 		}
 	}
 	virtual int Order() const { return 65; }
