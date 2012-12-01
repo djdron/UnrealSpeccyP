@@ -2,7 +2,8 @@
     <qresource prefix="/">
         <file alias="rom/dos513f.rom">../../res/rom/dos513f.rom</file>
         <file alias="rom/service.rom">../../res/rom/service.rom</file>
-        <file alias="rom/sos128.rom">../../res/rom/sos128.rom</file>
+        <file alias="rom/sos128_0.rom">../../res/rom/sos128_0.rom</file>
+        <file alias="rom/sos128_1.rom">../../res/rom/sos128_1.rom</file>
         <file alias="rom/sos48.rom">../../res/rom/sos48.rom</file>
         <file alias="image/keyboard.png">res/image/keyboard.png</file>
         <file alias="image/joystick.png">res/image/joystick.png</file>

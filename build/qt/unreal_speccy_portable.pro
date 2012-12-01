@@ -1,4 +1,6 @@
-QT       += core gui multimedia
+QT       += core gui network multimediakit
+CONFIG   += mobility
+MOBILITY += multimedia
 
 TARGET = unreal_speccy_portable
 TEMPLATE = app
@@ -51,9 +53,10 @@ SOURCES += ../../speccy.cpp \
 	../../platform/qt/qt_window.cpp \
 	../../platform/qt/qt_control.cpp \
 	../../platform/qt/qt_view.cpp \
-    ../../speccy_handler.cpp \
-    ../../file_type.cpp \
-    ../../file_type_zip.cpp
+	../../speccy_handler.cpp \
+	../../file_type.cpp \
+	../../file_type_zip.cpp \
+	../../snapshot/rzx.cpp
 
 HEADERS  += \
 	../../std_types.h \
@@ -115,7 +118,8 @@ HEADERS  += \
 	../../platform/qt/qt_window.h \
 	../../platform/qt/qt_control.h \
 	../../platform/qt/qt_view.h \
-    ../../file_type.h
+	../../file_type.h \
+	../../snapshot/rzx.h
 
 RESOURCES += unreal_speccy_portable.qrc
 
@@ -127,7 +131,6 @@ QMAKE_CFLAGS_WARN_ON    = -Wall
 DEFINES += USE_QT USE_CONFIG USE_ZIP USE_EXTERN_RESOURCES USE_OPTIONS_COMMON USE_TUI
 
 symbian {
-	CONFIG += mobility
 	MOBILITY += systeminfo
 	DEFINES += _POSIX
 	TARGET.UID3 = 0xa89fac37

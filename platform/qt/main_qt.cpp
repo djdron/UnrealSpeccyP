@@ -26,7 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "qt_window.h"
 #include "../../std_types.h"
 
-byte sos128[16384];
+byte sos128_0[16384];
+byte sos128_1[16384];
 byte sos48[16384];
 byte service[16384];
 byte dos513f[16384];
@@ -47,10 +48,11 @@ static void InitResource(const char* name, byte* data)
 //-----------------------------------------------------------------------------
 static void InitResources()
 {
-	InitResource(":/rom/dos513f.rom", dos513f);
-	InitResource(":/rom/service.rom", service);
-	InitResource(":/rom/sos128.rom", sos128);
-	InitResource(":/rom/sos48.rom", sos48);
+	InitResource(":/rom/dos513f.rom",	dos513f);
+	InitResource(":/rom/service.rom",	service);
+	InitResource(":/rom/sos128_0.rom",	sos128_0);
+	InitResource(":/rom/sos128_1.rom",	sos128_1);
+	InitResource(":/rom/sos48.rom",		sos48);
 }
 
 }
