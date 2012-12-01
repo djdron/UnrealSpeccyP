@@ -200,10 +200,11 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 void eWindow::OnOpenFile()
 {
 	QString name = QFileDialog::getOpenFileName(this, tr("Open file"), OpLastFolder(),
-		tr(	"Supported files (*.sna *.z80 *.trd *.scl *.tap *.csw *.tzx *.zip);;"
+		tr(	"Supported files (*.sna *.z80 *.rzx *.trd *.scl *.fdi *.tap *.csw *.tzx *.zip);;"
 			"All files (*.*);;"
 			"Snapshot files (*.sna *.z80);;"
-			"Disk images (*.trd *.scl);;"
+			"Replay files (*.rzx);;"
+			"Disk images (*.trd *.scl *.fdi);;"
 			"Tape files (*.tap *.csw *.tzx);;"
 			"ZIP archives (*.zip)"
 			));
