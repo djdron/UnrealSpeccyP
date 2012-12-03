@@ -105,7 +105,7 @@ abstract class FSSWeb extends FileSelectorSource
 			FileOutputStream os = new FileOutputStream(file);
 			URL url = new URL(_url);
 			InputStream is = url.openStream();
-			byte buffer[] = new byte[16384];
+			byte buffer[] = new byte[256*1024];
 			int r = -1;
 			while((r = is.read(buffer)) != -1)
 			{

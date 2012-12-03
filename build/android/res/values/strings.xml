@@ -55,9 +55,10 @@
     <string name="av_timer_sync">A/V Sync By Timer</string>
     <string name="av_timer_sync_desc">Smoother playback on some devices</string>
 
-    <string name="file_system">File System</string>
+    <string name="file_system">Files</string>
     <string name="vtrdos">VTRDOS</string>
     <string name="wos">WOS</string>
+    <string name="rzx">RZX</string>
 
     <string name="accessing_web">Accessing web</string>
     <string name="downloading_image">Downloading image...</string>

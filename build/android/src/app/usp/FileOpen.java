@@ -24,6 +24,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.TabHost;
 import app.usp.fs.FileSelectorFS;
+import app.usp.fs.FileSelectorRZX;
 import app.usp.fs.FileSelectorVtrdos;
 import app.usp.fs.FileSelectorWOS;
 
@@ -53,6 +54,12 @@ public class FileOpen extends TabActivity
 		intent = new Intent().setClass(this, FileSelectorWOS.class);
 		spec = tabHost.newTabSpec("file_select_wos")
 								.setIndicator(res.getString(R.string.wos), res.getDrawable(R.drawable.icon_tab_wos))
+								.setContent(intent);
+		tabHost.addTab(spec);
+
+		intent = new Intent().setClass(this, FileSelectorRZX.class);
+		spec = tabHost.newTabSpec("file_select_rzx")
+								.setIndicator(res.getString(R.string.rzx), res.getDrawable(R.drawable.icon_tab_rzx))
 								.setContent(intent);
 		tabHost.addTab(spec);
 
