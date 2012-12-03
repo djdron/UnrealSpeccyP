@@ -31,14 +31,14 @@ public class FileSelectorRZX extends FileSelector
 	@Override
 	State State() { return state; }
 	@Override
-	boolean LongUpdate() { return PathLevel(State().current_path) >= 2; }
+	boolean LongUpdate() { return PathLevel(State().current_path) >= 1; }
     @Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		sources.add(new ParserGames());
+		sources.add(new FSSRZX());
 	}
-	abstract class FSSRZX extends FSSWeb
+	class FSSRZX extends FSSWeb
 	{
 		private static final String RZX_FS = "/sdcard/usp/rzx";
 		public String BaseURL() { return "http://www.rzxarchive.co.uk"; }
@@ -59,9 +59,30 @@ public class FileSelectorRZX extends FileSelector
 			}
 			return ApplyResult.FAIL;
 		}
-	}
-	class ParserGames extends FSSRZX
-	{
+		public GetItemsResult GetItems(final File path, List<Item> items)
+		{
+			File path_up = path.getParentFile();
+			if(path_up == null)
+			{
+				for(String i : Items2())
+				{
+					items.add(new Item(i));
+				}
+				return GetItemsResult.OK;
+			}
+			items.add(new Item("/.."));
+			int idx = 0;
+			String n = "/" + path.getName().toString();
+			for(String i : Items2())
+			{
+				if(i.equals(n))
+				{
+					return ParseURL(Items2URLs()[idx], items, n);
+				}
+				++idx;
+			}
+			return GetItemsResult.FAIL;
+		}
 		private final String[] ITEMS2 = new String[]
 			{	"/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H",
 				"/I", "/J", "/K", "/L", "/M", "/N", "/O", "/P", "/Q",
@@ -74,7 +95,7 @@ public class FileSelectorRZX extends FileSelector
 		    };
 		private final String[] PATTERNS = new String[] { "<tr><td><font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"http://www.thunderstats.com/download.cgi\\?http://www.rzxarchive.co.uk(.+?)\"|<font size=2 color=red>).+?" };
 		@Override
-		public final String Root() { return "/games"; }
+		public final String Root() { return null; }
 		@Override
 		public final String[] Patterns() { return PATTERNS; }		
 		@Override

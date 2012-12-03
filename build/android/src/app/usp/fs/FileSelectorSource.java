@@ -143,7 +143,7 @@ abstract class FSSWeb extends FileSelectorSource
 		}
 		return null;
 	}
-	private GetItemsResult ParseURL(String _url, List<Item> items, final String _name)
+	protected GetItemsResult ParseURL(String _url, List<Item> items, final String _name)
 	{
 		String s = LoadText(BaseURL() + _url + HtmlExt(), HtmlEncoding());
 		if(s == null)
