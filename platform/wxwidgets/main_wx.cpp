@@ -45,12 +45,14 @@ void DrawGL(int w, int h);
 
 struct eOptions
 {
-	eOptions() : true_speed(false), mode_48k(false), full_screen(false), size_percent(-1) {}
+	eOptions() : true_speed(V_DEFAULT), mode_48k(V_DEFAULT), full_screen(V_DEFAULT), size_percent(-1) {}
 	wxString file_to_open;
 	wxString joystick;
-	bool true_speed;
-	bool mode_48k;
-	bool full_screen;
+
+	enum eOptionValue { V_DEFAULT = -1, V_OFF = 0, V_ON = 1 };
+	eOptionValue true_speed;
+	eOptionValue mode_48k;
+	eOptionValue full_screen;
 	int size_percent;
 };
 static eOptions options;
@@ -432,17 +434,17 @@ public:
 		gl_canvas = new GLCanvas(this);
 		gl_canvas->SetFocus();
 
-		if(options.true_speed)
+		if(options.true_speed != eOptions::V_DEFAULT)
 		{
-			op_true_speed.Set(options.true_speed);
+			op_true_speed.Set(options.true_speed == eOptions::V_ON);
 			op_true_speed.Apply();
 		}
-		if(options.full_screen)
-			op_full_screen.Set(options.full_screen);
+		if(options.full_screen != eOptions::V_DEFAULT)
+			op_full_screen.Set(options.full_screen == eOptions::V_ON);
 		xOptions::eOption<bool>* op_mode_48k = xOptions::eOption<bool>::Find("mode 48k");
-		if(options.mode_48k && op_mode_48k)
+		if(options.mode_48k != eOptions::V_DEFAULT && op_mode_48k)
 		{
-			op_mode_48k->Set(options.mode_48k);
+			op_mode_48k->Set(options.mode_48k == eOptions::V_ON);
 			op_mode_48k->Apply();
 		}
 		if(!options.joystick.empty())
@@ -759,15 +761,22 @@ class App: public wxApp
 		{
 			{ wxCMD_LINE_SWITCH, _("h"), _("help"), _("displays help on the command line parameters"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
 			{ wxCMD_LINE_PARAM, NULL, NULL, _("input file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
-			{ wxCMD_LINE_SWITCH, _("t"), _("true_speed"), _("true speed (50Hz) mode"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
-			{ wxCMD_LINE_SWITCH, _("m"), _("mode_48k"), _("mode 48k"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
-			{ wxCMD_LINE_SWITCH, _("f"), _("full_screen"), _("full screen mode"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_OPTION, _("t"), _("true_speed"), _("true speed (50Hz) mode (0 or 1)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_OPTION, _("m"), _("mode_48k"), _("mode 48k (0 or 1)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
+			{ wxCMD_LINE_OPTION, _("f"), _("full_screen"), _("full screen mode (0 or 1)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_OPTION, _("s"), _("size"), _("window size (in percent)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_OPTION, _("j"), _("joystick"), _("use joystick (kempston, cursor, qaop, sinclair2)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
 			{ wxCMD_LINE_NONE }
 		};
 		parser.SetDesc(g_cmdLineDesc);
-		parser.SetSwitchChars(wxT("-"));
+	}
+	void GetOptionValue(eOptions::eOptionValue* v, wxCmdLineParser& parser, const char* opt)
+	{
+		long o = 1;
+		if(parser.Found(wxConvertMB2WX(opt), &o))
+		{
+			*v = o ? eOptions::V_ON : eOptions::V_OFF;
+		}
 	}
 	virtual bool OnCmdLineParsed(wxCmdLineParser& parser)
 	{
@@ -775,9 +784,9 @@ class App: public wxApp
 		{
 			options.file_to_open = parser.GetParam(0);
 		}
-		options.true_speed = parser.Found(wxT("t"));
-		options.mode_48k = parser.Found(wxT("m"));
-		options.full_screen = parser.Found(wxT("f"));
+		GetOptionValue(&options.true_speed, 	parser, "t");
+		GetOptionValue(&options.mode_48k, 	parser, "m");
+		GetOptionValue(&options.full_screen, parser, "f");
 		long size = 0;
 		if(parser.Found(wxT("s"), &size))
 		{

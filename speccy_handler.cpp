@@ -136,9 +136,6 @@ void eSpeccyHandler::OnInit()
 	sound_dev[1] = speccy->Device<eAY>();
 	sound_dev[2] = speccy->Device<eTape>();
 	xOptions::Load();
-	xOptions::eOption<bool>* op_mode_48k = xOptions::eOption<bool>::Find("mode 48k");
-	if(op_mode_48k && *op_mode_48k)
-		speccy->Reset();
 }
 void eSpeccyHandler::OnDone()
 {
@@ -300,6 +297,21 @@ static struct eOptionAutoPlayImage : public xOptions::eOptionBool
 	virtual int Order() const { return 55; }
 } op_auto_play_image;
 
+static struct eOption48K : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "mode 48k"; }
+	virtual void Change(bool next = true)
+	{
+		eOptionBool::Change();
+		Apply();
+	}
+	virtual void Apply()
+	{
+		sh.OnAction(A_RESET);
+	}
+	virtual int Order() const { return 65; }
+} op_48k;
+
 eActionResult eSpeccyHandler::OnAction(eAction action)
 {
 	switch(action)
@@ -307,6 +319,7 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 	case A_RESET:
 		SAFE_DELETE(replay);
 		SAFE_DELETE(macro);
+		speccy->Mode48k(op_48k);
 		speccy->Reset();
 		return AR_OK;
 	case A_TAPE_TOGGLE:
@@ -336,27 +349,6 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 	}
 	return AR_ERROR;
 }
-
-static struct eOption48K : public xOptions::eOptionBool
-{
-	virtual const char* Name() const { return "mode 48k"; }
-	virtual void Change(bool next = true)
-	{
-		eOptionBool::Change();
-		Apply();
-	}
-	virtual void Apply()
-	{
-		if(sh.speccy->Device<eRam>()->Mode48k() != self)
-		{
-			sh.speccy->Device<eRom>()->Mode48k(self);
-			sh.speccy->Device<eRam>()->Mode48k(self);
-			sh.speccy->Device<eUla>()->Mode48k(self);
-			Handler()->OnAction(A_RESET);
-		}
-	}
-	virtual int Order() const { return 65; }
-} op_48k;
 
 static void SetupSoundChip();
 static struct eOptionSoundChip : public xOptions::eOptionInt

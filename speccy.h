@@ -45,6 +45,9 @@ public:
 
 	qword T() const { return t_states; }
 
+	bool Mode48k() const;
+	void Mode48k(bool on);
+
 protected:
 	xZ80::eZ80* cpu;
 	eMemory* memory;
