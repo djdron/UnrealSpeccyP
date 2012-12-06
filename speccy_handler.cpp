@@ -58,7 +58,7 @@ protected:
 
 static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ80::eZ80::eHandlerIo
 {
-	eSpeccyHandler() : speccy(NULL), macro(NULL), replay(NULL), video_paused(0) {}
+	eSpeccyHandler() : speccy(NULL), macro(NULL), replay(NULL), video_paused(0), inside_update(false) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit();
 	virtual void OnDone();
@@ -119,6 +119,7 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 	eMacro* macro;
 	eRZX* replay;
 	int video_paused;
+	bool inside_update;
 
 	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];
@@ -160,6 +161,7 @@ void eSpeccyHandler::OnLoop()
 		if(replay)
 		{
 			int icount = 0;
+			inside_update = true;
 			if(replay->Update(&icount) == eRZX::OK)
 			{
 				speccy->Update(&icount);
@@ -172,6 +174,7 @@ void eSpeccyHandler::OnLoop()
 			{
 				Replay(NULL);
 			}
+			inside_update = false;
 		}
 		else
 			speccy->Update(NULL);
@@ -317,10 +320,13 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 	switch(action)
 	{
 	case A_RESET:
-		SAFE_DELETE(replay);
+		if(!inside_update) // when opening snapshots from replay->Update()
+			SAFE_DELETE(replay);
 		SAFE_DELETE(macro);
 		speccy->Mode48k(op_48k);
 		speccy->Reset();
+		if(inside_update && replay)
+			speccy->CPU()->HandlerIo(this);
 		return AR_OK;
 	case A_TAPE_TOGGLE:
 		{
@@ -440,6 +446,7 @@ static struct eFileTypeZ80 : public eFileType
 {
 	virtual bool Open(const void* data, size_t data_size)
 	{
+		sh.OnAction(A_RESET);
 		return xSnapshot::Load(sh.speccy, Type(), data, data_size);
 	}
 	virtual const char* Type() { return "z80"; }
@@ -459,9 +466,6 @@ class eMacroDiskRun : public eMacro
 	{
 		switch(frame)
 		{
-		case 0:
-			sh.speccy->Reset();
-			break;
 		case 100:
 			sh.OnKey('e', KF_DOWN|KF_UI_SENDER);
 			break;
@@ -487,12 +491,10 @@ static struct eFileTypeTRD : public eFileType
 		bool ok = wd->Open(Type(), OpDrive(), data, data_size);
 		if(ok && op_auto_play_image)
 		{
+			sh.OnAction(A_RESET);
 			if(wd->BootExist(OpDrive()))
-			{
-				sh.speccy->Reset();
 				sh.speccy->Memory()->SetPage(0, eMemory::P_ROM3); // tr-dos rom
-			}
-			else
+			else if(!sh.speccy->Mode48k())
 				sh.PlayMacro(new eMacroDiskRun);
 		}
 		return ok;

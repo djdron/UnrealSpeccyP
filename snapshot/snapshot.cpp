@@ -297,7 +297,6 @@ void eZ80Accessor::UnpackPage(byte* dst, int dstlen, byte* src, int srclen)
 
 bool Load(eSpeccy* speccy, const char* type, const void* data, size_t data_size)
 {
-	xPlatform::Handler()->OnAction(xPlatform::A_RESET);
 	speccy->Devices().FrameStart(0);
 	eZ80Accessor* z80 = (eZ80Accessor*)speccy->CPU();
 	bool ok = false;

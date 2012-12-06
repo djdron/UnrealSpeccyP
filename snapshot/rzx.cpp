@@ -56,7 +56,7 @@ public:
 		,zbuf(NULL)
 #endif//USE_ZIP
 	{}
-	~eImpl() { rzx_close(); }
+	~eImpl() { Close(); }
 	eError Open(const void* data, size_t data_size, eHandler* handler);
 	eError Update(int* icount);
 	eError IoRead(byte* data);
@@ -122,21 +122,19 @@ private:
 	enum { ZBUFLEN = 16384 };
 	z_stream zs;
 	byte* zbuf;
-	int rzx_pread(byte* buffer, int len);
-	int rzx_pclose();
-	int rzx_popen();
+	int ZipOpen();
+	int ZipRead(byte* buffer, int len);
+	int ZipClose();
 #endif//USE_ZIP
-	int rzx_scan();
-	void rzx_close_irb();
-	int rzx_seek_irb();
-	void rzx_close();
+	int ReadBlock();
+	void Close();
 };
 
 
 /* ======================================================================== */
 
 #ifdef USE_ZIP
-int eRZX::eImpl::rzx_pread(byte *buffer, int len)
+int eRZX::eImpl::ZipRead(byte *buffer, int len)
 {
 	zs.next_out = buffer;
 	zs.avail_out = len;
@@ -154,7 +152,7 @@ int eRZX::eImpl::rzx_pread(byte *buffer, int len)
 	return len - zs.avail_out;
 }
 
-int eRZX::eImpl::rzx_pclose()
+int eRZX::eImpl::ZipClose()
 {
 	if(zbuf != 0)
 	{
@@ -165,14 +163,13 @@ int eRZX::eImpl::rzx_pclose()
 	return 0;
 }
 
-int eRZX::eImpl::rzx_popen()
+int eRZX::eImpl::ZipOpen()
 {
-	int err;
 	memset(&zs, 0, sizeof(zs));
 	assert(!zbuf);
-	zbuf = (byte*) malloc(ZBUFLEN);
+	zbuf = (byte*)malloc(ZBUFLEN);
 	zs.next_in = zbuf;
-	err = inflateInit2(&zs,15);
+	int err = inflateInit2(&zs, 15);
 	zs.avail_out = ZBUFLEN;
 	if(err != Z_OK)
 		return -1;
@@ -180,61 +177,7 @@ int eRZX::eImpl::rzx_popen()
 }
 #endif//USE_ZIP
 
-int eRZX::eImpl::rzx_scan()
-{
-	long fpos = 10;
-	do
-	{
-		file->Seek(fpos);
-		if(file->Read(block.buff, 5) < 5)
-			break;
-		block.type = block.buff[0];
-		block.length = block.buff[1] + 256 * block.buff[2] + 65536 * block.buff[3] + 16777216 * block.buff[4];
-		/* printf("rzx_scan: block %02X len=%05i\n",block.type,block.length); */
-		if(block.length == 0)
-			return INVALID;
-		switch(block.type)
-		{
-		case RZXBLK_CREATOR:
-			{
-				/* read the info about the emulator which created this RZX */
-				file->Seek(file->Pos() + 24);
-				int custom_data_size = block.length - 29;
-				if(custom_data_size > 0)
-					file->Seek(file->Pos() + custom_data_size);
-			}
-			break;
-		case RZXBLK_DATA:
-			file->Read(block.buff, 13);
-			break;
-		}
-		fpos += block.length;
-	} while(1);
-	file->Seek(10);
-	block.start = 10;
-	block.length = 0;
-	block.type = 0;
-	return OK;
-}
-
-
-void eRZX::eImpl::rzx_close_irb()
-{
-#ifdef USE_ZIP
-	rzx_pclose();
-#endif
-	/* suppress empty IRBs */
-	if(!framecount)
-	{
-		file->Seek(block.start);
-		status &= ~RZX_IRB;
-		return;
-	}
-	block.start = file->Pos();
-	status &= ~RZX_IRB;
-}
-
-int eRZX::eImpl::rzx_seek_irb()
+int eRZX::eImpl::ReadBlock()
 {
 	int done = 0;
 	long fpos;
@@ -258,7 +201,7 @@ int eRZX::eImpl::rzx_seek_irb()
 #ifdef USE_ZIP
 					bool compressed = (block.buff[0] & 0x02) != 0;
 					fpos = file->Pos();
-					rzx_popen();
+					ZipOpen();
 #endif
 					strcpy(snap_filename, (const char*)block.buff + 4);
 					size_t snap_size = block.buff[8]+256*block.buff[9]+65536*block.buff[10]+16777216*block.buff[11];
@@ -270,7 +213,7 @@ int eRZX::eImpl::rzx_seek_irb()
 						done = (fpos > RZXBLKBUF) ? RZXBLKBUF : fpos;
 #ifdef USE_ZIP
 						if(compressed)
-							rzx_pread(block.buff, done);
+							ZipRead(block.buff, done);
 						else
 #endif
 							file->Read(block.buff, done);
@@ -279,7 +222,7 @@ int eRZX::eImpl::rzx_seek_irb()
 						fpos -= done;
 					}
 #ifdef USE_ZIP
-					rzx_pclose();
+					ZipClose();
 #endif
 					done = 0;
 					bool ok = handler->RZX_OnOpenSnapshot(snap_filename, snap_data, snap_size);
@@ -326,7 +269,7 @@ int eRZX::eImpl::rzx_seek_irb()
 #else//USE_ZIP
 			{
 				fpos = file->Pos();
-				rzx_popen();
+				ZipOpen();
 			}
 #endif
 			return OK;
@@ -337,7 +280,8 @@ int eRZX::eImpl::rzx_seek_irb()
 		}
 		/* seek the next block in the file */
 		block.start += block.length;
-		file->Seek(block.start);
+		if(file->Seek(block.start) != 0)
+			return INVALID;
 	}
 	return OK;
 }
@@ -359,18 +303,16 @@ eRZX::eError eRZX::eImpl::Open(const void* _data, size_t _data_size, eHandler* _
 	file->Read(block.buff, 6);
 	if(memcmp(block.buff, "RZX!", 4))
 	{
-		rzx_close();
+		Close();
 		return INVALID;
 	}
-	/* pre-scan the file to collect useful information and stats */
-	if(rzx_scan() != OK)
+	block.start = 10;
+	block.length = 0;
+	block.type = 0;
+	file->Seek(block.start);
+	if(ReadBlock() != OK)
 	{
-		rzx_close();
-		return INVALID;
-	}
-	if(rzx_seek_irb() != OK)
-	{
-		rzx_close();
+		Close();
 		return FINISHED;
 	}
 	INcount = 0;
@@ -378,10 +320,10 @@ eRZX::eError eRZX::eImpl::Open(const void* _data, size_t _data_size, eHandler* _
 	return OK;
 }
 
-void eRZX::eImpl::rzx_close()
+void eRZX::eImpl::Close()
 {
 #ifdef USE_ZIP
-	rzx_pclose();
+	ZipClose();
 #endif//USE_ZIP
 	SAFE_DELETE(file);
 	status = RZX_INIT;
@@ -397,10 +339,16 @@ eRZX::eError eRZX::eImpl::Update(int* icount)
 	/* need to seek another IRB? */
 	if(!(status & RZX_IRB))
 	{
-		if(rzx_seek_irb() != OK)
+#ifdef USE_ZIP
+		ZipClose();
+#endif//USE_ZIP
+		block.start += block.length;
+		if(file->Seek(block.start) != 0) // bugfix with possible buffer overread when readed zipped data
+			return INVALID;
+		if(ReadBlock() != OK)
 		{
 			/* no more IRBs, finished */
-			rzx_close();
+			Close();
 			return FINISHED;
 		}
 	}
@@ -409,7 +357,7 @@ eRZX::eError eRZX::eImpl::Update(int* icount)
 	INold = INmax;
 #ifdef USE_ZIP
 	if(status & RZX_PACK)
-		rzx_pread(block.buff, 4);
+		ZipRead(block.buff, 4);
 	else
 #endif
 		file->Read(block.buff, 4);
@@ -423,7 +371,7 @@ eRZX::eError eRZX::eImpl::Update(int* icount)
 		{
 #ifdef USE_ZIP
 			if(status & RZX_PACK)
-				rzx_pread(inputbuffer, INmax);
+				ZipRead(inputbuffer, INmax);
 			else
 #endif//USE_ZIP
 				file->Read(inputbuffer, INmax);
