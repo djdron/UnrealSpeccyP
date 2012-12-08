@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../z80/z80.h"
 #include "../devices/memory.h"
 #include "../devices/ula.h"
+#include "../devices/sound/ay.h"
 #include "../speccy.h"
 #include "../platform/endian.h"
 #include "../platform/platform.h"
@@ -89,6 +90,7 @@ bool eZ80Accessor::SetState(const eSnapshot_SNA* s, size_t buf_size)
 	if(!sna48 && !sna128)
 		return false;
 
+	SetupDevices(sna48);
 	alt.af = SwapWord(s->alt_af);
 	alt.bc = SwapWord(s->alt_bc);
 	alt.de = SwapWord(s->alt_de);
@@ -114,7 +116,6 @@ bool eZ80Accessor::SetState(const eSnapshot_SNA* s, size_t buf_size)
 	int p = sna48 ? 0 : (s->p7FFD & 7);
 	memcpy(memory->Get(eMemory::P_RAM0 + p), s->page, p_size);
 
-	SetupDevices(sna48);
 	if(sna48)
 	{
 		pc = memory->Read(sp) + 0x100 * memory->Read(sp+1);
@@ -207,6 +208,7 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 	if(reg_pc == 0)
 	{ // 2.01
 		model48k = (s->model < 3);
+		SetupDevices(model48k);
 		word len = SwapWord(s->len);
 		ptr += 2 + len;
 		reg_pc = s->newpc;
@@ -237,9 +239,11 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 				UnpackPage(dstpage, eMemory::PAGE_SIZE, ptr, len);
 			ptr += len;
 		}
+		devices->Get<eAY>()->SetRegs(s->AY);
 	}
 	else
 	{
+		SetupDevices(true);
 		int len = buf_size - 30;
 		byte* mem48 = ptr;
 		if(flags&0x20)
@@ -270,8 +274,6 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 		memory->SetPage(0, eRom::ROM_48);
 	else
 		memory->SetPage(0, (s->p7FFD & 0x10) ? eRom::ROM_128_0 : eRom::ROM_128_1);
-
-	SetupDevices(model48k);
 	return true;
 }
 void eZ80Accessor::UnpackPage(byte* dst, int dstlen, byte* src, int srclen)
@@ -304,9 +306,8 @@ bool Load(eSpeccy* speccy, const char* type, const void* data, size_t data_size)
 		ok = z80->SetState((const eSnapshot_SNA*)data, data_size);
 	else if(!strcmp(type, "z80"))
 		ok = z80->SetState((const eSnapshot_Z80*)data, data_size);
-	dword t = z80->FrameTacts() + z80->T();
 	speccy->Devices().FrameUpdate();
-	speccy->Devices().FrameEnd(t);
+	speccy->Devices().FrameEnd(z80->FrameTacts() + z80->T());
 	return ok;
 }
 

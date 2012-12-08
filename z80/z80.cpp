@@ -159,7 +159,7 @@ void eZ80::Int()
 	byte vector = 0xff;
 	word intad = 0x38;
 	if(im >= 2) // im2
-	{ 
+	{
 		word vec = vector + i*0x100;
 		intad = Read(vec) + 0x100*Read(vec+1);
 	}
