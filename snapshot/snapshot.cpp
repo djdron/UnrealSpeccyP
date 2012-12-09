@@ -120,11 +120,11 @@ bool eZ80Accessor::SetState(const eSnapshot_SNA* s, size_t buf_size)
 	{
 		pc = memory->Read(sp) + 0x100 * memory->Read(sp+1);
 		sp += 2;
-		memory->SetPage(0, eRom::ROM_48);
+		devices->Get<eRom>()->SelectPage(eRom::ROM_48);
 		return true;
 	}
 	devices->IoWrite(0x7ffd, s->p7FFD, t);
-	memory->SetPage(0, s->trdos ? eRom::ROM_DOS : eRom::ROM_128_0);
+	devices->Get<eRom>()->SelectPage(s->trdos ? eRom::ROM_DOS : eRom::ROM_128_0);
 	const byte* page = s->pages;
 	byte mapped = 0x24 | (1 << (s->p7FFD & 7));
 	for(int i = 0; i < 8; ++i)
@@ -271,9 +271,9 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 	iff1 = s->iff1, iff2 = s->iff2; im = s->im & 3;
 	devices->IoWrite(0x7ffd, model48k ? 0x30 : s->p7FFD, t);
 	if(model48k)
-		memory->SetPage(0, eRom::ROM_48);
+		devices->Get<eRom>()->SelectPage(eRom::ROM_48);
 	else
-		memory->SetPage(0, (s->p7FFD & 0x10) ? eRom::ROM_128_0 : eRom::ROM_128_1);
+		devices->Get<eRom>()->SelectPage((s->p7FFD & 0x10) ? eRom::ROM_128_0 : eRom::ROM_128_1);
 	return true;
 }
 void eZ80Accessor::UnpackPage(byte* dst, int dstlen, byte* src, int srclen)

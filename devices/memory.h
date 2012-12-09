@@ -79,15 +79,14 @@ public:
 		byte pc_h = addr >> 8;
 		if(page_selected == ROM_SOS() && (pc_h == 0x3d))
 		{
-			page_selected = ROM_DOS;
-			memory->SetPage(0, page_selected);
+			SelectPage(ROM_DOS);
 		}
 		else if(DosSelected() && (pc_h & 0xc0)) // pc > 0x3fff closes tr-dos
 		{
-			page_selected = ROM_SOS();
-			memory->SetPage(0, page_selected);
+			SelectPage(ROM_SOS());
 		}
 	}
+	void SelectPage(int page) { page_selected = page; memory->SetPage(0, page_selected); }
 	bool DosSelected() const { return page_selected == ROM_DOS; }
 	void Mode48k(bool on) { mode_48k = on; }
 	int ROM_SOS() const { return mode_48k ? ROM_48 : ROM_128_0; }

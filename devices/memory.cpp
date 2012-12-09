@@ -109,8 +109,7 @@ void eRom::Init()
 //-----------------------------------------------------------------------------
 void eRom::Reset()
 {
-	page_selected = mode_48k ? ROM_48 : ROM_SYS;
-	memory->SetPage(0, page_selected);
+	SelectPage(mode_48k ? ROM_48 : ROM_SYS);
 }
 //=============================================================================
 //	eRom::IoWrite
@@ -124,8 +123,7 @@ bool eRom::IoWrite(word port) const
 //-----------------------------------------------------------------------------
 void eRom::IoWrite(word port, byte v, int tact)
 {
-	page_selected = (page_selected & ~1) + ((v >> 4) & 1);
-	memory->SetPage(0, page_selected);
+	SelectPage((page_selected & ~1) + ((v >> 4) & 1));
 }
 
 //=============================================================================
