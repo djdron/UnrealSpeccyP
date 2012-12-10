@@ -190,7 +190,7 @@ public class ViewGLES extends GLSurfaceView
 							Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
 						}
 					}
-				})
+				});
 			}
 		}
 		@Override
