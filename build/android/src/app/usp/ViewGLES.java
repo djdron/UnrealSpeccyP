@@ -24,6 +24,7 @@ import java.nio.FloatBuffer;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Handler;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -166,24 +167,37 @@ public class ViewGLES extends GLSurfaceView
 			gl.glDisable(GL10.GL_LIGHTING);
 			gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 		}
+		private void ShowMessage(final int code)
+		{
+			if(code != 0)
+			{
+				Handler h = new Handler(context.getMainLooper());
+				h.post(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						String msg = null;
+						switch(code)
+						{
+						case 1:	msg = context.getString(R.string.rzx_finished);		break;
+						case 2:	msg = context.getString(R.string.rzx_sync_lost);	break;
+						case 3:	msg = context.getString(R.string.rzx_invalid);		break;
+						case 4:	msg = context.getString(R.string.rzx_unsupported);	break;
+						}
+						if(msg != null)
+						{
+							Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+						}
+					}
+				})
+			}
+		}
 		@Override
 		public void onDrawFrame(GL10 gl)
 		{
 			Emulator.the.ProfilerEnd(2);
-			int err = Emulator.the.Update();
-			if(err != 0)
-			{
-				String msg = null;
-				switch(err)
-				{
-				case 1:	msg = context.getString(R.string.rzx_finished);		break;
-				case 2:	msg = context.getString(R.string.rzx_sync_lost);	break;
-				case 3:	msg = context.getString(R.string.rzx_invalid);		break;
-				case 4:	msg = context.getString(R.string.rzx_unsupported);	break;
-				}
-				if(msg != null)
-					Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-			}
+			ShowMessage(Emulator.the.Update());
 			Emulator.the.UpdateVideo(buf_video);
 
 			// write video buffer data to texture
