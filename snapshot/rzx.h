@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class eRZX
 {
 public:
-	enum eError { OK, NOTFOUND, INVALID, FINISHED, UNSUPPORTED, NOMEMORY, SYNCLOST };
+	enum eError { E_OK, E_FINISHED, E_SYNC_LOST, E_INVALID, E_UNSUPPORTED };
 
 	eRZX();
 	~eRZX();

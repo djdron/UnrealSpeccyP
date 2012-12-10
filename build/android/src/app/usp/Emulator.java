@@ -31,9 +31,9 @@ public class Emulator
 	synchronized native void	Init(final String path);
 	synchronized native void	Done();
 
-	synchronized native void	Update();
+	synchronized native int		Update();
 	synchronized native void	UpdateVideo(ByteBuffer buf);
-	synchronized native int	UpdateAudio(ByteBuffer buf);
+	synchronized native int		UpdateAudio(ByteBuffer buf);
 	public synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 	public synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
 

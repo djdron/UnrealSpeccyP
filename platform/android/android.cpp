@@ -157,9 +157,19 @@ void Java_app_usp_Emulator_Done(JNIEnv* env, jobject obj)
 	xPlatform::Done();
 }
 
-void Java_app_usp_Emulator_Update(JNIEnv* env, jobject obj)
+jint Java_app_usp_Emulator_Update(JNIEnv* env, jobject obj)
 {
-	xPlatform::Handler()->OnLoop();
+	const char* err = xPlatform::Handler()->OnLoop();
+	if(!err)
+		return 0;
+	else if(!strcmp(err, "rzx_finished"))
+		return 1;
+	else if(!strcmp(err, "rzx_sync_lost"))
+		return 2;
+	else if(!strcmp(err, "rzx_invalid"))
+		return 3;
+	else if(!strcmp(err, "rzx_unsupported"))
+		return 4;
 }
 void Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
 {

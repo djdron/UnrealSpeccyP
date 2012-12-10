@@ -60,7 +60,7 @@ public:
 	eError Open(const void* data, size_t data_size, eHandler* handler);
 	eError Update(int* icount);
 	eError IoRead(byte* data);
-	eError CheckSync() const { return INcount == INmax ? OK : SYNCLOST; }
+	eError CheckSync() const { return INcount == INmax ? E_OK : E_SYNC_LOST; }
 
 private:
 	class eStream : public xIo::eStreamMemory
@@ -126,7 +126,7 @@ private:
 	int ZipRead(byte* buffer, int len);
 	int ZipClose();
 #endif//USE_ZIP
-	int ReadBlock();
+	eError ReadBlock();
 	void Close();
 };
 
@@ -177,18 +177,18 @@ int eRZX::eImpl::ZipOpen()
 }
 #endif//USE_ZIP
 
-int eRZX::eImpl::ReadBlock()
+eRZX::eError eRZX::eImpl::ReadBlock()
 {
 	int done = 0;
 	long fpos;
 	while(!done)
 	{
 		if(file->Read(block.buff, 5) < 5)
-			return FINISHED;
+			return E_FINISHED;
 		block.type = block.buff[0];
 		block.length = block.buff[1]+256*block.buff[2]+65536*block.buff[3]+16777216*block.buff[4];
 		if(block.length == 0)
-			return INVALID;
+			return E_INVALID;
 		switch(block.type)
 		{
 		case RZXBLK_SNAP:
@@ -228,7 +228,7 @@ int eRZX::eImpl::ReadBlock()
 					bool ok = handler->RZX_OnOpenSnapshot(snap_filename, snap_data, snap_size);
 					SAFE_DELETE_ARRAY(snap_data);
 					if(!ok)
-						return UNSUPPORTED;
+						return E_UNSUPPORTED;
 				}
 				else
 				{
@@ -244,7 +244,7 @@ int eRZX::eImpl::ReadBlock()
 						strcpy(snap_filename, xPlatform::OpLastFolder());
 						strcat(snap_filename, snap_fullname + l + 1);
 						if(!handler->RZX_OnOpenSnapshot(snap_filename, NULL, 0))
-							return UNSUPPORTED;
+							return E_UNSUPPORTED;
 					}
 				}
 			}
@@ -265,25 +265,23 @@ int eRZX::eImpl::ReadBlock()
 
 			if(status & RZX_PACK)
 #ifndef USE_ZIP
-				return UNSUPPORTED;
+				return E_UNSUPPORTED;
 #else//USE_ZIP
 			{
 				fpos = file->Pos();
 				ZipOpen();
 			}
 #endif
-			return OK;
-		case RZXBLK_SECURITY:
-			break;
+			return E_OK;
 		default:
 			break;
 		}
 		/* seek the next block in the file */
 		block.start += block.length;
 		if(file->Seek(block.start) != 0)
-			return INVALID;
+			return E_INVALID;
 	}
-	return OK;
+	return E_OK;
 }
 
 
@@ -293,9 +291,9 @@ eRZX::eError eRZX::eImpl::Open(const void* _data, size_t _data_size, eHandler* _
 	file = new eStream(_data, _data_size);
 	handler = _handler;
 	if(!handler)
-		return INVALID;
+		return E_INVALID;
 	if(!file->Size())
-		return INVALID;
+		return E_INVALID;
 	inputbuffer = new byte[RZXINPUTMAX];
 	memset(inputbuffer, 0, RZXINPUTMAX);
 	memset(block.buff, 0, RZXBLKBUF);
@@ -304,20 +302,21 @@ eRZX::eError eRZX::eImpl::Open(const void* _data, size_t _data_size, eHandler* _
 	if(memcmp(block.buff, "RZX!", 4))
 	{
 		Close();
-		return INVALID;
+		return E_INVALID;
 	}
 	block.start = 10;
 	block.length = 0;
 	block.type = 0;
 	file->Seek(block.start);
-	if(ReadBlock() != OK)
+	eError err = ReadBlock();
+	if(err != E_OK)
 	{
 		Close();
-		return FINISHED;
+		return err;
 	}
 	INcount = 0;
 	INold = 0xFFFF;
-	return OK;
+	return E_OK;
 }
 
 void eRZX::eImpl::Close()
@@ -344,12 +343,13 @@ eRZX::eError eRZX::eImpl::Update(int* icount)
 #endif//USE_ZIP
 		block.start += block.length;
 		if(file->Seek(block.start) != 0) // bugfix with possible buffer overread when readed zipped data
-			return INVALID;
-		if(ReadBlock() != OK)
+			return E_INVALID;
+		eError err = ReadBlock();
+		if(err != E_OK)
 		{
 			/* no more IRBs, finished */
 			Close();
-			return FINISHED;
+			return err;
 		}
 	}
 
@@ -381,14 +381,14 @@ eRZX::eError eRZX::eImpl::Update(int* icount)
 		INmax = INold;
 	INcount = 0;
 	--framecount;
-	return OK;
+	return E_OK;
 }
 eRZX::eError eRZX::eImpl::IoRead(byte* data)
 {
 	if(INcount >= INmax)
-		return SYNCLOST;
+		return E_SYNC_LOST;
 	*data = inputbuffer[INcount++];
-	return OK;
+	return E_OK;
 }
 
 eRZX::eRZX() { impl = new eImpl; }

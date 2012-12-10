@@ -58,11 +58,11 @@ protected:
 
 static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ80::eZ80::eHandlerIo
 {
-	eSpeccyHandler() : speccy(NULL), macro(NULL), replay(NULL), video_paused(0), inside_update(false) {}
+	eSpeccyHandler() : speccy(NULL), macro(NULL), replay(NULL), video_paused(0), inside_replay_update(false) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit();
 	virtual void OnDone();
-	virtual void OnLoop();
+	virtual const char* OnLoop();
 	virtual void* VideoData() { return speccy->Device<eUla>()->Screen(); }
 	virtual void* VideoDataUI()
 	{
@@ -98,11 +98,10 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 	virtual byte Z80_IoRead(word port, int tact)
 	{
 		byte r = 0xff;
-		eRZX::eError e = replay->IoRead(&r);
-		if(e != eRZX::OK)
-			Replay(NULL);
+		replay->IoRead(&r);
 		return r;
 	}
+	const char* RZXErrorDesc(eRZX::eError err) const;
 	void Replay(eRZX* r)
 	{
 		speccy->CPU()->HandlerIo(NULL);
@@ -119,7 +118,7 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 	eMacro* macro;
 	eRZX* replay;
 	int video_paused;
-	bool inside_update;
+	bool inside_replay_update;
 
 	enum { SOUND_DEV_COUNT = 3 };
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];
@@ -149,8 +148,9 @@ void eSpeccyHandler::OnDone()
 #endif//USE_UI
 	PROFILER_DUMP;
 }
-void eSpeccyHandler::OnLoop()
+const char* eSpeccyHandler::OnLoop()
 {
+	const char* error = NULL;
 	if(FullSpeed() || !video_paused)
 	{
 		if(macro)
@@ -161,20 +161,19 @@ void eSpeccyHandler::OnLoop()
 		if(replay)
 		{
 			int icount = 0;
-			inside_update = true;
-			if(replay->Update(&icount) == eRZX::OK)
+			inside_replay_update = true;
+			eRZX::eError err = replay->Update(&icount);
+			inside_replay_update = false;
+			if(err == eRZX::E_OK)
 			{
 				speccy->Update(&icount);
-				if(replay && replay->CheckSync() == eRZX::SYNCLOST)
-				{
-					Replay(NULL);
-				}
+				err = replay->CheckSync();
 			}
-			else
+			if(err != eRZX::E_OK)
 			{
 				Replay(NULL);
+				error = RZXErrorDesc(err);
 			}
-			inside_update = false;
 		}
 		else
 			speccy->Update(NULL);
@@ -182,6 +181,19 @@ void eSpeccyHandler::OnLoop()
 #ifdef USE_UI
 	ui_desktop->Update();
 #endif//USE_UI
+	return error;
+}
+const char* eSpeccyHandler::RZXErrorDesc(eRZX::eError err) const
+{
+	switch(err)
+	{
+	case eRZX::E_OK:			return "rzx_ok";
+	case eRZX::E_FINISHED:		return "rzx_finished";
+	case eRZX::E_SYNC_LOST:		return "rzx_sync_lost";
+	case eRZX::E_INVALID:		return "rzx_invalid";
+	case eRZX::E_UNSUPPORTED:	return "rzx_unsupported";
+	}
+	return NULL;
 }
 void eSpeccyHandler::OnKey(char key, dword flags)
 {
@@ -320,12 +332,12 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 	switch(action)
 	{
 	case A_RESET:
-		if(!inside_update) // when opening snapshots from replay->Update()
+		if(!inside_replay_update) // can be called from replay->Update()
 			SAFE_DELETE(replay);
 		SAFE_DELETE(macro);
 		speccy->Mode48k(op_48k);
 		speccy->Reset();
-		if(inside_update && replay)
+		if(inside_replay_update)
 			speccy->CPU()->HandlerIo(this);
 		return AR_OK;
 	case A_TAPE_TOGGLE:
@@ -427,7 +439,7 @@ static struct eFileTypeRZX : public eFileType
 	virtual bool Open(const void* data, size_t data_size)
 	{
 		eRZX* rzx = new eRZX;
-		if(rzx->Open(data, data_size, &sh) == eRZX::OK)
+		if(rzx->Open(data, data_size, &sh) == eRZX::E_OK)
 		{
 			sh.Replay(rzx);
 			return true;

@@ -89,6 +89,7 @@ static struct eOptionFullScreen : public xOptions::eOptionBool
 
 const wxEventType evtMouseCapture = wxNewEventType();
 enum wxEventMouseCaptureId { evID_MOUSE_CAPTURED = 1, evID_MOUSE_RELEASED };
+const wxEventType evtError = wxNewEventType();
 
 class GLCanvas : public wxGLCanvas
 {
@@ -109,13 +110,6 @@ public:
 		int w, h;
 		GetClientSize(&w, &h);
 		SetCurrent();
-		static bool vsync = false;
-		bool s = !Handler()->FullSpeed();
-		if(vsync != s)
-		{
-			vsync = s;
-			VsyncGL(vsync);
-		}
 		DrawGL(w, h);
 		SwapBuffers();
 	}
@@ -126,10 +120,23 @@ public:
 			GetParent()->Close(true);
 			return;
 		}
-		Handler()->OnLoop();
+		const char* err = Handler()->OnLoop();
+		if(err)
+		{
+			wxCommandEvent ev(evtError);
+			ev.SetString(wxConvertMB2WX(err));
+			ProcessEvent(ev);
+		}
 		OnLoopSound();
 		{
 			wxClientDC dc(this);
+			static bool vsync = false;
+			bool s = !Handler()->FullSpeed();
+			if(vsync != s)
+			{
+				vsync = s;
+				VsyncGL(vsync);
+			}
 			Paint(dc);
 		}
 		if(!Handler()->FullSpeed())
@@ -650,6 +657,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		case evID_MOUSE_RELEASED:	SetStatusText(_("Mouse released"));	break;
 		}
 	}
+	void OnError(wxCommandEvent& event)
+	{
+		if(event.GetString() == L"rzx_finished")
+			SetStatusText(_("RZX playback finished"));
+		else if(event.GetString() == L"rzx_sync_lost")
+			SetStatusText(_("RZX error - sync lost"));
+		else if(event.GetString() == L"rzx_invalid")
+			SetStatusText(_("RZX error - invalid data"));
+		else if(event.GetString() == L"rzx_unsupported")
+			SetStatusText(_("RZX error - unsupported format"));
+	}
 	void UpdateJoyMenu()
 	{
 		eJoystick joy = OpJoystick();
@@ -708,6 +726,7 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_TrueSpeedToggle,	Frame::OnTrueSpeedToggle)
 	EVT_MENU(Frame::ID_Mode48kToggle,	Frame::OnMode48kToggle)
 	EVT_COMMAND(wxID_ANY, evtMouseCapture, Frame::OnMouseCapture)
+	EVT_COMMAND(wxID_ANY, evtError, Frame::OnError)
 END_EVENT_TABLE()
 
 class App: public wxApp

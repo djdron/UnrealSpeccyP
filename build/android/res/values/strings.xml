@@ -72,4 +72,9 @@
     <string name= "file_select_invalid_info">invalid info</string>
     <string name= "file_select_not_available">not available</string>
     <string name= "file_select_unsupported_format">unsupported format</string>
+
+    <string name= "rzx_finished">RZX playback finished</string>
+    <string name= "rzx_sync_lost">RZX error - sync lost</string>
+    <string name= "rzx_invalid">RZX error - invalid data</string>
+    <string name= "rzx_unsupported">RZX error - unsupported format</string>
 </resources>

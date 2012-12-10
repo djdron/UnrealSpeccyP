@@ -28,6 +28,7 @@ import android.content.res.Configuration;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLSurfaceView;
+import android.widget.Toast;
 import app.usp.ctl.ControlController;
 import app.usp.ctl.ControlKeyboard;
 import app.usp.ctl.ControlTouch;
@@ -126,8 +127,10 @@ public class ViewGLES extends GLSurfaceView
 		private float scale_x = 1.0f;
 		private float scale_y = 1.0f;
 		private SyncTimer sync_timer = null;
-		Video(Context context)
+		private Context context;
+		Video(Context _context)
 		{
+			context = _context;
 			control_controller = new ControlController(context);
 			control_keyboard = new ControlKeyboard(context);
 		}
@@ -167,7 +170,20 @@ public class ViewGLES extends GLSurfaceView
 		public void onDrawFrame(GL10 gl)
 		{
 			Emulator.the.ProfilerEnd(2);
-			Emulator.the.Update();
+			int err = Emulator.the.Update();
+			if(err != 0)
+			{
+				String msg = null;
+				switch(err)
+				{
+				case 1:	msg = context.getString(R.string.rzx_finished);		break;
+				case 2:	msg = context.getString(R.string.rzx_sync_lost);	break;
+				case 3:	msg = context.getString(R.string.rzx_invalid);		break;
+				case 4:	msg = context.getString(R.string.rzx_unsupported);	break;
+				}
+				if(msg != null)
+					Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+			}
 			Emulator.the.UpdateVideo(buf_video);
 
 			// write video buffer data to texture
