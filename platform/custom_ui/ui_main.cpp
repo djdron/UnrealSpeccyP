@@ -43,6 +43,7 @@ static struct eOptionOpenFile : public xOptions::eOptionB
 	virtual void Change(bool next = true) { if(next) on = true; }
 	bool on;
 } op_open_file;
+xOptions::eOptionB& OpOpenFile() { return op_open_file; }
 
 //=============================================================================
 //	eMainDialog::eMainDialog

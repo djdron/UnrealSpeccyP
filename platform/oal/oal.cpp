@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-static xOptions::eOption<bool>* op_true_speed = NULL;
+static xOptions::eOptionBool* op_true_speed = NULL;
 
 struct eSource
 {
@@ -118,7 +118,7 @@ static ALCcontext* context = NULL;
 
 void InitSound()
 {
-	op_true_speed = xOptions::eOption<bool>::Find("true speed");
+	op_true_speed = xOptions::eRootOption<xOptions::eOptionBool>::Find("true speed");
 	device = alcOpenDevice(NULL);
 	if(!device)
 		return;

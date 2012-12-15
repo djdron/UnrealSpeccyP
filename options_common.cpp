@@ -22,6 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui/ui.h"
 #include "options_common.h"
 
+namespace xUi
+{
+xOptions::eOptionB& OpOpenFile();
+}
+
 namespace xPlatform
 {
 
@@ -57,7 +62,6 @@ static struct eOptionSaveState : public eOptionState
 		if(name)
 			Handler()->OnSaveFile(name);
 	}
-	virtual int Order() const { return 1; }
 } op_save_state;
 
 static struct eOptionLoadState : public eOptionState
@@ -69,11 +73,12 @@ static struct eOptionLoadState : public eOptionState
 		if(name)
 			Handler()->OnOpenFile(name);
 	}
-	virtual int Order() const { return 2; }
 } op_load_state;
 
-static struct eOptionTape : public xOptions::eOptionInt
+xOptions::eOptionB& OpTapeFast();
+static struct eOptionTape : public xOptions::eRootOption<xOptions::eOptionInt>
 {
+	typedef xOptions::eRootOption<xOptions::eOptionInt> eInherited;
 	eOptionTape() { storeable = false; }
 	virtual const char* Name() const { return "tape"; }
 	virtual const char** Values() const
@@ -90,14 +95,20 @@ static struct eOptionTape : public xOptions::eOptionInt
 		case AR_TAPE_STARTED:		Set(2);	break;
 		default: break;
 		}
+		eInherited::Change(next);
 	}
-	virtual int Order() const { return 40; }
+	virtual int Order() const { return 5; }
+protected:
+	virtual void OnOption()
+	{
+		Option(OpTapeFast());
+	}
 } op_tape;
 
-static struct eOptionSound : public xOptions::eOptionInt
+static struct eOptionSoundSource : public xOptions::eOptionInt
 {
-	eOptionSound() { Set(S_AY); }
-	virtual const char* Name() const { return "sound"; }
+	eOptionSoundSource() { Set(S_AY); }
+	virtual const char* Name() const { return "source"; }
 	virtual const char** Values() const
 	{
 		static const char* values[] = { "beeper", "ay", "tape", NULL };
@@ -105,10 +116,10 @@ static struct eOptionSound : public xOptions::eOptionInt
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(S_FIRST, S_LAST, next);
+		eOptionInt::Change(S_LAST, next);
 	}
-	virtual int Order() const { return 20; }
-} op_sound;
+} op_sound_source;
+xOptions::eOptionB* OpSoundSource() { return &op_sound_source; }
 
 static struct eOptionVolume : public xOptions::eOptionInt
 {
@@ -121,12 +132,12 @@ static struct eOptionVolume : public xOptions::eOptionInt
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(V_FIRST, V_LAST, next);
+		eOptionInt::Change(V_LAST, next);
 	}
-	virtual int Order() const { return 30; }
 } op_volume;
+xOptions::eOptionB* OpSoundVolume() { return &op_volume; }
 
-static struct eOptionPause : public xOptions::eOptionBool
+static struct eOptionPause : public xOptions::eRootOption<xOptions::eOptionBool>
 {
 	eOptionPause() { storeable = false; }
 	virtual const char* Name() const { return "pause"; }
@@ -141,8 +152,8 @@ static struct eOptionPause : public xOptions::eOptionBool
 eVolume	OpVolume() { return (eVolume)(int)op_volume; }
 void OpVolume(eVolume v) { op_volume.Set(v); }
 
-eSound	OpSound() { return (eSound)(int)op_sound; }
-void OpSound(eSound s) { op_sound.Set(s); }
+eSound	OpSound() { return (eSound)(int)op_sound_source; }
+void OpSound(eSound s) { op_sound_source.Set(s); }
 
 #else//USE_UI || USE_OPTIONS_COMMON
 
@@ -152,9 +163,12 @@ void OpVolume(eVolume v) {}
 eSound	OpSound() { return S_AY; }
 void OpSound(eSound s) {}
 
+xOptions::eOptionB* OpSoundSource() { return NULL; }
+xOptions::eOptionB* OpSoundVolume() { return NULL; }
+
 #endif//USE_UI || USE_OPTIONS_COMMON
 
-static struct eOptionJoy : public xOptions::eOptionInt
+static struct eOptionJoy : public xOptions::eRootOption<xOptions::eOptionInt>
 {
 	eOptionJoy() { Set(J_KEMPSTON); }
 	virtual const char* Name() const { return "joystick"; }
@@ -165,7 +179,7 @@ static struct eOptionJoy : public xOptions::eOptionInt
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(J_FIRST, J_LAST, next);
+		eOptionInt::Change(J_LAST, next);
 	}
 	virtual int Order() const { return 10; }
 } op_joy;
@@ -181,12 +195,26 @@ static struct eOptionDrive : public xOptions::eOptionInt
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(D_FIRST, D_LAST, next);
+		eOptionInt::Change(D_LAST, next);
 	}
-	virtual int Order() const { return 60; }
 } op_drive;
 
-static struct eOptionReset : public xOptions::eOptionB
+xOptions::eOptionB& OpAutoPlayImage();
+static struct eOptionImage : public xOptions::eRootOption<xOptions::eOptionB>
+{
+	virtual const char* Name() const { return "image"; }
+protected:
+	virtual void OnOption()
+	{
+		Option(xUi::OpOpenFile());
+		Option(op_drive);
+		Option(OpAutoPlayImage());
+		Option(op_save_state);
+		Option(op_load_state);
+	}
+} op_image;
+
+static struct eOptionReset : public xOptions::eRootOption<xOptions::eOptionB>
 {
 	eOptionReset() { storeable = false; }
 	virtual const char* Name() const { return "reset"; }
@@ -194,7 +222,7 @@ static struct eOptionReset : public xOptions::eOptionB
 	virtual int Order() const { return 80; }
 } op_reset;
 
-static struct eOptionQuit : public xOptions::eOptionBool
+static struct eOptionQuit : public xOptions::eRootOption<xOptions::eOptionBool>
 {
 	eOptionQuit() { storeable = false; }
 	virtual const char* Name() const { return "quit"; }
@@ -202,7 +230,7 @@ static struct eOptionQuit : public xOptions::eOptionBool
 	virtual const char** Values() const { return NULL; }
 } op_quit;
 
-static struct eOptionLastFile : public xOptions::eOptionString
+static struct eOptionLastFile : public xOptions::eRootOption<xOptions::eOptionString>
 {
 	eOptionLastFile() { customizable = false; }
 	virtual const char* Name() const { return "last file"; }

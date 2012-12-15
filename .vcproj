@@ -987,6 +987,14 @@
 				RelativePath=".\ui\ui_list.h"
 				>
 			</File>
+			<File
+				RelativePath=".\ui\ui_tree.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ui\ui_tree.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="tools"

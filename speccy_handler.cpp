@@ -136,6 +136,9 @@ void eSpeccyHandler::OnInit()
 	sound_dev[1] = speccy->Device<eAY>();
 	sound_dev[2] = speccy->Device<eTape>();
 	xOptions::Load();
+	xOptions::eOptionBool* op_mode_48k = xOptions::eRootOption<xOptions::eOptionBool>::Find("mode 48k");
+	if(op_mode_48k && *op_mode_48k)
+		speccy->Reset();
 }
 void eSpeccyHandler::OnDone()
 {
@@ -301,30 +304,27 @@ bool eSpeccyHandler::OnSaveFile(const char* name)
 static struct eOptionTapeFast : public xOptions::eOptionBool
 {
 	eOptionTapeFast() { Set(true); }
-	virtual const char* Name() const { return "fast tape"; }
-	virtual int Order() const { return 50; }
+	virtual const char* Name() const { return "fast"; }
 } op_tape_fast;
+xOptions::eOptionB& OpTapeFast() { return op_tape_fast; }
 
 static struct eOptionAutoPlayImage : public xOptions::eOptionBool
 {
 	eOptionAutoPlayImage() { Set(true); }
-	virtual const char* Name() const { return "auto play image"; }
-	virtual int Order() const { return 55; }
+	virtual const char* Name() const { return "auto play"; }
 } op_auto_play_image;
+xOptions::eOptionB& OpAutoPlayImage() { return op_auto_play_image; }
 
-static struct eOption48K : public xOptions::eOptionBool
+static struct eOption48K : public xOptions::eRootOption<xOptions::eOptionBool>
 {
 	virtual const char* Name() const { return "mode 48k"; }
-	virtual void Change(bool next = true)
-	{
-		eOptionBool::Change();
-		Apply();
-	}
-	virtual void Apply()
-	{
-		sh.OnAction(A_RESET);
-	}
 	virtual int Order() const { return 65; }
+protected:
+	virtual void OnOption()
+	{
+		if(changed)
+			sh.OnAction(A_RESET);
+	}
 } op_48k;
 
 eActionResult eSpeccyHandler::OnAction(eAction action)
@@ -368,12 +368,11 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 	return AR_ERROR;
 }
 
-static void SetupSoundChip();
 static struct eOptionSoundChip : public xOptions::eOptionInt
 {
 	eOptionSoundChip() { Set(SC_AY); }
 	enum eType { SC_FIRST, SC_AY = SC_FIRST, SC_YM, SC_LAST };
-	virtual const char* Name() const { return "sound chip"; }
+	virtual const char* Name() const { return "chip"; }
 	virtual const char** Values() const
 	{
 		static const char* values[] = { "ay", "ym", NULL };
@@ -381,21 +380,15 @@ static struct eOptionSoundChip : public xOptions::eOptionInt
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(SC_FIRST, SC_LAST, next);
-		Apply();
+		eOptionInt::Change(SC_LAST, next);
 	}
-	virtual void Apply()
-	{
-		SetupSoundChip();
-	}
-	virtual int Order() const { return 24; }
 }op_sound_chip;
 
 static struct eOptionAYStereo : public xOptions::eOptionInt
 {
 	eOptionAYStereo() { Set(AS_ABC); }
 	enum eMode { AS_FIRST, AS_ABC = AS_FIRST, AS_ACB, AS_BAC, AS_BCA, AS_CAB, AS_CBA, AS_MONO, AS_LAST };
-	virtual const char* Name() const { return "ay stereo"; }
+	virtual const char* Name() const { return "stereo"; }
 	virtual const char** Values() const
 	{
 		static const char* values[] = { "abc", "acb", "bac", "bca", "cab", "cba", "mono", NULL };
@@ -403,36 +396,59 @@ static struct eOptionAYStereo : public xOptions::eOptionInt
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(AS_FIRST, AS_LAST, next);
-		Apply();
+		eOptionInt::Change(AS_LAST, next);
 	}
-	virtual void Apply()
-	{
-		SetupSoundChip();
-	}
-	virtual int Order() const { return 25; }
 }op_ay_stereo;
 
-void SetupSoundChip()
+xOptions::eOptionB* OpSoundSource();
+xOptions::eOptionB* OpSoundVolume();
+static struct eOptionAY : public xOptions::eOptionB
 {
-	eOptionSoundChip::eType chip = (eOptionSoundChip::eType)(int)op_sound_chip;
-	eOptionAYStereo::eMode stereo = (eOptionAYStereo::eMode)(int)op_ay_stereo;
-	eAY* ay = sh.speccy->Device<eAY>();
-	const SNDCHIP_PANTAB* sndr_pan = SNDR_PAN_MONO;
-	switch(stereo)
+	virtual const char* Name() const { return "ay"; }
+protected:
+	virtual void OnOption()
 	{
-	case eOptionAYStereo::AS_ABC: sndr_pan = SNDR_PAN_ABC; break;
-	case eOptionAYStereo::AS_ACB: sndr_pan = SNDR_PAN_ACB; break;
-	case eOptionAYStereo::AS_BAC: sndr_pan = SNDR_PAN_BAC; break;
-	case eOptionAYStereo::AS_BCA: sndr_pan = SNDR_PAN_BCA; break;
-	case eOptionAYStereo::AS_CAB: sndr_pan = SNDR_PAN_CAB; break;
-	case eOptionAYStereo::AS_CBA: sndr_pan = SNDR_PAN_CBA; break;
-	case eOptionAYStereo::AS_MONO: sndr_pan = SNDR_PAN_MONO; break;
-	case eOptionAYStereo::AS_LAST: break;
+		bool chip_changed = Option(op_sound_chip);
+		bool stereo_changed = Option(op_ay_stereo);
+		if(chip_changed || stereo_changed)
+		{
+			Setup();
+		}
 	}
-	ay->SetChip(chip == eOptionSoundChip::SC_AY ? eAY::CHIP_AY : eAY::CHIP_YM);
-	ay->SetVolumes(0x7FFF, chip == eOptionSoundChip::SC_AY ? SNDR_VOL_AY : SNDR_VOL_YM, sndr_pan);
-}
+	void Setup()
+	{
+		eOptionSoundChip::eType chip = (eOptionSoundChip::eType)(int)op_sound_chip;
+		eOptionAYStereo::eMode stereo = (eOptionAYStereo::eMode)(int)op_ay_stereo;
+		eAY* ay = sh.speccy->Device<eAY>();
+		const SNDCHIP_PANTAB* sndr_pan = SNDR_PAN_MONO;
+		switch(stereo)
+		{
+		case eOptionAYStereo::AS_ABC: sndr_pan = SNDR_PAN_ABC; break;
+		case eOptionAYStereo::AS_ACB: sndr_pan = SNDR_PAN_ACB; break;
+		case eOptionAYStereo::AS_BAC: sndr_pan = SNDR_PAN_BAC; break;
+		case eOptionAYStereo::AS_BCA: sndr_pan = SNDR_PAN_BCA; break;
+		case eOptionAYStereo::AS_CAB: sndr_pan = SNDR_PAN_CAB; break;
+		case eOptionAYStereo::AS_CBA: sndr_pan = SNDR_PAN_CBA; break;
+		case eOptionAYStereo::AS_MONO: sndr_pan = SNDR_PAN_MONO; break;
+		case eOptionAYStereo::AS_LAST: break;
+		}
+		ay->SetChip(chip == eOptionSoundChip::SC_AY ? eAY::CHIP_AY : eAY::CHIP_YM);
+		ay->SetVolumes(0x7FFF, chip == eOptionSoundChip::SC_AY ? SNDR_VOL_AY : SNDR_VOL_YM, sndr_pan);
+	}
+}op_ay;
+
+static struct eOptionSound : public xOptions::eRootOption<xOptions::eOptionB>
+{
+	virtual const char* Name() const { return "sound"; }
+	virtual int Order() const { return 25; }
+protected:
+	virtual void OnOption()
+	{
+		Option(OpSoundSource());
+		Option(OpSoundVolume());
+		Option(op_ay);
+	}
+}op_sound;
 
 static struct eFileTypeRZX : public eFileType
 {
