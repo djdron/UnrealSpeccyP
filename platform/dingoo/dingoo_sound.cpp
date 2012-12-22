@@ -20,13 +20,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../platform.h"
 #include "../../options_common.h"
+#include "../../speccy.h"
+#include "../../devices/sound/ay.h"
 
 #include <dingoo/audio.h>
 
 namespace xPlatform
 {
 
-class eAudio
+xOptions::eOptionB* OpSoundSource();
+xOptions::eOptionB* OpSoundVolume();
+
+class eAudio : public xOptions::eRootOption<xOptions::eOptionB>
 {
 public:
 	eAudio() : volume(0)
@@ -37,16 +42,21 @@ public:
 	}
 	~eAudio() { waveout_close(handle); }
 	void Update();
+	virtual const char* Name() const { return "sound"; }
+	virtual int Order() const { return 25; }
 protected:
-	void SetVolume(int v)
+	void SetVolume(int v) { waveout_set_volume(v); }
+	virtual void OnOption()
 	{
-		waveout_set_volume(v);
+		Option(OpSoundSource());
+		Option(OpSoundVolume());
+		Option(Handler()->Speccy()->Device<eAY>());
 	}
 protected:
 	void* handle;
 	int source;
 	int volume;
-};
+} audio;
 
 void eAudio::Update()
 {
@@ -67,7 +77,7 @@ void eAudio::Update()
 	}
 }
 
-void UpdateAudio() { static eAudio audio; audio.Update(); }
+void UpdateAudio() { audio.Update(); }
 
 }
 //namespace xPlatform

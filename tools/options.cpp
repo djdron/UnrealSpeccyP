@@ -31,7 +31,7 @@ eOptionB* eRootOptionB::Find(const char* name)
 {
 	for(eRootOptionB* r = First(); r; r = r->Next())
 	{
-		eOptionB* o = (eOptionB*)*r;
+		eOptionB* o = r->OptionB();
 		if(!strcmp(name, o->Name()))
 			return o;
 	}
@@ -41,8 +41,7 @@ void eRootOptionB::Apply()
 {
 	for(eRootOptionB* r = eRootOptionB::First(); r; r = r->Next())
 	{
-		eOptionB* o = *r;
-		o->Apply();
+		r->OptionB()->Apply();
 	}
 }
 void eRootOptionB::Load(TiXmlElement* owner)
@@ -62,8 +61,7 @@ void eRootOptionB::Store(TiXmlElement* owner)
 {
 	for(eRootOptionB* r = eRootOptionB::First(); r; r = r->Next())
 	{
-		eOptionB* o = *r;
-		o->Store(owner);
+		r->OptionB()->Store(owner);
 	}
 }
 
@@ -93,7 +91,7 @@ bool eOptionB::Option(eOptionB& o)
 		o.Apply();
 	return res;
 }
-eOptionB* eOptionB::Find(const char* name)
+eOptionB* eOptionB::Find(const char* name) const
 {
 	for(eOptionB* o = sub_options; o; o = o->Next())
 	{
@@ -116,10 +114,11 @@ void eOptionB::Load(TiXmlElement* owner)
 }
 void eOptionB::Store(TiXmlElement* owner)
 {
-	TiXmlElement* xe;
-	xe = new TiXmlElement(OptNameToXmlName(Name()));
+	if(!(storeable && Value()) && !sub_options)
+		return;
+	TiXmlElement* xe = new TiXmlElement(OptNameToXmlName(Name()));
 	owner->LinkEndChild(xe);
-	if(Storeable() && Value())
+	if(storeable && Value())
 	{
 		xe->LinkEndChild(new TiXmlText(Value()));
 	}
@@ -241,6 +240,7 @@ const char*	eOptionBool::Value() const
 }
 void eOptionBool::Value(const char* v)
 {
+	return;
 	const char** vals = Values();
 	if(!vals)
 		return;
@@ -306,7 +306,7 @@ void Store()
 
 #else//USE_CONFIG
 
-void Load() { eOA::SortByOrder(); }
+void Load() { eOA::SortByOrder(); eRootOptionB::Apply(); }
 void Store() {}
 
 #endif//USE_CONFIG

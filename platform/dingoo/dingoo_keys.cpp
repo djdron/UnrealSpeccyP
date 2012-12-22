@@ -27,13 +27,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
+xOptions::eOptionB* OpSoundSource();
+
 class eKeys
 {
 public:
-	eKeys() : status(0)
-	{
-		op_sound = xOptions::eOption<int>::Find("sound");
-	}
+	eKeys() : status(0) {}
 	void Update();
 protected:
 	enum eKeyBit
@@ -71,7 +70,6 @@ protected:
 	}
 protected:
 	dword status;
-	xOptions::eOption<int>* op_sound;
 };
 
 void eKeys::Update()
@@ -94,7 +92,7 @@ void eKeys::Update()
 			if(!audio_next)
 			{
 				audio_next = true;
-				SAFE_CALL(op_sound)->Change();
+				OpSoundSource()->Change();
 			}
 			return;
 		}

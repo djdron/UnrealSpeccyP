@@ -38,6 +38,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #endif//_WINDOWS || _LINUX || _MAC
 
+class eSpeccy;
+
 namespace xPlatform
 {
 
@@ -95,6 +97,7 @@ struct eHandler
 	virtual void AudioDataUse(int source, dword size) = 0;
 
 	virtual bool FullSpeed() const = 0;
+	virtual eSpeccy* Speccy() const = 0;
 };
 
 eHandler* Handler();

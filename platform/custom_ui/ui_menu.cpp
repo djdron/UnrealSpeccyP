@@ -61,7 +61,7 @@ void eMenu::OnChangeOption()
 	int i = 0;
 	for(eRootOptionB* o = eRootOptionB::First(); o; o = o->Next())
 	{
-		CreateOption(i, *o);
+		CreateOption(i, o->OptionB());
 	}
 }
 bool eMenu::ChangeOption(bool next)

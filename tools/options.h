@@ -31,26 +31,29 @@ namespace xOptions
 
 class eOptionB;
 
-struct eRootOptionB : public eList<eRootOptionB>
+class eRootOptionB : public eList<eRootOptionB>
 {
+public:
 	virtual int Order() const { return 0; }
-	virtual operator eOptionB*() = 0;
+	virtual eOptionB* OptionB() = 0;
 	static eOptionB* Find(const char* name);
 	static void Apply();
 	static void Load(TiXmlElement* owner);
 	static void Store(TiXmlElement* owner);
+protected:
+	eRootOptionB() {}
 };
 
 template<class T> struct eRootOption : public eRootOptionB, public T
 {
-	virtual operator eOptionB*() { return (eOptionB*)this; }
+	virtual eOptionB* OptionB() { return (eOptionB*)this; }
 	static T* Find(const char* name) { return (T*)eRootOptionB::Find(name); }
 };
 
 class eOptionB
 {
 public:
-	eOptionB() : sub_options(NULL), customizable(true), storeable(true), changed(false) {}
+	eOptionB() : next(NULL), sub_options(NULL), customizable(true), storeable(true), changed(false) {}
 	virtual ~eOptionB() {}
 
 	eOptionB* Next() { return next; }
@@ -63,7 +66,6 @@ public:
 	virtual const char* Name() const = 0;
 	virtual const char*	Value() const { return NULL; }
 	virtual void Value(const char* v) {}
-	virtual const char** Values() const { return NULL; }
 	virtual void Change(bool next = true) { changed = true; }
 	bool Option(eOptionB& o);
 	bool Option(eOptionB* o) { return o ? Option(*o) : false; }
@@ -73,8 +75,9 @@ public:
 	static const char* OptNameToXmlName(const char* name);
 	static const char* XmlNameToOptName(const char* name);
 protected:
+	virtual const char** Values() const { return NULL; }
 	virtual void OnOption() {}
-	eOptionB* Find(const char* name);
+	eOptionB* Find(const char* name) const;
 public:
 	static bool loading;
 protected:
