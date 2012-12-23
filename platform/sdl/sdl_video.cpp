@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform.h"
 
 #ifdef USE_SDL
+#ifndef SDL_UNUSE_VIDEO
 
 #include <SDL.h>
 #include "../../ui/ui.h"
@@ -117,4 +118,5 @@ void UpdateScreen()
 }
 //namespace xPlatform
 
+#endif//SDL_UNUSE_VIDEO
 #endif//USE_SDL

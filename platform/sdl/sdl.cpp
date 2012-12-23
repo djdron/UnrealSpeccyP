@@ -49,12 +49,14 @@ static bool Init()
 	OpLastFile(SDL_DEFAULT_FOLDER);
 	Handler()->OnInit();
 
-#ifndef SDL_USE_JOYSTICK
-	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0)
-		return false;
-#else//SDL_USE_JOYSTICK
-	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_JOYSTICK) < 0)
+	Uint32 init_flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO;
+#ifdef SDL_USE_JOYSTICK
+	init_flags |= SDL_INIT_JOYSTICK;
+#endif//SDL_USE_JOYSTICK
+	if(SDL_Init(init_flags) < 0)
         return false;
+
+#ifdef SDL_USE_JOYSTICK
 	SDL_JoystickEventState(SDL_ENABLE);
 	joystick = SDL_JoystickOpen(0);
 #endif//SDL_USE_JOYSTICK
@@ -62,6 +64,7 @@ static bool Init()
     sdl_inited = true;
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_WM_SetCaption(Handler()->WindowCaption(), NULL);
+
 	if(!InitVideo())
 		return false;
 	if(!InitAudio())

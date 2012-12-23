@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform.h"
 #include "gles2_shader.h"
 #include "gles2.h"
+#include "../../ui/ui.h"
 
 namespace xPlatform
 {
@@ -163,7 +164,7 @@ static struct eCachedColors
 			byte r = c&2 ? i : 0;
 			byte g = c&4 ? i : 0;
 			items[c] = BGR565(r, g, b);
-			items_shifted[c] = BGR565(r, g, b) << 16;
+			items_shifted[c] = items[c] << 16;
 			items_rgbx[c] = RGBX(r, g, b);
 		}
 	}

@@ -10,7 +10,7 @@
  */
 
 #ifdef USE_GLES2
-#ifdef _LINUX
+#ifdef _LINUX_TEST
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -297,5 +297,5 @@ int main(int argc, char *argv[])
 	xPlatform::Main(argc, argv);
 }
 
-#endif//_LINUX
+#endif//_LINUX_TEST
 #endif//USE_GLES2
