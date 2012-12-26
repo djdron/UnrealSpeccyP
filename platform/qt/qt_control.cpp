@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../../std_types.h"
 #include "../platform.h"
+#include "../../tools/options.h"
 #include "../../options_common.h"
 #include "../touch_ui/tui_keyboard.h"
 #include "../touch_ui/tui_joystick.h"

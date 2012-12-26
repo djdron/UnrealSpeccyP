@@ -33,23 +33,18 @@ class eOptionB;
 namespace xUi
 {
 
-class eTree;
+class eButton;
 
 class eMenu : public eDialog
 {
 	typedef eDialog eInherited;
 public:
-	eMenu() : tree(NULL) {}
+	eMenu() {}
 	virtual void Init();
 protected:
-	void CreateOption(int& i, xOptions::eOptionB* o);
-	bool ChangeOption(bool next);
-	void OnChangeOption();
-	virtual bool OnKey(char key, dword flags);
-protected:
-	eTree* tree;
-	enum { ITEMS_COUNT = 256 };
-	xOptions::eOptionB* options[ITEMS_COUNT];
+	void ChangeItem(byte id);
+	void UpdateItem(eButton* b, xOptions::eOptionB* o);
+	virtual void OnNotify(byte n, byte from);
 };
 
 }

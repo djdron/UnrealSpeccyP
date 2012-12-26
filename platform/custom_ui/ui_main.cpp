@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_menu.h"
 #include "ui_keyboard.h"
 #include "ui_file_open.h"
+#include "../../tools/options.h"
 #include "../../tools/profiler.h"
 #include "../../options_common.h"
 
@@ -143,7 +144,4 @@ void eMainDialog::OnNotify(byte n, byte from)
 }
 //namespace xUi
 
-DECLARE_OPTION_EX(eOptionB, &xUi::op_open_file, op_open_file);
-#else
-DECLARE_OPTION_VOID(eOptionB, op_open_file);
 #endif//USE_UI

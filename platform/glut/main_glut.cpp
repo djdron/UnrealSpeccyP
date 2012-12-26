@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../platform.h"
-#include "../../options_common.h"
 
 #ifdef USE_GLUT
 
@@ -53,8 +52,6 @@ static void Draw()
 static void OnDraw() { Draw(); }
 static void OnIdle()
 {
-	if(*OPTION_GET(op_quit))
-		exit(1);
 	Handler()->OnLoop();
 	glutPostRedisplay();
 	OnLoopSound();
@@ -132,10 +129,8 @@ static void OnKeyUp(unsigned char _key, int x, int y)
 
 static void OnKeySpecialDown(int _key, int x, int y)
 {
-	int m = glutGetModifiers();
-	if(_key == GLUT_KEY_F4 && m&GLUT_ACTIVE_ALT)
-		OPTION_GET(op_quit)->Set(true);
 	dword flags = KF_DOWN|KF_CURSOR|KF_KEMPSTON;
+	int m = glutGetModifiers();
 	if(m&GLUT_ACTIVE_SHIFT)
 		flags |= KF_SHIFT;
 	if(m&GLUT_ACTIVE_CTRL)

@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../io.h"
 #include "../platform.h"
 #include "../../options_common.h"
+#include "../../tools/options.h"
 
 PSP_MODULE_INFO("Unreal Speccy Portable", 0, 0, 38);
 PSP_HEAP_SIZE_KB(-1024);
@@ -71,18 +72,18 @@ void Init(const char* app_path)
 		app_dir[pos - app_path + 1] = '\0';
 		xIo::SetResourcePath(app_dir);
 		xIo::SetProfilePath(app_dir);
-		OPTION_GET(op_last_file)->Set(app_dir);
+		OpLastFile(app_dir);
 	}
 	using namespace xOptions;
 	struct eOptionBX : public eOptionB
 	{
 		void Unuse() { customizable = false; storeable = false; }
 	};
-	eOptionBX* o = (eOptionBX*)OPTION_GET(op_sound_source);
+	eOptionBX* o = (eOptionBX*)eOptionB::Find("sound");
 	SAFE_CALL(o)->Unuse();
-	o = (eOptionBX*)OPTION_GET(op_volume);
+	o = (eOptionBX*)eOptionB::Find("volume");
 	SAFE_CALL(o)->Unuse();
-	o = (eOptionBX*)OPTION_GET(op_quit);
+	o = (eOptionBX*)eOptionB::Find("quit");
 	SAFE_CALL(o)->Unuse();
 	Handler()->OnInit();
 	InitVideo();

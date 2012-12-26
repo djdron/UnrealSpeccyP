@@ -31,7 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace xPlatform
 {
-OPTION_USING(eOptionBool, op_true_speed);
+
+static xOptions::eOption<bool>* op_true_speed = NULL;
 
 struct eSource
 {
@@ -67,7 +68,6 @@ struct eSource
 };
 eSource::eUpdateResult eSource::Update(dword data_ready, void* data)
 {
-	xOptions::eOptionBool* op_true_speed = OPTION_GET(op_true_speed);
 	const float fps = op_true_speed && *op_true_speed ? 50.0f : 60.0f;
 	const float fps_org = 50.0f;
 	dword frame_data = 44100*2*2/fps_org;
@@ -118,6 +118,7 @@ static ALCcontext* context = NULL;
 
 void InitSound()
 {
+	op_true_speed = xOptions::eOption<bool>::Find("true speed");
 	device = alcOpenDevice(NULL);
 	if(!device)
 		return;

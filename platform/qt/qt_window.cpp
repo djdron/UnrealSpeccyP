@@ -25,12 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "qt_view.h"
 #include "../platform.h"
 #include "../../options_common.h"
+#include "../../tools/options.h"
 
 namespace xPlatform
 {
-
-OPTION_USING(eOptionBool, op_fast_tape);
-OPTION_USING(eOptionInt, op_skip_frame);
 
 //=============================================================================
 //	eWindow::eWindow
@@ -165,7 +163,7 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 	setCentralWidget(w);
 	control->setFocus();
 
-	switch(*OPTION_GET(op_joy))
+	switch(OpJoystick())
 	{
 	case J_KEMPSTON:	ajoy_kempston->setChecked(true);	break;
 	case J_CURSOR:		ajoy_cursor->setChecked(true);		break;
@@ -173,17 +171,17 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 	case J_SINCLAIR2:	ajoy_sinclair->setChecked(true);	break;
 	default: break;
 	}
-	switch(*OPTION_GET(op_sound_source))
+	switch(OpSound())
 	{
 	case S_BEEPER:		asnd_beeper->setChecked(true);		break;
 	case S_AY:			asnd_ay->setChecked(true);			break;
 	case S_TAPE:		asnd_tape->setChecked(true);		break;
 	default: break;
 	}
-	xOptions::eOptionBool* ft = OPTION_GET(op_fast_tape);
+	xOptions::eOptionBool* ft = (xOptions::eOptionBool*)xOptions::eOptionB::Find("fast tape");
 	atape_fast->setChecked(ft && *ft);
 #ifdef Q_WS_S60
-	xOptions::eOptionInt* sf = OPTION_GET(op_skip_frames);
+	xOptions::eOptionInt* sf = (xOptions::eOptionInt*)xOptions::eOptionB::Find("skip frames");
 	if(sf)
 	{
 		switch(*sf)
@@ -254,7 +252,8 @@ void eWindow::OnControlToggle()
 void eWindow::OnSaveState()
 {
 	using namespace xOptions;
-	SAFE_CALL(OPTION_GET(op_save_state))->Change();
+	eOptionB* o = eOptionB::Find("save state");
+	SAFE_CALL(o)->Change();
 }
 //=============================================================================
 //	eWindow::OnLoadState
@@ -262,18 +261,19 @@ void eWindow::OnSaveState()
 void eWindow::OnLoadState()
 {
 	using namespace xOptions;
-	SAFE_CALL(OPTION_GET(op_load_state))->Change();
+	eOptionB* o = eOptionB::Find("load state");
+	SAFE_CALL(o)->Change();
 }
 //=============================================================================
 //	eWindow::OnJoy*
 //-----------------------------------------------------------------------------
-void eWindow::OnJoyKempston()	{ OPTION_GET(op_joy)->Set(J_KEMPSTON);	}
-void eWindow::OnJoyCursor()		{ OPTION_GET(op_joy)->Set(J_CURSOR);	}
-void eWindow::OnJoyQAOP()		{ OPTION_GET(op_joy)->Set(J_QAOP);		}
-void eWindow::OnJoySinclair()	{ OPTION_GET(op_joy)->Set(J_SINCLAIR2);	}
-void eWindow::OnSndBeeper()		{ OPTION_GET(op_sound_source)->Set(S_BEEPER); }
-void eWindow::OnSndAY()			{ OPTION_GET(op_sound_source)->Set(S_AY); }
-void eWindow::OnSndTape()		{ OPTION_GET(op_sound_source)->Set(S_TAPE); }
+void eWindow::OnJoyKempston()	{ OpJoystick(J_KEMPSTON);	}
+void eWindow::OnJoyCursor()		{ OpJoystick(J_CURSOR);		}
+void eWindow::OnJoyQAOP()		{ OpJoystick(J_QAOP);		}
+void eWindow::OnJoySinclair()	{ OpJoystick(J_SINCLAIR2);	}
+void eWindow::OnSndBeeper()		{ OpSound(S_BEEPER);		}
+void eWindow::OnSndAY()			{ OpSound(S_AY);			}
+void eWindow::OnSndTape()		{ OpSound(S_TAPE);			}
 
 //=============================================================================
 //	eWindow::OnTapeToggle
@@ -287,7 +287,8 @@ void eWindow::OnTapeToggle()
 //-----------------------------------------------------------------------------
 void eWindow::OnTapeFast()
 {
-	SAFE_CALL(OPTION_GET(op_fast_tape))->Change();
+	xOptions::eOptionBool* o = (xOptions::eOptionBool*)xOptions::eOptionB::Find("fast tape");
+	SAFE_CALL(o)->Change();
 }
 #ifdef Q_WS_S60
 //=============================================================================
@@ -295,7 +296,8 @@ void eWindow::OnTapeFast()
 //-----------------------------------------------------------------------------
 void eWindow::SetSkipFrames(int sf)
 {
-	SAFE_CALL(OPTION_GET(op_skip_frames))->Set(sf);
+	xOptions::eOptionInt* o = (xOptions::eOptionInt*)xOptions::eOptionB::Find("skip frames");
+	SAFE_CALL(o)->Set(sf);
 }
 void eWindow::OnSkipNone()	{ SetSkipFrames(0);	}
 void eWindow::OnSkip2()		{ SetSkipFrames(1);	}

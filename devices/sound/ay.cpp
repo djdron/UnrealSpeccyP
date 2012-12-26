@@ -20,88 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../z80/z80.h"
 #include "ay.h"
 
-static struct eOptionSoundChip : public xOptions::eOptionInt
-{
-	eOptionSoundChip() { Set(SC_AY); }
-	enum eType { SC_FIRST, SC_AY = SC_FIRST, SC_YM, SC_LAST };
-	virtual const char* Name() const { return "chip"; }
-	virtual const char** Values() const
-	{
-		static const char* values[] = { "ay", "ym", NULL };
-		return values;
-	}
-	virtual void Change(bool next = true)
-	{
-		eOptionInt::Change(SC_LAST, next);
-	}
-} op_sound_chip;
-
-static struct eOptionAYStereo : public xOptions::eOptionInt
-{
-	eOptionAYStereo() { Set(AS_ABC); }
-	enum eMode { AS_FIRST, AS_ABC = AS_FIRST, AS_ACB, AS_BAC, AS_BCA, AS_CAB, AS_CBA, AS_MONO, AS_LAST };
-	virtual const char* Name() const { return "stereo"; }
-	virtual const char** Values() const
-	{
-		static const char* values[] = { "abc", "acb", "bac", "bca", "cab", "cba", "mono", NULL };
-		return values;
-	}
-	virtual void Change(bool next = true)
-	{
-		eOptionInt::Change(AS_LAST, next);
-	}
-} op_ay_stereo;
-
-const dword SNDR_DEFAULT_AY_RATE = 1774400; // original ZX-Spectrum soundchip clock fq
-
-// output volumes (#0000-#FFFF) for given envelope state or R8-R10 value
-// AY chip has only 16 different volume values, so v[0]=v[1], v[2]=v[3], ...
-struct SNDCHIP_VOLTAB
-{
-	dword v[32];
-};
-
-// generator's channel panning, % (0-100)
-struct SNDCHIP_PANTAB
-{
-	dword raw[6];
-	// structured as 'struct { dword left, right; } chan[3]';
-};
-
-const SNDCHIP_VOLTAB SNDR_VOL_AY_S =
-{ { 0x0000,0x0000,0x0340,0x0340,0x04C0,0x04C0,0x06F2,0x06F2,0x0A44,0x0A44,0x0F13,0x0F13,0x1510,0x1510,0x227E,0x227E,
-	0x289F,0x289F,0x414E,0x414E,0x5B21,0x5B21,0x7258,0x7258,0x905E,0x905E,0xB550,0xB550,0xD7A0,0xD7A0,0xFFFF,0xFFFF } };
-
-const SNDCHIP_VOLTAB SNDR_VOL_YM_S =
-{ { 0x0000,0x0000,0x00EF,0x01D0,0x0290,0x032A,0x03EE,0x04D2,0x0611,0x0782,0x0912,0x0A36,0x0C31,0x0EB6,0x1130,0x13A0,
-	0x1751,0x1BF5,0x20E2,0x2594,0x2CA1,0x357F,0x3E45,0x475E,0x5502,0x6620,0x7730,0x8844,0xA1D2,0xC102,0xE0A2,0xFFFF } };
-
-static const SNDCHIP_PANTAB SNDR_PAN_MONO_S = {{100,100, 100,100, 100,100}};
-static const SNDCHIP_PANTAB SNDR_PAN_ABC_S =  {{ 100,10,  66,66,   10,100}};
-static const SNDCHIP_PANTAB SNDR_PAN_ACB_S =  {{ 100,10,  10,100,  66,66 }};
-static const SNDCHIP_PANTAB SNDR_PAN_BAC_S =  {{ 66,66,   100,10,  10,100}};
-static const SNDCHIP_PANTAB SNDR_PAN_BCA_S =  {{ 10,100,  100,10,  66,66 }};
-static const SNDCHIP_PANTAB SNDR_PAN_CAB_S =  {{ 66,66,   10,100,  100,10}};
-static const SNDCHIP_PANTAB SNDR_PAN_CBA_S =  {{ 10,100,  66,66,   100,10}};
-
-const SNDCHIP_VOLTAB* SNDR_VOL_AY = &SNDR_VOL_AY_S;
-const SNDCHIP_VOLTAB* SNDR_VOL_YM = &SNDR_VOL_YM_S;
-const SNDCHIP_PANTAB* SNDR_PAN_MONO = &SNDR_PAN_MONO_S;
-const SNDCHIP_PANTAB* SNDR_PAN_ABC = &SNDR_PAN_ABC_S;
-const SNDCHIP_PANTAB* SNDR_PAN_ACB = &SNDR_PAN_ACB_S;
-const SNDCHIP_PANTAB* SNDR_PAN_BAC = &SNDR_PAN_BAC_S;
-const SNDCHIP_PANTAB* SNDR_PAN_BCA = &SNDR_PAN_BCA_S;
-const SNDCHIP_PANTAB* SNDR_PAN_CAB = &SNDR_PAN_CAB_S;
-const SNDCHIP_PANTAB* SNDR_PAN_CBA = &SNDR_PAN_CBA_S;
-
-DECLARE_OPTION_VOID(eOptionB, op_ay);
-
 //=============================================================================
 //	eAY::eAY
 //-----------------------------------------------------------------------------
 eAY::eAY()
 {
-	OPTION_GET(op_ay) = this;
 	bitA = bitB = bitC = bitN = 0;
 	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 	SetChip(CHIP_AY);
@@ -356,30 +279,34 @@ void eAY::ApplyRegs(dword timestamp)
 		Write(timestamp, p);
 	}
 }
-void eAY::OnOption()
-{
-	bool chip_changed = Option(op_sound_chip);
-	bool stereo_changed = Option(op_ay_stereo);
-	if(chip_changed || stereo_changed)
-	{
-		eOptionSoundChip::eType chip = (eOptionSoundChip::eType)(int)op_sound_chip;
-		eOptionAYStereo::eMode stereo = (eOptionAYStereo::eMode)(int)op_ay_stereo;
-		const SNDCHIP_PANTAB* sndr_pan = SNDR_PAN_MONO;
-		switch(stereo)
-		{
-		case eOptionAYStereo::AS_ABC: sndr_pan = SNDR_PAN_ABC; break;
-		case eOptionAYStereo::AS_ACB: sndr_pan = SNDR_PAN_ACB; break;
-		case eOptionAYStereo::AS_BAC: sndr_pan = SNDR_PAN_BAC; break;
-		case eOptionAYStereo::AS_BCA: sndr_pan = SNDR_PAN_BCA; break;
-		case eOptionAYStereo::AS_CAB: sndr_pan = SNDR_PAN_CAB; break;
-		case eOptionAYStereo::AS_CBA: sndr_pan = SNDR_PAN_CBA; break;
-		case eOptionAYStereo::AS_MONO: sndr_pan = SNDR_PAN_MONO; break;
-		case eOptionAYStereo::AS_LAST: break;
-		}
-		SetChip(chip == eOptionSoundChip::SC_AY ? CHIP_AY : CHIP_YM);
-		SetVolumes(0x7FFF, chip == eOptionSoundChip::SC_AY ? SNDR_VOL_AY : SNDR_VOL_YM, sndr_pan);
-	}
-}
+
 // corresponds enum CHIP_TYPE
 const char * const ay_chips[] = { "AY-3-8910", "YM2149F" };
+
 const char* eAY::GetChipName(CHIP_TYPE i) { return ay_chips[i]; }
+
+const SNDCHIP_VOLTAB SNDR_VOL_AY_S =
+{ { 0x0000,0x0000,0x0340,0x0340,0x04C0,0x04C0,0x06F2,0x06F2,0x0A44,0x0A44,0x0F13,0x0F13,0x1510,0x1510,0x227E,0x227E,
+	0x289F,0x289F,0x414E,0x414E,0x5B21,0x5B21,0x7258,0x7258,0x905E,0x905E,0xB550,0xB550,0xD7A0,0xD7A0,0xFFFF,0xFFFF } };
+
+const SNDCHIP_VOLTAB SNDR_VOL_YM_S =
+{ { 0x0000,0x0000,0x00EF,0x01D0,0x0290,0x032A,0x03EE,0x04D2,0x0611,0x0782,0x0912,0x0A36,0x0C31,0x0EB6,0x1130,0x13A0,
+	0x1751,0x1BF5,0x20E2,0x2594,0x2CA1,0x357F,0x3E45,0x475E,0x5502,0x6620,0x7730,0x8844,0xA1D2,0xC102,0xE0A2,0xFFFF } };
+
+static const SNDCHIP_PANTAB SNDR_PAN_MONO_S = {{100,100, 100,100, 100,100}};
+static const SNDCHIP_PANTAB SNDR_PAN_ABC_S =  {{ 100,10,  66,66,   10,100}};
+static const SNDCHIP_PANTAB SNDR_PAN_ACB_S =  {{ 100,10,  10,100,  66,66 }};
+static const SNDCHIP_PANTAB SNDR_PAN_BAC_S =  {{ 66,66,   100,10,  10,100}};
+static const SNDCHIP_PANTAB SNDR_PAN_BCA_S =  {{ 10,100,  100,10,  66,66 }};
+static const SNDCHIP_PANTAB SNDR_PAN_CAB_S =  {{ 66,66,   10,100,  100,10}};
+static const SNDCHIP_PANTAB SNDR_PAN_CBA_S =  {{ 10,100,  66,66,   100,10}};
+
+const SNDCHIP_VOLTAB* SNDR_VOL_AY = &SNDR_VOL_AY_S;
+const SNDCHIP_VOLTAB* SNDR_VOL_YM = &SNDR_VOL_YM_S;
+const SNDCHIP_PANTAB* SNDR_PAN_MONO = &SNDR_PAN_MONO_S;
+const SNDCHIP_PANTAB* SNDR_PAN_ABC = &SNDR_PAN_ABC_S;
+const SNDCHIP_PANTAB* SNDR_PAN_ACB = &SNDR_PAN_ACB_S;
+const SNDCHIP_PANTAB* SNDR_PAN_BAC = &SNDR_PAN_BAC_S;
+const SNDCHIP_PANTAB* SNDR_PAN_BCA = &SNDR_PAN_BCA_S;
+const SNDCHIP_PANTAB* SNDR_PAN_CAB = &SNDR_PAN_CAB_S;
+const SNDCHIP_PANTAB* SNDR_PAN_CBA = &SNDR_PAN_CBA_S;

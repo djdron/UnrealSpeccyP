@@ -28,8 +28,7 @@ namespace xPlatform
 
 bool Init(const char* path)
 {
-	const char* lf = "A:\\GAME\\";
-	OPTION_GET(op_last_file)->Set(lf);
+	OpLastFile("A:\\GAME\\");
 //	xIo::SetResourcePath(OpLastFolder());
 	xIo::SetProfilePath(OpLastFolder());
 //	xLog::SetLogPath(OpLastFolder());
@@ -51,7 +50,7 @@ void UpdateKeys();
 
 void Loop()
 {
-	while(!*OPTION_GET(op_quit) && _sys_judge_event(NULL) >= 0)
+	while(!OpQuit() && _sys_judge_event(NULL) >= 0)
 	{
 		UpdateAudio(); //sync by audio
 		FlipVideo();

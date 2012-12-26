@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef SDL_KEYS_DINGOO
 
 #include <SDL.h>
+#include "../../tools/options.h"
 #include "../../options_common.h"
 
 #define DINGOO_BUTTON_UP            SDLK_UP
@@ -59,12 +60,12 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	case DINGOO_BUTTON_SELECT:
 		b_select = _flags&KF_DOWN;
 		if(b_select && b_start)
-			OPTION_GET(op_quit)->Set(true);
+			OpQuit(true);
 		return 'm';
 	case DINGOO_BUTTON_START:
 		b_start = _flags&KF_DOWN;
 		if(b_select && b_start)
-			OPTION_GET(op_quit)->Set(true);
+			OpQuit(true);
 		return 'k';
 
 	case DINGOO_BUTTON_L:
@@ -76,7 +77,8 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 		r_shift = _flags&KF_DOWN;
 		if(!ui_focused)
 		{
-			SAFE_CALL(OPTION_GET(op_sound_source))->Change();
+			xOptions::eOption<int>* op_sound = xOptions::eOption<int>::Find("sound");
+			SAFE_CALL(op_sound)->Change();
 		}
 		break;
 
@@ -84,7 +86,7 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 		break;
 	}
 	if(b_select && b_start)
-		OPTION_GET(op_quit)->Set(true);
+		OpQuit(true);
 	return 0;
 }
 

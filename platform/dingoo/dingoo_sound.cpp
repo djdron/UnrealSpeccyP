@@ -23,12 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <dingoo/audio.h>
 
-OPTION_USING(eOptionB, op_ay);
-
 namespace xPlatform
 {
 
-static class eAudio : public xOptions::eRootOption<xOptions::eOptionB>
+class eAudio
 {
 public:
 	eAudio() : volume(0)
@@ -39,35 +37,29 @@ public:
 	}
 	~eAudio() { waveout_close(handle); }
 	void Update();
-	virtual const char* Name() const { return "sound"; }
-	virtual int Order() const { return 25; }
 protected:
-	void SetVolume(int v) { waveout_set_volume(v); }
-	virtual void OnOption()
+	void SetVolume(int v)
 	{
-		Option(OPTION_GET(op_sound_source));
-		Option(OPTION_GET(op_volume));
-		Option(OPTION_GET(op_ay));
+		waveout_set_volume(v);
 	}
 protected:
 	void* handle;
 	int source;
 	int volume;
-} audio;
+};
 
 void eAudio::Update()
 {
 	bool ui_enabled = Handler()->VideoDataUI();
-	int op_volume = *OPTION_GET(op_volume);
-	if((!ui_enabled && op_volume != volume) || (ui_enabled && volume))
+	if((!ui_enabled && OpVolume() != volume) || (ui_enabled && volume))
 	{
-		volume = !ui_enabled ? op_volume : 0;
+		volume = !ui_enabled ? OpVolume() : 0;
 		SetVolume(volume * 3);
 	}
 	for(int i = Handler()->AudioSources(); --i >= 0;)
 	{
 		dword size = Handler()->AudioDataReady(i);
-		if(i == *OPTION_GET(op_sound_source) && !Handler()->FullSpeed())
+		if(i == OpSound() && !Handler()->FullSpeed())
 		{
 			waveout_write(handle, (char*)Handler()->AudioData(i), size);
 		}
@@ -75,7 +67,7 @@ void eAudio::Update()
 	}
 }
 
-void UpdateAudio() { audio.Update(); }
+void UpdateAudio() { static eAudio audio; audio.Update(); }
 
 }
 //namespace xPlatform

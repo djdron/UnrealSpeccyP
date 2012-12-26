@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QPainter>
 #include "qt_view.h"
 #include "../platform.h"
+#include "../../tools/options.h"
 #include "../../options_common.h"
 #include "../../ui/ui.h"
 
@@ -48,8 +49,7 @@ static struct eOptionSkipFrames : public xOptions::eOptionInt
 eView::eView(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Format_RGB32)
 {
 	setAttribute(Qt::WA_NoSystemBackground, true);
-	const char* lf = "/";
-	OPTION_GET(op_last_file)->Set(lf);
+	OpLastFile("/");
 	Handler()->OnInit();
 	startTimer(10);
 	QAudioFormat fmt;
@@ -134,7 +134,7 @@ void eView::UpdateScreen(uchar* _scr) const
 //-----------------------------------------------------------------------------
 void eView::UpdateSound()
 {
-	audio_buffer.Update(*OPTION_GET(op_sound_source));
+	audio_buffer.Update(OpSound());
 	if(audio->state() != QAudio::StoppedState)
 	{
 		qint64 out = stream->write((const char*)audio_buffer.Ptr(), audio_buffer.Ready());

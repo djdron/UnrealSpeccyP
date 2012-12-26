@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui/ui_desktop.h"
 #include "platform/custom_ui/ui_main.h"
 #include "tools/profiler.h"
+#include "tools/options.h"
 #include "options_common.h"
 #include "file_type.h"
 #include "snapshot/rzx.h"
@@ -123,19 +124,6 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];
 } sh;
 
-static struct eOption48K : public xOptions::eRootOption<xOptions::eOptionBool>
-{
-	virtual const char* Name() const { return "mode 48k"; }
-	virtual int Order() const { return 65; }
-protected:
-	virtual void OnOption()
-	{
-		if(changed)
-			sh.OnAction(A_RESET);
-	}
-} op_48k;
-DECLARE_OPTION(eOptionBool, op_48k);
-
 void eSpeccyHandler::OnInit()
 {
 	assert(!speccy);
@@ -147,13 +135,11 @@ void eSpeccyHandler::OnInit()
 	sound_dev[0] = speccy->Device<eBeeper>();
 	sound_dev[1] = speccy->Device<eAY>();
 	sound_dev[2] = speccy->Device<eTape>();
-	xOptions::Init();
-	if(op_48k)
-		speccy->Reset();
+	xOptions::Load();
 }
 void eSpeccyHandler::OnDone()
 {
-	xOptions::Done();
+	xOptions::Store();
 	SAFE_DELETE(macro);
 	SAFE_DELETE(replay);
 	SAFE_DELETE(speccy);
@@ -273,7 +259,7 @@ void eSpeccyHandler::OnMouse(eMouseAction action, byte a, byte b)
 }
 bool eSpeccyHandler::OnOpenFile(const char* name, const void* data, size_t data_size)
 {
-	OPTION_GET(op_last_file)->Set(name);
+	OpLastFile(name);
 	return OpenFile(name, data, data_size);
 }
 bool eSpeccyHandler::OpenFile(const char* name, const void* data, size_t data_size)
@@ -305,7 +291,7 @@ bool eSpeccyHandler::OpenFile(const char* name, const void* data, size_t data_si
 }
 bool eSpeccyHandler::OnSaveFile(const char* name)
 {
-	OPTION_GET(op_last_file)->Set(name);
+	OpLastFile(name);
 	eFileType* t = eFileType::FindByName(name);
 	if(!t)
 		return false;
@@ -315,16 +301,31 @@ bool eSpeccyHandler::OnSaveFile(const char* name)
 static struct eOptionTapeFast : public xOptions::eOptionBool
 {
 	eOptionTapeFast() { Set(true); }
-	virtual const char* Name() const { return "fast"; }
+	virtual const char* Name() const { return "fast tape"; }
+	virtual int Order() const { return 50; }
 } op_tape_fast;
-DECLARE_OPTION(eOptionBool, op_tape_fast);
 
 static struct eOptionAutoPlayImage : public xOptions::eOptionBool
 {
 	eOptionAutoPlayImage() { Set(true); }
-	virtual const char* Name() const { return "auto play"; }
+	virtual const char* Name() const { return "auto play image"; }
+	virtual int Order() const { return 55; }
 } op_auto_play_image;
-DECLARE_OPTION(eOptionBool, op_auto_play_image);
+
+static struct eOption48K : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "mode 48k"; }
+	virtual void Change(bool next = true)
+	{
+		eOptionBool::Change();
+		Apply();
+	}
+	virtual void Apply()
+	{
+		sh.OnAction(A_RESET);
+	}
+	virtual int Order() const { return 65; }
+} op_48k;
 
 eActionResult eSpeccyHandler::OnAction(eAction action)
 {
@@ -365,6 +366,72 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 		}
 	}
 	return AR_ERROR;
+}
+
+static void SetupSoundChip();
+static struct eOptionSoundChip : public xOptions::eOptionInt
+{
+	eOptionSoundChip() { Set(SC_AY); }
+	enum eType { SC_FIRST, SC_AY = SC_FIRST, SC_YM, SC_LAST };
+	virtual const char* Name() const { return "sound chip"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "ay", "ym", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		eOptionInt::Change(SC_FIRST, SC_LAST, next);
+		Apply();
+	}
+	virtual void Apply()
+	{
+		SetupSoundChip();
+	}
+	virtual int Order() const { return 24; }
+}op_sound_chip;
+
+static struct eOptionAYStereo : public xOptions::eOptionInt
+{
+	eOptionAYStereo() { Set(AS_ABC); }
+	enum eMode { AS_FIRST, AS_ABC = AS_FIRST, AS_ACB, AS_BAC, AS_BCA, AS_CAB, AS_CBA, AS_MONO, AS_LAST };
+	virtual const char* Name() const { return "ay stereo"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "abc", "acb", "bac", "bca", "cab", "cba", "mono", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		eOptionInt::Change(AS_FIRST, AS_LAST, next);
+		Apply();
+	}
+	virtual void Apply()
+	{
+		SetupSoundChip();
+	}
+	virtual int Order() const { return 25; }
+}op_ay_stereo;
+
+void SetupSoundChip()
+{
+	eOptionSoundChip::eType chip = (eOptionSoundChip::eType)(int)op_sound_chip;
+	eOptionAYStereo::eMode stereo = (eOptionAYStereo::eMode)(int)op_ay_stereo;
+	eAY* ay = sh.speccy->Device<eAY>();
+	const SNDCHIP_PANTAB* sndr_pan = SNDR_PAN_MONO;
+	switch(stereo)
+	{
+	case eOptionAYStereo::AS_ABC: sndr_pan = SNDR_PAN_ABC; break;
+	case eOptionAYStereo::AS_ACB: sndr_pan = SNDR_PAN_ACB; break;
+	case eOptionAYStereo::AS_BAC: sndr_pan = SNDR_PAN_BAC; break;
+	case eOptionAYStereo::AS_BCA: sndr_pan = SNDR_PAN_BCA; break;
+	case eOptionAYStereo::AS_CAB: sndr_pan = SNDR_PAN_CAB; break;
+	case eOptionAYStereo::AS_CBA: sndr_pan = SNDR_PAN_CBA; break;
+	case eOptionAYStereo::AS_MONO: sndr_pan = SNDR_PAN_MONO; break;
+	case eOptionAYStereo::AS_LAST: break;
+	}
+	ay->SetChip(chip == eOptionSoundChip::SC_AY ? eAY::CHIP_AY : eAY::CHIP_YM);
+	ay->SetVolumes(0x7FFF, chip == eOptionSoundChip::SC_AY ? SNDR_VOL_AY : SNDR_VOL_YM, sndr_pan);
 }
 
 static struct eFileTypeRZX : public eFileType
@@ -433,11 +500,11 @@ static struct eFileTypeTRD : public eFileType
 	virtual bool Open(const void* data, size_t data_size)
 	{
 		eWD1793* wd = sh.speccy->Device<eWD1793>();
-		bool ok = wd->Open(Type(), *OPTION_GET(op_drive), data, data_size);
+		bool ok = wd->Open(Type(), OpDrive(), data, data_size);
 		if(ok && op_auto_play_image)
 		{
 			sh.OnAction(A_RESET);
-			if(wd->BootExist(*OPTION_GET(op_drive)))
+			if(wd->BootExist(OpDrive()))
 				sh.speccy->Memory()->SetPage(0, eMemory::P_ROM3); // tr-dos rom
 			else if(!sh.speccy->Mode48k())
 				sh.PlayMacro(new eMacroDiskRun);
