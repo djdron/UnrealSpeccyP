@@ -33,7 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui/ui_desktop.h"
 #include "platform/custom_ui/ui_main.h"
 #include "tools/profiler.h"
-#include "tools/options.h"
 #include "options_common.h"
 #include "file_type.h"
 #include "snapshot/rzx.h"
@@ -92,7 +91,6 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 	virtual void VideoPaused(bool paused) {	paused ? ++video_paused : --video_paused; }
 
 	virtual bool FullSpeed() const { return speccy->CPU()->HandlerStep() != NULL; }
-	virtual eSpeccy* Speccy() const { return speccy; }
 
 	void PlayMacro(eMacro* m) { SAFE_DELETE(macro); macro = m; }
 	virtual bool RZX_OnOpenSnapshot(const char* name, const void* data, size_t data_size) { return OpenFile(name, data, data_size); }
@@ -125,6 +123,19 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 	eDeviceSound* sound_dev[SOUND_DEV_COUNT];
 } sh;
 
+static struct eOption48K : public xOptions::eRootOption<xOptions::eOptionBool>
+{
+	virtual const char* Name() const { return "mode 48k"; }
+	virtual int Order() const { return 65; }
+protected:
+	virtual void OnOption()
+	{
+		if(changed)
+			sh.OnAction(A_RESET);
+	}
+} op_48k;
+DECLARE_OPTION(eOptionBool, op_48k);
+
 void eSpeccyHandler::OnInit()
 {
 	assert(!speccy);
@@ -136,14 +147,13 @@ void eSpeccyHandler::OnInit()
 	sound_dev[0] = speccy->Device<eBeeper>();
 	sound_dev[1] = speccy->Device<eAY>();
 	sound_dev[2] = speccy->Device<eTape>();
-	xOptions::Load();
-	xOptions::eOptionBool* op_mode_48k = xOptions::eRootOption<xOptions::eOptionBool>::Find("mode 48k");
-	if(op_mode_48k && *op_mode_48k)
+	xOptions::Init();
+	if(op_48k)
 		speccy->Reset();
 }
 void eSpeccyHandler::OnDone()
 {
-	xOptions::Store();
+	xOptions::Done();
 	SAFE_DELETE(macro);
 	SAFE_DELETE(replay);
 	SAFE_DELETE(speccy);
@@ -263,7 +273,7 @@ void eSpeccyHandler::OnMouse(eMouseAction action, byte a, byte b)
 }
 bool eSpeccyHandler::OnOpenFile(const char* name, const void* data, size_t data_size)
 {
-	OpLastFile(name);
+	OPTION_GET(op_last_file)->Set(name);
 	return OpenFile(name, data, data_size);
 }
 bool eSpeccyHandler::OpenFile(const char* name, const void* data, size_t data_size)
@@ -295,7 +305,7 @@ bool eSpeccyHandler::OpenFile(const char* name, const void* data, size_t data_si
 }
 bool eSpeccyHandler::OnSaveFile(const char* name)
 {
-	OpLastFile(name);
+	OPTION_GET(op_last_file)->Set(name);
 	eFileType* t = eFileType::FindByName(name);
 	if(!t)
 		return false;
@@ -307,26 +317,14 @@ static struct eOptionTapeFast : public xOptions::eOptionBool
 	eOptionTapeFast() { Set(true); }
 	virtual const char* Name() const { return "fast"; }
 } op_tape_fast;
-xOptions::eOptionB& OpTapeFast() { return op_tape_fast; }
+DECLARE_OPTION(eOptionBool, op_tape_fast);
 
 static struct eOptionAutoPlayImage : public xOptions::eOptionBool
 {
 	eOptionAutoPlayImage() { Set(true); }
 	virtual const char* Name() const { return "auto play"; }
 } op_auto_play_image;
-xOptions::eOptionB& OpAutoPlayImage() { return op_auto_play_image; }
-
-static struct eOption48K : public xOptions::eRootOption<xOptions::eOptionBool>
-{
-	virtual const char* Name() const { return "mode 48k"; }
-	virtual int Order() const { return 65; }
-protected:
-	virtual void OnOption()
-	{
-		if(changed)
-			sh.OnAction(A_RESET);
-	}
-} op_48k;
+DECLARE_OPTION(eOptionBool, op_auto_play_image);
 
 eActionResult eSpeccyHandler::OnAction(eAction action)
 {
@@ -368,22 +366,7 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 	}
 	return AR_ERROR;
 }
-/*
-xOptions::eOptionB* OpSoundSource();
-xOptions::eOptionB* OpSoundVolume();
-static struct eOptionSound : public xOptions::eRootOption<xOptions::eOptionB>
-{
-	virtual const char* Name() const { return "sound"; }
-	virtual int Order() const { return 25; }
-protected:
-	virtual void OnOption()
-	{
-		Option(OpSoundSource());
-		Option(OpSoundVolume());
-		Option(op_ay);
-	}
-}op_sound;
-*/
+
 static struct eFileTypeRZX : public eFileType
 {
 	virtual bool Open(const void* data, size_t data_size)
@@ -450,11 +433,11 @@ static struct eFileTypeTRD : public eFileType
 	virtual bool Open(const void* data, size_t data_size)
 	{
 		eWD1793* wd = sh.speccy->Device<eWD1793>();
-		bool ok = wd->Open(Type(), OpDrive(), data, data_size);
+		bool ok = wd->Open(Type(), *OPTION_GET(op_drive), data, data_size);
 		if(ok && op_auto_play_image)
 		{
 			sh.OnAction(A_RESET);
-			if(wd->BootExist(OpDrive()))
+			if(wd->BootExist(*OPTION_GET(op_drive)))
 				sh.speccy->Memory()->SetPage(0, eMemory::P_ROM3); // tr-dos rom
 			else if(!sh.speccy->Mode48k())
 				sh.PlayMacro(new eMacroDiskRun);

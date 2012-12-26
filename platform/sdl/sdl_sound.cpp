@@ -103,7 +103,7 @@ void UpdateAudio()
 	{
 		dword size = Handler()->AudioDataReady(i);
 		bool ui_enabled = Handler()->VideoDataUI();
-		if(size && i == OpSound() && !ui_enabled && !Handler()->FullSpeed())
+		if(size && i == *OPTION_GET(op_sound_source) && !ui_enabled && !Handler()->FullSpeed())
 		{
 			audio_buffer->Add((byte*)Handler()->AudioData(i), size);
 		}

@@ -94,11 +94,14 @@ const SNDCHIP_PANTAB* SNDR_PAN_BCA = &SNDR_PAN_BCA_S;
 const SNDCHIP_PANTAB* SNDR_PAN_CAB = &SNDR_PAN_CAB_S;
 const SNDCHIP_PANTAB* SNDR_PAN_CBA = &SNDR_PAN_CBA_S;
 
+DECLARE_OPTION_VOID(eOptionB, op_ay);
+
 //=============================================================================
 //	eAY::eAY
 //-----------------------------------------------------------------------------
 eAY::eAY()
 {
+	OPTION_GET(op_ay) = this;
 	bitA = bitB = bitC = bitN = 0;
 	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 	SetChip(CHIP_AY);

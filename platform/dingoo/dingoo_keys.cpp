@@ -19,15 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef _DINGOO
 
 #include "../platform.h"
-#include "../../tools/options.h"
 #include "../../options_common.h"
 
 #include <dingoo/keyboard.h>
 
 namespace xPlatform
 {
-
-xOptions::eOptionB* OpSoundSource();
 
 class eKeys
 {
@@ -76,7 +73,7 @@ void eKeys::Update()
 {
 	if(Pressed(K_BUTTON_SELECT) && Pressed(K_BUTTON_START))
 	{
-		OpQuit(true);
+		OPTION_GET(op_quit)->Set(true);
 	}
 	dword flags = OpJoyKeyFlags();
 	bool ui_focused = Handler()->VideoDataUI();
@@ -92,7 +89,7 @@ void eKeys::Update()
 			if(!audio_next)
 			{
 				audio_next = true;
-				OpSoundSource()->Change();
+				OPTION_GET(op_sound_source)->Change(true);
 			}
 			return;
 		}

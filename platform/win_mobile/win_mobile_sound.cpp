@@ -65,7 +65,7 @@ void eAudio::Update()
 	{
 		dword size = Handler()->AudioDataReady(i);
 		bool ui_enabled = Handler()->VideoDataUI() != NULL;
-		if(i == OpSound() && !ui_enabled && !Handler()->FullSpeed())
+		if(i == *OPTION_GET(op_sound_source) && !ui_enabled && !Handler()->FullSpeed())
 		{
 			WAVEHDR whdr;
 			whdr.dwBufferLength = size;

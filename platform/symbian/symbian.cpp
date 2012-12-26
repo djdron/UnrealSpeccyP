@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/log.h"
 #include "../../ui/ui.h"
 #include "../../tools/profiler.h"
-#include "../../tools/options.h"
 #include "../../tools/tick.h"
 #include "../../options_common.h"
 
@@ -176,7 +175,6 @@ protected:
 	CIdle* iTimer;
 	CFbsBitmap* bitmap;
 	mutable int frame;
-	xOptions::eOption<int>* op_volume;
 	CRemConInterfaceSelector* iInterfaceSelector;
     CRemConCoreApiTarget*     iCoreTarget;
 
@@ -213,7 +211,6 @@ static inline dword BGRX(byte r, byte g, byte b)
 
 void TDCControl::ConstructL(const TRect& /*aRect*/)
 {
-	op_volume = xOptions::eOption<int>::Find("volume");
 	iInterfaceSelector = CRemConInterfaceSelector::NewL();
 	iCoreTarget = CRemConCoreApiTarget::NewL(*iInterfaceSelector, *this);
 	iInterfaceSelector->OpenTargetL();
@@ -473,7 +470,7 @@ void TDCControl::Draw(bool horizontal) const
 }
 void TDCControl::OnTimer()
 {
-	if(OpQuit())
+	if(*OPTION_GET(op_quit))
 		CEikonEnv::Static()->EikAppUi()->HandleCommandL(EEikCmdExit);
 //	if(mouse.enable && mouse.Update())
 //	{
@@ -611,6 +608,7 @@ TKeyResponse TDCControl::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
 }
 void TDCControl::MrccatoCommand(TRemConCoreApiOperationId id, TRemConCoreApiButtonAction a)
 {
+	xOptions::eOptionInt* op_volume = OPTION_GET(op_volume);
 	if(op_volume && a == ERemConCoreApiButtonClick)
 	{
 		switch(id)

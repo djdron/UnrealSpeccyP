@@ -33,7 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "nacl_sound.h"
 #include "../gles2/gles2.h"
 #include "../platform.h"
-#include "../../tools/options.h"
 #include "../../options_common.h"
 
 #include <GLES2/gl2.h>
@@ -133,8 +132,7 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 	{
 		using namespace xOptions;
 		string joy = m.substr(joystick.length());
-		eOption<int>* op_joy = eOption<int>::Find("joystick");
-		SAFE_CALL(op_joy)->Value(joy.c_str());
+		SAFE_CALL(OPTION_GET(op_joy))->Value(joy.c_str());
 	}
 	else if(m == "reset")
 	{

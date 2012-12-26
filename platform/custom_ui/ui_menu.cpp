@@ -70,7 +70,7 @@ bool eMenu::ChangeOption(bool next)
 	if(item == -1)
 		return false;
 	options[item]->Change(next);
-	eRootOptionB::Apply();
+	Apply();
 	OnChangeOption();
 	return true;
 }

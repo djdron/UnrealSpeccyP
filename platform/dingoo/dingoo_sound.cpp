@@ -20,18 +20,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../platform.h"
 #include "../../options_common.h"
-#include "../../speccy.h"
-#include "../../devices/sound/ay.h"
 
 #include <dingoo/audio.h>
+
+OPTION_USING(eOptionB, op_ay);
 
 namespace xPlatform
 {
 
-xOptions::eOptionB* OpSoundSource();
-xOptions::eOptionB* OpSoundVolume();
-
-class eAudio : public xOptions::eRootOption<xOptions::eOptionB>
+static class eAudio : public xOptions::eRootOption<xOptions::eOptionB>
 {
 public:
 	eAudio() : volume(0)
@@ -48,9 +45,9 @@ protected:
 	void SetVolume(int v) { waveout_set_volume(v); }
 	virtual void OnOption()
 	{
-		Option(OpSoundSource());
-		Option(OpSoundVolume());
-		Option(Handler()->Speccy()->Device<eAY>());
+		Option(OPTION_GET(op_sound_source));
+		Option(OPTION_GET(op_volume));
+		Option(OPTION_GET(op_ay));
 	}
 protected:
 	void* handle;
@@ -61,15 +58,16 @@ protected:
 void eAudio::Update()
 {
 	bool ui_enabled = Handler()->VideoDataUI();
-	if((!ui_enabled && OpVolume() != volume) || (ui_enabled && volume))
+	int op_volume = *OPTION_GET(op_volume);
+	if((!ui_enabled && op_volume != volume) || (ui_enabled && volume))
 	{
-		volume = !ui_enabled ? OpVolume() : 0;
+		volume = !ui_enabled ? op_volume : 0;
 		SetVolume(volume * 3);
 	}
 	for(int i = Handler()->AudioSources(); --i >= 0;)
 	{
 		dword size = Handler()->AudioDataReady(i);
-		if(i == OpSound() && !Handler()->FullSpeed())
+		if(i == *OPTION_GET(op_sound_source) && !Handler()->FullSpeed())
 		{
 			waveout_write(handle, (char*)Handler()->AudioData(i), size);
 		}

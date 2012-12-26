@@ -27,46 +27,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xOptions
 {
 
-eOptionB* eRootOptionB::Find(const char* name)
-{
-	for(eRootOptionB* r = First(); r; r = r->Next())
-	{
-		eOptionB* o = r->OptionB();
-		if(!strcmp(name, o->Name()))
-			return o;
-	}
-	return NULL;
-}
-void eRootOptionB::Apply()
-{
-	for(eRootOptionB* r = eRootOptionB::First(); r; r = r->Next())
-	{
-		r->OptionB()->Apply();
-	}
-}
-void eRootOptionB::Load(TiXmlElement* owner)
-{
-	eOptionB::loading = true;
-	for(TiXmlElement* xe = owner->FirstChildElement(); xe; xe = xe->NextSiblingElement())
-	{
-		const char* id = xe->Value();
-		eOptionB* o = Find(eOptionB::XmlNameToOptName(id));
-		if(!o)
-			continue;
-		o->Load(xe);
-	}
-	eOptionB::loading = false;
-}
-void eRootOptionB::Store(TiXmlElement* owner)
-{
-	for(eRootOptionB* r = eRootOptionB::First(); r; r = r->Next())
-	{
-		r->OptionB()->Store(owner);
-	}
-}
+bool loading = false;
 
-bool eOptionB::loading = false;
-char eOptionB::buf[256];
+static char buf[256];
+static const char* OptNameToXmlName(const char* name)
+{
+	strcpy(buf, name);
+	for(char* b = buf; *b; ++b)
+	{
+		if(*b == ' ')
+			*b = '_';
+	}
+	return buf;
+}
+static const char* XmlNameToOptName(const char* name)
+{
+	strcpy(buf, name);
+	for(char* b = buf; *b; ++b)
+	{
+		if(*b == '_')
+			*b = ' ';
+	}
+	return buf;
+}
 
 void eOptionB::Apply()
 {
@@ -93,10 +76,12 @@ bool eOptionB::Option(eOptionB& o)
 }
 eOptionB* eOptionB::Find(const char* name) const
 {
+	const char* sub_name = strchr(name, '/');
+	int size = sub_name ? sub_name - name : strlen(name);
 	for(eOptionB* o = sub_options; o; o = o->Next())
 	{
-		if(!strcmp(name, o->Name()))
-			return o;
+		if(!strncmp(name, o->Name(), size))
+			return sub_name ? o->Find(sub_name + 1) : o;
 	}
 	return NULL;
 }
@@ -128,26 +113,6 @@ void eOptionB::Store(TiXmlElement* owner)
 			continue;
 		o->Store(xe);
 	}
-}
-const char* eOptionB::OptNameToXmlName(const char* name)
-{
-	strcpy(buf, name);
-	for(char* b = buf; *b; ++b)
-	{
-		if(*b == ' ')
-			*b = '_';
-	}
-	return buf;
-}
-const char* eOptionB::XmlNameToOptName(const char* name)
-{
-	strcpy(buf, name);
-	for(char* b = buf; *b; ++b)
-	{
-		if(*b == '_')
-			*b = ' ';
-	}
-	return buf;
 }
 
 struct eOA : public eRootOptionB // access to protected members hack
@@ -268,46 +233,76 @@ void eOptionString::Set(const char*& v)
 	eInherited::Set(value);
 }
 
+eOptionB* Find(const char* name)
+{
+	const char* sub_name = strchr(name, '/');
+	int size = sub_name ? sub_name - name : strlen(name);
+	for(eRootOptionB* r = eRootOptionB::First(); r; r = r->Next())
+	{
+		eOptionB* o = r->OptionB();
+		if(!strncmp(name, o->Name(), size))
+			return sub_name ? o->Find(sub_name + 1) : o;
+	}
+	return NULL;
+}
+void Apply()
+{
+	for(eRootOptionB* r = eRootOptionB::First(); r; r = r->Next())
+	{
+		r->OptionB()->Apply();
+	}
+}
+
 #ifdef USE_CONFIG
 static const char* FileName() { return xIo::ProfilePath("unreal_speccy_portable.xml"); }
-//=============================================================================
-//	Load
-//-----------------------------------------------------------------------------
-void Load()
+void Init()
 {
 	eOA::SortByOrder();
-	eRootOptionB::Apply();
+	Apply();
 	TiXmlDocument doc;
 	if(!doc.LoadFile(FileName()))
 		return;
 	TiXmlElement* root = doc.RootElement();
 	if(!root)
 		return;
-	TiXmlElement* opts = root->FirstChildElement("Options");
-	if(!opts)
+	TiXmlElement* owner = root->FirstChildElement("Options");
+	if(!owner)
 		return;
-	eRootOptionB::Load(opts);
+	loading = true;
+	for(TiXmlElement* xe = owner->FirstChildElement(); xe; xe = xe->NextSiblingElement())
+	{
+		const char* id = xe->Value();
+		eOptionB* o = Find(XmlNameToOptName(id));
+		if(!o)
+			continue;
+		o->Load(xe);
+	}
+	loading = false;
 }
-//=============================================================================
-//	Store
-//-----------------------------------------------------------------------------
-void Store()
+void Done()
 {
 	TiXmlDocument doc;
 	TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "UTF-8", "");
 	doc.LinkEndChild(decl);
 	TiXmlElement* root = new TiXmlElement("UnrealSpeccyPortable");
 	doc.LinkEndChild(root);
-	TiXmlElement* opts = new TiXmlElement("Options");
-	root->LinkEndChild(opts);
-	eRootOptionB::Store(opts);
+	TiXmlElement* owner = new TiXmlElement("Options");
+	root->LinkEndChild(owner);
+	for(eRootOptionB* r = eRootOptionB::First(); r; r = r->Next())
+	{
+		r->OptionB()->Store(owner);
+	}
 	doc.SaveFile(FileName());
 }
 
 #else//USE_CONFIG
 
-void Load() { eOA::SortByOrder(); eRootOptionB::Apply(); }
-void Store() {}
+void Init()
+{
+	eOA::SortByOrder();
+	Apply();
+}
+void Done() {}
 
 #endif//USE_CONFIG
 

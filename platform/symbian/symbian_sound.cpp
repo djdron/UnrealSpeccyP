@@ -71,9 +71,10 @@ public:
 	{
 		if(aError == KErrNone)
 		{
+			int volume = *OPTION_GET(op_volume);
 			iSndStream->SetPriority(EPriorityMuchMore, EMdaPriorityPreferenceNone);
-			iSndStream->SetVolume(iSndStream->MaxVolume()*OpVolume()/10);
-			iVolume = OpVolume();
+			iSndStream->SetVolume(iSndStream->MaxVolume()*volume/10);
+			iVolume = volume;
 			if(!UpdatePSndRate())
 			{
 				iSampleRate = 8000;
@@ -85,10 +86,11 @@ public:
 
 	virtual void MaoscBufferCopied(TInt aError, const TDesC8& aBuffer)
 	{
-		if(iVolume != OpVolume() || aError != KErrNone)
+		int volume = *OPTION_GET(op_volume);
+		if(iVolume != volume || aError != KErrNone)
 		{
-			iSndStream->SetVolume(iSndStream->MaxVolume()*OpVolume()/10);
-			iVolume = OpVolume();
+			iSndStream->SetVolume(iSndStream->MaxVolume()*volume/10);
+			iVolume = volume;
 		}
 		buffer_busy = false;
 	}
@@ -97,8 +99,9 @@ public:
 	{
 		if(aError != KErrNone)
 		{
-			iSndStream->SetVolume(iSndStream->MaxVolume()*OpVolume()/10);
-			iVolume = OpVolume();
+			int volume = *OPTION_GET(op_volume);
+			iSndStream->SetVolume(iSndStream->MaxVolume()*volume/10);
+			iVolume = volume;
 			UpdatePSndRate();
 		}
 	}
@@ -128,7 +131,7 @@ public:
 		{
 			dword size = Handler()->AudioDataReady(i);
 			bool ui_enabled = Handler()->VideoDataUI() != NULL;
-			if(i == OpSound() && !ui_enabled && !Handler()->FullSpeed())
+			if(i == *OPTION_GET(op_sound_source) && !ui_enabled && !Handler()->FullSpeed())
 			{
 				if(size > 44100*2*2/50*3)//~approx >10600 bytes
 				{

@@ -46,7 +46,7 @@ static bool Init()
 #ifndef SDL_DEFAULT_FOLDER
 #define SDL_DEFAULT_FOLDER "/"
 #endif//SDL_DEFAULT_FOLDER
-	OpLastFile(SDL_DEFAULT_FOLDER);
+	OPTION_GET(op_last_file)->Set((const char*&)SDL_DEFAULT_FOLDER);
 	Handler()->OnInit();
 
 	Uint32 init_flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO;
@@ -119,7 +119,7 @@ static void Loop()
 		UpdateScreen();
 		UpdateAudio();
 //		SDL_Delay(5);
-		if(OpQuit())
+		if(*OPTION_GET(op_quit))
 			quit = true;
 	}
 }

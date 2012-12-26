@@ -17,11 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../platform.h"
+#include "../../tools/options.h"
 
 #ifdef USE_WXWIDGETS
 
 #include "../io.h"
-#include "../../tools/options.h"
 #include "../../options_common.h"
 
 #undef self
@@ -57,20 +57,24 @@ struct eOptions
 };
 static eOptions options;
 
-static struct eOptionTrueSpeed : public xOptions::eOptionBool
+static struct eOptionTrueSpeed : public xOptions::eRootOption<xOptions::eOptionBool>
 {
 	eOptionTrueSpeed() { Set(true); }
 	virtual const char* Name() const { return "true speed"; }
-	virtual void Change(bool next = true)
-	{
-		eOptionBool::Change();
-		DoneSound();
-		InitSound();
-	}
 	virtual int Order() const { return 75; }
+protected:
+	virtual void OnOption()
+	{
+		if(changed)
+		{
+			DoneSound();
+			InitSound();
+		}
+	}
 } op_true_speed;
+DECLARE_OPTION(eOptionBool, op_true_speed);
 
-static struct eOptionWindowSize : public xOptions::eOptionInt
+static struct eOptionWindowSize : public xOptions::eRootOption<xOptions::eOptionInt>
 {
 	eOptionWindowSize() { customizable = false; Set(1); }
 	virtual const char* Name() const { return "window size"; }
@@ -81,7 +85,7 @@ static struct eOptionWindowSize : public xOptions::eOptionInt
 	}
 } op_window_size;
 
-static struct eOptionFullScreen : public xOptions::eOptionBool
+static struct eOptionFullScreen : public xOptions::eRootOption<xOptions::eOptionBool>
 {
 	eOptionFullScreen() { customizable = false; }
 	virtual const char* Name() const { return "full screen"; }
@@ -115,7 +119,7 @@ public:
 	}
 	virtual void OnIdle(wxIdleEvent& event)
 	{
-		if(OpQuit())
+		if(*OPTION_GET(op_quit))
 		{
 			GetParent()->Close(true);
 			return;
@@ -363,6 +367,9 @@ struct DropFilesTarget : public wxFileDropTarget
 };
 #endif//_MAC
 
+OPTION_USING(eOptionBool, op_48k);
+OPTION_USING(eOptionBool, op_tape_fast);
+
 class Frame: public wxFrame
 {
 public:
@@ -444,25 +451,24 @@ public:
 		if(options.true_speed != eOptions::V_DEFAULT)
 		{
 			op_true_speed.Set(options.true_speed == eOptions::V_ON);
-			op_true_speed.Apply();
+			xOptions::Apply();
 		}
 		if(options.full_screen != eOptions::V_DEFAULT)
 			op_full_screen.Set(options.full_screen == eOptions::V_ON);
-		xOptions::eOption<bool>* op_mode_48k = xOptions::eOption<bool>::Find("mode 48k");
+		xOptions::eOptionBool* op_mode_48k = OPTION_GET(op_48k);
 		if(options.mode_48k != eOptions::V_DEFAULT && op_mode_48k)
 		{
 			op_mode_48k->Set(options.mode_48k == eOptions::V_ON);
-			op_mode_48k->Apply();
+			xOptions::Apply();
 		}
 		if(!options.joystick.empty())
 		{
-			xOptions::eOption<int>* op_joy = xOptions::eOption<int>::Find("joystick");
-			SAFE_CALL(op_joy)->Value(wxConvertWX2MB(options.joystick));
+			SAFE_CALL(OPTION_GET(op_joy))->Value(wxConvertWX2MB(options.joystick));
 		}
 		UpdateJoyMenu();
 		menu_true_speed->Check(op_true_speed);
 		menu_mode_48k->Check(op_mode_48k && *op_mode_48k);
-		xOptions::eOption<bool>* op_tape_fast = xOptions::eOption<bool>::Find("fast tape");
+		xOptions::eOptionBool* op_tape_fast = OPTION_GET(op_tape_fast);
 		menu_tape_fast->Check(op_tape_fast && *op_tape_fast);
 
 		if(!options.file_to_open.empty())
@@ -585,7 +591,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	void OnTapeFastToggle(wxCommandEvent& event)
 	{
 		using namespace xOptions;
-		eOption<bool>* op_tape_fast = eOption<bool>::Find("fast tape");
+		eOptionBool* op_tape_fast = OPTION_GET(op_tape_fast);
 		SAFE_CALL(op_tape_fast)->Change();
 		bool tape_fast = op_tape_fast && *op_tape_fast;
 		menu_tape_fast->Check(tape_fast);
@@ -593,10 +599,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	}
 	void OnDriveNext(wxCommandEvent& event)
 	{
-		xOptions::eOption<int>* op_drive = xOptions::eOption<int>::Find("drive");
+		xOptions::eOptionInt* op_drive = OPTION_GET(op_drive);
 		if(op_drive)
 		{
-			op_drive->Change();
+			op_drive->Change(true);
 			switch(*op_drive)
 			{
 			case D_A:	SetStatusText(_("Selected drive A"));	break;
@@ -611,10 +617,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	{
 		switch(event.GetId())
 		{
-		case ID_JoyKempston:	OpJoystick(J_KEMPSTON); break;
-		case ID_JoyCursor:		OpJoystick(J_CURSOR); break;
-		case ID_JoyQAOP:		OpJoystick(J_QAOP); break;
-		case ID_JoySinclair2:	OpJoystick(J_SINCLAIR2); break;
+		case ID_JoyKempston:	OPTION_GET(op_joy)->Set(J_KEMPSTON);	break;
+		case ID_JoyCursor:		OPTION_GET(op_joy)->Set(J_CURSOR);		break;
+		case ID_JoyQAOP:		OPTION_GET(op_joy)->Set(J_QAOP);		break;
+		case ID_JoySinclair2:	OPTION_GET(op_joy)->Set(J_SINCLAIR2);	break;
 		}
 		UpdateJoyMenu();
 	}
@@ -643,7 +649,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	void OnMode48kToggle(wxCommandEvent& event)
 	{
 		using namespace xOptions;
-		eOption<bool>* op_mode_48k = eOption<bool>::Find("mode 48k");
+		eOptionBool* op_mode_48k = OPTION_GET(op_48k);
 		SAFE_CALL(op_mode_48k)->Change();
 		bool mode48k = op_mode_48k && *op_mode_48k;
 		menu_mode_48k->Check(mode48k);
@@ -670,7 +676,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	}
 	void UpdateJoyMenu()
 	{
-		eJoystick joy = OpJoystick();
+		int joy = *OPTION_GET(op_joy);
 		menu_joy.kempston->Check(joy == J_KEMPSTON);
 		menu_joy.cursor->Check(joy == J_CURSOR);
 		menu_joy.qaop->Check(joy == J_QAOP);
@@ -825,5 +831,13 @@ class App: public wxApp
 //namespace xPlatform
 
 IMPLEMENT_APP(xPlatform::App)
+
+#else//USE_WXWIDGETS
+
+namespace xPlatform
+{
+DECLARE_OPTION_VOID(eOptionBool, op_true_speed);
+}
+//namespace xPlatform
 
 #endif//USE_WXWIDGETS

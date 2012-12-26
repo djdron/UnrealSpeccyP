@@ -911,6 +911,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="rpi"
+				>
+				<File
+					RelativePath=".\platform\rpi\rpi_video.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="snapshot"

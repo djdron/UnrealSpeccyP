@@ -24,6 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#define DECLARE_OPTION_EX(cls, p, id) xOptions::cls* _opt_##id = p
+#define DECLARE_OPTION_VOID(cls, id) DECLARE_OPTION_EX(cls, NULL, id)
+#define DECLARE_OPTION(cls, obj) DECLARE_OPTION_EX(cls, &obj, obj)
+
+#define OPTION_USING(cls, id) extern xOptions::cls* _opt_##id
+#define OPTION_GET(id) _opt_##id
+
 class TiXmlElement;
 
 namespace xOptions
@@ -36,18 +43,13 @@ class eRootOptionB : public eList<eRootOptionB>
 public:
 	virtual int Order() const { return 0; }
 	virtual eOptionB* OptionB() = 0;
-	static eOptionB* Find(const char* name);
-	static void Apply();
-	static void Load(TiXmlElement* owner);
-	static void Store(TiXmlElement* owner);
 protected:
 	eRootOptionB() {}
 };
 
 template<class T> struct eRootOption : public eRootOptionB, public T
 {
-	virtual eOptionB* OptionB() { return (eOptionB*)this; }
-	static T* Find(const char* name) { return (T*)eRootOptionB::Find(name); }
+	virtual eOptionB* OptionB() { return this; }
 };
 
 class eOptionB
@@ -70,23 +72,18 @@ public:
 	bool Option(eOptionB& o);
 	bool Option(eOptionB* o) { return o ? Option(*o) : false; }
 	void Apply();
+	eOptionB* Find(const char* name) const;
 	void Load(TiXmlElement* owner);
 	void Store(TiXmlElement* owner);
-	static const char* OptNameToXmlName(const char* name);
-	static const char* XmlNameToOptName(const char* name);
 protected:
 	virtual const char** Values() const { return NULL; }
 	virtual void OnOption() {}
-	eOptionB* Find(const char* name) const;
-public:
-	static bool loading;
 protected:
 	eOptionB* next;
 	eOptionB* sub_options;
 	bool customizable;
 	bool storeable;
 	bool changed;
-	static char buf[256];
 };
 
 template<class T> class eOption : public eOptionB
@@ -103,10 +100,9 @@ class eOptionInt : public eOption<int>
 	typedef eOption<int> eInherited;
 public:
 	eOptionInt() { Set(0); }
-protected:
-	void Change(int last, bool next = true);
 	virtual const char*	Value() const;
 	virtual void Value(const char* v);
+	void Change(int last, bool next = true);
 };
 
 class eOptionBool : public eOption<bool>
@@ -114,11 +110,11 @@ class eOptionBool : public eOption<bool>
 	typedef eOption<bool> eInherited;
 public:
 	eOptionBool() { Set(false); }
-protected:
 	virtual const char*	Value() const;
 	virtual void Value(const char* v);
-	virtual const char** Values() const;
 	virtual void Change(bool next = true) { Set(!value); eInherited::Change(); }
+protected:
+	virtual const char** Values() const;
 };
 
 struct eOptionString : public eOption<const char*>
@@ -132,8 +128,13 @@ struct eOptionString : public eOption<const char*>
 	int alloc_size;
 };
 
-void Load();
-void Store();
+eOptionB* Find(const char* name);
+template<class T> T* Find(const char* name) { return static_cast<T*>(Find(name)); }
+void Apply();
+
+extern bool loading;
+void Init();
+void Done();
 
 }
 //namespace xOptions

@@ -24,12 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <aygshell.h>
 #pragma comment(lib, "aygshell.lib") 
 
-#include "../../tools/options.h"
 #include "../../options_common.h"
 #include "../io.h"
 
 namespace xPlatform
 {
+
+OPTION_USING(eOptionBool, op_tape_fast);
 
 void OnLoopSound();
 
@@ -232,10 +233,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		eUpdateJoyMenu()
 		{
-			CheckMenuItem(joy_menu, IDM_JOY_KEMPSTON, MF_BYCOMMAND|(OpJoystick() == J_KEMPSTON ? MF_CHECKED : MF_UNCHECKED));
-			CheckMenuItem(joy_menu, IDM_JOY_CURSOR, MF_BYCOMMAND|(OpJoystick() == J_CURSOR ? MF_CHECKED : MF_UNCHECKED));
-			CheckMenuItem(joy_menu, IDM_JOY_QAOP, MF_BYCOMMAND|(OpJoystick() == J_QAOP ? MF_CHECKED : MF_UNCHECKED));
-			CheckMenuItem(joy_menu, IDM_JOY_SINCLAIR2, MF_BYCOMMAND|(OpJoystick() == J_SINCLAIR2 ? MF_CHECKED : MF_UNCHECKED));
+			int joy = *OPTION_GET(op_joy);
+			CheckMenuItem(joy_menu, IDM_JOY_KEMPSTON, MF_BYCOMMAND|(joy == J_KEMPSTON ? MF_CHECKED : MF_UNCHECKED));
+			CheckMenuItem(joy_menu, IDM_JOY_CURSOR, MF_BYCOMMAND|(joy == J_CURSOR ? MF_CHECKED : MF_UNCHECKED));
+			CheckMenuItem(joy_menu, IDM_JOY_QAOP, MF_BYCOMMAND|(joy == J_QAOP ? MF_CHECKED : MF_UNCHECKED));
+			CheckMenuItem(joy_menu, IDM_JOY_SINCLAIR2, MF_BYCOMMAND|(joy == J_SINCLAIR2 ? MF_CHECKED : MF_UNCHECKED));
 		}
 	};
 
@@ -271,7 +273,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_TAPE_FAST_TOGGLE:
 			{
 				using namespace xOptions;
-				eOption<bool>* op_tape_fast = eOption<bool>::Find("fast tape");
+				xOptions::eOptionBool* op_tape_fast = OPTION_GET(op_fast_tape);
 				SAFE_CALL(op_tape_fast)->Change();
 				bool tape_fast = op_tape_fast && *op_tape_fast;
 				CheckMenuItem(main_menu, IDM_TAPE_FAST_TOGGLE, MF_BYCOMMAND|(tape_fast ? MF_CHECKED : MF_UNCHECKED));
@@ -284,19 +286,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
 			break;
 		case IDM_JOY_KEMPSTON:
-			OpJoystick(J_KEMPSTON);
+			OPTION_GET(op_joy)->Set(J_KEMPSTON);
 			eUpdateJoyMenu();
 			break;
 		case IDM_JOY_CURSOR:
-			OpJoystick(J_CURSOR);
+			OPTION_GET(op_joy)->Set(J_CURSOR);
 			eUpdateJoyMenu();
 			break;
 		case IDM_JOY_QAOP:
-			OpJoystick(J_QAOP);
+			OPTION_GET(op_joy)->Set(J_QAOP);
 			eUpdateJoyMenu();
 			break;
 		case IDM_JOY_SINCLAIR2:
-			OpJoystick(J_SINCLAIR2);
+			OPTION_GET(op_joy)->Set(J_SINCLAIR2);
 			eUpdateJoyMenu();
 			break;
 		}
@@ -308,7 +310,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			AppendMenu(menu, MF_STRING|MF_POPUP, (UINT)main_menu, TEXT("File"));
 			AppendMenu(main_menu, MF_STRING, IDM_OPEN_FILE, TEXT("Open"));
 			AppendMenu(main_menu, MF_STRING, IDM_TAPE_TOGGLE, TEXT("Start/stop tape"));
-			xOptions::eOption<bool>* op_tape_fast = xOptions::eOption<bool>::Find("fast tape");
+			xOptions::eOptionBool* op_tape_fast = OPTION_GET(op_fast_tape);
 			AppendMenu(main_menu, MF_STRING|(op_tape_fast && *op_tape_fast ? MF_CHECKED : 0), IDM_TAPE_FAST_TOGGLE, TEXT("Fast tape"));
 
 			joy_menu = CreatePopupMenu();

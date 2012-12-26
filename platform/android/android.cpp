@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <jni.h>
 #include "../io.h"
 #include "../../options_common.h"
-#include "../../tools/options.h"
 #include "../../tools/profiler.h"
 #include "../touch_ui/tui_keyboard.h"
 #include "../touch_ui/tui_joystick.h"
@@ -50,7 +49,7 @@ void InitSound();
 void DoneSound();
 int UpdateSound(byte* buf);
 
-static struct eOptionZoom : public xOptions::eOptionInt
+static struct eOptionZoom : public xOptions::eRootOption<xOptions::eOptionInt>
 {
 	eOptionZoom() { Set(2); }
 	virtual const char* Name() const { return "zoom"; }
@@ -62,26 +61,26 @@ static struct eOptionZoom : public xOptions::eOptionInt
 	virtual int Order() const { return 1; }
 } op_zoom;
 
-static struct eOptionFiltering : public xOptions::eOptionBool
+static struct eOptionFiltering : public xOptions::eRootOption<xOptions::eOptionBool>
 {
 	eOptionFiltering() { Set(true); }
 	virtual const char* Name() const { return "filtering"; }
 	virtual int Order() const { return 2; }
 } op_filtering;
 
-static struct eOptionAVTimerSync : public xOptions::eOptionBool
+static struct eOptionAVTimerSync : public xOptions::eRootOption<xOptions::eOptionBool>
 {
 	virtual const char* Name() const { return "av timer sync"; }
 	virtual int Order() const { return 3; }
 } op_av_timer_sync;
 
-static struct eOptionUseSensor : public xOptions::eOptionBool
+static struct eOptionUseSensor : public xOptions::eRootOption<xOptions::eOptionBool>
 {
 	virtual const char* Name() const { return "use sensor"; }
 	virtual int Order() const { return 4; }
 } op_use_sensor;
 
-static struct eOptionUseKeyboard : public xOptions::eOptionBool
+static struct eOptionUseKeyboard : public xOptions::eRootOption<xOptions::eOptionBool>
 {
 	eOptionUseKeyboard() { Set(true); }
 	virtual const char* Name() const { return "use keyboard"; }
@@ -91,7 +90,7 @@ static struct eOptionUseKeyboard : public xOptions::eOptionBool
 static void Init(const char* path)
 {
 	const char* res = "/";
-	OpLastFile(res);
+	OPTION_GET(op_last_file)->Set(res);
 //	xIo::SetResourcePath(res);
 	char buf[xIo::MAX_PATH_LEN];
 	strcpy(buf, path);
@@ -111,16 +110,16 @@ static void Done()
 
 template<class T> static int GetOption(const char* name)
 {
-	xOptions::eOption<T>* o = xOptions::eOption<T>::Find(name);
+	xOptions::eOption<T>* o = xOptions::Find<xOptions::eOption<T>>(name);
 	return o ? *o : T(0);
 }
 template<class T> static int SetOption(const char* name, const T& value)
 {
-	xOptions::eOption<T>* o = xOptions::eOption<T>::Find(name);
+	xOptions::eOption<T>* o = xOptions::Find<xOptions::eOption<T>>(name);
 	if(o)
 	{
 		o->Set(value);
-		o->Apply();
+		xOptions::Apply();
 	}
 }
 
@@ -206,21 +205,19 @@ jboolean Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
 }
 jstring Java_app_usp_Emulator_GetLastFile(JNIEnv* env, jobject obj)
 {
-	return env->NewStringUTF(xPlatform::OpLastFile());
+	return env->NewStringUTF(OPTION_GET(op_last_file));
 }
 
+OPTION_USING(eOptionB, op_load_state);
 void Java_app_usp_Emulator_LoadState(JNIEnv* env, jobject obj)
 {
-	using namespace xOptions;
-	eOptionB* o = eOptionB::Find("load state");
-	SAFE_CALL(o)->Change();
+	SAFE_CALL(OPTION_GET(op_load_state))->Change();
 }
 
+OPTION_USING(eOptionB, op_save_state);
 void Java_app_usp_Emulator_SaveState(JNIEnv* env, jobject obj)
 {
-	using namespace xOptions;
-	eOptionB* o = eOptionB::Find("save state");
-	SAFE_CALL(o)->Change();
+	SAFE_CALL(OPTION_GET(op_save_state))->Change();
 }
 
 void Java_app_usp_Emulator_StoreOptions(JNIEnv* env, jobject obj)

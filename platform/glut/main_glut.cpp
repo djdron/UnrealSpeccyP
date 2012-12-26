@@ -53,7 +53,7 @@ static void Draw()
 static void OnDraw() { Draw(); }
 static void OnIdle()
 {
-	if(OpQuit())
+	if(*OPTION_GET(op_quit))
 		exit(1);
 	Handler()->OnLoop();
 	glutPostRedisplay();
@@ -134,7 +134,7 @@ static void OnKeySpecialDown(int _key, int x, int y)
 {
 	int m = glutGetModifiers();
 	if(_key == GLUT_KEY_F4 && m&GLUT_ACTIVE_ALT)
-		OpQuit(true);
+		OPTION_GET(op_quit)->Set(true);
 	dword flags = KF_DOWN|KF_CURSOR|KF_KEMPSTON;
 	if(m&GLUT_ACTIVE_SHIFT)
 		flags |= KF_SHIFT;
