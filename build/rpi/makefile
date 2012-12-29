@@ -18,11 +18,9 @@ BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
 CXXCFLAGS = -O3 -g0 -Wall -c -fmessage-length=0 -I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads
 
-CXXFLAGS := $(CXXCFLAGS) -D_LINUX -DUSE_GLES2 -D_RPI -DUSE_SDL -DSDL_UNUSE_VIDEO -DSDL_KEYS_COMMON `sdl-config --cflags`
-#CXXFLAGS := $(CXXCFLAGS) -D_LINUX -DUSE_SDL -DSDL_KEYS_COMMON `sdl-config --cflags`
+CXXFLAGS := $(CXXCFLAGS) -D_LINUX -DUSE_GLES2 -D_RPI -DUI_REAL_ALPHA -DUSE_SDL -DSDL_UNUSE_VIDEO -DSDL_KEYS_COMMON `sdl-config --cflags`
 CFLAGS := $(CXXCFLAGS)
 LFLAGS = -L$(SDKSTAGE)/opt/vc/lib -lGLESv2 -lEGL `sdl-config --libs`
-#LFLAGS = `sdl-config --libs`
 
 all: build
 
