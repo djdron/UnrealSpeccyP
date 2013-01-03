@@ -24,6 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SDL.h>
 #include <assert.h>
 #include "../gles2/gles2.h"
+#include "../../tools/profiler.h"
+
+PROFILER_DECLARE(u_vid0);
+PROFILER_DECLARE(u_vid1);
 
 namespace xPlatform
 {
@@ -118,7 +122,10 @@ bool InitVideo()
 void DoneVideo()
 {
 	if(screen)
+	{
 		SDL_FreeSurface(screen);
+		screen = NULL;
+	}
 	delete gles2;
 	gles2 = NULL;
 	// Release OpenGL resources
@@ -130,8 +137,14 @@ void DoneVideo()
 
 void UpdateScreen()
 {
-	gles2->Draw(screen_width, screen_height);
-	eglSwapBuffers(display, surface);
+	{
+		PROFILER_SECTION(u_vid0);
+		gles2->Draw(screen_width, screen_height);
+	}
+	{
+		PROFILER_SECTION(u_vid1);
+		eglSwapBuffers(display, surface);
+	}
 }
 
 }

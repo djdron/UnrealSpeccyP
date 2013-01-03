@@ -37,6 +37,7 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	case SDLK_LALT:		return 's';
 	case SDLK_RALT:		return 's';
 	case SDLK_RETURN:	return 'e';
+	case SDLK_BACKQUOTE: return 'p';
 	case SDLK_BACKSPACE:
 		_flags |= KF_SHIFT;
 		return '0';
