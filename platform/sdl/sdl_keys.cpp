@@ -22,10 +22,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef SDL_KEYS_COMMON
 
 #include <SDL.h>
+#include "../../tools/options.h"
 #include "../../options_common.h"
 
 namespace xPlatform
 {
+
+static bool ProcessFuncKey(SDL_Event& e)
+{
+	if(e.key.keysym.mod)
+		return false;
+	switch(e.key.keysym.sym)
+	{
+	case SDLK_F2:
+		{
+			using namespace xOptions;
+			eOptionB* o = eOptionB::Find("save state");
+			SAFE_CALL(o)->Change();
+		}
+		return true;
+	case SDLK_F3:
+		{
+			using namespace xOptions;
+			eOptionB* o = eOptionB::Find("load state");
+			SAFE_CALL(o)->Change();
+		}
+		return true;
+	case SDLK_F5:
+		Handler()->OnAction(A_TAPE_TOGGLE);
+		return true;
+	case SDLK_F7:
+		{
+			static bool paused = false;
+			paused = !paused;
+			Handler()->VideoPaused(paused);
+		}
+		return true;
+	case SDLK_F12:
+		Handler()->OnAction(A_RESET);
+		return true;
+	default:
+		return false;
+	}
+}
 
 static byte TranslateKey(SDLKey _key, dword& _flags)
 {
@@ -142,6 +181,7 @@ void ProcessKey(SDL_Event& e)
 		}
 		break;
 	case SDL_KEYUP:
+		if(!ProcessFuncKey(e))
 		{
 			dword flags = 0;
 			if(e.key.keysym.mod&KMOD_ALT)
