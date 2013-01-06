@@ -29,20 +29,30 @@ namespace xUi
 //-----------------------------------------------------------------------------
 void eList::Insert(const char* item)
 {
+	if(size == MAX_ITEMS)
+		return;
+	char* s = new char[strlen(item) + 1];
+	strcpy(s, item);
+	items[size] = s;
+	++size;
+	items[size] = NULL;
 	changed = true;
-	for(int i = 0; i < MAX_ITEMS; ++i)
-	{
-		if(items[i])
-			continue;
-		char* s = new char[strlen(item) + 1];
-		memcpy(s, item, strlen(item) + 1);
-		items[i] = s;
-		items[i + 1] = NULL;
-		size = i + 1;
-		break;
-	}
 	if(Selected() < 0)
 		Selected(0);
+}
+//=============================================================================
+//	eList::Clear
+//-----------------------------------------------------------------------------
+void eList::Clear()
+{
+	changed = true;
+	for(int i = 0; i < size; ++i)
+	{
+		delete[] items[i];
+	}
+	items[0] = NULL;
+	size = page_begin = page_size = 0;
+	last_selected = selected = -1;
 }
 //=============================================================================
 //	eList::Update

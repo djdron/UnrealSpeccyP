@@ -33,24 +33,16 @@ class eList : public eControl
 	enum { MAX_ITEMS = 2000 };
 	enum eNotify { N_SELECTED };
 public:
-	eList() : size(0), last_selected(-1), selected(-1), page_begin(0), page_size(0) { *items = NULL; }
+	eList() : size(0), last_selected(-1), selected(-1), page_begin(0), page_size(0) { items[0] = NULL; }
 	virtual ~eList() { Clear(); }
-	void Clear()
-	{
-		changed = true;
-		for(int i = 0; items[i]; ++i)
-		{
-			delete[] items[i];
-		}
-		*items = NULL;
-		size = page_begin = page_size = 0;
-		last_selected = selected = -1;
-	}
+	void Clear();
 	void Insert(const char* item);
 	const char* Item() const { return selected >= 0 ? items[selected] : NULL; }
 	void Item(const char* item);
+	const char** Items() { return items; }
 	int	Selected() const { return selected; }
 	void Selected(int s);
+	int Size() const { return size; }
 	virtual void Update();
 	virtual bool OnKey(char key, dword flags);
 protected:

@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../io.h"
 #include "../../tools/io_select.h"
 #include "../platform.h"
+#include <ctype.h>
 
 #ifdef USE_UI
 
@@ -51,6 +52,24 @@ void eFileOpenDialog::Init()
 	OnChangePath();
 }
 //=============================================================================
+//	StrCaseCmp
+//-----------------------------------------------------------------------------
+static int StrCaseCmp(const char* a, const char* b)
+{
+	while(tolower(*a) == tolower(*b))
+	{
+		if(*a == 0)
+			return 0;
+		++a;
+		++b;
+	}
+	return tolower(*a) - tolower(*b);
+}
+static int NameCmp(const void* _a, const void* _b)
+{
+	return StrCaseCmp(*(const char**)_a, *(const char**)_b);
+}
+//=============================================================================
 //	eFileOpenDialog::OnChangePath
 //-----------------------------------------------------------------------------
 void eFileOpenDialog::OnChangePath()
@@ -74,6 +93,8 @@ void eFileOpenDialog::OnChangePath()
 		list->Insert(ds.Name());
 		folders[i++] = true;
 	}
+	int folder_count = list->Size();
+	qsort(list->Items(), folder_count, sizeof(const char*), NameCmp);
 	for(xIo::eFileSelect fs(path); i < MAX_ITEMS && fs.Valid(); fs.Next())
 	{
 		if(!fs.IsFile() || !xPlatform::Handler()->FileTypeSupported(fs.Name()))
@@ -81,6 +102,7 @@ void eFileOpenDialog::OnChangePath()
 		list->Insert(fs.Name());
 		folders[i++] = false;
 	}
+	qsort(list->Items() + folder_count, list->Size() - folder_count, sizeof(const char*), NameCmp);
 }
 //=============================================================================
 //	GetUpLevel
