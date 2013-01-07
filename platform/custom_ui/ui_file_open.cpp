@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../io.h"
 #include "../../tools/io_select.h"
 #include "../platform.h"
+#include "../../options_common.h"
 #include <ctype.h>
 
 #ifdef USE_UI
@@ -50,6 +51,11 @@ void eFileOpenDialog::Init()
 	list->Bound() = eRect(margin.x, margin.y, r.Width() - margin.x, r.Height() - margin.y);
 	Insert(list);
 	OnChangePath();
+	int l = strlen(xPlatform::OpLastFolder());
+	if(l)
+	{
+		list->Item(xPlatform::OpLastFile() + l);
+	}
 }
 //=============================================================================
 //	StrCaseCmp
