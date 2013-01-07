@@ -53,9 +53,9 @@ static bool ProcessFuncKey(SDL_Event& e)
 		return true;
 	case SDLK_F7:
 		{
-			static bool paused = false;
-			paused = !paused;
-			Handler()->VideoPaused(paused);
+			using namespace xOptions;
+			eOptionB* o = eOptionB::Find("pause");
+			SAFE_CALL(o)->Change();
 		}
 		return true;
 	case SDLK_F12:
