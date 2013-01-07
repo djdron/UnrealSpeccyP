@@ -151,8 +151,9 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	case SDLK_RIGHT:	return 'r';
 	case SDLK_UP:		return 'u';
 	case SDLK_DOWN:		return 'd';
-	case SDLK_INSERT:	return 'f';
-	case SDLK_RCTRL:	return 'f';
+	case SDLK_INSERT:
+	case SDLK_RCTRL:
+	case SDLK_LCTRL:	return 'f';
 	default:
 		break;
 	}
