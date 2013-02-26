@@ -24,11 +24,13 @@ import java.nio.FloatBuffer;
 
 import android.content.Context;
 import android.content.res.Configuration;
+//import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
 import android.os.Handler;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-import android.opengl.GLSurfaceView;
+
 import android.widget.Toast;
 import app.usp.ctl.ControlController;
 import app.usp.ctl.ControlKeyboard;
@@ -68,11 +70,11 @@ public class ViewGLES extends GLSurfaceView
 			t = ByteBuffer.allocateDirect(triangles.length);
 			t.put(triangles).rewind();
 		}
-		public void Draw(GL10 gl)
+		public void Draw()
 		{
-			gl.glVertexPointer(2, GL10.GL_FLOAT, 0, v);
-			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, uv);
-		    gl.glDrawElements(GL10.GL_TRIANGLES, 2 * 3, GL10.GL_UNSIGNED_BYTE, t);
+//			GLES20.glVertexPointer(2, GLES20.GL_FLOAT, 0, v);
+//			GLES20.glTexCoordPointer(2, GLES20.GL_FLOAT, 0, uv);
+//		    GLES20.glDrawElements(GLES20.GL_TRIANGLES, 2 * 3, GLES20.GL_UNSIGNED_BYTE, t);
 		}
 		FloatBuffer v = null;
 		FloatBuffer uv = null;
@@ -143,29 +145,31 @@ public class ViewGLES extends GLSurfaceView
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)
 		{
+			Emulator.the.InitGL();
 			Emulator.the.ProfilerBegin(2);
-		    gl.glClearColor(0, 0, 0, 0);
-			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-			gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+/*		    GLES20.glClearColor(0, 0, 0, 0);
+			GLES20.glEnableClientState(GLES20.GL_VERTEX_ARRAY);
+			GLES20.glEnableClientState(GLES20.GL_TEXTURE_COORD_ARRAY);
 
-			gl.glGenTextures(1, textures, 0);
-			gl.glEnable(GL10.GL_TEXTURE_2D);
+			GLES20.glGenTextures(1, textures, 0);
+			GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 
-		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, null);
+		    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
+			GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GLES20.GL_RGB, GLES20.GL_UNSIGNED_SHORT_5_6_5, null);
 
 			control_controller.Init(gl);
 			control_keyboard.Init(gl);
 
-			gl.glMatrixMode(GL10.GL_PROJECTION);
-			gl.glLoadIdentity();
-			gl.glOrthof(-0.5f, +0.5f, +0.5f, -0.5f, -1.0f, 1.0f);
+			GLES20.glMatrixMode(GLES20.GL_PROJECTION);
+			GLES20.glLoadIdentity();
+			GLES20.glOrthof(-0.5f, +0.5f, +0.5f, -0.5f, -1.0f, 1.0f);
 
-			gl.glShadeModel(GL10.GL_FLAT);
-			gl.glDisable(GL10.GL_DEPTH_TEST);
-			gl.glDisable(GL10.GL_DITHER);
-			gl.glDisable(GL10.GL_LIGHTING);
-			gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
+			GLES20.glShadeModel(GLES20.GL_FLAT);
+			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			GLES20.glDisable(GLES20.GL_DITHER);
+			GLES20.glDisable(GLES20.GL_LIGHTING);
+			GLES20.glHint(GLES20.GL_PERSPECTIVE_CORRECTION_HINT, GLES20.GL_FASTEST);
+*/
 		}
 		private void ShowMessage(final int code)
 		{
@@ -194,37 +198,38 @@ public class ViewGLES extends GLSurfaceView
 			}
 		}
 		@Override
-		public void onDrawFrame(GL10 gl)
+		public void onDrawFrame(GL10 _gl)
 		{
 			Emulator.the.ProfilerEnd(2);
 			ShowMessage(Emulator.the.Update());
-			Emulator.the.UpdateVideo(buf_video);
+			Emulator.the.DrawGL(width, height);
 
-			// write video buffer data to texture
+/*			// write video buffer data to texture
 			Emulator.the.ProfilerBegin(3);
-		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-			gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, buf_video);
+		    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
+			GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GLES20.GL_RGB, GLES20.GL_UNSIGNED_SHORT_5_6_5, buf_video);
 			Emulator.the.ProfilerEnd(3);
 
 			Emulator.the.ProfilerBegin(1);
 			// draw emulator screen 
-		    gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-			gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		    gl.glViewport(0, 0, width, height);
-		    gl.glMatrixMode(GL10.GL_MODELVIEW);
-		    gl.glLoadIdentity();
-		    gl.glScalef(scale_x, scale_y, 1.0f);
-			gl.glMatrixMode(GL10.GL_TEXTURE);
-			gl.glLoadIdentity();
-			gl.glScalef(((float)WIDTH)/TEX_WIDTH, ((float)HEIGHT)/TEX_HEIGHT, 1.0f);
-			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
-			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
-			gl.glDisable(GL10.GL_BLEND);
+		    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+			GLES20.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		    GLES20.glViewport(0, 0, width, height);
+		    GLES20.glMatrixMode(GLES20.GL_MODELVIEW);
+		    GLES20.glLoadIdentity();
+		    GLES20.glScalef(scale_x, scale_y, 1.0f);
+			GLES20.glMatrixMode(GLES20.GL_TEXTURE);
+			GLES20.glLoadIdentity();
+			GLES20.glScalef(((float)WIDTH)/TEX_WIDTH, ((float)HEIGHT)/TEX_HEIGHT, 1.0f);
+			GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, filtering ? GLES20.GL_LINEAR : GLES20.GL_NEAREST);
+			GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, filtering ? GLES20.GL_LINEAR : GLES20.GL_NEAREST);
+			GLES20.glDisable(GLES20.GL_BLEND);
 			quad.Draw(gl);
 
 			control_controller.Draw(gl, quad, width);
 			control_keyboard.Draw(gl, quad);
 			Emulator.the.ProfilerEnd(1);
+*/
 
 			audio.Update();
 
@@ -283,6 +288,7 @@ public class ViewGLES extends GLSurfaceView
 	{
 		super(context);
 		setEGLConfigChooser(false);
+		setEGLContextClientVersion(2);
 		audio = new Audio();
 		video = new Video(context);
 		setRenderer(video);

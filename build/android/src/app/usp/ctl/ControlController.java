@@ -78,11 +78,12 @@ public class ControlController
 	}
 	public void Init(GL10 gl)
 	{
-		gl.glGenTextures(2, textures, 0);
+/*		gl.glGenTextures(2, textures, 0);
 	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
 	    GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, joy_area, 0);
 	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[1]);
 	    GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, joy_ptr, 0);
+*/
 	}
 	public void OnTouch(float x, float y, boolean down, int pointer_id)
 	{
@@ -151,19 +152,19 @@ public class ControlController
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		quad.Draw(gl);
+		quad.Draw();
 
 		gl.glTranslatef(dir_x*0.25f, -dir_y*0.25f, 0.0f);
 	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[1]);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
-		quad.Draw(gl);
+		quad.Draw();
 		
 	    gl.glViewport(width - size, 0, size, size);
 	    gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glTranslatef(0.15f, 0.15f, 0.0f);
-		quad.Draw(gl);
+		quad.Draw();
 	}
 	public void Active(boolean on)
 	{

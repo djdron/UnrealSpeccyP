@@ -134,7 +134,7 @@ public class ControlKeyboard
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		quad.Draw(gl);
+		quad.Draw();
 	}
 	public void Active(boolean on)
 	{

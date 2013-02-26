@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/profiler.h"
 #include "../touch_ui/tui_keyboard.h"
 #include "../touch_ui/tui_joystick.h"
+#include "../gles2/gles2.h"
 
 PROFILER_DECLARE(u_vid);
 PROFILER_DECLARE(u_aud);
@@ -171,11 +172,18 @@ jint Java_app_usp_Emulator_Update(JNIEnv* env, jobject obj)
 	else if(!strcmp(err, "rzx_unsupported"))
 		return 4;
 }
-void Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
+static xPlatform::eGLES2* gles2 = NULL;
+void Java_app_usp_Emulator_InitGL(JNIEnv* env, jobject obj)
 {
-	PROFILER_SECTION(u_vid);
-	uint16_t* buf = (uint16_t*)env->GetDirectBufferAddress(byte_buffer);
-	xPlatform::UpdateScreen(buf);
+	gles2 = xPlatform::eGLES2::Create();
+}
+void Java_app_usp_Emulator_DoneGL(JNIEnv* env, jobject obj)
+{
+	SAFE_DELETE(gles2);
+}
+void Java_app_usp_Emulator_DrawGL(JNIEnv* env, jobject obj, jint width, jint height)
+{
+	gles2->Draw(width, height);
 }
 jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer)
 {

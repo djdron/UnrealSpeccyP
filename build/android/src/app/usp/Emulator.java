@@ -31,8 +31,11 @@ public class Emulator
 	synchronized native void	Init(final String path);
 	synchronized native void	Done();
 
+	synchronized native void	InitGL();
+	synchronized native void	DoneGL();
+	synchronized native void	DrawGL(int width, int height);
+
 	synchronized native int		Update();
-	synchronized native void	UpdateVideo(ByteBuffer buf);
 	synchronized native int		UpdateAudio(ByteBuffer buf);
 	public synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 	public synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
@@ -44,13 +47,13 @@ public class Emulator
 	synchronized native void	Reset();
 	public synchronized native boolean	FileTypeSupported(final String name);
 
-	synchronized native int	GetOptionInt(final String name);
+	synchronized native int		GetOptionInt(final String name);
 	synchronized native void	SetOptionInt(final String name, int value);
 	public synchronized native boolean GetOptionBool(final String name);
 	public synchronized native void	SetOptionBool(final String name, boolean value);
 	synchronized native void	StoreOptions();
 
-	synchronized native int	TapeState();
+	synchronized native int		TapeState();
 	synchronized native void	TapeToggle();
 	
 	synchronized native void	ProfilerBegin(int id);
