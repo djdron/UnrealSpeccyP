@@ -60,8 +60,8 @@ public:
 
 	enum { BANKS_AMOUNT = 4, PAGE_SIZE = 0x4000, SIZE = P_AMOUNT * PAGE_SIZE };
 protected:
-	byte* bank_read[4];
-	byte* bank_write[4];
+	byte* bank_read[BANKS_AMOUNT];
+	byte* bank_write[BANKS_AMOUNT];
 	byte* memory;
 };
 
