@@ -41,7 +41,7 @@ public class FileSelectorVtrdos extends FileSelector
 		sources.add(new ParserDemos());
 		sources.add(new ParserPress());
 	}
-	abstract class FSSVtrdos extends FSSWeb
+	abstract class FSSVtrdos extends FSSHtml
 	{
 		private static final String VTRDOS_FS = "/sdcard/usp/vtrdos";
 		public String BaseURL() { return "http://vtrdos.ru"; }

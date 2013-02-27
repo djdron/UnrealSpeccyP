@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#undef PAGE_SIZE
+
 //*****************************************************************************
 //	eMemory
 //-----------------------------------------------------------------------------
@@ -58,8 +60,8 @@ public:
 
 	enum { BANKS_AMOUNT = 4, PAGE_SIZE = 0x4000, SIZE = P_AMOUNT * PAGE_SIZE };
 protected:
-	byte* bank_read[BANKS_AMOUNT];
-	byte* bank_write[BANKS_AMOUNT];
+	byte* bank_read[4];
+	byte* bank_write[4];
 	byte* memory;
 };
 

@@ -48,53 +48,6 @@ abstract class FileSelectorSource
 
 abstract class FSSWeb extends FileSelectorSource
 {
-	abstract String Root();
-	abstract String BaseURL();
-	abstract String HtmlExt();
-	abstract String HtmlEncoding();
-	abstract String[] Items2();
-	abstract String[] Items2URLs();
-	abstract String[] Patterns();
-	abstract void Get(List<Item> items, Matcher m, final String _url, final String _name);
-	public GetItemsResult GetItems(final File path, List<Item> items)
-	{
-		File path_up = path.getParentFile();
-		if(path_up == null)
-		{
-			items.add(new Item(Root()));
-			return GetItemsResult.OK;
-		}
-		File r = path;
-		for(;;)
-		{
-			File p = r.getParentFile();
-			if(p.getParentFile() == null)
-				break;
-			r = p;
-		}
-		if(!r.toString().equals(Root()))
-			return GetItemsResult.OK;
-		items.add(new Item("/.."));
-		if(path_up.getParent() == null)
-		{
-			for(String i : Items2())
-			{
-				items.add(new Item(i));
-			}
-			return GetItemsResult.OK;
-		}
-		int idx = 0;
-		String n = "/" + path.getName().toString();
-		for(String i : Items2())
-		{
-			if(i.equals(n))
-			{
-				return ParseURL(Items2URLs()[idx], items, n);
-			}
-			++idx;
-		}
-		return GetItemsResult.FAIL;
-	}
 	protected boolean LoadFile(final String _url, final File _name)
 	{
 		try
@@ -142,6 +95,57 @@ abstract class FSSWeb extends FileSelectorSource
 		{
 		}
 		return null;
+	}
+}
+
+abstract class FSSHtml extends FSSWeb
+{
+	abstract String Root();
+	abstract String BaseURL();
+	abstract String HtmlExt();
+	abstract String HtmlEncoding();
+	abstract String[] Items2();
+	abstract String[] Items2URLs();
+	abstract String[] Patterns();
+	abstract void Get(List<Item> items, Matcher m, final String _url, final String _name);
+	public GetItemsResult GetItems(final File path, List<Item> items)
+	{
+		File path_up = path.getParentFile();
+		if(path_up == null)
+		{
+			items.add(new Item(Root()));
+			return GetItemsResult.OK;
+		}
+		File r = path;
+		for(;;)
+		{
+			File p = r.getParentFile();
+			if(p.getParentFile() == null)
+				break;
+			r = p;
+		}
+		if(!r.toString().equals(Root()))
+			return GetItemsResult.OK;
+		items.add(new Item("/.."));
+		if(path_up.getParent() == null)
+		{
+			for(String i : Items2())
+			{
+				items.add(new Item(i));
+			}
+			return GetItemsResult.OK;
+		}
+		int idx = 0;
+		String n = "/" + path.getName().toString();
+		for(String i : Items2())
+		{
+			if(i.equals(n))
+			{
+				return ParseURL(Items2URLs()[idx], items, n);
+			}
+			++idx;
+		}
+		return GetItemsResult.FAIL;
 	}
 	protected GetItemsResult ParseURL(String _url, List<Item> items, final String _name)
 	{

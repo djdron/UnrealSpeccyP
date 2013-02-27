@@ -45,7 +45,7 @@ public class FileSelectorWOS extends FileSelector
 		sources.add(new ParserAdventures());
 		sources.add(new ParserUtilites());
 	}
-	abstract class FSSWOS extends FSSWeb
+	abstract class FSSWOS extends FSSHtml
 	{
 		private static final String WOS_FS = "/sdcard/usp/wos";
 		public String BaseURL() { return "http://www.worldofspectrum.org"; }

@@ -38,7 +38,7 @@ public class FileSelectorRZX extends FileSelector
 		super.onCreate(savedInstanceState);
 		sources.add(new FSSRZX());
 	}
-	class FSSRZX extends FSSWeb
+	class FSSRZX extends FSSHtml
 	{
 		private static final String RZX_FS = "/sdcard/usp/rzx";
 		public String BaseURL() { return "http://www.rzxarchive.co.uk"; }
