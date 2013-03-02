@@ -528,10 +528,6 @@ class eMacroTapeLoad : public eMacro
 	{
 		switch(frame)
 		{
-		case 0:
-			sh.speccy->Reset();
-			sh.speccy->Memory()->SetPage(0, eMemory::P_ROM1); // 48-basic rom
-			break;
 		case 100:
 			sh.OnKey('J', KF_DOWN|KF_UI_SENDER);
 			break;
@@ -567,6 +563,8 @@ static struct eFileTypeTAP : public eFileType
 		bool ok = sh.speccy->Device<eTape>()->Open(Type(), data, data_size);
 		if(ok && op_auto_play_image)
 		{
+			sh.OnAction(A_RESET);
+			sh.speccy->Devices().Get<eRom>()->SelectPage(eRom::ROM_128_0);
 			sh.PlayMacro(new eMacroTapeLoad);
 		}
 		return ok;
