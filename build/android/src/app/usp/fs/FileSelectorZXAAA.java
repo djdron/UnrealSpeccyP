@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,9 +27,6 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 import app.usp.Emulator;
-import app.usp.fs.FileSelectorSource.ApplyResult;
-import app.usp.fs.FileSelectorSource.GetItemsResult;
-import app.usp.fs.FileSelectorSource.Item;
 
 public class FileSelectorZXAAA extends FileSelector
 {

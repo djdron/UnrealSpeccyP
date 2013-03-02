@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
 		<activity android:name=".Preferences" android:label="@string/preferences"></activity>
-		<activity android:name=".FileOpen" android:label="@string/open_file"></activity>
+		<activity android:name=".FileOpen" android:label="@string/open_file" android:configChanges="keyboardHidden|orientation"></activity>
 		<activity android:name=".fs.FileSelectorFS" android:label="@string/file_selector"></activity>
 		<activity android:name=".fs.FileSelectorVtrdos" android:label="@string/file_selector"></activity>
 		<activity android:name=".fs.FileSelectorWOS" android:label="@string/file_selector"></activity>
