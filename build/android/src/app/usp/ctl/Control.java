@@ -41,12 +41,26 @@ public class Control extends ImageView
 	{
 		super(context);
 		view = _view;
-
-		keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard);
-		joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
+		
+		int width = 0;
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+			width = context.getResources().getDisplayMetrics().widthPixels;
+		else
+			width = context.getResources().getDisplayMetrics().heightPixels;
+		if(width > 480)
+		{
+			keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard_hq);
+			joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick_hq);
+		}
+		else
+		{
+			keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard);
+			joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
+		}
 		keyboard_active = Emulator.the.GetOptionBool(Preferences.use_keyboard_id);
 		sensor = new ControlSensor(context);
 		setAdjustViewBounds(true);
+		setScaleType(ScaleType.FIT_XY);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		setImageBitmap(keyboard_active ? keyboard : joystick);

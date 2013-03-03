@@ -69,8 +69,13 @@ public class ControlKeyboard
 		}
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inScaled = false;
-		Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.keyboard, options);
-        bm.setDensity(Bitmap.DENSITY_NONE);
+		options.inPreferQualityOverSpeed = true;
+		Bitmap bm = null;
+		if(width > 480)
+			bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.keyboard_hq, options);
+		else
+			bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.keyboard, options);
+		bm.setDensity(Bitmap.DENSITY_NONE);
 		final int w = bm.getWidth();
 		final int h = bm.getHeight();
 		final int width_pot = NextPot(w);
@@ -130,8 +135,8 @@ public class ControlKeyboard
 	    gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
+		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
+		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		quad.Draw(gl);
