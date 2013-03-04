@@ -69,7 +69,6 @@ public class ControlKeyboard
 		}
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inScaled = false;
-		options.inPreferQualityOverSpeed = true;
 		Bitmap bm = null;
 		if(width > 480)
 			bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.keyboard_hq, options);
