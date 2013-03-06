@@ -133,6 +133,7 @@ void DoneVideo()
 	eglDestroySurface( display, surface );
 	eglDestroyContext( display, context );
 	eglTerminate( display );
+	bcm_host_deinit();
 }
 
 void UpdateScreen()
