@@ -44,13 +44,13 @@ public class FileSelectorRZX extends FileSelector
 		public String BaseURL() { return "http://www.rzxarchive.co.uk"; }
 		public String HtmlExt() { return ".php"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }
-		public ApplyResult ApplyItem(Item item)
+		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
 			try
 			{
 				String p = item.url;
 				File file = new File(RZX_FS + p).getCanonicalFile();
-				if(!LoadFile(BaseURL() + p, file))
+				if(!LoadFile(BaseURL() + p, file, progress))
 					return ApplyResult.UNABLE_CONNECT2;
 				return Emulator.the.Open(file.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 			}
@@ -59,7 +59,7 @@ public class FileSelectorRZX extends FileSelector
 			}
 			return ApplyResult.FAIL;
 		}
-		public GetItemsResult GetItems(final File path, List<Item> items)
+		public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress)
 		{
 			File path_up = path.getParentFile();
 			if(path_up == null)
@@ -77,7 +77,7 @@ public class FileSelectorRZX extends FileSelector
 			{
 				if(i.equals(n))
 				{
-					return ParseURL(Items2URLs()[idx], items, n);
+					return ParseURL(Items2URLs()[idx], items, n, progress);
 				}
 				++idx;
 			}

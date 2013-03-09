@@ -52,9 +52,9 @@ public class FileSelectorWOS extends FileSelector
 		public String HtmlExt() { return ".html"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }
 		final static String FTP_URL = "ftp://ftp.worldofspectrum.org/pub/sinclair/";
-		public ApplyResult ApplyItem(Item item)
+		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
-			String s = LoadText("http://www.worldofspectrum.org/api/infoseek_select_json.cgi?id=" + item.url, HtmlEncoding());
+			String s = LoadText("http://www.worldofspectrum.org/api/infoseek_select_json.cgi?id=" + item.url, HtmlEncoding(), null);
 			if(s == null)
 				return ApplyResult.UNABLE_CONNECT1;
 			JSONObject desc = null;
@@ -93,7 +93,7 @@ public class FileSelectorWOS extends FileSelector
 			{
 				String p = url.substring(FTP_URL.length() - 1);
 				File f = new File(WOS_FS + p).getCanonicalFile();
-				if(!LoadFile(url, f))
+				if(!LoadFile(url, f, progress))
 					return ApplyResult.UNABLE_CONNECT2;
 				return Emulator.the.Open(f.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 			}

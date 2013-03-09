@@ -46,7 +46,7 @@ public class FileSelectorZXAAA extends FileSelector
 		private static final String ZXAAA_FS = "/sdcard/usp/zxaaa";
 		private static final String GET_URL = "http://zxaaa.untergrund.net/get.php?f=";
 		public String JsonEncoding() { return "iso-8859-1"; }
-		public ApplyResult ApplyItem(Item item)
+		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
 			try
 			{
@@ -54,7 +54,7 @@ public class FileSelectorZXAAA extends FileSelector
 				if(!p.startsWith(GET_URL))
 					return ApplyResult.FAIL;
 				File file = new File(ZXAAA_FS + "/" + p.substring(GET_URL.length())).getCanonicalFile();
-				if(!LoadFile(p, file))
+				if(!LoadFile(p, file, progress))
 					return ApplyResult.UNABLE_CONNECT2;
 				return Emulator.the.Open(file.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 			}
@@ -63,7 +63,7 @@ public class FileSelectorZXAAA extends FileSelector
 			}
 			return ApplyResult.FAIL;
 		}
-		public GetItemsResult GetItems(final File path, List<Item> items)
+		public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress)
 		{
 			File path_up = path.getParentFile();
 			if(path_up == null)
@@ -89,7 +89,7 @@ public class FileSelectorZXAAA extends FileSelector
 		}
 		protected GetItemsResult ParseJSON(String _url, List<Item> items, final String _name)
 		{
-			String s0 = LoadText("http://zxaaa.untergrund.net/unreal_demos.php?l=" + _url, JsonEncoding());
+			String s0 = LoadText("http://zxaaa.untergrund.net/unreal_demos.php?l=" + _url, JsonEncoding(), null);
 			if(s0 == null)
 				return GetItemsResult.UNABLE_CONNECT;
 			String s = "{ \"items\": [ " + s0 + " ] }";

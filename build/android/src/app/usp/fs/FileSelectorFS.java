@@ -56,7 +56,7 @@ public class FileSelectorFS extends FileSelector
 	}
 	class FSSFS extends FileSelectorSource
 	{
-		public GetItemsResult GetItems(final File path, List<Item> items)
+		public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress)
 		{
 			if(path.getParent() != null)
 			{
@@ -95,7 +95,7 @@ public class FileSelectorFS extends FileSelector
 			}
 			return GetItemsResult.OK;
 		}
-		public ApplyResult ApplyItem(Item item)
+		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
 			File f = new File(State().current_path.getPath() + "/" + item.name);
 			return Emulator.the.Open(f.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;

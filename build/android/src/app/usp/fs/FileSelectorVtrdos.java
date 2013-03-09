@@ -47,13 +47,13 @@ public class FileSelectorVtrdos extends FileSelector
 		public String BaseURL() { return "http://vtrdos.ru"; }
 		public String HtmlExt() { return ".htm"; }
 		public String HtmlEncoding() { return "windows-1251"; }
-		public ApplyResult ApplyItem(Item item)
+		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
 			try
 			{
 				String p = item.url;
 				File file = new File(VTRDOS_FS + p).getCanonicalFile();
-				if(!LoadFile(BaseURL() + p, file))
+				if(!LoadFile(BaseURL() + p, file, progress))
 					return ApplyResult.UNABLE_CONNECT2;
 				return Emulator.the.Open(file.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 			}

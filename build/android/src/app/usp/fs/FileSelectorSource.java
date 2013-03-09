@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -29,6 +30,11 @@ import java.nio.charset.CharsetDecoder;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+interface FileSelectorProgress
+{
+	abstract public void OnProgress(Integer current, Integer max);
+}
 
 abstract class FileSelectorSource
 {
@@ -41,14 +47,14 @@ abstract class FileSelectorSource
 		String url;
 	};
 	enum GetItemsResult { OK, FAIL, UNABLE_CONNECT, INVALID_INFO }
-	abstract public GetItemsResult GetItems(final File path, List<Item> items);
+	abstract public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress);
 	enum ApplyResult { OK, FAIL, UNABLE_CONNECT1, UNABLE_CONNECT2, INVALID_INFO, NOT_AVAILABLE, UNSUPPORTED_FORMAT }
-	abstract public ApplyResult ApplyItem(Item item);
+	abstract public ApplyResult ApplyItem(Item item, FileSelectorProgress progress);
 }
 
 abstract class FSSWeb extends FileSelectorSource
 {
-	protected boolean LoadFile(final String _url, final File _name)
+	protected boolean LoadFile(final String _url, final File _name, FileSelectorProgress progress)
 	{
 		try
 		{
@@ -56,13 +62,20 @@ abstract class FSSWeb extends FileSelectorSource
 			File path = file.getParentFile();
 			path.mkdirs();
 			FileOutputStream os = new FileOutputStream(file);
-			URL url = new URL(_url);
-			InputStream is = url.openStream();
+			
+			URLConnection connection = new URL(_url).openConnection();
+			InputStream is = connection.getInputStream();
+			int len = connection.getContentLength();
+
 			byte buffer[] = new byte[256*1024];
+			int size = 0;
 			int r = -1;
 			while((r = is.read(buffer)) != -1)
 			{
 				os.write(buffer, 0, r);
+				size += r;
+				if(len > 0 && progress != null)
+					progress.OnProgress(size, len);
 			}
 			is.close();
 			os.close();
@@ -73,20 +86,26 @@ abstract class FSSWeb extends FileSelectorSource
 		}
 		return false;
 	}
-	protected String LoadText(final String _url, final String _encoding)
+	protected String LoadText(final String _url, final String _encoding, FileSelectorProgress progress)
 	{
 		try
 		{
 			Charset charset = Charset.forName(_encoding);
 			CharsetDecoder decoder = charset.newDecoder();
-			InputStream is = new URL(_url).openStream();
+			URLConnection connection = new URL(_url).openConnection();
+			InputStream is = connection.getInputStream();
+			int len = connection.getContentLength();
 			byte buffer[] = new byte[16384];
 			String s = "";
+			int size = 0;
 			int r = -1;
 			while((r = is.read(buffer)) != -1)
 			{
 				CharBuffer cb = decoder.decode(ByteBuffer.wrap(buffer, 0, r));
 				s += cb;
+				size += r;
+				if(len > 0 && progress != null)
+					progress.OnProgress(size, len);
 			}
 			is.close();
 			return s;
@@ -108,7 +127,7 @@ abstract class FSSHtml extends FSSWeb
 	abstract String[] Items2URLs();
 	abstract String[] Patterns();
 	abstract void Get(List<Item> items, Matcher m, final String _url, final String _name);
-	public GetItemsResult GetItems(final File path, List<Item> items)
+	public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress)
 	{
 		File path_up = path.getParentFile();
 		if(path_up == null)
@@ -141,15 +160,15 @@ abstract class FSSHtml extends FSSWeb
 		{
 			if(i.equals(n))
 			{
-				return ParseURL(Items2URLs()[idx], items, n);
+				return ParseURL(Items2URLs()[idx], items, n, progress);
 			}
 			++idx;
 		}
 		return GetItemsResult.FAIL;
 	}
-	protected GetItemsResult ParseURL(String _url, List<Item> items, final String _name)
+	protected GetItemsResult ParseURL(String _url, List<Item> items, final String _name, FileSelectorProgress progress)
 	{
-		String s = LoadText(BaseURL() + _url + HtmlExt(), HtmlEncoding());
+		String s = LoadText(BaseURL() + _url + HtmlExt(), HtmlEncoding(), progress);
 		if(s == null)
 			return GetItemsResult.UNABLE_CONNECT;
 		boolean ok = false;

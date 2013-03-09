@@ -135,38 +135,110 @@ public abstract class FileSelector extends ListActivity
 			}
 		}
 	}
+	
+	static abstract class FSSProgressDialog implements FileSelectorProgress
+	{
+		FSSProgressDialog(Context _owner, final int _res_title, final int _res_message)
+		{
+			owner = _owner;
+			res_title = _res_title;
+			res_message = _res_message;
+		}
+		void Create()
+		{
+			pd = CreateProgress();
+			pd.show();
+			time_last = System.nanoTime();
+		}
+		void Destroy()
+		{
+			if(pd != null)
+				pd.cancel();
+		}
+		void Update(final int value, final int value_max)
+		{
+			if(pd == null)
+				return;
+			final long time = System.nanoTime();
+			if(time - time_last < 0.5*1e9) // update each 0.5 sec
+				return;
+			time_last = time;
+			if(pd.isIndeterminate() && (value - value_last)*3 < value_max)
+			{
+				pd.cancel();
+				pd = CreateProgress();
+				pd.setIndeterminate(false);
+				pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+				pd.show();
+			}
+			if(!pd.isIndeterminate())
+			{
+				pd.setMax(value_max);
+				pd.setProgress(value);
+			}
+			value_last = value;
+		}
+		private ProgressDialog CreateProgress()
+		{
+			ProgressDialog pd = new ProgressDialog(owner);
+			pd.setTitle(owner.getString(res_title));
+			pd.setMessage(owner.getString(res_message));
+			pd.setCancelable(false);
+			return pd;
+		}
+		private Context owner;
+		private final int res_title;
+		private final int res_message;
+		private ProgressDialog pd = null;
+		private long time_last = 0;
+		int value_last = 0;
+	}
 
-	private class ApplyAsync extends AsyncTask<Void, Void, FileSelectorSource.ApplyResult>
+	private class ApplyAsync extends AsyncTask<Void, Integer, FileSelectorSource.ApplyResult>
 	{
 		private FileSelector owner;
 		FileSelectorSource.Item item;
-		ProgressDialog progress_dialog = null;
+		private FSSProgressDialog progress = null;
 		ApplyAsync(FileSelector _owner, FileSelectorSource.Item _item)
 		{
 			owner = _owner;
 			item = _item;
+			progress = new FSSProgressDialog(owner, R.string.accessing_web, R.string.downloading_image)
+			{
+				@Override
+				public void OnProgress(Integer current, Integer max)
+				{
+					publishProgress(current, max);
+				}
+			};
 		}
 		@Override
 		protected void onPreExecute()
 		{
 			async_task = true;
 			if(LongUpdate())
-				progress_dialog = ProgressDialog.show(owner, getString(R.string.accessing_web), getString(R.string.downloading_image));
+			{
+				progress.Create();
+			}
 		}
 		@Override
 		protected FileSelectorSource.ApplyResult doInBackground(Void... args)
 		{
 			for(FileSelectorSource s : sources)
 			{
-				return s.ApplyItem(item);
+				return s.ApplyItem(item, progress);
 			}
 			return FileSelectorSource.ApplyResult.FAIL;
 		}
 		@Override
+		protected void onProgressUpdate(Integer... values)
+		{
+			progress.Update(values[0], values[1]);
+		}
+		@Override
 		protected void onPostExecute(FileSelectorSource.ApplyResult r)
 		{
-			if(progress_dialog != null)
-				progress_dialog.cancel();
+			progress.Destroy();
 			String e = null;
 			switch(r)
 			{
@@ -187,22 +259,32 @@ public abstract class FileSelector extends ListActivity
 		}
 	}
 
-	private class UpdateAsync extends AsyncTask<Void, Void, FileSelectorSource.GetItemsResult>
+	private class UpdateAsync extends AsyncTask<Void, Integer, FileSelectorSource.GetItemsResult>
 	{
 		private FileSelector owner;
 		private String select_after_update;
-		ProgressDialog progress_dialog = null;
+		private FSSProgressDialog progress = null;
 		UpdateAsync(FileSelector _owner, final String _select_after_update)
 		{
 			owner = _owner;
 			select_after_update = _select_after_update;
+			progress = new FSSProgressDialog(owner, R.string.accessing_web, R.string.gathering_list)
+			{
+				@Override
+				public void OnProgress(Integer current, Integer max)
+				{
+					publishProgress(current, max);
+				}
+			};
 		}
 		@Override
 		protected void onPreExecute()
 		{
 			async_task = true;
 			if(LongUpdate())
-				progress_dialog = ProgressDialog.show(owner, getString(R.string.accessing_web), getString(R.string.gathering_list));
+			{
+				progress.Create();
+			}
 		}
 		@Override
 		protected FileSelectorSource.GetItemsResult doInBackground(Void... args)
@@ -210,11 +292,16 @@ public abstract class FileSelector extends ListActivity
 			Items().clear();
 			for(FileSelectorSource s : sources)
 			{
-				FileSelectorSource.GetItemsResult r = s.GetItems(State().current_path, Items());
+				FileSelectorSource.GetItemsResult r = s.GetItems(State().current_path, Items(), progress);
 				if(r != FileSelectorSource.GetItemsResult.OK)
 					return r;
 			}
 			return FileSelectorSource.GetItemsResult.OK;
+		}
+		@Override
+		protected void onProgressUpdate(Integer... values)
+		{
+			progress.Update(values[0], values[1]);
 		}
 		@Override
 		protected void onPostExecute(FileSelectorSource.GetItemsResult r)
@@ -224,8 +311,7 @@ public abstract class FileSelector extends ListActivity
 			{
 				SelectItem(select_after_update);
 			}
-			if(progress_dialog != null)
-				progress_dialog.cancel();
+			progress.Destroy();
 			String e = null;
 			switch(r)
 			{
