@@ -36,7 +36,7 @@ public class FileSelectorWOS extends FileSelector
 	@Override
 	State State() { return state; }
 	@Override
-	boolean LongUpdate() { return PathLevel(State().current_path) >= 2; }
+	boolean LongUpdate(final File path) { return PathLevel(path) >= 2; }
     @Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -54,9 +54,11 @@ public class FileSelectorWOS extends FileSelector
 		final static String FTP_URL = "ftp://ftp.worldofspectrum.org/pub/sinclair/";
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
-			String s = LoadText("http://www.worldofspectrum.org/api/infoseek_select_json.cgi?id=" + item.url, HtmlEncoding(), null);
+			String s = LoadText("http://www.worldofspectrum.org/api/infoseek_select_json.cgi?id=" + item.url, HtmlEncoding(), progress);
 			if(s == null)
 				return ApplyResult.UNABLE_CONNECT1;
+			if(progress.Canceled())
+				return ApplyResult.CANCELED;
 			JSONObject desc = null;
 			try
 			{
@@ -95,6 +97,8 @@ public class FileSelectorWOS extends FileSelector
 				File f = new File(WOS_FS + p).getCanonicalFile();
 				if(!LoadFile(url, f, progress))
 					return ApplyResult.UNABLE_CONNECT2;
+				if(progress.Canceled())
+					return ApplyResult.CANCELED;
 				return Emulator.the.Open(f.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 			}
 			catch(IOException e) { return ApplyResult.FAIL; }

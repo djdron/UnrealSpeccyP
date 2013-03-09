@@ -31,7 +31,7 @@ public class FileSelectorRZX extends FileSelector
 	@Override
 	State State() { return state; }
 	@Override
-	boolean LongUpdate() { return PathLevel(State().current_path) >= 1; }
+	boolean LongUpdate(final File path) { return PathLevel(path) >= 1; }
     @Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -52,6 +52,8 @@ public class FileSelectorRZX extends FileSelector
 				File file = new File(RZX_FS + p).getCanonicalFile();
 				if(!LoadFile(BaseURL() + p, file, progress))
 					return ApplyResult.UNABLE_CONNECT2;
+				if(progress.Canceled())
+					return ApplyResult.CANCELED;
 				return Emulator.the.Open(file.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 			}
 			catch(Exception e)

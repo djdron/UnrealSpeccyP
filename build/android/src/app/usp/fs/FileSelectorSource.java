@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 interface FileSelectorProgress
 {
 	abstract public void OnProgress(Integer current, Integer max);
+	abstract public boolean Canceled();
 }
 
 abstract class FileSelectorSource
@@ -46,9 +47,9 @@ abstract class FileSelectorSource
 		String desc;
 		String url;
 	};
-	enum GetItemsResult { OK, FAIL, UNABLE_CONNECT, INVALID_INFO }
+	enum GetItemsResult { OK, FAIL, UNABLE_CONNECT, INVALID_INFO, CANCELED }
 	abstract public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress);
-	enum ApplyResult { OK, FAIL, UNABLE_CONNECT1, UNABLE_CONNECT2, INVALID_INFO, NOT_AVAILABLE, UNSUPPORTED_FORMAT }
+	enum ApplyResult { OK, FAIL, UNABLE_CONNECT1, UNABLE_CONNECT2, INVALID_INFO, NOT_AVAILABLE, UNSUPPORTED_FORMAT, CANCELED }
 	abstract public ApplyResult ApplyItem(Item item, FileSelectorProgress progress);
 }
 
@@ -74,11 +75,15 @@ abstract class FSSWeb extends FileSelectorSource
 			{
 				os.write(buffer, 0, r);
 				size += r;
-				if(len > 0 && progress != null)
+				if(progress.Canceled())
+					break;
+				if(len > 0)
 					progress.OnProgress(size, len);
 			}
 			is.close();
 			os.close();
+			if(progress.Canceled())
+				file.delete();
 			return true;
 		}
 		catch(Exception e)
@@ -104,7 +109,9 @@ abstract class FSSWeb extends FileSelectorSource
 				CharBuffer cb = decoder.decode(ByteBuffer.wrap(buffer, 0, r));
 				s += cb;
 				size += r;
-				if(len > 0 && progress != null)
+				if(progress.Canceled())
+					break;
+				if(len > 0)
 					progress.OnProgress(size, len);
 			}
 			is.close();
@@ -171,6 +178,8 @@ abstract class FSSHtml extends FSSWeb
 		String s = LoadText(BaseURL() + _url + HtmlExt(), HtmlEncoding(), progress);
 		if(s == null)
 			return GetItemsResult.UNABLE_CONNECT;
+		if(progress.Canceled())
+			return GetItemsResult.CANCELED;
 		boolean ok = false;
 		for(String p : Patterns())
 		{

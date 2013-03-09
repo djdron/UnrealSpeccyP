@@ -34,7 +34,7 @@ public class FileSelectorZXAAA extends FileSelector
 	@Override
 	State State() { return state; }
 	@Override
-	boolean LongUpdate() { return PathLevel(State().current_path) >= 1; }
+	boolean LongUpdate(final File path) { return PathLevel(path) >= 1; }
     @Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -56,6 +56,8 @@ public class FileSelectorZXAAA extends FileSelector
 				File file = new File(ZXAAA_FS + "/" + p.substring(GET_URL.length())).getCanonicalFile();
 				if(!LoadFile(p, file, progress))
 					return ApplyResult.UNABLE_CONNECT2;
+				if(progress.Canceled())
+					return ApplyResult.CANCELED;
 				return Emulator.the.Open(file.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 			}
 			catch(Exception e)
@@ -81,17 +83,19 @@ public class FileSelectorZXAAA extends FileSelector
 			{
 				if(i.equals(n))
 				{
-					return ParseJSON(ITEMS2URLS[idx], items, n);
+					return ParseJSON(ITEMS2URLS[idx], items, n, progress);
 				}
 				++idx;
 			}
 			return GetItemsResult.FAIL;
 		}
-		protected GetItemsResult ParseJSON(String _url, List<Item> items, final String _name)
+		protected GetItemsResult ParseJSON(String _url, List<Item> items, final String _name, FileSelectorProgress progress)
 		{
-			String s0 = LoadText("http://zxaaa.untergrund.net/unreal_demos.php?l=" + _url, JsonEncoding(), null);
+			String s0 = LoadText("http://zxaaa.untergrund.net/unreal_demos.php?l=" + _url, JsonEncoding(), progress);
 			if(s0 == null)
 				return GetItemsResult.UNABLE_CONNECT;
+			if(progress.Canceled())
+				return GetItemsResult.CANCELED;
 			String s = "{ \"items\": [ " + s0 + " ] }";
 			JSONObject json = null;
 			try
