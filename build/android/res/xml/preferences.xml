@@ -19,5 +19,6 @@
         <ListPreference android:entries="@array/zoom_names" android:entryValues="@array/zoom_values" android:key="zoom" android:title="@string/zoom"></ListPreference>
         <CheckBoxPreference android:title="@string/filtering" android:key="filtering"></CheckBoxPreference>
         <CheckBoxPreference android:title="@string/av_timer_sync" android:summary="@string/av_timer_sync_desc" android:key="av timer sync"></CheckBoxPreference>
-        </PreferenceCategory>
+        <ListPreference android:entries="@array/skip_frames_names" android:entryValues="@array/skip_frames_values" android:title="@string/skip_frames" android:key="skip frames"></ListPreference>
+    </PreferenceCategory>
 </PreferenceScreen>

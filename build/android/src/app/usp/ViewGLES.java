@@ -197,39 +197,48 @@ public class ViewGLES extends GLSurfaceView
 		public void onDrawFrame(GL10 gl)
 		{
 			Emulator.the.ProfilerEnd(2);
-			ShowMessage(Emulator.the.Update());
-			Emulator.the.UpdateVideo(buf_video);
 
-			// write video buffer data to texture
-			Emulator.the.ProfilerBegin(3);
-		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-			gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, buf_video);
-			Emulator.the.ProfilerEnd(3);
+			final int skip_frames = Emulator.the.GetOptionInt(Preferences.skip_frames_id);
+			for(int f = 0; f <= skip_frames; ++f)
+			{
+				ShowMessage(Emulator.the.Update());
 
-			Emulator.the.ProfilerBegin(1);
-			// draw emulator screen 
-		    gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-			gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		    gl.glViewport(0, 0, width, height);
-		    gl.glMatrixMode(GL10.GL_MODELVIEW);
-		    gl.glLoadIdentity();
-		    gl.glScalef(scale_x, scale_y, 1.0f);
-			gl.glMatrixMode(GL10.GL_TEXTURE);
-			gl.glLoadIdentity();
-			gl.glScalef(((float)WIDTH)/TEX_WIDTH, ((float)HEIGHT)/TEX_HEIGHT, 1.0f);
-			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
-			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
-			gl.glDisable(GL10.GL_BLEND);
-			quad.Draw(gl);
+				if(f == skip_frames)
+				{
+					Emulator.the.UpdateVideo(buf_video);
+		
+					// write video buffer data to texture
+					Emulator.the.ProfilerBegin(3);
+				    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
+					gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, buf_video);
+					Emulator.the.ProfilerEnd(3);
+		
+					Emulator.the.ProfilerBegin(1);
+					// draw emulator screen 
+				    gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+					gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+				    gl.glViewport(0, 0, width, height);
+				    gl.glMatrixMode(GL10.GL_MODELVIEW);
+				    gl.glLoadIdentity();
+				    gl.glScalef(scale_x, scale_y, 1.0f);
+					gl.glMatrixMode(GL10.GL_TEXTURE);
+					gl.glLoadIdentity();
+					gl.glScalef(((float)WIDTH)/TEX_WIDTH, ((float)HEIGHT)/TEX_HEIGHT, 1.0f);
+					gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
+					gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
+					gl.glDisable(GL10.GL_BLEND);
+					quad.Draw(gl);
+		
+					control_controller.Draw(gl, quad, width);
+					control_keyboard.Draw(gl, quad);
+					Emulator.the.ProfilerEnd(1);
+				}
 
-			control_controller.Draw(gl, quad, width);
-			control_keyboard.Draw(gl, quad);
-			Emulator.the.ProfilerEnd(1);
+				audio.Update();
 
-			audio.Update();
-
-			if(sync_timer != null)
-				sync_timer.Sync();
+				if(sync_timer != null)
+					sync_timer.Sync();
+			}
 
 			Emulator.the.ProfilerBegin(2);
 		}

@@ -40,6 +40,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static public String select_zoom_id = "zoom";
 	final static public String filtering_id = "filtering";
 	final static public String av_timer_sync_id = "av timer sync";
+	final static public String skip_frames_id = "skip frames";
 	final static public String use_sensor_id = "use sensor";
 	final static public String use_keyboard_id = "use keyboard";
 	private ListPreference select_joystick;
@@ -54,6 +55,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private ListPreference select_zoom;
 	private CheckBoxPreference filtering;
 	private CheckBoxPreference av_timer_sync;
+	private ListPreference skip_frames;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -71,6 +73,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         select_zoom = (ListPreference)getPreferenceScreen().findPreference(select_zoom_id);
         filtering = (CheckBoxPreference)getPreferenceScreen().findPreference(filtering_id);
         av_timer_sync = (CheckBoxPreference)getPreferenceScreen().findPreference(av_timer_sync_id);
+        skip_frames = (ListPreference)getPreferenceScreen().findPreference(skip_frames_id);
 	}
 	private void UpdateDescs()
 	{
@@ -85,6 +88,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		case 2:	tape.setSummary(R.string.tape_started);	tape.setEnabled(true);	break;
 		}
 		select_zoom.setSummary(select_zoom.getEntry());
+		skip_frames.setSummary(skip_frames.getEntry());
 	}
 	@Override
 	protected void onResume()
@@ -101,6 +105,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		select_zoom.setValueIndex(Emulator.the.GetOptionInt(select_zoom_id));
 		filtering.setChecked(Emulator.the.GetOptionBool(filtering_id));
 		av_timer_sync.setChecked(Emulator.the.GetOptionBool(av_timer_sync_id));
+		skip_frames.setValueIndex(Emulator.the.GetOptionInt(skip_frames_id));
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		UpdateDescs();
 	}
@@ -150,6 +155,11 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			Emulator.the.SetOptionBool(filtering_id, filtering.isChecked());
 		else if(key.equals(av_timer_sync_id))
 			Emulator.the.SetOptionBool(av_timer_sync_id, av_timer_sync.isChecked());
+		else if(key.equals(skip_frames_id))
+		{
+			Emulator.the.SetOptionInt(skip_frames_id, Integer.parseInt(skip_frames.getValue()));
+			UpdateDescs();
+		}
 	}
 	@Override
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)

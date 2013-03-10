@@ -75,17 +75,29 @@ static struct eOptionAVTimerSync : public xOptions::eOptionBool
 	virtual int Order() const { return 3; }
 } op_av_timer_sync;
 
+static struct eOptionSkipFrames : public xOptions::eOptionInt
+{
+	eOptionSkipFrames() { Set(0); }
+	virtual const char* Name() const { return "skip frames"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "none", "1", "2", "3", "4", "5", NULL };
+		return values;
+	}
+	virtual int Order() const { return 4; }
+} op_skip_frames;
+
 static struct eOptionUseSensor : public xOptions::eOptionBool
 {
 	virtual const char* Name() const { return "use sensor"; }
-	virtual int Order() const { return 4; }
+	virtual int Order() const { return 5; }
 } op_use_sensor;
 
 static struct eOptionUseKeyboard : public xOptions::eOptionBool
 {
 	eOptionUseKeyboard() { Set(true); }
 	virtual const char* Name() const { return "use keyboard"; }
-	virtual int Order() const { return 5; }
+	virtual int Order() const { return 6; }
 } op_use_keyboard;
 
 static void Init(const char* path)

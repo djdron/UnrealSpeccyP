@@ -54,6 +54,13 @@
     <string name="filtering">Filtering</string>
     <string name="av_timer_sync">A/V Sync By Timer</string>
     <string name="av_timer_sync_desc">Smoother playback on some devices</string>
+    <string name="skip_frames">Skip Frames</string>
+    <string name="skip_frames_none">None</string>
+    <string name="skip_frames_1">1</string>
+    <string name="skip_frames_2">2</string>
+    <string name="skip_frames_3">3</string>
+    <string name="skip_frames_4">4</string>
+    <string name="skip_frames_5">5</string>
 
     <string name="file_system">Files</string>
     <string name="vtrdos">VTRDOS</string>
