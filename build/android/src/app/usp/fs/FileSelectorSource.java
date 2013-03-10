@@ -62,7 +62,8 @@ abstract class FSSWeb extends FileSelectorSource
 			File file = _name.getCanonicalFile();
 			File path = file.getParentFile();
 			path.mkdirs();
-			FileOutputStream os = new FileOutputStream(file);
+			File file_tmp = new File(file.getPath() + ".tmp");
+			FileOutputStream os = new FileOutputStream(file_tmp);
 			
 			URLConnection connection = new URL(_url).openConnection();
 			InputStream is = connection.getInputStream();
@@ -82,9 +83,13 @@ abstract class FSSWeb extends FileSelectorSource
 			}
 			is.close();
 			os.close();
-			if(progress.Canceled())
-				file.delete();
-			return true;
+			if(!progress.Canceled())
+				return file_tmp.renameTo(file);
+			else
+			{
+				file_tmp.delete();
+				return true;
+			}
 		}
 		catch(Exception e)
 		{
