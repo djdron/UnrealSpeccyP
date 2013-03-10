@@ -190,7 +190,16 @@ public abstract class FileSelector extends ListActivity
 		@Override
 		public boolean Canceled() { return canceled; }
 		@Override
-		public void onCancel(DialogInterface di) { canceled = true; }
+		public void onCancel(DialogInterface di)
+		{
+			canceled = true;
+			pd.dismiss();
+			pd = new ProgressDialog(owner);
+			pd.setTitle(owner.getString(res_title));
+			pd.setMessage(owner.getString(R.string.canceling));
+			pd.setCancelable(false);
+			pd.show();
+		}
 		private Context owner;
 		private final int res_title;
 		private final int res_message;

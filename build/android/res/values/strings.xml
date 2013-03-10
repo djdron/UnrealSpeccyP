@@ -67,10 +67,11 @@
     <string name="wos">WOS</string>
     <string name="rzx">RZX</string>
     <string name="zxaaa">ZXAAA</string>
-    
+
     <string name="accessing_web">Accessing web</string>
     <string name="downloading_image">Downloading image...</string>
     <string name="gathering_list">Gathering list...</string>
+    <string name="canceling">Canceling...</string>
 
     <string name= "file_select_open_error">"Open error : "</string>
     <string name= "file_select_update_error">"Update error : "</string>
