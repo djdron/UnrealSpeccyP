@@ -23,9 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //=============================================================================
 //	eAY::eAY
 //-----------------------------------------------------------------------------
-eAY::eAY()
+eAY::eAY() : t(0), ta(0), tb(0), tc(0), tn(0), te(0), env(0), denv(0)
+	,bitA(0), bitB(0), bitC(0), bitN(0), ns(0)
+	,bit0(0), bit1(0), bit2(0), bit3(0), bit4(0), bit5(0)
+	,ea(0), eb(0), ec(0), va(0), vb(0), vc(0)
+	,fa(0), fb(0), fc(0), fn(0), fe(0)
+	,activereg(0), r13_reloaded(0)
 {
-	bitA = bitB = bitC = bitN = 0;
+
 	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 	SetChip(CHIP_AY);
 	SetVolumes(0x7FFF, SNDR_VOL_AY, SNDR_PAN_ABC);
