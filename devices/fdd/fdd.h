@@ -37,7 +37,7 @@ public:
 	enum { MAX_CYL = 86, MAX_SIDE = 2, MAX_SEC = 32 };
 	struct eTrack
 	{
-		eTrack() : data_len(0), data(NULL), id(NULL), sectors_amount(0) {}
+		eTrack() : data_len(6400), data(NULL), id(NULL), sectors_amount(0) {}
 		bool Marker(int pos) const;
 		void Write(int pos, byte v, bool marker = false);
 		void Update(); //on raw changed
