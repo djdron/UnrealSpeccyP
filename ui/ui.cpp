@@ -93,7 +93,7 @@ public:
 	~eFont()
 	{
 #if !defined(USE_EMBEDDED_RESOURCES) && !defined(USE_EXTERN_RESOURCES)
-		SAFE_DELETE(data);
+		SAFE_DELETE_ARRAY(data);
 #endif//USE_EMBEDDED_RESOURCES
 	}
 	void Create(int _w, int _h, const char* fname)
