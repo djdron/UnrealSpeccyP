@@ -31,6 +31,7 @@ eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true), base(NU
 	, colortab(NULL), timing(NULL), prev_t(0), frame(0), mode_48k(false)
 {
 	screen = new byte[S_WIDTH * S_HEIGHT];
+	memset(screen, 0, S_WIDTH * S_HEIGHT);
 }
 //=============================================================================
 //	eUla::~eUla
