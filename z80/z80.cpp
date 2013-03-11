@@ -32,7 +32,7 @@ namespace xZ80
 eZ80::eZ80(eMemory* _m, eDevices* _d, dword _frame_tacts)
 	: memory(_m), rom(_d->Get<eRom>()), ula(_d->Get<eUla>()), devices(_d)
 	, t(0), im(0), eipos(0)
-	, frame_tacts(_frame_tacts), fetches(0)
+	, frame_tacts(_frame_tacts), fetches(0), reg_unused(0)
 {
 	pc = sp = ir = memptr = ix = iy = 0;
 	bc = de = hl = af = alt.bc = alt.de = alt.hl = alt.af = 0;

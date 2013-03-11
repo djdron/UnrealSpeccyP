@@ -30,9 +30,8 @@ eAY::eAY() : t(0), ta(0), tb(0), tc(0), tn(0), te(0), env(0), denv(0)
 	,fa(0), fb(0), fc(0), fn(0), fe(0)
 	,activereg(0), r13_reloaded(0)
 {
-
-	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 	SetChip(CHIP_AY);
+	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 	SetVolumes(0x7FFF, SNDR_VOL_AY, SNDR_PAN_ABC);
 	_Reset();
 }
@@ -249,8 +248,6 @@ void eAY::SetTimings(dword _system_clock_rate, dword _chip_clock_rate, dword _sa
 	eInherited::SetTimings(_chip_clock_rate, _sample_rate);
 	passed_chip_ticks = passed_clk_ticks = 0;
 	t = 0; ns = 0xFFFF;
-
-	ApplyRegs();
 }
 //=============================================================================
 //	eAY::SetVolumes
@@ -266,7 +263,7 @@ void eAY::SetVolumes(dword global_vol, const SNDCHIP_VOLTAB *voltab, const SNDCH
 //-----------------------------------------------------------------------------
 void eAY::_Reset(dword timestamp)
 {
-	for(int i = 0; i < 14; i++)
+	for(int i = 0; i < 16; i++)
 		reg[i] = 0;
 	ApplyRegs(timestamp);
 }
