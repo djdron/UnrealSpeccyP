@@ -293,7 +293,15 @@ void eFdd::CreateTrd()
 	s->data[0xe3] = 0x16;				// 80T,DS
 	SectorDataW(s, 0xe5, 2544);			// free sec
 	s->data[0xe7] = 0x10;				// trdos flag
-	WriteSector(0, 0, 9, s->data);		// update sector CRC
+	UpdateCRC(s);
+}
+//=============================================================================
+//	eFdd::UpdateCRC
+//-----------------------------------------------------------------------------
+void eFdd::UpdateCRC(eUdi::eTrack::eSector* s) const
+{
+	int len = s->Len();
+	SectorDataW(s, len, swap_byte_order(Crc(s->data - 1, len + 1)));
 }
 //=============================================================================
 //	eFdd::AddFile
@@ -312,13 +320,13 @@ bool eFdd::AddFile(const byte* hdr, const byte* data)
 		return false;
 	memcpy(dir->data + (pos & 0xff), hdr, 14);
 	SectorDataW(dir, (pos & 0xff) + 14, SectorDataW(s, 0xe1));
-	WriteSector(0, 0, 1 + pos / 0x100, dir->data);
+	UpdateCRC(dir);
 
 	pos = s->data[0xe1] + 16 * s->data[0xe2];
 	s->data[0xe1] = (pos + len) & 0x0f, s->data[0xe2] = (pos + len) >> 4;
 	s->data[0xe4]++;
 	SectorDataW(s, 0xe5, SectorDataW(s, 0xe5) - len);
-	WriteSector(0, 0, 9, s->data);
+	UpdateCRC(s);
 
 	// goto next track. s8 become invalid
 	for(int i = 0; i < len; ++i, ++pos)

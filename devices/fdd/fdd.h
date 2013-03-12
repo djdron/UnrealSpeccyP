@@ -30,7 +30,7 @@ class eUdi
 {
 public:
 	eUdi(int cyls, int sides);
-	~eUdi() { SAFE_DELETE(raw); }
+	~eUdi() { SAFE_DELETE_ARRAY(raw); }
 	int Cyls() const	{ return cyls; }
 	int Sides() const	{ return sides; }
 
@@ -110,6 +110,7 @@ protected:
 	bool ReadScl(const void* data, size_t data_size);
 	bool ReadTrd(const void* data, size_t data_size);
 	bool ReadFdi(const void* data, size_t data_size);
+	void UpdateCRC(eUdi::eTrack::eSector* s) const;
 
 protected:
 	qword	motor;	// 0 - not spinning, >0 - time when it'll stop

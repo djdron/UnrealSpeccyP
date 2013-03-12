@@ -326,7 +326,7 @@ void eRZX::eImpl::Close()
 #endif//USE_ZIP
 	SAFE_DELETE(file);
 	status = RZX_INIT;
-	SAFE_DELETE(inputbuffer);
+	SAFE_DELETE_ARRAY(inputbuffer);
 }
 
 
