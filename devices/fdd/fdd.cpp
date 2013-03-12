@@ -203,7 +203,7 @@ bool eFdd::WriteSector(int cyl, int side, int sec, const byte* data)
 		return false;
 	int len = s->Len();
 	memcpy(s->data, data, len);
-	SectorDataW(s, len, swap_byte_order(Crc(s->data - 1, len + 1)));
+	UpdateCRC(s);
 	return true;
 }
 //=============================================================================
@@ -359,7 +359,7 @@ bool eFdd::ReadScl(const void* data, size_t data_size)
 	{
 		eUdi::eTrack::eSector* s = GetSector(0, 0, 9);
 		SectorDataW(s, 0xe5, size);			// free sec
-		WriteSector(0, 0, 9, s->data);		// update sector CRC
+		UpdateCRC(s);
 	}
 	const byte* d = buf + 9 + 14 * buf[8];
 	for(int i = 0; i < buf[8]; ++i)
