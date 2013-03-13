@@ -2,7 +2,7 @@ SRC_PATH = ../..
 OBJ_BASE = Release
 
 PROJECT_NAME = unreal_speccy_portable
-SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml tools/libpng snapshot ui platform platform/custom_ui platform/gl platform/oal platform/wxwidgets platform/linux platform/sdl devices devices/fdd devices/input devices/sound 
+SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml tools/libpng snapshot ui platform platform/custom_ui platform/gl platform/oal platform/wxwidgets platform/linux platform/sdl platform/benchmark devices devices/fdd devices/input devices/sound
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
@@ -16,16 +16,20 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
-CXXFLAGS = -D_LINUX -O3 -Wall -c -fmessage-length=0
-CFLAGS = -O3 -Wall -c -fmessage-length=0
-LFLAGS = -s
+CXXFLAGS = -D_LINUX -O0 -g3 -Wall -c -fmessage-length=0
+CFLAGS = -O0 -g3 -Wall -c -fmessage-length=0
+LFLAGS =
 
+ifdef BENCHMARK
+CXXFLAGS := $(CXXFLAGS) -DUSE_BENCHMARK
+else
 ifdef SDL
 CXXFLAGS := $(CXXFLAGS) -DUSE_SDL -DSDL_KEYS_COMMON `sdl-config --cflags`
 LFLAGS := $(LFLAGS) `sdl-config --libs`
 else
 CXXFLAGS := $(CXXFLAGS) `wx-config --cxxflags`
 LFLAGS := $(LFLAGS) -lGL -lopenal `wx-config --libs core,base,gl,adv`
+endif
 endif
 
 all: build
