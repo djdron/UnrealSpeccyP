@@ -16,9 +16,9 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
-CXXFLAGS = -D_LINUX -O0 -g3 -Wall -c -fmessage-length=0
-CFLAGS = -O0 -g3 -Wall -c -fmessage-length=0
-LFLAGS =
+CXXFLAGS = -D_LINUX -O3 -Wall -c -fmessage-length=0
+CFLAGS = -O3 -Wall -c -fmessage-length=0
+LFLAGS = -s
 
 ifdef BENCHMARK
 CXXFLAGS := $(CXXFLAGS) -DUSE_BENCHMARK
