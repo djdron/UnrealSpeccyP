@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -363,17 +363,27 @@ void OpeA1() { // cpi
 	if (--bc & 0xFFFF) f |= PV; //???
 	memptr++;
 }
+void OpeA2A3AAABFlags(byte val, byte tmp)
+{
+	f = log_f[b] & ~PV;
+	if(log_f[(tmp & 0x07) ^ b] & PV) f |= PV;
+	if(tmp < val) f |= (HF|CF);
+	if(val & 0x80) f |= NF;
+}
 void OpeA2() { // ini
 	memptr = bc+1;
 	t += 8;
-	Write(hl++, IoRead(bc));
-	dec8(b);
+	byte val = IoRead(bc);
+	--b;
+	Write(hl++, val);
+	OpeA2A3AAABFlags(val, val + c + 1);
 }
 void OpeA3() { // outi
 	t += 8;
-	dec8(b);
-	IoWrite(bc, Read(hl++));
-	f &= ~CF; if (!l) f |= CF;
+	byte val = Read(hl++);
+	--b;
+	IoWrite(bc, val);
+	OpeA2A3AAABFlags(val, val + l);
 	memptr = bc+1;
 }
 void OpeA8() { // ldd
@@ -395,14 +405,17 @@ void OpeA9() { // cpd
 void OpeAA() { // ind
 	memptr = bc-1;
 	t += 8;
-	Write(hl--, IoRead(bc));
-	dec8(b);
+	byte val = IoRead(bc);
+	--b;
+	Write(hl--, val);
+	OpeA2A3AAABFlags(val, val + c - 1);
 }
 void OpeAB() { // outd
 	t += 8;
-	dec8(b);
-	IoWrite(bc, Read(hl--));
-	f &= ~CF; if (l == 0xFF) f |= CF;
+	byte val = Read(hl--);
+	--b;
+	IoWrite(bc, val);
+	OpeA2A3AAABFlags(val, val + l);
 	memptr = bc-1;
 }
 void OpeB0() { // ldir
@@ -447,7 +460,7 @@ void OpeB8() { // lddr
 	Write(de--, tempbyte);
 	tempbyte += a; tempbyte = (tempbyte & F3) + ((tempbyte << 4) & F5);
 	f = (f & ~(NF|HF|PV|F3|F5)) + tempbyte;
-	if (--bc & 0xFFFF) f |= PV, pc -= 2, t += 5; //???
+	if (--bc & 0xFFFF) f |= PV, memptr = pc - 1, pc -= 2, t += 5; //???
 }
 void OpeB9() { // cpdr
 	memptr--;
