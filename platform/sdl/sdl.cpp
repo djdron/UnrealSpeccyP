@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SDL.h>
 #include "../../options_common.h"
+#include "../../tools/tick.h"
 
 namespace xPlatform
 {
@@ -90,6 +91,8 @@ static void Done()
 
 static void Loop()
 {
+	eTick last_tick;
+	last_tick.SetCurrent();
 	bool quit = false;
 	while(!quit)
 	{
@@ -118,7 +121,11 @@ static void Loop()
 		Handler()->OnLoop();
 		UpdateScreen();
 		UpdateAudio();
-//		SDL_Delay(5);
+		while(last_tick.Passed().Ms() < 15)
+		{
+			SDL_Delay(3);
+		}
+		last_tick.SetCurrent();
 		if(OpQuit())
 			quit = true;
 	}
@@ -134,6 +141,8 @@ int main(int argc, char* argv[])
 		xPlatform::Done();
 		return -1;
 	}
+	if(argc > 1)
+		xPlatform::Handler()->OnOpenFile(argv[1]);
 	xPlatform::Loop();
 	xPlatform::Done();
 	return 0;

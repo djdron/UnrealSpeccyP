@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ bool InitAudio()
 	audio.channels = 2;
 	audio.format = AUDIO_S16SYS;
 #ifndef SDL_AUDIO_SAMPLES
-#define SDL_AUDIO_SAMPLES 4096
+#define SDL_AUDIO_SAMPLES 512
 #endif//SDL_AUDIO_SAMPLES
 	audio.samples = SDL_AUDIO_SAMPLES;
 	audio.callback = AudioCallback;
