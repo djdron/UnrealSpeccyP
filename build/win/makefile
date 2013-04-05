@@ -28,7 +28,7 @@ CXXFLAGS := $(CXXFLAGS) -DUSE_SDL -DSDL_KEYS_COMMON `sdl-config --cflags`
 LFLAGS := $(LFLAGS) `sdl-config --libs`
 else
 CXXFLAGS := $(CXXFLAGS) -I../../../lib/wxWidgets-2.8.12/include -I../../../lib/wxWidgets-2.8.12/lib/gcc_lib/mswu -I../../../lib/GL/include -I../../../lib/oal/include
-LFLAGS := $(LFLAGS) --static -lcomdlg32 -lopengl32 -lopenal32 -lwxmsw28u -lwxmsw28u_gl -L../../../lib/wxWidgets-2.8.12/lib/gcc_lib -L../../../lib/oal/libs/Win32
+LFLAGS := $(LFLAGS) --static -lwxmsw28u -lwxmsw28u_gl -lopenal32 -lgdi32 -lopengl32 -lcomdlg32 -lole32 -luuid -lcomctl32 -loleaut32 -lwinspool -L../../../lib/wxWidgets-2.8.12/lib/gcc_lib -L../../../lib/oal/libs/Win32
 endif
 endif
 
