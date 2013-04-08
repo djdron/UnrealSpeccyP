@@ -32,10 +32,8 @@ CXXFLAGS := $(CXXFLAGS) -DUSE_SDL -DSDL_KEYS_COMMON `sdl-config --cflags`
 LFLAGS := $(LFLAGS) `sdl-config --libs`
 else
 CXXFLAGS := $(CXXFLAGS) -I../../../lib/wxWidgets-2.8.12/include -I../../../lib/wxWidgets-2.8.12/lib/gcc_lib/mswu -I../../../lib/GL/include -I../../../lib/oal/include
-LFLAGS := $(LFLAGS) --static -lwxmsw28u -lwxmsw28u_gl -lopenal32 -lgdi32 -lopengl32 -lcomdlg32 -lole32 -luuid -lcomctl32 -loleaut32 -lwinspool -L../../../lib/wxWidgets-2.8.12/lib/gcc_lib -L../../../lib/oal/libs/Win32
-WX_RES = $(OBJ_PATH)/wx_res.o
-$(WX_RES):
-	$(RES) -I../../../lib/wxWidgets-2.8.12/include ../../../lib/wxWidgets-2.8.12/include/wx/msw/wx.rc $(WX_RES)
+LFLAGS := $(LFLAGS) --static -lwxmsw28u_adv -lwxmsw28u_core -lwxmsw28u_gl -lwxbase28u -lopenal32 -lgdi32 -lopengl32 -lcomdlg32 -lole32 -luuid -lcomctl32 -loleaut32 -lwinspool -L../../../lib/wxWidgets-2.8.12/lib/gcc_lib -L../../../lib/oal/libs/Win32
+RES_FLAGS = -I../../../lib/wxWidgets-2.8.12/include -DWX_RES
 endif
 endif
 
@@ -48,11 +46,11 @@ $(CXX_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.cpp
 $(C_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.c
 	$(C) $(CFLAGS) -o $@ $<
 
-$(BIN_TARGET): $(CXX_OBJS) $(C_OBJS) $(WX_RES) $(RES_OBJ)
-	$(CXX) $(WXRES) $^ $(LFLAGS) $(RES_OBJ) -o$(BIN_TARGET)
+$(BIN_TARGET): $(CXX_OBJS) $(C_OBJS) $(RES_OBJ)
+	$(CXX) $(RES_OBJ) $^ $(LFLAGS) -o$(BIN_TARGET)
 
 $(RES_OBJ):
-	$(RES) $(PROJECT_NAME).rc $(RES_OBJ)
+	$(RES) $(RES_FLAGS) $(PROJECT_NAME).rc $(RES_OBJ)
 
 build: mkdirs $(BIN_TARGET)
 
