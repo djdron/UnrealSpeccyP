@@ -8,10 +8,12 @@ CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
 CXX = g++
 C = gcc
+RES = windres
 DIST_PATH = $(OBJ_BASE)
 OBJ_PATH = $(OBJ_BASE)
 CXX_OBJS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$(CXXSRCS))
 CXX_DEPS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.d,$(CXXSRCS))
+RES_OBJ = $(OBJ_PATH)/$(PROJECT_NAME)_res.o
 C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
@@ -19,6 +21,8 @@ BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 CXXFLAGS = -D_WINDOWS -O3 -Wall -c -fmessage-length=0
 CFLAGS = -O3 -Wall -c -fmessage-length=0
 LFLAGS = -s
+
+all: build
 
 ifdef BENCHMARK
 CXXFLAGS := $(CXXFLAGS) -DUSE_BENCHMARK
@@ -29,10 +33,11 @@ LFLAGS := $(LFLAGS) `sdl-config --libs`
 else
 CXXFLAGS := $(CXXFLAGS) -I../../../lib/wxWidgets-2.8.12/include -I../../../lib/wxWidgets-2.8.12/lib/gcc_lib/mswu -I../../../lib/GL/include -I../../../lib/oal/include
 LFLAGS := $(LFLAGS) --static -lwxmsw28u -lwxmsw28u_gl -lopenal32 -lgdi32 -lopengl32 -lcomdlg32 -lole32 -luuid -lcomctl32 -loleaut32 -lwinspool -L../../../lib/wxWidgets-2.8.12/lib/gcc_lib -L../../../lib/oal/libs/Win32
+WX_RES = $(OBJ_PATH)/wx_res.o
+$(WX_RES):
+	$(RES) -I../../../lib/wxWidgets-2.8.12/include ../../../lib/wxWidgets-2.8.12/include/wx/msw/wx.rc $(WX_RES)
 endif
 endif
-
-all: build
 
 mkdirs:
 	-@mkdir $(foreach dir, $(SRCFOLDERS), "$(OBJ_PATH)/$(dir)")
@@ -43,16 +48,15 @@ $(CXX_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.cpp
 $(C_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.c
 	$(C) $(CFLAGS) -o $@ $<
 
-$(BIN_TARGET): $(CXX_OBJS) $(C_OBJS)
-	$(CXX) $^ $(LFLAGS) -o$(BIN_TARGET)
+$(BIN_TARGET): $(CXX_OBJS) $(C_OBJS) $(WX_RES) $(RES_OBJ)
+	$(CXX) $(WXRES) $^ $(LFLAGS) $(RES_OBJ) -o$(BIN_TARGET)
+
+$(RES_OBJ):
+	$(RES) $(PROJECT_NAME).rc $(RES_OBJ)
 
 build: mkdirs $(BIN_TARGET)
 
 clean:
-	rm -rf $(CXX_OBJS)
-	rm -rf $(CXX_DEPS)
-	rm -rf $(C_OBJS)
-	rm -rf $(C_DEPS)
-	rm -rf $(BIN_TARGET)
+	-@rmdir /S /Q "$(DIST_PATH)"
 
 .PHONY: mkdirs clean build all
