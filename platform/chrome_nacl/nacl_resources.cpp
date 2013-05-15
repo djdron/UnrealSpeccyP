@@ -23,12 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace std;
 
-byte sos128[16384];
+byte sos128_0[16384];
+byte sos128_1[16384];
 byte sos48[16384];
 byte service[16384];
 byte dos513f[16384];
 
-static const string rom_sos128	= "res/rom/sos128.rom";
+static const string rom_sos128_0= "res/rom/sos128_0.rom";
+static const string rom_sos128_1= "res/rom/sos128_1.rom";
 static const string rom_sos48	= "res/rom/sos48.rom";
 static const string rom_service	= "res/rom/service.rom";
 static const string rom_dos513f	= "res/rom/dos513f.rom";
@@ -41,7 +43,8 @@ class eResourceLoader : public eURLLoader::eCallback
 public:
 	eResourceLoader(pp::Instance* i) : instance(i), resources_ok(0), resources_failed(0)
 	{
-		new eURLLoader(instance, rom_sos128, this);
+		new eURLLoader(instance, rom_sos128_0, this);
+		new eURLLoader(instance, rom_sos128_1, this);
 		new eURLLoader(instance, rom_sos48, this);
 		new eURLLoader(instance, rom_service, this);
 		new eURLLoader(instance, rom_dos513f, this);
@@ -50,7 +53,8 @@ protected:
 	virtual void OnURLLoadOk(const string& url, const char* buffer, size_t size)
 	{
 		bool ok = false;
-		if(url == rom_sos128			&& size == sizeof(sos128))	{ memcpy(sos128,	buffer, sizeof(sos128));	ok = true; }
+		if(url == rom_sos128_0			&& size == sizeof(sos128_0))	{ memcpy(sos128_0,	buffer, sizeof(sos128_0));	ok = true; }
+		else if(url == rom_sos128_1		&& size == sizeof(sos128_1))	{ memcpy(sos128_1,	buffer, sizeof(sos128_1));	ok = true; }
 		else if(url == rom_sos48		&& size == sizeof(sos48))	{ memcpy(sos48,		buffer, sizeof(sos48));		ok = true; }
 		else if(url == rom_service		&& size == sizeof(service))	{ memcpy(service,	buffer, sizeof(service));	ok = true; }
 		else if(url == rom_dos513f		&& size == sizeof(dos513f))	{ memcpy(dos513f,	buffer, sizeof(dos513f));	ok = true; }
@@ -67,7 +71,7 @@ protected:
 	}
 	void OnURLLoaded()
 	{
-		if(resources_failed + resources_ok < 4)
+		if(resources_failed + resources_ok < 5)
 			return;
 		if(resources_failed)
 			instance->PostMessage("resources_failed");

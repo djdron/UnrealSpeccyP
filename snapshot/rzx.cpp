@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rzx.h"
 
 #ifdef USE_ZIP
-#include "../tools/zlib/zlib.h"
+#include <zlib.h>
 #endif
 
 class eRZX::eImpl

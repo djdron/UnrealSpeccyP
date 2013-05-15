@@ -8,7 +8,7 @@ endif
 OBJ_BASE = Release$(PLATFORM)
 
 PROJECT_NAME = unreal_speccy_portable$(PLATFORM)
-SRCFOLDERS = . z80 tools tools/zlib snapshot platform platform/chrome_nacl platform/gles2 devices devices/fdd devices/input devices/sound 
+SRCFOLDERS = . z80 tools 3rdparty/zlib 3rdparty/minizip snapshot platform platform/chrome_nacl platform/gles2 devices devices/fdd devices/input devices/sound 
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
@@ -22,8 +22,8 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(PROJECT_NAME).nexe
 
-CXXFLAGS = -D_CHROME_NACL -DUSE_GLES2 -DUSE_ZIP -DUSE_EXTERN_RESOURCES -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0
-CFLAGS = -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0
+CXXFLAGS = -D_CHROME_NACL -DUSE_GLES2 -DUSE_ZIP -DUSE_EXTERN_RESOURCES -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0 -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/zlib
+CFLAGS = -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0 -I$(SRC_PATH)/3rdparty/zlib
 LFLAGS = -s -lppapi -lppapi_cpp -lppapi_gles2
 
 ifdef X86

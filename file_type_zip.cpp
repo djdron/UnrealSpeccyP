@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_ZIP
 
+#include <unzip.h>
 #include "platform/io.h"
-#include "tools/zlib/unzip.h"
 #include "tools/stream_memory.h"
 #include "file_type.h"
 

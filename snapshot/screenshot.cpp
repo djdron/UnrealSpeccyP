@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_PNG
 
+#include <png.h>
 #include "../speccy.h"
-#include "../tools/libpng/png.h"
 #include "../file_type.h"
 
 namespace xScreenshot

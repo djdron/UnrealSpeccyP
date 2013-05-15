@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform/platform.h"
 
 #ifdef USE_CONFIG
+#include <tinyxml.h>
 #include "../platform/io.h"
-#include "tinyxml/tinyxml.h"
 #endif//USE_CONFIG
 
 namespace xOptions

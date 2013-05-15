@@ -2,7 +2,7 @@ SRC_PATH = ../..
 OBJ_BASE = Release
 
 PROJECT_NAME = unreal_speccy_portable
-SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml tools/libpng snapshot ui platform platform/custom_ui platform/gles2 platform/rpi platform/sdl platform/linux devices devices/fdd devices/input devices/sound 
+SRCFOLDERS = . z80 tools 3rdparty/minizip 3rdparty/tinyxml tools/libpng snapshot ui platform platform/custom_ui platform/gles2 platform/rpi platform/sdl platform/linux devices devices/fdd devices/input devices/sound 
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
@@ -16,11 +16,11 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
-CXXCFLAGS = -O3 -g0 -Wall -c -fmessage-length=0 -I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads -I$(SDKSTAGE)/opt/vc/include/interface/vmcs_host/linux
+CXXCFLAGS = -O3 -g0 -Wall -c -fmessage-length=0 -I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads -I$(SDKSTAGE)/opt/vc/include/interface/vmcs_host/linux -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml
 
 CXXFLAGS := $(CXXCFLAGS) -D_LINUX -DUSE_GLES2 -D_RPI -DUI_REAL_ALPHA -DUSE_SDL -DSDL_UNUSE_VIDEO -DSDL_KEYS_COMMON `sdl-config --cflags`
 CFLAGS := $(CXXCFLAGS)
-LFLAGS = -s -L$(SDKSTAGE)/opt/vc/lib -lGLESv2 -lEGL `sdl-config --libs`
+LFLAGS = -s -L$(SDKSTAGE)/opt/vc/lib -lGLESv2 -lEGL `sdl-config --libs` -lz -lpng
 
 all: build
 

@@ -1,4 +1,4 @@
-MIPSTOOLS = /home/djdron/mipsel-tools/mipsel-4.1.2-nopic
+MIPSTOOLS = /home/djdron/mipsel-4.1.2-nopic
 DINGOO_SDK = /home/djdron/dingoo-sdk
 PATH := $(MIPSTOOLS)/bin:$(PATH)
 
@@ -17,12 +17,12 @@ DIST_PATH = $(OBJ_BASE)
 OBJ_PATH = $(OBJ_BASE)
 RES_PATH = res
 
-SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml snapshot ui platform platform/custom_ui platform/dingoo devices devices/fdd devices/input devices/sound
+SRCFOLDERS = . z80 tools 3rdparty/minizip 3rdparty/tinyxml snapshot ui platform platform/custom_ui platform/dingoo devices devices/fdd devices/input devices/sound
 LIB_PATH  = $(DINGOO_SDK)/lib
-LIBS      = -lc -ljz4740 -lgcc -lstdc++
+LIBS      = -lc -ljz4740 -lgcc -lstdc++ -lz
 
-INCLUDE   = -I$(DINGOO_SDK)/include -I$(MIPSTOOLS)/mipsel-linux/include -I. -I$
-STD_OPTS  = -G0 -O3 $(INCLUDE) -Wall -finline-functions -fomit-frame-pointer -msoft-float -fno-builtin -fno-exceptions -mips32 -mno-abicalls -fno-pic -c -DMPU_JZ4740 -DNDEBUG -D_DINGOO -DUSE_UI -DUSE_ZIP -DUSE_CONFIG -DUSE_EMBEDDED_RESOURCES
+INCLUDE   = -I$(DINGOO_SDK)/include -I$(DINGOO_SDK)/include/zlib -I$(MIPSTOOLS)/mipsel-linux/include -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml -I.
+STD_OPTS  = -G0 -O3 $(INCLUDE) -Wall -finline-functions -fomit-frame-pointer -msoft-float -fno-builtin -fno-exceptions -mips32 -mno-abicalls -fno-pic -c -DMPU_JZ4740 -DNDEBUG -D_DINGOO -DUSE_UI -DUSE_ZIP -DUSE_CONFIG -DUSE_EMBEDDED_RESOURCES -DUSE_FILE32API
 CPP_OPTS  = $(STD_OPTS) -fno-rtti -fno-threadsafe-statics
 C_OPTS    = $(STD_OPTS)
 LD_OPTS   = -nodefaultlibs --script $(LD_SCRIPT) -L$(LIB_PATH) $(LIBS)
