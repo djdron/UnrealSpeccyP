@@ -78,8 +78,8 @@ static const char* fragment_shader =
 	"uniform sampler2D u_palette;													\n"
 	"void main()																	\n"
 	"{																				\n"
-	"	vec4 p0 = texture2D(u_texture, v_texcoord);									\n" // use paletted texture
-	"	vec4 c0 = texture2D(u_palette, vec2(p0.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
+	"	mediump vec4 p0 = texture2D(u_texture, v_texcoord);									\n" // use paletted texture
+	"	mediump vec4 c0 = texture2D(u_palette, vec2(p0.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
 	"	gl_FragColor = c0;											 				\n"
 	"}																				\n";
 
@@ -89,15 +89,15 @@ static const char* fragment_shader_filtering =
 	"uniform sampler2D u_palette;													\n"
 	"void main()																	\n"
 	"{																				\n"
-	"	vec4 p0 = texture2D(u_texture, v_texcoord);									\n" // manually linear filtering of paletted texture is awful
-	"	vec4 p1 = texture2D(u_texture, v_texcoord + vec2(1.0/512.0, 0)); 			\n"
-	"	vec4 p2 = texture2D(u_texture, v_texcoord + vec2(0, 1.0/256.0)); 			\n"
-	"	vec4 p3 = texture2D(u_texture, v_texcoord + vec2(1.0/512.0, 1.0/256.0)); 	\n"
-	"	vec4 c0 = texture2D(u_palette, vec2(p0.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
-	"	vec4 c1 = texture2D(u_palette, vec2(p1.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
-	"	vec4 c2 = texture2D(u_palette, vec2(p2.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
-	"	vec4 c3 = texture2D(u_palette, vec2(p3.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
-	"	vec2 l = vec2(fract(512.0*v_texcoord.x), fract(256.0*v_texcoord.y)); 		\n"
+	"	mediump vec4 p0 = texture2D(u_texture, v_texcoord);									\n" // manually linear filtering of paletted texture is awful
+	"	mediump vec4 p1 = texture2D(u_texture, v_texcoord + vec2(1.0/512.0, 0)); 			\n"
+	"	mediump vec4 p2 = texture2D(u_texture, v_texcoord + vec2(0, 1.0/256.0)); 			\n"
+	"	mediump vec4 p3 = texture2D(u_texture, v_texcoord + vec2(1.0/512.0, 1.0/256.0)); 	\n"
+	"	mediump vec4 c0 = texture2D(u_palette, vec2(p0.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
+	"	mediump vec4 c1 = texture2D(u_palette, vec2(p1.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
+	"	mediump vec4 c2 = texture2D(u_palette, vec2(p2.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
+	"	mediump vec4 c3 = texture2D(u_palette, vec2(p3.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
+	"	mediump vec2 l = vec2(fract(512.0*v_texcoord.x), fract(256.0*v_texcoord.y)); 		\n"
 	"	gl_FragColor = mix(mix(c0, c1, l.x), mix(c2, c3, l.x), l.y); 				\n"
 	"}																				\n";
 
@@ -292,13 +292,16 @@ void eGLES2Impl::Draw(int _w, int _h)
 		return;
 
 	bool filtering = op_filtering;
-	float sx = 1.0f, sy = 1.0f, sx1 = 1.0f, sy1 = 1.0f;
+	float sx = 1.0f, sy = 1.0f;
 	float a = (float)_w/_h;
 	float a43 = 4.0f/3.0f;
+#ifdef USE_UI
+	float sx1 = 1.0f, sy1 = 1.0f
 	if(a > a43)
 		sx1 = a43/a;
 	else
 		sy1 = a/a43;
+#endif//USE_UI
 	switch(op_zoom)
 	{
 	case 0:

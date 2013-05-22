@@ -124,6 +124,8 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 		return;
 	static const string open("open:");
 	static const string joystick("joystick:");
+	static const string zoom("zoom:");
+	static const string filtering("filtering:");
 	if(m.length() > open.length() && m.substr(0, open.length()) == open)
 	{
 		string url = m.substr(open.length());
@@ -135,6 +137,20 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 		string joy = m.substr(joystick.length());
 		eOption<int>* op_joy = eOption<int>::Find("joystick");
 		SAFE_CALL(op_joy)->Value(joy.c_str());
+	}
+	else if(m.length() > zoom.length() && m.substr(0, zoom.length()) == zoom)
+	{
+		using namespace xOptions;
+		string z = m.substr(zoom.length());
+		eOption<int>* op_zoom = eOption<int>::Find("zoom");
+		SAFE_CALL(op_zoom)->Value(z.c_str());
+	}
+	else if(m.length() > filtering.length() && m.substr(0, filtering.length()) == filtering)
+	{
+		using namespace xOptions;
+		string f = m.substr(filtering.length());
+		eOption<bool>* op_filtering = eOption<bool>::Find("filtering");
+		SAFE_CALL(op_filtering)->Value(f.c_str());
 	}
 	else if(m == "reset")
 	{
@@ -314,14 +330,7 @@ bool eUSPInstance::SpecialKeyDown(const pp::KeyboardInputEvent event)
 	}
 	else if(key == 'F' && event.GetModifiers()&PP_INPUTEVENT_MODIFIER_CONTROLKEY)
 	{
-		if(!full_screen.IsFullscreen())
-		{
-			full_screen.SetFullscreen(true);
-			if(!mouse_locked)
-				LockMouse(callback.NewCallback(&eUSPInstance::DidLockMouse));
-		}
-		else
-			full_screen.SetFullscreen(false);
+		full_screen.SetFullscreen(!full_screen.IsFullscreen());
 		return true;
 	}
 	return false;
@@ -373,6 +382,11 @@ bool eUSPInstance::HandleInputEvent(const pp::InputEvent& ev)
 		}
 		break;
 	case PP_INPUTEVENT_TYPE_MOUSEDOWN:
+		if(!mouse_locked)
+		{
+			LockMouse(callback.NewCallback(&eUSPInstance::DidLockMouse));
+		}
+		//no break
 	case PP_INPUTEVENT_TYPE_MOUSEUP:
 		if(mouse_locked)
 		{

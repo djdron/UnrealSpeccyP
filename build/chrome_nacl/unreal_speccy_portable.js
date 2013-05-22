@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	listener.addEventListener('message', handleMessage, true);
 	document.getElementById('reset').addEventListener('click', onReset, true);
 	document.getElementById('joystick').addEventListener('change', onJoystick, true);
+	document.getElementById('zoom').addEventListener('change', onZoom, true);
+	document.getElementById('filtering').addEventListener('click', onFiltering, true);
 	pageDidLoad();
 });
 
@@ -27,8 +29,30 @@ function handleMessage(m)
 	{
 		var joy = localStorage["joystick"];
 		if(joy)
-		{
 			module.postMessage('joystick:' + joy);
+		var z = localStorage["zoom"];
+		if(z)
+			module.postMessage('zoom:' + z);
+		var f = localStorage["filtering"];
+		if(f)
+			module.postMessage('filtering:' + f);
+	}
+}
+
+function optionSelect(o)
+{
+	var v = localStorage[o];
+	if(v)
+	{
+		var el = document.getElementById(o);
+		for(var i = 0; i < el.children.length; i++)
+		{
+			var c = el.children[i];
+			if(c.value == v)
+			{
+				c.selected = "true";
+				break;
+			}
 		}
 	}
 }
@@ -39,19 +63,13 @@ function pageDidLoad()
 		updateStatus('loading...');
 	else
 		updateStatus();
-	var joy = localStorage["joystick"];
-	if(joy)
+	optionSelect("joystick");
+	optionSelect("zoom");
+	var f = localStorage["filtering"];
+	if(f)
 	{
-		var joystick = document.getElementById("joystick");
-		for(var i = 0; i < joystick.children.length; i++)
-		{
-			var j = joystick.children[i];
-			if(j.value == joy)
-			{
-				j.selected = "true";
-				break;
-			}
-		}
+		var filtering = document.getElementById("filtering");
+		filtering.checked = (f == "on");
 	}
 	var bp = localStorage["browser_path"];
 	if(bp)
@@ -311,6 +329,22 @@ function onJoystick()
 	var joy = joystick.options[joystick.selectedIndex].value;
 	module.postMessage('joystick:' + joy);
 	localStorage["joystick"] = joy;
+}
+
+function onZoom()
+{
+	var zoom = document.getElementById("zoom");
+	var z = zoom.options[zoom.selectedIndex].value;
+	module.postMessage('zoom:' + z);
+	localStorage["zoom"] = z;
+}
+
+function onFiltering()
+{
+	var filtering = document.getElementById("filtering");
+	var f = filtering.checked ? "on" : "off";
+	module.postMessage('filtering:' + f);
+	localStorage["filtering"] = f;
 }
 
 function updateStatus(opt_message)

@@ -1,10 +1,32 @@
-SRC_PATH = ../..
+ifdef ARM
 
+PATH_BIN := $(PATH):$(NACL_PEPPER)/toolchain/linux_arm_newlib/bin/
+CXX = arm-nacl-g++
+C = arm-nacl-gcc
+PLATFORM = _arm
+
+else #ARM
+
+PATH_BIN := $(PATH):$(NACL_PEPPER)/toolchain/linux_x86_newlib/bin/
+CXX = i686-nacl-g++
+C = i686-nacl-gcc
 ifdef X86
 PLATFORM = _x86_32
-else
+CXXFLAGS = -m32
+CFLAGS = -m32
+LFLAGS = -m32
+else #X86 
 PLATFORM = _x86_64
-endif
+CXXFLAGS = -m64
+CFLAGS = -m64
+LFLAGS = -m64
+endif #X86
+
+endif #ARM
+
+export PATH = $(PATH_BIN)
+
+SRC_PATH = ../..
 OBJ_BASE = Release$(PLATFORM)
 
 PROJECT_NAME = unreal_speccy_portable$(PLATFORM)
@@ -12,8 +34,6 @@ SRCFOLDERS = . z80 tools 3rdparty/zlib 3rdparty/minizip snapshot platform platfo
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
-CXX = i686-nacl-g++
-C = i686-nacl-gcc
 DIST_PATH = $(OBJ_BASE)
 OBJ_PATH = $(OBJ_BASE)
 CXX_OBJS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$(CXXSRCS))
@@ -22,19 +42,11 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(PROJECT_NAME).nexe
 
-CXXFLAGS = -D_CHROME_NACL -DUSE_GLES2 -DUSE_ZIP -DUSE_EXTERN_RESOURCES -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0 -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/zlib
-CFLAGS = -O3 -Wall -c -Wno-long-long -pthread -fmessage-length=0 -I$(SRC_PATH)/3rdparty/zlib
-LFLAGS = -s -lppapi -lppapi_cpp -lppapi_gles2
+CXXCFLAGS = -O3 -Wall -c -fmessage-length=0 -I$(NACL_PEPPER)/include -I$(SRC_PATH)/3rdparty/zlib
 
-ifdef X86
-CXXFLAGS := $(CXXFLAGS) -m32
-CFLAGS := $(CFLAGS) -m32
-LFLAGS := $(LFLAGS) -m32
-else
-CXXFLAGS := $(CXXFLAGS) -m64
-CFLAGS := $(CFLAGS) -m64
-LFLAGS := $(LFLAGS) -m64
-endif
+CXXFLAGS += $(CXXCFLAGS) -D_CHROME_NACL -DUSE_GLES2 -DUSE_ZIP -DUSE_EXTERN_RESOURCES -I$(SRC_PATH)/3rdparty/minizip
+CFLAGS += $(CXXCFLAGS)
+LFLAGS += -s -lppapi -lppapi_cpp -lppapi_gles2
 
 all: build
 

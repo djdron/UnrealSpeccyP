@@ -1,6 +1,7 @@
 {
   "program": {
     "x86-64": {"url": "unreal_speccy_portable_x86_64.nexe"},
-    "x86-32": {"url": "unreal_speccy_portable_x86_32.nexe"}
+    "x86-32": {"url": "unreal_speccy_portable_x86_32.nexe"},
+    "arm": {"url": "unreal_speccy_portable_arm.nexe"}
   }
 }
