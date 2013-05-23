@@ -2,7 +2,7 @@
   "name": "Unreal Speccy Portable",
   "version": "0.0.47",
   "manifest_version": 2,
-  "description": "Portable ZX Spectrum emulator supports Z80 128K (Pentagon) AY/YM, Beeper, BetaDisk, Tape, Kempston Joystick/Mouse, Snapshots, Replays.",
+  "description": "Portable ZX Spectrum emulator supports Z80 128K (Pentagon) AY/YM, Beeper, BetaDisk, Tape, Kempston Joystick/Mouse, Snapshots.",
   "icons": {
     "16" : "unreal_speccy_portable_16.png",
     "48" : "unreal_speccy_portable_48.png",
