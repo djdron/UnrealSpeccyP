@@ -10,22 +10,22 @@ SOURCES += ../../speccy.cpp \
 	../../z80/z80_op_tables.cpp \
 	../../z80/z80_opcodes.cpp \
 	../../z80/z80.cpp \
-	../../tools/tinyxml/tinyxmlparser.cpp \
-	../../tools/tinyxml/tinyxmlerror.cpp \
-	../../tools/tinyxml/tinyxml.cpp \
-	../../tools/tinyxml/tinystr.cpp \
-	../../tools/zlib/zutil.c \
-	../../tools/zlib/unzip.c \
-	../../tools/zlib/uncompr.c \
-	../../tools/zlib/trees.c \
-	../../tools/zlib/ioapi.c \
-	../../tools/zlib/inftrees.c \
-	../../tools/zlib/inflate.c \
-	../../tools/zlib/inffast.c \
-	../../tools/zlib/infback.c \
-	../../tools/zlib/deflate.c \
-	../../tools/zlib/crc32.c \
-	../../tools/zlib/adler32.c \
+	../../3rdparty/tinyxml/tinyxmlparser.cpp \
+	../../3rdparty/tinyxml/tinyxmlerror.cpp \
+	../../3rdparty/tinyxml/tinyxml.cpp \
+	../../3rdparty/tinyxml/tinystr.cpp \
+	../../3rdparty/zlib/zutil.c \
+	../../3rdparty/zlib/uncompr.c \
+	../../3rdparty/zlib/trees.c \
+	../../3rdparty/zlib/inftrees.c \
+	../../3rdparty/zlib/inflate.c \
+	../../3rdparty/zlib/inffast.c \
+	../../3rdparty/zlib/infback.c \
+	../../3rdparty/zlib/deflate.c \
+	../../3rdparty/zlib/crc32.c \
+	../../3rdparty/zlib/adler32.c \
+	../../3rdparty/minizip/ioapi.c \
+	../../3rdparty/minizip/unzip.c \
 	../../snapshot/snapshot.cpp \
 	../../snapshot/screenshot.cpp \
 	../../platform/touch_ui/tui_keyboard.cpp \
@@ -72,21 +72,21 @@ HEADERS  += \
 	../../z80/z80_op_cb.h \
 	../../z80/z80_op.h \
 	../../z80/z80.h \
-	../../tools/tinyxml/tinyxml.h \
-	../../tools/tinyxml/tinystr.h \
-	../../tools/zlib/zutil.h \
-	../../tools/zlib/zlib.h \
-	../../tools/zlib/zconf.h \
-	../../tools/zlib/unzip.h \
-	../../tools/zlib/trees.h \
-	../../tools/zlib/ioapi.h \
-	../../tools/zlib/inftrees.h \
-	../../tools/zlib/inflate.h \
-	../../tools/zlib/inffixed.h \
-	../../tools/zlib/inffast.h \
-	../../tools/zlib/deflate.h \
-	../../tools/zlib/crypt.h \
-	../../tools/zlib/crc32.h \
+	../../3rdparty/tinyxml/tinyxml.h \
+	../../3rdparty/tinyxml/tinystr.h \
+	../../3rdparty/zlib/zutil.h \
+	../../3rdparty/zlib/zlib.h \
+	../../3rdparty/zlib/zconf.h \
+	../../3rdparty/zlib/trees.h \
+	../../3rdparty/zlib/inftrees.h \
+	../../3rdparty/zlib/inflate.h \
+	../../3rdparty/zlib/inffixed.h \
+	../../3rdparty/zlib/inffast.h \
+	../../3rdparty/zlib/deflate.h \
+	../../3rdparty/zlib/crc32.h \
+	../../3rdparty/minizip/crypt.h \
+	../../3rdparty/minizip/ioapi.h \
+	../../3rdparty/minizip/unzip.h \
 	../../snapshot/snapshot.h \
 	../../platform/touch_ui/tui_keyboard.h \
 	../../platform/touch_ui/tui_joystick.h \
@@ -129,6 +129,10 @@ QMAKE_CXXFLAGS_WARN_ON  = -Wall
 QMAKE_CFLAGS_WARN_ON    = -Wall
 
 DEFINES += USE_QT USE_CONFIG USE_ZIP USE_EXTERN_RESOURCES USE_OPTIONS_COMMON USE_TUI
+
+INCLUDEPATH += "../../3rdparty/tinyxml"
+INCLUDEPATH += "../../3rdparty/zlib"
+INCLUDEPATH += "../../3rdparty/minizip"
 
 symbian {
 	MOBILITY += systeminfo
