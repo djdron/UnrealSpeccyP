@@ -2,7 +2,7 @@ SRC_PATH = ../..
 OBJ_BASE = Release
 
 PROJECT_NAME = unreal_speccy_portable
-SRCFOLDERS = . z80 tools tools/zlib tools/tinyxml tools/libpng snapshot ui platform platform/custom_ui platform/gl platform/oal platform/wxwidgets platform/linux platform/sdl platform/benchmark devices devices/fdd devices/input devices/sound
+SRCFOLDERS = . z80 tools 3rdparty/zlib 3rdparty/minizip 3rdparty/tinyxml 3rdparty/libpng snapshot ui platform platform/custom_ui platform/gl platform/oal platform/wxwidgets platform/linux platform/sdl platform/benchmark devices devices/fdd devices/input devices/sound
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
@@ -18,8 +18,10 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
-CXXFLAGS = -D_WINDOWS -O3 -Wall -c -fmessage-length=0
-CFLAGS = -O3 -Wall -c -fmessage-length=0
+CXXCFLAGS = -O3 -Wall -c -fmessage-length=0 -I$(SRC_PATH)/3rdparty/zlib -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml -I$(SRC_PATH)/3rdparty/libpng
+
+CXXFLAGS = -D_WINDOWS $(CXXCFLAGS)
+CFLAGS = $(CXXCFLAGS)
 LFLAGS = -s
 
 all: build
