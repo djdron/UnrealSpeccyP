@@ -26,18 +26,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-enum { KEY_COUNT = 80 };
+enum { KEY_COUNT = 60 };
 static int key_state[KEY_COUNT];
 static const char key_map[KEY_COUNT] =
 {
-	'L', 'L', 'u', 'U', 'U', '.', ' ', ' ', 'e', 'e',
-	'L', 'L', 'u', 'U', 'U', '.', ' ', ' ', 'e', 'e',
+	'L', 'L', 'u', 'U', 'U', ' ', ' ', ' ', 'e', 'e',
 	'L', 'L', 'u', 'U', 'U', '.', ' ', ' ', 'f', '.',
-	'l', 'l', '.', 'r', 'r', '.', '.', 'f', 'f', 'f',
-	'D', 'D', 'd', 'R', 'R', '.', '.', 'f', 'f', 'f',
-	'D', 'D', 'd', 'R', 'R', '.', '.', 'f', 'f', 'f',
-	'D', 'D', 'd', 'R', 'R', '.', '.', 'f', 'f', 'f',
-	'D', 'D', 'd', 'R', 'R', '.', '.', 'f', 'f', 'f',
+	'l', 'l', '.', 'r', 'r', '.', 'f', 'f', 'f', 'f',
+	'D', 'D', 'd', 'R', 'R', '.', 'f', 'f', 'f', 'f',
+	'D', 'D', 'd', 'R', 'R', '.', 'f', 'f', 'f', 'f',
+	'D', 'D', 'd', 'R', 'R', '.', 'f', 'f', 'f', 'f',
 };
 
 static void ProcessKey(char key, dword flags)
@@ -70,10 +68,10 @@ void OnTouchJoy(float _x, float _y, bool down, int pointer_id)
 {
 	int pid = pointer_id + 1;
 	int x = _x*10;
-	int y = _y*8.3333f;
+	int y = _y*5.625f;
 	if(x < 0 || x >= 10)
 		return;
-	if(y < 0 || y >= 8)
+	if(y < 0 || y >= 5)
 		return;
 
 	using namespace xPlatform;

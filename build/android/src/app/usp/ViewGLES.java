@@ -230,7 +230,7 @@ public class ViewGLES extends GLSurfaceView
 					quad.Draw(gl);
 		
 					control_controller.Draw(gl, quad, width);
-					control_keyboard.Draw(gl, quad);
+					control_keyboard.Draw(gl, quad, width, height);
 					Emulator.the.ProfilerEnd(1);
 				}
 

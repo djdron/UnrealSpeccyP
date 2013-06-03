@@ -36,19 +36,33 @@ static const char key_map[KEY_COUNT] =
 	'c', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 's', ' ',
 };
 
+static const char* key_map2[] =
+{
+	"11111111222222223333333444444455555556666666677777778888888999999900000000000000",
+	"QQQQQQQQQQQQWWWWWWWWEEEEEEERRRRRRRTTTTTTTYYYYYYYYUUUUUUUIIIIIIIOOOOOOOPPPPPPPPPP",
+	"AAAAAAAAAAAAAASSSSSSSSDDDDDDDFFFFFFFGGGGGGGHHHHHHHHJJJJJJJKKKKKKKLLLLLLLeeeeeeee",
+	"cccccccccccZZZZZZZXXXXXXXCCCCCCCVVVVVVVVBBBBBBBNNNNNNNMMMMMMMssssssss           ",
+};
+
 void OnTouchKey(float _x, float _y, bool down, int pointer_id)
 {
 	int pid = pointer_id + 1;
-	int x = _x*10;
+	int x = _x*80;
 	int y = _y*4;
-	if(x < 0 || x >= 10)
+	if(x < 0 || x >= 80)
 		return;
 	if(y < 0 || y >= 4)
 		return;
 
 	using namespace xPlatform;
 	dword flags = OpJoyKeyFlags();
-	int k = y*10+x;
+	char c = key_map2[y][x];
+	int k = 0;
+	for(;k < KEY_COUNT; ++k)
+	{
+		if(c == key_map[k])
+			break;
+	}
 	if(down) // release previous keys with this pid
 	{
 		for(int i = 0; i < KEY_COUNT; ++i)
