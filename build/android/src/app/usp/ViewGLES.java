@@ -152,7 +152,7 @@ public class ViewGLES extends GLSurfaceView
 			gl.glEnable(GL10.GL_TEXTURE_2D);
 
 		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, null);
+			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, ByteBuffer.allocate(TEX_WIDTH*TEX_HEIGHT*2));
 
 			control_controller.Init(gl);
 			control_keyboard.Init(gl);
