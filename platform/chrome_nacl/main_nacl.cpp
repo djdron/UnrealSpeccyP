@@ -44,6 +44,9 @@ namespace xPlatform
 {
 
 void LoadResources(pp::Instance* i);
+void TranslateKey(int& key, dword& flags);
+float OpZoom();
+void GetScaleWithAspect43(float* sx, float* sy, int _w, int _h);
 
 class eUSPInstance : public pp::Instance, public pp::MouseLock, public eURLLoader::eCallback
 {
@@ -60,7 +63,6 @@ public:
 
 protected:
 	bool 	SpecialKeyDown(const pp::KeyboardInputEvent event);
-	void	TranslateKey(int& key, dword& flags);
 	void	Draw();
 
 	//callbacks
@@ -76,6 +78,19 @@ protected:
 	pp::CompletionCallbackFactory<eUSPInstance> callback;
 	bool inited;
 	bool mouse_locked;
+	struct eMouseDelta
+	{
+		eMouseDelta() : x(0.0f), y(0.0f) {}
+		eMouseDelta(const pp::Point& d, float sx, float sy)
+		{
+			x = sx*d.x();
+			y = sy*d.y();
+		}
+		eMouseDelta& operator+=(const eMouseDelta& d) { x += d.x; y += d.y; return *this; }
+		float x;
+		float y;
+	};
+	eMouseDelta mouse_delta;
 };
 
 eUSPInstance::eUSPInstance(PP_Instance instance)
@@ -212,113 +227,6 @@ void eUSPInstance::Draw()
 	gl_context->Flush();
 }
 
-void eUSPInstance::TranslateKey(int& key, dword& flags)
-{
-	enum
-	{
-		K_SHIFT = 16, K_CTRL = 17, K_ALT = 18,
-		K_TAB = 9, K_ENTER = 13, K_BACKSPACE = 8,
-		K_LEFT = 37, K_UP = 38, K_RIGHT = 39, K_DOWN = 40,
-		K_QUOTE = 222, K_APOSTROPHE = 192, K_BACKSLASH = 220,
-		K_DOT = 190, K_COMMA = 188, K_SEMICOLON = 186, K_SLASH = 191,
-		K_MINUS = 189, K_EQUAL = 187,
-	};
-	switch(key)
-	{
-	case K_SHIFT:		key = 'c';	break;
-	case K_ALT:			key = 's';	break;
-	case K_ENTER:		key = 'e';	break;
-	case K_TAB:
-		key = '\0';
-		flags |= KF_ALT;
-		flags |= KF_SHIFT;
-		break;
-	case K_BACKSPACE:
-		key = '0';
-		flags |= KF_SHIFT;
-		break;
-	case K_LEFT:		key = 'l';	break;
-	case K_RIGHT:		key = 'r';	break;
-	case K_UP:			key = 'u';	break;
-	case K_DOWN:		key = 'd';	break;
-	case K_CTRL:		key = 'f';	flags &= ~KF_CTRL; break;
-	case K_APOSTROPHE:	key = 'm';	break;
-	case K_BACKSLASH:	key = 'k';	break;
-	case K_QUOTE:
-		if(flags&KF_SHIFT)
-		{
-			key = 'P';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = '7';
-		flags |= KF_ALT;
-		break;
-	case K_COMMA:
-		if(flags&KF_SHIFT)
-		{
-			key = 'R';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'N';
-		flags |= KF_ALT;
-		break;
-	case K_DOT:
-		if(flags&KF_SHIFT)
-		{
-			key = 'T';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'M';
-		flags |= KF_ALT;
-		break;
-	case K_SEMICOLON:
-		if(flags&KF_SHIFT)
-		{
-			key = 'Z';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'O';
-		flags |= KF_ALT;
-		break;
-	case K_SLASH:
-		if(flags&KF_SHIFT)
-		{
-			key = 'C';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'V';
-		flags |= KF_ALT;
-		break;
-	case K_MINUS:
-		if(flags&KF_SHIFT)
-		{
-			key = '0';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'J';
-		flags |= KF_ALT;
-		break;
-	case K_EQUAL:
-		if(flags&KF_SHIFT)
-		{
-			key = 'K';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'L';
-		flags |= KF_ALT;
-		break;
-	}
-	if(key > 255 || key < 32)
-		key = 0;
-}
-
 bool eUSPInstance::SpecialKeyDown(const pp::KeyboardInputEvent event)
 {
 	int key = event.GetKeyCode();
@@ -376,8 +284,20 @@ bool eUSPInstance::HandleInputEvent(const pp::InputEvent& ev)
 		if(mouse_locked)
 		{
 			pp::MouseInputEvent event(ev);
-			pp::Point delta = event.GetMovement();
-			Handler()->OnMouse(MA_MOVE, delta.x(), -delta.y());
+			float z = OpZoom();
+			float sx, sy;
+			GetScaleWithAspect43(&sx, &sy, size.width(), size.height());
+			float scale_x = 320.0f/size.width()/sx/z;
+			float scale_y = 240.0f/size.height()/sy/z;
+			mouse_delta += eMouseDelta(event.GetMovement(), scale_x, scale_y);
+			int dx = mouse_delta.x;
+			int dy = mouse_delta.y;
+			if(dx || dy)
+			{
+				mouse_delta.x -= dx;
+				mouse_delta.y -= dy;
+				Handler()->OnMouse(MA_MOVE, dx, -dy);
+			}
 			return true;
 		}
 		break;
