@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef _CHROME_NACL
 
+#include "ppapi/c/ppb_gamepad.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/module.h"
 #include "ppapi/cpp/var.h"
@@ -45,6 +46,7 @@ namespace xPlatform
 
 void LoadResources(pp::Instance* i);
 void TranslateKey(int& key, dword& flags);
+void UpdateGamepads(const PP_GamepadsSampleData& pads, const PP_GamepadsSampleData& pads_prev);
 float OpZoom();
 void GetScaleWithAspect43(float* sx, float* sy, int _w, int _h);
 
@@ -72,6 +74,8 @@ protected:
 protected:
 	eGLContext* gl_context;
 	eGLES2* gles2;
+	const PPB_Gamepad* gamepad;
+
 	pp::Size size;
 	eAudio audio;
 	pp::Fullscreen full_screen;
@@ -91,14 +95,19 @@ protected:
 		float y;
 	};
 	eMouseDelta mouse_delta;
+	PP_GamepadsSampleData gamepad_data_prev;
 };
 
 eUSPInstance::eUSPInstance(PP_Instance instance)
 	: pp::Instance(instance), pp::MouseLock(this)
-	, gl_context(NULL), gles2(NULL), size(0, 0)
+	, gl_context(NULL), gles2(NULL), gamepad(NULL), size(0, 0)
 	, full_screen(this), callback(this)
 	, inited(false), mouse_locked(false)
 {
+	pp::Module* module = pp::Module::Get();
+	if(module)
+		gamepad = static_cast<const PPB_Gamepad*>(module->GetBrowserInterface(PPB_GAMEPAD_INTERFACE));
+	memset(&gamepad_data_prev, 0, sizeof(gamepad_data_prev));
 }
 
 eUSPInstance::~eUSPInstance()
@@ -187,6 +196,13 @@ void eUSPInstance::OnURLLoadFail(const std::string& url)
 void eUSPInstance::Update(int32_t result)
 {
 	pp::Module::Get()->core()->CallOnMainThread(17, callback.NewCallback(&eUSPInstance::Update));
+	if(gamepad)
+	{
+		PP_GamepadsSampleData gamepad_data;
+		gamepad->Sample(pp_instance(), &gamepad_data);
+		UpdateGamepads(gamepad_data, gamepad_data_prev);
+		gamepad_data_prev = gamepad_data;
+	}
 	Handler()->OnLoop();
 	audio.Update();
 	Draw();
