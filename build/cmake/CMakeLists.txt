@@ -89,6 +89,8 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM_OPENAL})
 source_group("platform\\oal" FILES ${SRCCXX_PLATFORM_OAL})
 
 #Open GL
+find_package(OpenGL REQUIRED)
+include_directories("${OPENGL_INCLUDE_DIR}")
 file(GLOB SRCCXX_PLATFORM_OPENGL "../../platform/gl/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_OPENGL})
 source_group("platform\\gl" FILES ${SRCCXX_PLATFORM_OPENGL})
@@ -99,9 +101,15 @@ if(MSVC)
 add_definitions("/wd4244 /wd4996")
 endif(MSVC)
 
+if(UNIX)
+add_definitions(-D_LINUX)
+endif(UNIX)
+
 add_executable(unreal_speccy_portable WIN32 ${SRCCXX} ${SRCC} ${SRCH})
 
 if(USE_WX_WIDGETS)
 target_link_libraries(unreal_speccy_portable ${wxWidgets_LIBRARIES})
 target_link_libraries(unreal_speccy_portable ${OPENAL_LIBRARY})
+target_link_libraries(unreal_speccy_portable ${OPENGL_LIBRARIES})
 endif(USE_WX_WIDGETS)
+
