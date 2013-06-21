@@ -21,13 +21,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_OAL
 
-#ifndef _MAC
-#include <AL/al.h>
-#include <AL/alc.h>
-#else//_MAC
+#ifdef _WINDOWS
+#include <al.h>
+#include <alc.h>
+#elif defined(_MAC)
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
-#endif//_MAC
+#else//_MAC
+#include <AL/al.h>
+#include <AL/alc.h>
+#endif//_WINDOWS
 
 namespace xPlatform
 {

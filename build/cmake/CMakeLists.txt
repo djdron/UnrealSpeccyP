@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 2.6)
 project (USP)
 
+option (USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" ON)
+option (USE_BENCHMARK "benchmark mode (console)" OFF)
+
 #core
 file(GLOB SRCCXX_ROOT "../../*.cpp")
 file(GLOB SRCH_ROOT "../../*.h")
@@ -61,13 +64,44 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM})
 list(APPEND SRCH ${SRCH_PLATFORM})
 source_group("platform" FILES ${SRCCXX_PLATFORM} ${SRCH_PLATFORM})
 
+#benchmark mode (console)
+if(USE_BENCHMARK)
 file(GLOB SRCCXX_PLATFORM_BENCHMARK "../../platform/benchmark/*.cpp")
 add_definitions(-DUSE_BENCHMARK)
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_BENCHMARK})
 source_group("platform\\benchmark" FILES ${SRCCXX_PLATFORM_BENCHMARK})
+endif(USE_BENCHMARK)
+
+if(USE_WX_WIDGETS)
+
+#wx widgets
+find_package(wxWidgets COMPONENTS core base adv gl REQUIRED)
+include("${wxWidgets_USE_FILE}")
+file(GLOB SRCCXX_PLATFORM_WX_WIDGETS "../../platform/wxwidgets/*.cpp")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_WX_WIDGETS})
+source_group("platform\\wxwidgets" FILES ${SRCCXX_PLATFORM_WX_WIDGETS})
+
+#Open AL
+find_package(OpenAL REQUIRED)
+include_directories("${OPENAL_INCLUDE_DIR}")
+file(GLOB SRCCXX_PLATFORM_OPENAL "../../platform/oal/*.cpp")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_OPENAL})
+source_group("platform\\oal" FILES ${SRCCXX_PLATFORM_OAL})
+
+#Open GL
+file(GLOB SRCCXX_PLATFORM_OPENGL "../../platform/gl/*.cpp")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_OPENGL})
+source_group("platform\\gl" FILES ${SRCCXX_PLATFORM_OPENGL})
+
+endif(USE_WX_WIDGETS)
 
 if(MSVC)
 add_definitions("/wd4244 /wd4996")
 endif(MSVC)
 
-add_executable(unreal_speccy_portable ${SRCCXX} ${SRCC} ${SRCH})
+add_executable(unreal_speccy_portable WIN32 ${SRCCXX} ${SRCC} ${SRCH})
+
+if(USE_WX_WIDGETS)
+target_link_libraries(unreal_speccy_portable ${wxWidgets_LIBRARIES})
+target_link_libraries(unreal_speccy_portable ${OPENAL_LIBRARY})
+endif(USE_WX_WIDGETS)
