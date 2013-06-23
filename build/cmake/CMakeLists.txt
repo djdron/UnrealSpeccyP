@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project (USP)
 
 option (USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" ON)
+option (USE_SDL "SDL version" OFF)
 option (USE_BENCHMARK "benchmark mode (console)" OFF)
 
 #core
@@ -64,13 +65,13 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM})
 list(APPEND SRCH ${SRCH_PLATFORM})
 source_group("platform" FILES ${SRCCXX_PLATFORM} ${SRCH_PLATFORM})
 
-#benchmark mode (console)
-if(USE_BENCHMARK)
-file(GLOB SRCCXX_PLATFORM_BENCHMARK "../../platform/benchmark/*.cpp")
-add_definitions(-DUSE_BENCHMARK)
-list(APPEND SRCCXX ${SRCCXX_PLATFORM_BENCHMARK})
-source_group("platform\\benchmark" FILES ${SRCCXX_PLATFORM_BENCHMARK})
-endif(USE_BENCHMARK)
+if(MSVC)
+add_definitions("/wd4244 /wd4996")
+endif(MSVC)
+
+if(UNIX)
+add_definitions(-D_LINUX)
+endif(UNIX)
 
 if(USE_WX_WIDGETS)
 
@@ -95,21 +96,51 @@ file(GLOB SRCCXX_PLATFORM_OPENGL "../../platform/gl/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_OPENGL})
 source_group("platform\\gl" FILES ${SRCCXX_PLATFORM_OPENGL})
 
-endif(USE_WX_WIDGETS)
-
-if(MSVC)
-add_definitions("/wd4244 /wd4996")
-endif(MSVC)
-
-if(UNIX)
-add_definitions(-D_LINUX)
-endif(UNIX)
-
 add_executable(unreal_speccy_portable WIN32 ${SRCCXX} ${SRCC} ${SRCH})
-
-if(USE_WX_WIDGETS)
 target_link_libraries(unreal_speccy_portable ${wxWidgets_LIBRARIES})
 target_link_libraries(unreal_speccy_portable ${OPENAL_LIBRARY})
 target_link_libraries(unreal_speccy_portable ${OPENGL_LIBRARIES})
+
+elseif(USE_SDL)
+
+#SDL
+find_package(SDL REQUIRED)
+include_directories("${SDL_INCLUDE_DIR}")
+file(GLOB SRCCXX_PLATFORM_SDL "../../platform/sdl/*.cpp")
+add_definitions(-DUSE_SDL -DSDL_KEYS_COMMON)
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL})
+source_group("platform\\sdl" FILES ${SRCCXX_PLATFORM_SDL})
+
+file(GLOB SRCCXX_UI "../../ui/*.cpp")
+file(GLOB SRCH_UI "../../ui/*.h")
+list(APPEND SRCCXX ${SRCCXX_UI})
+list(APPEND SRCH ${SRCH_UI})
+source_group("ui" FILES ${SRCCXX_UI} ${SRCH_UI})
+
+file(GLOB SRCCXX_PLATFORM_CUSTOM_UI "../../platform/custom_ui/*.cpp")
+file(GLOB SRCH_PLATFORM_CUSTOM_UI "../../platform/custom_ui/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_CUSTOM_UI})
+list(APPEND SRCH ${SRCH_PLATFORM_CUSTOM_UI})
+source_group("platform\\custom_ui" FILES ${SRCCXX_PLATFORM_CUSTOM_UI} ${SRCH_PLATFORM_CUSTOM_UI})
+
+file(GLOB SRCCXX_PLATFORM_LINUX "../../platform/linux/*.cpp")
+file(GLOB SRCH_PLATFORM_LINUX "../../platform/linux/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_LINUX})
+list(APPEND SRCH ${SRCH_PLATFORM_LINUX})
+source_group("platform\\linux" FILES ${SRCCXX_PLATFORM_LINUX} ${SRCH_PLATFORM_LINUX})
+
+add_executable(unreal_speccy_portable WIN32 ${SRCCXX} ${SRCC} ${SRCH})
+target_link_libraries(unreal_speccy_portable ${SDL_LIBRARY})
+
+elseif(USE_BENCHMARK)
+
+#benchmark mode (console)
+file(GLOB SRCCXX_PLATFORM_BENCHMARK "../../platform/benchmark/*.cpp")
+add_definitions(-DUSE_BENCHMARK)
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_BENCHMARK})
+source_group("platform\\benchmark" FILES ${SRCCXX_PLATFORM_BENCHMARK})
+
+add_executable(unreal_speccy_portable ${SRCCXX} ${SRCC} ${SRCH})
+
 endif(USE_WX_WIDGETS)
 
