@@ -111,6 +111,7 @@ static void Loop()
 #ifdef SDL_USE_JOYSTICK
 			case SDL_JOYBUTTONDOWN:
 			case SDL_JOYBUTTONUP:
+			case SDL_JOYAXISMOTION:
 				ProcessJoy(e);
 				break;
 #endif//SDL_USE_JOYSTICK

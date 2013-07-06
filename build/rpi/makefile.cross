@@ -18,7 +18,7 @@ BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
 CXXCFLAGS = -O3 -g0 -Wall -c -fmessage-length=0 -I$(RPI_SDK)/include -I$(RPI_SDK)/include/SDL -I$(RPI_SDK)/include/interface/vmcs_host/linux -I$(RPI_SDK)/include/interface/vcos/pthreads -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml
 
-CXXFLAGS := $(CXXCFLAGS) -D_LINUX -DUSE_GLES2 -D_RPI -DUI_REAL_ALPHA -DUSE_SDL -DSDL_UNUSE_VIDEO -DSDL_KEYS_COMMON
+CXXFLAGS := $(CXXCFLAGS) -D_LINUX -DUSE_GLES2 -D_RPI -DUI_REAL_ALPHA -DUSE_SDL -DSDL_UNUSE_VIDEO -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON
 CFLAGS := $(CXXCFLAGS)
 LFLAGS = -s -Wl,--unresolved-symbols=ignore-in-shared-libs -L$(RPI_SDK)/lib -lGLESv2 -lEGL -lSDL -lbcm_host -lz -lpng
 

@@ -24,7 +24,7 @@ ifdef BENCHMARK
 CXXFLAGS := $(CXXFLAGS) -DUSE_BENCHMARK
 else
 ifdef SDL
-CXXFLAGS := $(CXXFLAGS) -DUSE_SDL -DSDL_KEYS_COMMON `sdl-config --cflags`
+CXXFLAGS := $(CXXFLAGS) -DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON `sdl-config --cflags`
 LFLAGS := $(LFLAGS) `sdl-config --libs`
 else
 CXXFLAGS := $(CXXFLAGS) `wx-config --cxxflags`

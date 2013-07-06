@@ -1,9 +1,9 @@
 cmake_minimum_required (VERSION 2.6)
 project (USP)
 
-option (USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" ON)
-option (USE_SDL "SDL version" OFF)
-option (USE_BENCHMARK "benchmark mode (console)" OFF)
+option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" ON)
+option(USE_SDL "SDL version" OFF)
+option(USE_BENCHMARK "benchmark mode (console)" OFF)
 
 #core
 file(GLOB SRCCXX_ROOT "../../*.cpp")
@@ -75,7 +75,7 @@ endif(UNIX)
 
 if(USE_WX_WIDGETS)
 
-#wx widgets
+#wxWidgets
 find_package(wxWidgets COMPONENTS core base adv gl REQUIRED)
 include("${wxWidgets_USE_FILE}")
 file(GLOB SRCCXX_PLATFORM_WX_WIDGETS "../../platform/wxwidgets/*.cpp")
@@ -109,7 +109,7 @@ elseif(USE_SDL)
 find_package(SDL REQUIRED)
 include_directories("${SDL_INCLUDE_DIR}")
 file(GLOB SRCCXX_PLATFORM_SDL "../../platform/sdl/*.cpp")
-add_definitions(-DUSE_SDL -DSDL_KEYS_COMMON)
+add_definitions(-DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON)
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL})
 source_group("platform\\sdl" FILES ${SRCCXX_PLATFORM_SDL})
 
