@@ -66,8 +66,9 @@ static struct eOptionFullScreen : public xOptions::eOptionBool
 	virtual const char* Name() const { return "full screen"; }
 } op_full_screen;
 
-extern const wxEventType evtMouseCapture = wxNewEventType();
-extern const wxEventType evtError = wxNewEventType();
+extern const wxEventType evtMouseCapture;
+extern const wxEventType evtSetStatusText;
+extern const wxEventType evtExitFullScreen;
 
 #ifndef _MAC
 struct DropFilesTarget : public wxFileDropTarget
@@ -125,7 +126,7 @@ public:
 		menuWindow->Append(ID_Size100, _("Size &100%\tCtrl+1"));
 		menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
 		menuWindow->Append(ID_Size300, _("Size &300%\tCtrl+3"));
-		menuWindow->Append(ID_SizeFS, _("Full screen\tCtrl+F"));
+		menuWindow->Append(ID_ToggleFullScreen, _("Full screen\tCtrl+F"));
 
 		wxMenuBar* menuBar = new wxMenuBar;
 		menuBar->Append(menuFile, _("File"));
@@ -266,6 +267,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		}
 		Handler()->VideoPaused(false);
 	}
+	void SetFullScreen(bool on)
+	{
+		op_full_screen.Set(on);
+		if(IsFullScreen() != op_full_screen)
+		{
+			ShowFullScreen(op_full_screen, wxFULLSCREEN_ALL);
+		}
+	}
+	void OnExitFullScreen(wxCommandEvent& event)
+	{
+		SetFullScreen(false);
+	}
 	void OnResize(wxCommandEvent& event)
 	{
 		switch(event.GetId())
@@ -281,12 +294,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 			op_window_size.Set(event.GetId() - ID_Size100);
 			SetClientSize(org_size*(op_window_size + 1));
 			break;
-		case ID_SizeFS:
-			op_full_screen.Change();
-			if(IsFullScreen() != op_full_screen)
-			{
-				ShowFullScreen(op_full_screen, wxFULLSCREEN_ALL);
-			}
+		case ID_ToggleFullScreen:
+			SetFullScreen(!op_full_screen);
 			break;
 		}
 	}
@@ -392,7 +401,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	}
 	enum
 	{
-		ID_Reset = 1, ID_Size100, ID_Size200, ID_Size300, ID_SizeFS,
+		ID_Reset = 1, ID_Size100, ID_Size200, ID_Size300, ID_ToggleFullScreen,
 		ID_TapeToggle, ID_TapeFastToggle, ID_DriveNext,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
 		ID_PauseToggle, ID_TrueSpeedToggle, ID_Mode48kToggle
@@ -428,7 +437,7 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_Size100,		Frame::OnResize)
 	EVT_MENU(Frame::ID_Size200,		Frame::OnResize)
 	EVT_MENU(Frame::ID_Size300,		Frame::OnResize)
-	EVT_MENU(Frame::ID_SizeFS,		Frame::OnResize)
+	EVT_MENU(Frame::ID_ToggleFullScreen, Frame::OnResize)
 	EVT_MENU(Frame::ID_TapeToggle,	Frame::OnTapeToggle)
 	EVT_MENU(Frame::ID_TapeFastToggle,Frame::OnTapeFastToggle)
 	EVT_MENU(Frame::ID_DriveNext,	Frame::OnDriveNext)
@@ -440,7 +449,8 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_TrueSpeedToggle,	Frame::OnTrueSpeedToggle)
 	EVT_MENU(Frame::ID_Mode48kToggle,	Frame::OnMode48kToggle)
 	EVT_COMMAND(wxID_ANY, evtMouseCapture, Frame::OnMouseCapture)
-	EVT_COMMAND(wxID_ANY, evtError, Frame::OnError)
+	EVT_COMMAND(wxID_ANY, evtSetStatusText, Frame::OnError)
+	EVT_COMMAND(wxID_ANY, evtExitFullScreen, Frame::OnExitFullScreen)
 END_EVENT_TABLE()
 
 wxWindow* CreateFrame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)

@@ -36,8 +36,9 @@ void TranslateKey(int& key, dword& flags);
 void VsyncGL(bool on);
 void DrawGL(int w, int h);
 
-extern const wxEventType evtMouseCapture;
-extern const wxEventType evtError;
+extern const wxEventType evtMouseCapture = wxNewEventType();
+extern const wxEventType evtSetStatusText = wxNewEventType();
+extern const wxEventType evtExitFullScreen = wxNewEventType();
 
 class GLCanvas : public wxGLCanvas
 {
@@ -71,7 +72,7 @@ public:
 		const char* err = Handler()->OnLoop();
 		if(err)
 		{
-			wxCommandEvent ev(evtError);
+			wxCommandEvent ev(evtSetStatusText);
 			ev.SetString(wxConvertMB2WX(err));
 			ProcessEvent(ev);
 		}
@@ -95,9 +96,15 @@ public:
 	virtual void OnKeydown(wxKeyEvent& event)
 	{
 		int key = event.GetKeyCode();
-		if(HasCapture() && key == WXK_ESCAPE)
+		if(key == WXK_ESCAPE)
 		{
-			KillMouseFocus();
+			if(HasCapture())
+				KillMouseFocus();
+			else
+			{
+				wxCommandEvent ev(evtExitFullScreen);
+				wxPostEvent(this, ev);
+			}
 			return;
 		}
 //		printf("kd:%c\n", key);
