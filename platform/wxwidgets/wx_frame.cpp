@@ -292,6 +292,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 				op_full_screen.Set(false);
 			}
 			op_window_size.Set(event.GetId() - ID_Size100);
+			if(IsMaximized())
+				Maximize(false);
 			SetClientSize(org_size*(op_window_size + 1));
 			break;
 		case ID_ToggleFullScreen:
@@ -380,7 +382,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	{
 		SetStatusText(event.GetId() ? _("Mouse captured, press ESC to cancel") : _("Mouse released"));
 	}
-	void OnError(wxCommandEvent& event)
+	void OnSetStatusText(wxCommandEvent& event)
 	{
 		if(event.GetString() == L"rzx_finished")
 			SetStatusText(_("RZX playback finished"));
@@ -449,7 +451,7 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_TrueSpeedToggle,	Frame::OnTrueSpeedToggle)
 	EVT_MENU(Frame::ID_Mode48kToggle,	Frame::OnMode48kToggle)
 	EVT_COMMAND(wxID_ANY, evtMouseCapture, Frame::OnMouseCapture)
-	EVT_COMMAND(wxID_ANY, evtSetStatusText, Frame::OnError)
+	EVT_COMMAND(wxID_ANY, evtSetStatusText, Frame::OnSetStatusText)
 	EVT_COMMAND(wxID_ANY, evtExitFullScreen, Frame::OnExitFullScreen)
 END_EVENT_TABLE()
 
