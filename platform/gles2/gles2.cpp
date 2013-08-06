@@ -54,17 +54,6 @@ static struct eOptionZoom : public xOptions::eOptionInt
 } op_zoom;
 
 float OpZoom() { return op_zoom.Zoom(); }
-void GetScaleWithAspect43(float* sx, float* sy, int _w, int _h)
-{
-	*sx = 1.0f;
-	*sy = 1.0f;
-	float a = (float)_w/_h;
-	float a43 = 4.0f/3.0f;
-	if(a > a43)
-		*sx = a43/a;
-	else
-		*sy = a/a43;
-}
 
 static struct eOptionFiltering : public xOptions::eOptionBool
 {
@@ -308,7 +297,7 @@ void eGLES2Impl::Draw(int _w, int _h)
 	float sx, sy;
 #ifdef USE_UI
 	float sx1, sy1;
-	GetScaleWithAspect43(&sx1, &sy1, _w, _h);
+	GetScaleWithAspectRatio43(&sx1, &sy1, _w, _h);
 #endif//USE_UI
 	switch(op_zoom)
 	{
@@ -318,7 +307,7 @@ void eGLES2Impl::Draw(int _w, int _h)
 	    sy = ((float)HEIGHT) / _h;
 		break;
 	default:
-		GetScaleWithAspect43(&sx, &sy, _w, _h);
+		GetScaleWithAspectRatio43(&sx, &sy, _w, _h);
 		break;
 	}
 

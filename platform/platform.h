@@ -104,6 +104,8 @@ struct eHandler
 
 eHandler* Handler();
 
+void GetScaleWithAspectRatio43(float* sx, float* sy, int _w, int _h);
+
 }
 //namespace xPlatform
 

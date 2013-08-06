@@ -48,7 +48,6 @@ void LoadResources(pp::Instance* i);
 void TranslateKey(int& key, dword& flags);
 void UpdateGamepads(const PP_GamepadsSampleData& pads, const PP_GamepadsSampleData& pads_prev);
 float OpZoom();
-void GetScaleWithAspect43(float* sx, float* sy, int _w, int _h);
 
 class eUSPInstance : public pp::Instance, public pp::MouseLock, public eURLLoader::eCallback
 {
@@ -302,7 +301,7 @@ bool eUSPInstance::HandleInputEvent(const pp::InputEvent& ev)
 			pp::MouseInputEvent event(ev);
 			float z = OpZoom();
 			float sx, sy;
-			GetScaleWithAspect43(&sx, &sy, size.width(), size.height());
+			GetScaleWithAspectRatio43(&sx, &sy, size.width(), size.height());
 			float scale_x = 320.0f/size.width()/sx/z;
 			float scale_y = 240.0f/size.height()/sy/z;
 			mouse_delta += eMouseDelta(event.GetMovement(), scale_x, scale_y);

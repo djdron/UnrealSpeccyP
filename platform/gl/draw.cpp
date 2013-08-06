@@ -118,12 +118,10 @@ void DrawGL(int _w, int _h)
 
 	PROFILER_SECTION(draw);
 
-	int w = _w;
-	int h = _h;
-	if(float(w)/h > 4.0f/3.0f)
-		w = float(_h)*4/3;
-	else
-		h = float(_w)*3/4;
+	float sx, sy;
+	GetScaleWithAspectRatio43(&sx, &sy, _w, _h);
+	int w = sx * _w;
+	int h = sy * _h;
 
 	GLint filter = w % 320 ? GL_LINEAR : GL_NEAREST;
 

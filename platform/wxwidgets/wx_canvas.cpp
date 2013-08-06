@@ -129,13 +129,38 @@ public:
 		event.Skip();
 		if(!HasCapture())
 			return;
+
+		wxSize size = GetClientSize();
 		wxPoint p = event.GetPosition();
 		wxPoint d = p - mouse_pos;
-		if(d.x || d.y)
+		wxPoint ps = ClientToScreen(p);
+		wxSize ss(wxSystemSettings::GetMetric(wxSYS_SCREEN_X), wxSystemSettings::GetMetric(wxSYS_SCREEN_Y));
+		bool warp = false;
+		if(ps.x < 100) 			ps.x = ss.x - 100, warp = true;
+		if(ps.y < 100) 			ps.y = ss.y - 100, warp = true;
+		if(ps.x > ss.x - 100)	ps.x = 100, warp = true;
+		if(ps.y > ss.y - 100)	ps.y = 100, warp = true;
+		if(warp)
 		{
+			mouse_pos = ScreenToClient(ps);
 			WarpPointer(mouse_pos.x, mouse_pos.y);
 		}
-		Handler()->OnMouse(MA_MOVE, d.x, -d.y);
+		else
+			mouse_pos = p;
+
+		float sx, sy;
+		GetScaleWithAspectRatio43(&sx, &sy, size.x, size.y);
+		float scale_x = 320.0f/size.x/sx;
+		float scale_y = 240.0f/size.y/sy;
+		mouse_delta += eMouseDelta(d, scale_x, scale_y);
+		int dx = mouse_delta.x;
+		int dy = mouse_delta.y;
+		if(dx || dy)
+		{
+			mouse_delta.x -= dx;
+			mouse_delta.y -= dy;
+			Handler()->OnMouse(MA_MOVE, dx, -dy);
+		}
 	}
 	virtual void OnMouseKey(wxMouseEvent& event)
 	{
@@ -177,6 +202,19 @@ public:
 	DECLARE_EVENT_TABLE()
 
 protected:
+	struct eMouseDelta
+	{
+		eMouseDelta() : x(0.0f), y(0.0f) {}
+		eMouseDelta(const wxPoint& d, float sx, float sy)
+		{
+			x = sx*d.x;
+			y = sy*d.y;
+		}
+		eMouseDelta& operator+=(const eMouseDelta& d) { x += d.x; y += d.y; return *this; }
+		float x;
+		float y;
+	};
+	eMouseDelta mouse_delta;
 	wxPoint mouse_pos;
 };
 int GLCanvas::canvas_attr[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, 0 };
