@@ -1,4 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
+
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
+
 project (USP)
 
 option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" ON)
@@ -79,8 +82,10 @@ if(USE_WX_WIDGETS)
 find_package(wxWidgets COMPONENTS core base adv gl REQUIRED)
 include("${wxWidgets_USE_FILE}")
 file(GLOB SRCCXX_PLATFORM_WX_WIDGETS "../../platform/wxwidgets/*.cpp")
+file(GLOB SRCH_PLATFORM_WX_WIDGETS "../../platform/wxwidgets/*.h")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_WX_WIDGETS})
-source_group("platform\\wxwidgets" FILES ${SRCCXX_PLATFORM_WX_WIDGETS})
+list(APPEND SRCH ${SRCH_PLATFORM_WX_WIDGETS})
+source_group("platform\\wxwidgets" FILES ${SRCCXX_PLATFORM_WX_WIDGETS} ${SRCH_PLATFORM_WX_WIDGETS})
 
 #Open AL
 find_package(OpenAL REQUIRED)
@@ -153,4 +158,3 @@ source_group("platform\\benchmark" FILES ${SRCCXX_PLATFORM_BENCHMARK})
 add_executable(unreal_speccy_portable ${SRCCXX} ${SRCC} ${SRCH})
 
 endif(USE_WX_WIDGETS)
-
