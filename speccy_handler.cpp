@@ -327,6 +327,12 @@ static struct eOption48K : public xOptions::eOptionBool
 	virtual int Order() const { return 65; }
 } op_48k;
 
+static struct eOptionResetToServiceRom : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "reset to service rom"; }
+	virtual int Order() const { return 79; }
+} op_reset_to_service_rom;
+
 eActionResult eSpeccyHandler::OnAction(eAction action)
 {
 	switch(action)
@@ -337,6 +343,8 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 		SAFE_DELETE(macro);
 		speccy->Mode48k(op_48k);
 		speccy->Reset();
+		if(!speccy->Mode48k())
+			speccy->Device<eRom>()->SelectPage(op_reset_to_service_rom ? eRom::ROM_SYS : eRom::ROM_128_1);
 		if(inside_replay_update)
 			speccy->CPU()->HandlerIo(this);
 		return AR_OK;
@@ -505,9 +513,12 @@ static struct eFileTypeTRD : public eFileType
 		{
 			sh.OnAction(A_RESET);
 			if(wd->BootExist(OpDrive()))
-				sh.speccy->Memory()->SetPage(0, eMemory::P_ROM3); // tr-dos rom
+				sh.speccy->Device<eRom>()->SelectPage(eRom::ROM_DOS);
 			else if(!sh.speccy->Mode48k())
+			{
+				sh.speccy->Device<eRom>()->SelectPage(eRom::ROM_SYS);
 				sh.PlayMacro(new eMacroDiskRun);
+			}
 		}
 		return ok;
 	}
@@ -564,7 +575,7 @@ static struct eFileTypeTAP : public eFileType
 		if(ok && op_auto_play_image)
 		{
 			sh.OnAction(A_RESET);
-			sh.speccy->Devices().Get<eRom>()->SelectPage(eRom::ROM_128_0);
+			sh.speccy->Devices().Get<eRom>()->SelectPage(sh.speccy->Devices().Get<eRom>()->ROM_SOS());
 			sh.PlayMacro(new eMacroTapeLoad);
 		}
 		return ok;

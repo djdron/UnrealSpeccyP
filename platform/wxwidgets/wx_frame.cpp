@@ -107,36 +107,44 @@ public:
 		menuFile->Append(wxID_EXIT, _("E&xit"));
 
 		wxMenu* menuDevice = new wxMenu;
-		menuDevice->Append(ID_TapeToggle, _("Start/Stop tape\tF5"));
-		menu_tape_fast = menuDevice->Append(ID_TapeFastToggle, _("Tape fast"), _(""), wxITEM_CHECK);
-		menuDevice->Append(ID_DriveNext, _("Select next drive\tF6"));
-		menu_pause = menuDevice->Append(ID_PauseToggle, _("Pause\tF7"), _(""), wxITEM_CHECK);
-		menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, _("True speed\tF8"), _(""), wxITEM_CHECK);
-		menu_mode_48k = menuDevice->Append(ID_Mode48kToggle, _("Mode 48k\tF9"), _(""), wxITEM_CHECK);
-		menuDevice->Append(ID_Reset, _("&Reset...\tF12"));
+		menuDevice->Append(ID_TapeToggle, _("&Start/Stop tape\tF5"));
+		menu_tape_fast = menuDevice->Append(ID_TapeFastToggle, _("Tape &fast"), _(""), wxITEM_CHECK);
+
+		wxMenu* menuBetaDisk = new wxMenu;
+		menu_beta_disk_drive[0] = menuBetaDisk->Append(ID_BetaDiskDriveA, _("&A"), _(""), wxITEM_CHECK);
+		menu_beta_disk_drive[1] = menuBetaDisk->Append(ID_BetaDiskDriveB, _("&B"), _(""), wxITEM_CHECK);
+		menu_beta_disk_drive[2] = menuBetaDisk->Append(ID_BetaDiskDriveC, _("&C"), _(""), wxITEM_CHECK);
+		menu_beta_disk_drive[3] = menuBetaDisk->Append(ID_BetaDiskDriveD, _("&D"), _(""), wxITEM_CHECK);
+		menuDevice->Append(-1, _("Beta disk &drive"), menuBetaDisk);
+
+		menu_pause = menuDevice->Append(ID_PauseToggle, _("&Pause\tF7"), _(""), wxITEM_CHECK);
+		menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, _("&True speed\tF8"), _(""), wxITEM_CHECK);
+		menu_mode_48k = menuDevice->Append(ID_Mode48kToggle, _("Mode &48k\tF9"), _(""), wxITEM_CHECK);
+		menu_reset_to_service_rom = menuDevice->Append(ID_ResetToServiceRom, _("Reset to service R&OM"), _(""), wxITEM_CHECK);
+		menuDevice->Append(ID_Reset, _("&Reset\tF12"));
 
 		wxMenu* menuJoy = new wxMenu;
-		menu_joy.cursor = menuJoy->Append(ID_JoyCursor, _("Cursor"), _(""), wxITEM_CHECK);
-		menu_joy.kempston = menuJoy->Append(ID_JoyKempston, _("Kempston"), _(""), wxITEM_CHECK);
-		menu_joy.qaop = menuJoy->Append(ID_JoyQAOP, _("QAOP"), _(""), wxITEM_CHECK);
-		menu_joy.sinclair2 = menuJoy->Append(ID_JoySinclair2, _("Sinclair 2"), _(""), wxITEM_CHECK);
-		menuDevice->Append(-1, _("Joystick"), menuJoy);
+		menu_joy.cursor = menuJoy->Append(ID_JoyCursor, _("&Cursor"), _(""), wxITEM_CHECK);
+		menu_joy.kempston = menuJoy->Append(ID_JoyKempston, _("&Kempston"), _(""), wxITEM_CHECK);
+		menu_joy.qaop = menuJoy->Append(ID_JoyQAOP, _("&QAOP"), _(""), wxITEM_CHECK);
+		menu_joy.sinclair2 = menuJoy->Append(ID_JoySinclair2, _("&Sinclair 2"), _(""), wxITEM_CHECK);
+		menuDevice->Append(-1, _("&Joystick"), menuJoy);
 
 		wxMenu* menuWindow = new wxMenu;
 		menuWindow->Append(ID_Size100, _("Size &100%\tCtrl+1"));
 		menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
 		menuWindow->Append(ID_Size300, _("Size &300%\tCtrl+3"));
-		menuWindow->Append(ID_ToggleFullScreen, _("Full screen\tCtrl+F"));
+		menuWindow->Append(ID_ToggleFullScreen, _("&Full screen\tCtrl+F"));
 
 		wxMenuBar* menuBar = new wxMenuBar;
-		menuBar->Append(menuFile, _("File"));
-		menuBar->Append(menuDevice, _("Device"));
-		menuBar->Append(menuWindow, _("Window"));
+		menuBar->Append(menuFile, _("&File"));
+		menuBar->Append(menuDevice, _("&Device"));
+		menuBar->Append(menuWindow, _("&Window"));
 
 #ifndef _MAC
 		wxMenu* menuHelp = new wxMenu;
-		menuHelp->Append(wxID_ABOUT, _("About ") + title);
-		menuBar->Append(menuHelp, _("Help"));
+		menuHelp->Append(wxID_ABOUT, _("&About") + title);
+		menuBar->Append(menuHelp, _("&Help"));
 #endif//_MAC
 
 		SetMenuBar(menuBar);
@@ -160,6 +168,7 @@ public:
 		gl_canvas = CreateGLCanvas(this);
 		gl_canvas->SetFocus();
 
+		UpdateBetaDiskMenu();
 		if(cmdline.true_speed != eCmdLine::V_DEFAULT)
 		{
 			op_true_speed.Set(cmdline.true_speed == eCmdLine::V_ON);
@@ -183,6 +192,9 @@ public:
 		menu_mode_48k->Check(op_mode_48k && *op_mode_48k);
 		xOptions::eOption<bool>* op_tape_fast = xOptions::eOption<bool>::Find("fast tape");
 		menu_tape_fast->Check(op_tape_fast && *op_tape_fast);
+
+		xOptions::eOption<bool>* op_reset_to_service_rom = xOptions::eOption<bool>::Find("reset to service rom");
+		menu_reset_to_service_rom->Check(op_reset_to_service_rom && *op_reset_to_service_rom);
 
 		if(!cmdline.file_to_open.empty())
 			Handler()->OnOpenFile(wxConvertWX2MB(cmdline.file_to_open));
@@ -320,30 +332,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		menu_tape_fast->Check(tape_fast);
 		SetStatusText(tape_fast ? _("Fast tape on") : _("Fast tape off"));
 	}
-	void OnDriveNext(wxCommandEvent& event)
+	void OnBetaDiskDrive(wxCommandEvent& event)
 	{
-		xOptions::eOption<int>* op_drive = xOptions::eOption<int>::Find("drive");
-		if(op_drive)
+		switch(event.GetId())
 		{
-			op_drive->Change();
-			switch(*op_drive)
-			{
-			case D_A:	SetStatusText(_("Selected drive A"));	break;
-			case D_B:	SetStatusText(_("Selected drive B"));	break;
-			case D_C:	SetStatusText(_("Selected drive C"));	break;
-			case D_D:	SetStatusText(_("Selected drive D"));	break;
-			default: break;
-			}
+		case ID_BetaDiskDriveA: OpDrive(D_A); SetStatusText(_("Drive A selected"));	break;
+		case ID_BetaDiskDriveB: OpDrive(D_B); SetStatusText(_("Drive B selected"));	break;
+		case ID_BetaDiskDriveC: OpDrive(D_C); SetStatusText(_("Drive C selected"));	break;
+		case ID_BetaDiskDriveD: OpDrive(D_D); SetStatusText(_("Drive D selected"));	break;
 		}
+		UpdateBetaDiskMenu();
 	}
 	void OnJoy(wxCommandEvent& event)
 	{
 		switch(event.GetId())
 		{
-		case ID_JoyKempston:	OpJoystick(J_KEMPSTON); break;
-		case ID_JoyCursor:		OpJoystick(J_CURSOR); break;
-		case ID_JoyQAOP:		OpJoystick(J_QAOP); break;
-		case ID_JoySinclair2:	OpJoystick(J_SINCLAIR2); break;
+		case ID_JoyKempston:	OpJoystick(J_KEMPSTON); SetStatusText(_("Kempston selected")); break;
+		case ID_JoyCursor:		OpJoystick(J_CURSOR); SetStatusText(_("Cursor selected")); break;
+		case ID_JoyQAOP:		OpJoystick(J_QAOP); SetStatusText(_("QAOP selected")); break;
+		case ID_JoySinclair2:	OpJoystick(J_SINCLAIR2); SetStatusText(_("Sinclair 2 selected")); break;
 		}
 		UpdateJoyMenu();
 	}
@@ -378,6 +385,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		menu_mode_48k->Check(mode48k);
 		SetStatusText(mode48k ? _("Mode 48k on") : _("Mode 48k off"));
 	}
+	void OnResetToServiceRomToggle(wxCommandEvent& event)
+	{
+		using namespace xOptions;
+		eOption<bool>* op_reset_to_service_rom = eOption<bool>::Find("reset to service rom");
+		SAFE_CALL(op_reset_to_service_rom)->Change();
+		bool reset_to_service_rom = op_reset_to_service_rom && *op_reset_to_service_rom;
+		menu_reset_to_service_rom->Check(reset_to_service_rom);
+		SetStatusText(reset_to_service_rom ? _("Reset to service ROM") : _("Reset to usual ROM"));
+	}
 	void OnMouseCapture(wxCommandEvent& event)
 	{
 		SetStatusText(event.GetId() ? _("Mouse captured, press ESC to cancel") : _("Mouse released"));
@@ -393,6 +409,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		else if(event.GetString() == L"rzx_unsupported")
 			SetStatusText(_("RZX error - unsupported format"));
 	}
+	void UpdateBetaDiskMenu()
+	{
+		eDrive drive = OpDrive();
+		menu_beta_disk_drive[0]->Check(drive == D_A);
+		menu_beta_disk_drive[1]->Check(drive == D_B);
+		menu_beta_disk_drive[2]->Check(drive == D_C);
+		menu_beta_disk_drive[3]->Check(drive == D_D);
+	}
 	void UpdateJoyMenu()
 	{
 		eJoystick joy = OpJoystick();
@@ -403,10 +427,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 	}
 	enum
 	{
-		ID_Reset = 1, ID_Size100, ID_Size200, ID_Size300, ID_ToggleFullScreen,
-		ID_TapeToggle, ID_TapeFastToggle, ID_DriveNext,
+		ID_Reset = 1, ID_ResetToServiceRom, ID_Size100, ID_Size200, ID_Size300, ID_ToggleFullScreen,
+		ID_TapeToggle, ID_TapeFastToggle,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
-		ID_PauseToggle, ID_TrueSpeedToggle, ID_Mode48kToggle
+		ID_PauseToggle, ID_TrueSpeedToggle, ID_Mode48kToggle,
+		ID_BetaDiskDriveA, ID_BetaDiskDriveB, ID_BetaDiskDriveC, ID_BetaDiskDriveD
 	};
 	struct eJoyMenuItems
 	{
@@ -416,10 +441,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 		wxMenuItem* sinclair2;
 	};
 	eJoyMenuItems menu_joy;
+	wxMenuItem* menu_beta_disk_drive[4];
 	wxMenuItem* menu_pause;
 	wxMenuItem* menu_true_speed;
 	wxMenuItem* menu_mode_48k;
 	wxMenuItem* menu_tape_fast;
+	wxMenuItem* menu_reset_to_service_rom;
 
 private:
 	DECLARE_EVENT_TABLE()
@@ -442,7 +469,10 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_ToggleFullScreen, Frame::OnResize)
 	EVT_MENU(Frame::ID_TapeToggle,	Frame::OnTapeToggle)
 	EVT_MENU(Frame::ID_TapeFastToggle,Frame::OnTapeFastToggle)
-	EVT_MENU(Frame::ID_DriveNext,	Frame::OnDriveNext)
+	EVT_MENU(Frame::ID_BetaDiskDriveA, Frame::OnBetaDiskDrive)
+	EVT_MENU(Frame::ID_BetaDiskDriveB, Frame::OnBetaDiskDrive)
+	EVT_MENU(Frame::ID_BetaDiskDriveC, Frame::OnBetaDiskDrive)
+	EVT_MENU(Frame::ID_BetaDiskDriveD, Frame::OnBetaDiskDrive)
 	EVT_MENU(Frame::ID_JoyKempston,	Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoyCursor,	Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoyQAOP,		Frame::OnJoy)
@@ -450,6 +480,7 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_PauseToggle,	Frame::OnPauseToggle)
 	EVT_MENU(Frame::ID_TrueSpeedToggle,	Frame::OnTrueSpeedToggle)
 	EVT_MENU(Frame::ID_Mode48kToggle,	Frame::OnMode48kToggle)
+	EVT_MENU(Frame::ID_ResetToServiceRom,	Frame::OnResetToServiceRomToggle)
 	EVT_COMMAND(wxID_ANY, evtMouseCapture, Frame::OnMouseCapture)
 	EVT_COMMAND(wxID_ANY, evtSetStatusText, Frame::OnSetStatusText)
 	EVT_COMMAND(wxID_ANY, evtExitFullScreen, Frame::OnExitFullScreen)
