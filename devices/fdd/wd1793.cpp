@@ -52,7 +52,6 @@ bool eWD1793::Open(const char* type, int drive, const void* data, size_t data_si
 	found_sec = NULL;
 	status = ST_NOTRDY;
 	rqs = R_INTRQ;
-	fdd->Motor(0);
 	state = S_IDLE;
 	return fdds[drive].Open(type, data, data_size);
 }

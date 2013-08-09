@@ -124,6 +124,7 @@ eFdd::eFdd() : motor(0), cyl(0), side(0), ts_byte(0), write_protect(false), disk
 //-----------------------------------------------------------------------------
 bool eFdd::Open(const char* type, const void* data, size_t data_size)
 {
+	Motor(0);
 	if(!strcmp(type, "trd"))
 		return ReadTrd(data, data_size);
 	if(!strcmp(type, "scl"))
