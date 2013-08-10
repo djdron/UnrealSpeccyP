@@ -26,6 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
+//=============================================================================
+//	eCmdLine::Init
+//-----------------------------------------------------------------------------
 void eCmdLine::Init(wxCmdLineParser& parser) const
 {
 	static const wxCmdLineEntryDesc g_cmdLineDesc[] =
@@ -42,6 +45,9 @@ void eCmdLine::Init(wxCmdLineParser& parser) const
 	parser.SetDesc(g_cmdLineDesc);
 }
 
+//=============================================================================
+//	eCmdLine::Parse
+//-----------------------------------------------------------------------------
 void eCmdLine::Parse(wxCmdLineParser& parser)
 {
 	if(parser.GetParamCount())
@@ -64,6 +70,9 @@ void eCmdLine::Parse(wxCmdLineParser& parser)
 	}
 }
 
+//=============================================================================
+//	eCmdLine::GetOptionValue
+//-----------------------------------------------------------------------------
 void eCmdLine::GetOptionValue(eOptionValue* v, wxCmdLineParser& parser, const char* opt) const
 {
 	long o = 1;

@@ -34,7 +34,10 @@ void DoneSound();
 
 wxWindow* CreateFrame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline);
 
-class App: public wxApp
+//=============================================================================
+//	App
+//-----------------------------------------------------------------------------
+class App : public wxApp
 {
 	virtual bool OnInit()
 	{

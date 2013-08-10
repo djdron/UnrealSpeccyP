@@ -26,6 +26,9 @@ class wxCmdLineParser;
 namespace xPlatform
 {
 
+//=============================================================================
+//	eCmdLine
+//-----------------------------------------------------------------------------
 struct eCmdLine
 {
 	eCmdLine() : true_speed(V_DEFAULT), mode_48k(V_DEFAULT), full_screen(V_DEFAULT), size_percent(-1) {}
