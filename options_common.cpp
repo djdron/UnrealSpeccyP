@@ -25,9 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-#if defined(USE_UI) || defined(USE_OPTIONS_COMMON)
-
-struct eOptionState : public xOptions::eOptionB
+struct eOptionState : public xOptions::eOptionBool
 {
 	eOptionState() { storeable = false; }
 	const char* SnapshotName() const
@@ -55,7 +53,9 @@ static struct eOptionSaveState : public eOptionState
 	{
 		const char* name = SnapshotName();
 		if(name)
-			Handler()->OnSaveFile(name);
+			Set(Handler()->OnSaveFile(name));
+		else
+			Set(false);
 	}
 	virtual int Order() const { return 1; }
 } op_save_state;
@@ -67,7 +67,9 @@ static struct eOptionLoadState : public eOptionState
 	{
 		const char* name = SnapshotName();
 		if(name)
-			Handler()->OnOpenFile(name);
+			Set(Handler()->OnOpenFile(name));
+		else
+			Set(false);
 	}
 	virtual int Order() const { return 2; }
 } op_load_state;
@@ -93,6 +95,20 @@ static struct eOptionTape : public xOptions::eOptionInt
 	}
 	virtual int Order() const { return 40; }
 } op_tape;
+
+static struct eOptionPause : public xOptions::eOptionBool
+{
+	eOptionPause() { storeable = false; }
+	virtual const char* Name() const { return "pause"; }
+	virtual void Change(bool next = true)
+	{
+		eOptionBool::Change();
+		Handler()->VideoPaused(self);
+	}
+	virtual int Order() const { return 70; }
+} op_pause;
+
+#if defined(USE_UI)
 
 static struct eOptionSound : public xOptions::eOptionInt
 {
@@ -126,25 +142,13 @@ static struct eOptionVolume : public xOptions::eOptionInt
 	virtual int Order() const { return 30; }
 } op_volume;
 
-static struct eOptionPause : public xOptions::eOptionBool
-{
-	eOptionPause() { storeable = false; }
-	virtual const char* Name() const { return "pause"; }
-	virtual void Change(bool next = true)
-	{
-		eOptionBool::Change();
-		Handler()->VideoPaused(self);
-	}
-	virtual int Order() const { return 70; }
-} op_pause;
-
 eVolume	OpVolume() { return (eVolume)(int)op_volume; }
 void OpVolume(eVolume v) { op_volume.Set(v); }
 
 eSound	OpSound() { return (eSound)(int)op_sound; }
 void OpSound(eSound s) { op_sound.Set(s); }
 
-#else//USE_UI || USE_OPTIONS_COMMON
+#else//USE_UI
 
 eVolume	OpVolume() { return V_100; }
 void OpVolume(eVolume v) {}

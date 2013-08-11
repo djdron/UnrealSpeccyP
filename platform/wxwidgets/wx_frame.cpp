@@ -114,6 +114,8 @@ private:
 	void OnAutoPlayImageToggle(wxCommandEvent& event);
 	void OnMouseCapture(wxCommandEvent& event);
 	void OnSetStatusText(wxCommandEvent& event);
+	void OnQuickLoad(wxCommandEvent& event);
+	void OnQuickSave(wxCommandEvent& event);
 	void UpdateBetaDiskMenu();
 	void UpdateJoyMenu();
 	bool UpdateBoolOption(wxMenuItem* o, const char* name, bool toggle = false) const; // returns option value
@@ -124,7 +126,8 @@ private:
 		ID_TapeToggle, ID_TapeFastToggle, ID_AutoPlayImageToggle,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
 		ID_PauseToggle, ID_TrueSpeedToggle, ID_Mode48kToggle,
-		ID_BetaDiskDriveA, ID_BetaDiskDriveB, ID_BetaDiskDriveC, ID_BetaDiskDriveD
+		ID_BetaDiskDriveA, ID_BetaDiskDriveB, ID_BetaDiskDriveC, ID_BetaDiskDriveD,
+		ID_QuickSave, ID_QuickLoad,
 	};
 	struct eJoyMenuItems
 	{
@@ -179,6 +182,8 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_Mode48kToggle,	Frame::OnMode48kToggle)
 	EVT_MENU(Frame::ID_ResetToServiceRomToggle,	Frame::OnResetToServiceRomToggle)
 	EVT_MENU(Frame::ID_AutoPlayImageToggle,	Frame::OnAutoPlayImageToggle)
+	EVT_MENU(Frame::ID_QuickLoad,	Frame::OnQuickLoad)
+	EVT_MENU(Frame::ID_QuickSave,	Frame::OnQuickSave)
 	EVT_COMMAND(wxID_ANY, evtMouseCapture, Frame::OnMouseCapture)
 	EVT_COMMAND(wxID_ANY, evtSetStatusText, Frame::OnSetStatusText)
 	EVT_COMMAND(wxID_ANY, evtExitFullScreen, Frame::OnExitFullScreen)
@@ -201,6 +206,10 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	wxMenu* menuFile = new wxMenu;
 	menuFile->Append(wxID_OPEN, _("&Open...\tF3"));
 	menuFile->Append(wxID_SAVE, _("&Save...\tF2"));
+
+	menuFile->Append(ID_QuickLoad, _("Quick &Load\tF4"));
+	menuFile->Append(ID_QuickSave, _("&Quick Save\tF6"));
+
 #ifdef _MAC
 	menuFile->Append(wxID_ABOUT, _("About ") + title);
 #else//_MAC
@@ -579,6 +588,32 @@ void Frame::OnSetStatusText(wxCommandEvent& event)
 		SetStatusText(_("RZX error - invalid data"));
 	else if(event.GetString() == L"rzx_unsupported")
 		SetStatusText(_("RZX error - unsupported format"));
+}
+//=============================================================================
+//	Frame::OnQuickLoad
+//-----------------------------------------------------------------------------
+void Frame::OnQuickLoad(wxCommandEvent& event)
+{
+	using namespace xOptions;
+	eOption<bool>* o = eOption<bool>::Find("load state");
+	if(o)
+	{
+		o->Change();
+		SetStatusText(*o ? _("Quick load OK") : _("Quick load FAILED"));
+	}
+}
+//=============================================================================
+//	Frame::OnQuickSave
+//-----------------------------------------------------------------------------
+void Frame::OnQuickSave(wxCommandEvent& event)
+{
+	using namespace xOptions;
+	eOption<bool>* o = eOption<bool>::Find("save state");
+	if(o)
+	{
+		o->Change();
+		SetStatusText(*o ? _("Quick save OK") : _("Quick save FAILED"));
+	}
 }
 //=============================================================================
 //	Frame::UpdateBetaDiskMenu

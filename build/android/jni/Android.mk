@@ -12,7 +12,7 @@ CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
 LOCAL_MODULE    := usp
 LOCAL_SRC_FILES := $(CXXSRCS) $(CSRCS)
-LOCAL_CFLAGS	:= -D_ANDROID -DUSE_OPTIONS_COMMON -DUSE_EXTERN_RESOURCES -DUSE_FILE32API -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml
+LOCAL_CFLAGS	:= -D_ANDROID -DUSE_EXTERN_RESOURCES -DUSE_FILE32API -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml
 LOCAL_LDLIBS	:= -lz
 
 ifndef _PROFILE
