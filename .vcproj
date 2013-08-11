@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml;3rdparty\libpng"
+				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml;3rdparty\libpng"
 				PreprocessorDefinitions="_WINDOWS"
 				DebugInformationFormat="1"
 			/>
@@ -194,7 +194,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml;3rdparty\libpng"
+				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml;3rdparty\libpng"
 				PreprocessorDefinitions="_WINDOWS"
 				ExceptionHandling="1"
 				BufferSecurityCheck="false"
@@ -562,6 +562,26 @@
 					RelativePath=".\platform\wxwidgets\main_wx.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_canvas.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_cmdline.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_cmdline.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_frame.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_keys.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="dingoo"
@@ -868,6 +888,10 @@
 				>
 				<File
 					RelativePath=".\platform\sdl\sdl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\sdl\sdl_joystick.cpp"
 					>
 				</File>
 				<File
