@@ -49,10 +49,19 @@ void eWD1793::Init()
 bool eWD1793::Open(const char* type, int drive, const void* data, size_t data_size)
 {
 	assert(drive >= 0 && drive < FDD_COUNT);
-	found_sec = NULL;
-	status = ST_NOTRDY;
-	rqs = R_INTRQ;
-	state = S_IDLE;
+	int current_fdd;
+	for(current_fdd = FDD_COUNT; --current_fdd >= 0;)
+	{
+		if(fdd == &fdds[current_fdd])
+			break;
+	}
+	if(drive == current_fdd)
+	{
+		found_sec = NULL;
+		status = ST_NOTRDY;
+		rqs = R_INTRQ;
+		state = S_IDLE;
+	}
 	return fdds[drive].Open(type, data, data_size);
 }
 //=============================================================================
