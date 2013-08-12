@@ -254,14 +254,14 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menuWindow->Append(ID_FullScreenToggle, _("&Full screen\tCtrl+F"));
 
 	wxMenuBar* menuBar = new wxMenuBar;
-	menuBar->Append(menuFile, _("&File"));
-	menuBar->Append(menuDevice, _("&Device"));
-	menuBar->Append(menuWindow, _("&Window"));
+	menuBar->Append(menuFile, _("File"));
+	menuBar->Append(menuDevice, _("Device"));
+	menuBar->Append(menuWindow, _("Window"));
 
 #ifndef _MAC
 	wxMenu* menuHelp = new wxMenu;
 	menuHelp->Append(wxID_ABOUT, _("&About ") + title);
-	menuBar->Append(menuHelp, _("&Help"));
+	menuBar->Append(menuHelp, _("Help"));
 #endif//_MAC
 
 	SetMenuBar(menuBar);

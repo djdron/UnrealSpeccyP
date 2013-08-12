@@ -279,7 +279,10 @@ void GLCanvas::OnKillFocus(wxFocusEvent& event)
 void GLCanvas::KillMouseFocus()
 {
 	if(HasCapture())
+	{
 		ReleaseMouse();
+		OnMouseCaptureLost();
+	}
 }
 //=============================================================================
 //	GLCanvas::OnMouseCaptureLost
