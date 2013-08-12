@@ -144,6 +144,7 @@ private:
 	wxMenuItem* menu_tape_fast;
 	wxMenuItem* menu_reset_to_service_rom;
 	wxMenuItem* menu_auto_play_image;
+	wxMenuItem* menu_quick_save;
 
 private:
 	DECLARE_EVENT_TABLE()
@@ -209,7 +210,8 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 
 	menuFile->AppendSeparator();
 	menuFile->Append(ID_QuickLoad, _("Quick &Load\tF4"));
-	menuFile->Append(ID_QuickSave, _("&Quick Save\tF6"));
+	menu_quick_save = menuFile->Append(ID_QuickSave, _("&Quick Save\tF6"));
+	menu_quick_save->Enable(false);
 
 #ifdef _MAC
 	menuFile->Append(wxID_ABOUT, _("About ") + title);
@@ -331,7 +333,10 @@ bool Frame::UpdateBoolOption(wxMenuItem* o, const char* name, bool toggle) const
 void Frame::OnReset(wxCommandEvent& event)
 {
 	if(Handler()->OnAction(A_RESET) == AR_OK)
+	{
 		SetStatusText(_("Reset OK"));
+		menu_quick_save->Enable(false);
+	}
 	else
 		SetStatusText(_("Reset FAILED"));
 }
@@ -383,7 +388,10 @@ void Frame::OnOpenFile(wxCommandEvent& event)
 	if(fd.ShowModal() == wxID_OK)
 	{
 		if(Handler()->OnOpenFile(wxConvertWX2MB(fd.GetPath().c_str())))
+		{
 			SetStatusText(_("File open OK"));
+			menu_quick_save->Enable(true);
+		}
 		else
 			SetStatusText(_("File open FAILED"));
 	}
@@ -601,6 +609,8 @@ void Frame::OnQuickLoad(wxCommandEvent& event)
 	{
 		o->Change();
 		SetStatusText(*o ? _("Quick load OK") : _("Quick load FAILED"));
+		if(*o)
+			menu_quick_save->Enable(true);
 	}
 }
 //=============================================================================
