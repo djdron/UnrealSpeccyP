@@ -61,6 +61,25 @@ private:
 	virtual void OnKillFocus(wxFocusEvent& event);
 	void KillMouseFocus();
 
+	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event)
+	{
+		wxLogDebug( wxT("OnMouseCaptureLost"));
+		OnMouseCaptureLost();
+	}
+	void OnMouseCaptureLost()
+	{
+		SetCursor(wxNullCursor);
+		wxCommandEvent ev(evtMouseCapture, false);
+		wxPostEvent(this, ev);
+	}
+	void OnMouseCaptureChanged(wxMouseCaptureChangedEvent& event)
+	{
+		wxLogDebug( wxT("OnMouseCaptureChanged"));
+		if(event.GetCapturedWindow() != this)
+		{
+			OnMouseCaptureLost();
+		}
+	}
 	static int canvas_attr[];
 	DECLARE_EVENT_TABLE()
 
@@ -97,6 +116,8 @@ BEGIN_EVENT_TABLE(GLCanvas, wxGLCanvas)
 	EVT_RIGHT_DOWN(GLCanvas::OnMouseKey)
 	EVT_RIGHT_UP(GLCanvas::OnMouseKey)
 	EVT_KILL_FOCUS(GLCanvas::OnKillFocus)
+	EVT_MOUSE_CAPTURE_LOST(GLCanvas::OnMouseCaptureLost)
+	EVT_MOUSE_CAPTURE_CHANGED(GLCanvas::OnMouseCaptureChanged)
 END_EVENT_TABLE()
 
 //=============================================================================

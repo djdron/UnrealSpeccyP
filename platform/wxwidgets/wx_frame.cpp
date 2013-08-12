@@ -207,6 +207,7 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menuFile->Append(wxID_OPEN, _("&Open...\tF3"));
 	menuFile->Append(wxID_SAVE, _("&Save...\tF2"));
 
+	menuFile->AppendSeparator();
 	menuFile->Append(ID_QuickLoad, _("Quick &Load\tF4"));
 	menuFile->Append(ID_QuickSave, _("&Quick Save\tF6"));
 
@@ -257,7 +258,7 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 
 #ifndef _MAC
 	wxMenu* menuHelp = new wxMenu;
-	menuHelp->Append(wxID_ABOUT, _("&About") + title);
+	menuHelp->Append(wxID_ABOUT, _("&About ") + title);
 	menuBar->Append(menuHelp, _("&Help"));
 #endif//_MAC
 
