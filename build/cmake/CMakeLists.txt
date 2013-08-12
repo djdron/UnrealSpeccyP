@@ -87,6 +87,12 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM_WX_WIDGETS})
 list(APPEND SRCH ${SRCH_PLATFORM_WX_WIDGETS})
 source_group("platform\\wxwidgets" FILES ${SRCCXX_PLATFORM_WX_WIDGETS} ${SRCH_PLATFORM_WX_WIDGETS})
 
+IF(WIN32)
+add_definitions(-DWX_RES)
+SET(SRCRES "../win/unreal_speccy_portable.rc")
+source_group("platform\\win\\res" FILES ${SRCRES})
+ENDIF(WIN32)
+
 #Open AL
 find_package(OpenAL REQUIRED)
 include_directories("${OPENAL_INCLUDE_DIR}")
@@ -103,7 +109,7 @@ file(GLOB SRCCXX_PLATFORM_OPENGL "../../platform/gl/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_OPENGL})
 source_group("platform\\gl" FILES ${SRCCXX_PLATFORM_OPENGL})
 
-add_executable(unreal_speccy_portable WIN32 ${SRCCXX} ${SRCC} ${SRCH})
+add_executable(unreal_speccy_portable WIN32 ${SRCCXX} ${SRCC} ${SRCH} ${SRCRES})
 target_link_libraries(unreal_speccy_portable ${wxWidgets_LIBRARIES})
 target_link_libraries(unreal_speccy_portable ${OPENAL_LIBRARY})
 target_link_libraries(unreal_speccy_portable ${OPENGL_LIBRARIES})
