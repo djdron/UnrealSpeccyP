@@ -63,6 +63,7 @@ void TranslateKey(int& key, dword& flags)
 	case '\\':	key = 'k';		break;
 	case ']':	key = 'p';		break;
 	case '\'':
+	case '\"':
 		if(flags&KF_SHIFT)
 		{
 			key = 'P';
@@ -73,14 +74,17 @@ void TranslateKey(int& key, dword& flags)
 		flags |= KF_ALT;
 		break;
 	case '<':
-		key = 'R';
-		flags &= ~KF_SHIFT;
-		flags |= KF_ALT;
-		break;
 	case ',':
-		key = 'N';
+		if(flags&KF_SHIFT)
+		{
+			key = 'R';
+			flags &= ~KF_SHIFT;
+		}
+		else
+			key = 'N';
 		flags |= KF_ALT;
 		break;
+	case '>':
 	case '.':
 		if(flags&KF_SHIFT)
 		{
@@ -92,6 +96,7 @@ void TranslateKey(int& key, dword& flags)
 		flags |= KF_ALT;
 		break;
 	case ';':
+	case ':':
 		if(flags&KF_SHIFT)
 		{
 			key = 'Z';
@@ -102,6 +107,7 @@ void TranslateKey(int& key, dword& flags)
 		flags |= KF_ALT;
 		break;
 	case '/':
+	case '?':
 		if(flags&KF_SHIFT)
 		{
 			key = 'C';
@@ -112,6 +118,7 @@ void TranslateKey(int& key, dword& flags)
 		flags |= KF_ALT;
 		break;
 	case '-':
+	case '_':
 		if(flags&KF_SHIFT)
 		{
 			key = '0';
@@ -122,6 +129,7 @@ void TranslateKey(int& key, dword& flags)
 		flags |= KF_ALT;
 		break;
 	case '=':
+	case '+':
 		if(flags&KF_SHIFT)
 		{
 			key = 'K';
