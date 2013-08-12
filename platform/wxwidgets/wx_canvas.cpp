@@ -60,26 +60,9 @@ private:
 	virtual void OnMouseKey(wxMouseEvent& event);
 	virtual void OnKillFocus(wxFocusEvent& event);
 	void KillMouseFocus();
-
-	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event)
-	{
-		wxLogDebug( wxT("OnMouseCaptureLost"));
-		OnMouseCaptureLost();
-	}
-	void OnMouseCaptureLost()
-	{
-		SetCursor(wxNullCursor);
-		wxCommandEvent ev(evtMouseCapture, false);
-		wxPostEvent(this, ev);
-	}
-	void OnMouseCaptureChanged(wxMouseCaptureChangedEvent& event)
-	{
-		wxLogDebug( wxT("OnMouseCaptureChanged"));
-		if(event.GetCapturedWindow() != this)
-		{
-			OnMouseCaptureLost();
-		}
-	}
+	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event) { OnMouseCaptureLost(); }
+	void OnMouseCaptureLost();
+	void OnMouseCaptureChanged(wxMouseCaptureChangedEvent& event);
 	static int canvas_attr[];
 	DECLARE_EVENT_TABLE()
 
@@ -296,11 +279,26 @@ void GLCanvas::OnKillFocus(wxFocusEvent& event)
 void GLCanvas::KillMouseFocus()
 {
 	if(HasCapture())
-	{
 		ReleaseMouse();
-		SetCursor(wxNullCursor);
-		wxCommandEvent ev(evtMouseCapture, false);
-		wxPostEvent(this, ev);
+}
+//=============================================================================
+//	GLCanvas::OnMouseCaptureLost
+//-----------------------------------------------------------------------------
+void GLCanvas::OnMouseCaptureLost()
+{
+	SetCursor(wxNullCursor);
+	wxCommandEvent ev(evtMouseCapture, false);
+	wxPostEvent(this, ev);
+//	wxLogDebug(_("OnMouseCaptureLost()"));
+}
+//=============================================================================
+//	GLCanvas::OnMouseCaptureChanged
+//-----------------------------------------------------------------------------
+void GLCanvas::OnMouseCaptureChanged(wxMouseCaptureChangedEvent& event)
+{
+	if(event.GetCapturedWindow() != this)
+	{
+		OnMouseCaptureLost();
 	}
 }
 
