@@ -219,7 +219,7 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	SetDropTarget(new DropFilesTarget);
 	menuFile->AppendSeparator();
 #endif//_MAC
-	menu_auto_play_image = menuFile->Append(ID_AutoPlayImageToggle, _("Auto &launch programs"), _(""), wxITEM_CHECK);
+	menu_auto_play_image = menuFile->Append(ID_AutoPlayImageToggle, _("&Auto launch programs"), _(""), wxITEM_CHECK);
 	menuFile->AppendSeparator();
 	menuFile->Append(wxID_EXIT, _("E&xit"));
 
