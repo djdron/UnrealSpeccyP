@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #undef self
 
 #include <wx/wx.h>
+#include <wx/popupwin.h>
 #include <wx/glcanvas.h>
 
 namespace xPlatform
@@ -39,6 +40,147 @@ void DrawGL(int w, int h);
 extern const wxEventType evtMouseCapture = wxNewEventType();
 extern const wxEventType evtSetStatusText = wxNewEventType();
 extern const wxEventType evtExitFullScreen = wxNewEventType();
+
+class MouseCapture : public wxPopupWindow
+{
+public:
+	MouseCapture(wxWindow* parent) : wxPopupWindow(parent)
+	{
+		wxSize ss(wxSystemSettings::GetMetric(wxSYS_SCREEN_X), wxSystemSettings::GetMetric(wxSYS_SCREEN_Y));
+		SetSize(ss);
+		Position(wxPoint(0, 0), wxSize(0, 0));
+		Show();
+		wxImage image_blank(1, 1);
+		image_blank.SetMask();
+		image_blank.SetMaskColour(0, 0, 0);
+		SetCursor(image_blank);
+		mouse_pos = ScreenToClient(wxGetMousePosition());
+		CaptureMouse();
+		wxCommandEvent ev(evtMouseCapture, true);
+		wxPostEvent(this, ev);
+	}
+private:
+	DECLARE_EVENT_TABLE()
+
+	virtual void OnEraseBackground(wxEraseEvent& event) {}
+	virtual void OnMouseMove(wxMouseEvent& event);
+	virtual void OnMouseKey(wxMouseEvent& event);
+	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event) { PostClose(); }
+	void OnMouseCaptureChanged(wxMouseCaptureChangedEvent& event);
+	void PostClose();
+	void OnPostClose(wxCommandEvent& event) { Close(); }
+	void OnClose(wxCloseEvent& event);
+
+private:
+	struct eMouseDelta
+	{
+		eMouseDelta() : x(0.0f), y(0.0f) {}
+		eMouseDelta(const wxPoint& d, float sx, float sy)
+		{
+			x = sx*d.x;
+			y = sy*d.y;
+		}
+		eMouseDelta& operator+=(const eMouseDelta& d) { x += d.x; y += d.y; return *this; }
+		float x;
+		float y;
+	};
+	eMouseDelta mouse_delta;
+	wxPoint mouse_pos;
+	static const wxEventType evtPostClose;
+};
+const wxEventType MouseCapture::evtPostClose = wxNewEventType();
+
+BEGIN_EVENT_TABLE(MouseCapture, wxWindow)
+	EVT_ERASE_BACKGROUND(MouseCapture::OnEraseBackground)
+	EVT_MOTION(MouseCapture::OnMouseMove)
+	EVT_LEFT_DOWN(MouseCapture::OnMouseKey)
+	EVT_LEFT_UP(MouseCapture::OnMouseKey)
+	EVT_RIGHT_DOWN(MouseCapture::OnMouseKey)
+	EVT_RIGHT_UP(MouseCapture::OnMouseKey)
+	EVT_MOUSE_CAPTURE_LOST(MouseCapture::OnMouseCaptureLost)
+	EVT_MOUSE_CAPTURE_CHANGED(MouseCapture::OnMouseCaptureChanged)
+	EVT_CLOSE(MouseCapture::OnClose)
+	EVT_COMMAND(wxID_ANY, MouseCapture::evtPostClose, MouseCapture::OnPostClose)
+END_EVENT_TABLE()
+
+//=============================================================================
+//	MouseCapture::OnMouseMove
+//-----------------------------------------------------------------------------
+void MouseCapture::OnMouseMove(wxMouseEvent& event)
+{
+	event.Skip();
+	if(!HasCapture())
+		return;
+
+	wxPoint p = event.GetPosition();
+//	wxLogDebug(_("OnMouseMove(%d, %d)"), p.x, p.y);
+	wxPoint d = p - mouse_pos;
+	wxSize ss(GetSize());
+	bool warp = false;
+	if(p.x < 100) 			p.x = ss.x - 100, warp = true;
+	if(p.y < 100) 			p.y = ss.y - 100, warp = true;
+	if(p.x > ss.x - 100)	p.x = 100, warp = true;
+	if(p.y > ss.y - 100)	p.y = 100, warp = true;
+	if(warp)
+	{
+		mouse_pos = p;
+		WarpPointer(mouse_pos.x, mouse_pos.y);
+	}
+	else
+		mouse_pos = p;
+
+	wxSize size = GetParent()->GetClientSize();
+	float sx, sy;
+	GetScaleWithAspectRatio43(&sx, &sy, size.x, size.y);
+	float scale_x = 320.0f/size.x/sx;
+	float scale_y = 240.0f/size.y/sy;
+	mouse_delta += eMouseDelta(d, scale_x, scale_y);
+	int dx = mouse_delta.x;
+	int dy = mouse_delta.y;
+	if(dx || dy)
+	{
+		mouse_delta.x -= dx;
+		mouse_delta.y -= dy;
+		Handler()->OnMouse(MA_MOVE, dx, -dy);
+	}
+}
+//=============================================================================
+//	MouseCapture::OnMouseKey
+//-----------------------------------------------------------------------------
+void MouseCapture::OnMouseKey(wxMouseEvent& event)
+{
+	event.Skip();
+	Handler()->OnMouse(MA_BUTTON, event.Button(wxMOUSE_BTN_LEFT) ? 0 : 1, event.ButtonDown());
+}
+//=============================================================================
+//	MouseCapture::OnMouseCaptureChanged
+//-----------------------------------------------------------------------------
+void MouseCapture::OnMouseCaptureChanged(wxMouseCaptureChangedEvent& event)
+{
+	if(event.GetCapturedWindow() != this)
+		PostClose();
+}
+//=============================================================================
+//	MouseCapture::OnMouseCaptureChanged
+//-----------------------------------------------------------------------------
+void MouseCapture::PostClose()
+{
+	wxCommandEvent ev(evtPostClose);
+	wxPostEvent(this, ev);
+}
+//=============================================================================
+//	MouseCapture::OnClose
+//-----------------------------------------------------------------------------
+void MouseCapture::OnClose(wxCloseEvent& event)
+{
+	if(HasCapture())
+		ReleaseMouse();
+	SetCursor(wxNullCursor);
+	wxCommandEvent ev(evtMouseCapture, false);
+	ProcessEvent(ev);
+//	wxLogDebug(_("OnClose()"));
+	Destroy();
+}
 
 //=============================================================================
 //	GLCanvas
@@ -56,31 +198,13 @@ private:
 	virtual void OnEraseBackground(wxEraseEvent& event) {}
 	virtual void OnKeydown(wxKeyEvent& event);
 	virtual void OnKeyup(wxKeyEvent& event);
-	virtual void OnMouseMove(wxMouseEvent& event);
-	virtual void OnMouseKey(wxMouseEvent& event);
 	virtual void OnKillFocus(wxFocusEvent& event);
-	void KillMouseFocus();
-	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event) { OnMouseCaptureLost(); }
-	void OnMouseCaptureLost();
-	void OnMouseCaptureChanged(wxMouseCaptureChangedEvent& event);
+	virtual void OnMouseKey(wxMouseEvent& event);
+	void OnMouseCapture(wxCommandEvent& event);
 	static int canvas_attr[];
 	DECLARE_EVENT_TABLE()
-
-private:
-	struct eMouseDelta
-	{
-		eMouseDelta() : x(0.0f), y(0.0f) {}
-		eMouseDelta(const wxPoint& d, float sx, float sy)
-		{
-			x = sx*d.x;
-			y = sy*d.y;
-		}
-		eMouseDelta& operator+=(const eMouseDelta& d) { x += d.x; y += d.y; return *this; }
-		float x;
-		float y;
-	};
-	eMouseDelta mouse_delta;
-	wxPoint mouse_pos;
+	
+	wxWindow* mouse_capture;
 };
 int GLCanvas::canvas_attr[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, 0 };
 
@@ -93,22 +217,16 @@ BEGIN_EVENT_TABLE(GLCanvas, wxGLCanvas)
 	EVT_IDLE(GLCanvas::OnIdle)
 	EVT_KEY_DOWN(GLCanvas::OnKeydown)
 	EVT_KEY_UP(GLCanvas::OnKeyup)
-	EVT_MOTION(GLCanvas::OnMouseMove)
 	EVT_LEFT_DOWN(GLCanvas::OnMouseKey)
-	EVT_LEFT_UP(GLCanvas::OnMouseKey)
-	EVT_RIGHT_DOWN(GLCanvas::OnMouseKey)
-	EVT_RIGHT_UP(GLCanvas::OnMouseKey)
 	EVT_KILL_FOCUS(GLCanvas::OnKillFocus)
-	EVT_MOUSE_CAPTURE_LOST(GLCanvas::OnMouseCaptureLost)
-	EVT_MOUSE_CAPTURE_CHANGED(GLCanvas::OnMouseCaptureChanged)
+	EVT_COMMAND(wxID_ANY, evtMouseCapture, GLCanvas::OnMouseCapture)
 END_EVENT_TABLE()
 
 //=============================================================================
 //	GLCanvas::GLCanvas
 //-----------------------------------------------------------------------------
 GLCanvas::GLCanvas(wxWindow* parent)
-	: eInherited(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, _("GLCanvas"), canvas_attr)
-	, mouse_pos(0, 0)
+	: eInherited(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, _("GLCanvas"), canvas_attr), mouse_capture(NULL)
 {
 }
 //=============================================================================
@@ -171,8 +289,10 @@ void GLCanvas::OnKeydown(wxKeyEvent& event)
 	int key = event.GetKeyCode();
 	if(key == WXK_ESCAPE)
 	{
-		if(HasCapture())
-			KillMouseFocus();
+		if(mouse_capture)
+		{
+			mouse_capture->Close();
+		}
 		else
 		{
 			wxCommandEvent ev(evtExitFullScreen);
@@ -201,110 +321,30 @@ void GLCanvas::OnKeyup(wxKeyEvent& event)
 	Handler()->OnKey(key, OpJoyKeyFlags());
 }
 //=============================================================================
-//	GLCanvas::OnMouseMove
-//-----------------------------------------------------------------------------
-void GLCanvas::OnMouseMove(wxMouseEvent& event)
-{
-	event.Skip();
-	if(!HasCapture())
-		return;
-
-	wxSize size = GetClientSize();
-	wxPoint p = event.GetPosition();
-	wxPoint d = p - mouse_pos;
-	wxPoint ps = ClientToScreen(p);
-	wxSize ss(wxSystemSettings::GetMetric(wxSYS_SCREEN_X), wxSystemSettings::GetMetric(wxSYS_SCREEN_Y));
-	bool warp = false;
-	if(ps.x < 100) 			ps.x = ss.x - 100, warp = true;
-	if(ps.y < 100) 			ps.y = ss.y - 100, warp = true;
-	if(ps.x > ss.x - 100)	ps.x = 100, warp = true;
-	if(ps.y > ss.y - 100)	ps.y = 100, warp = true;
-	if(warp)
-	{
-		mouse_pos = ScreenToClient(ps);
-		WarpPointer(mouse_pos.x, mouse_pos.y);
-	}
-	else
-		mouse_pos = p;
-
-	float sx, sy;
-	GetScaleWithAspectRatio43(&sx, &sy, size.x, size.y);
-	float scale_x = 320.0f/size.x/sx;
-	float scale_y = 240.0f/size.y/sy;
-	mouse_delta += eMouseDelta(d, scale_x, scale_y);
-	int dx = mouse_delta.x;
-	int dy = mouse_delta.y;
-	if(dx || dy)
-	{
-		mouse_delta.x -= dx;
-		mouse_delta.y -= dy;
-		Handler()->OnMouse(MA_MOVE, dx, -dy);
-	}
-}
-//=============================================================================
-//	GLCanvas::OnMouseKey
+//	GLCanvas::OnKeyup
 //-----------------------------------------------------------------------------
 void GLCanvas::OnMouseKey(wxMouseEvent& event)
 {
 	event.Skip();
-#ifndef _MAC
-	if(!HasCapture())
-	{
-		if(event.Button(wxMOUSE_BTN_LEFT) && event.ButtonDown())
-		{
-			wxImage image_blank(1, 1);
-			image_blank.SetMask();
-			image_blank.SetMaskColour(0, 0, 0);
-			SetCursor(image_blank);
-			mouse_pos = event.GetPosition();
-			CaptureMouse();
-			wxCommandEvent ev(evtMouseCapture, true);
-			wxPostEvent(this, ev);
-		}
-	}
-	else
-		Handler()->OnMouse(MA_BUTTON, event.Button(wxMOUSE_BTN_LEFT) ? 0 : 1, event.ButtonDown());
-#endif//_MAC
+	if(!mouse_capture)
+		mouse_capture = new MouseCapture(this);
 }
 //=============================================================================
 //	GLCanvas::OnKillFocus
 //-----------------------------------------------------------------------------
 void GLCanvas::OnKillFocus(wxFocusEvent& event)
 {
-	KillMouseFocus();
+	SAFE_CALL(mouse_capture)->Close();
 }
 //=============================================================================
-//	GLCanvas::KillMouseFocus
+//	GLCanvas::OnMouseCapture
 //-----------------------------------------------------------------------------
-void GLCanvas::KillMouseFocus()
+void GLCanvas::OnMouseCapture(wxCommandEvent& event)
 {
-	if(HasCapture())
-	{
-		ReleaseMouse();
-		OnMouseCaptureLost();
-	}
+	event.Skip();
+	if(!event.GetId())
+		mouse_capture = NULL;
 }
-//=============================================================================
-//	GLCanvas::OnMouseCaptureLost
-//-----------------------------------------------------------------------------
-void GLCanvas::OnMouseCaptureLost()
-{
-	SetCursor(wxNullCursor);
-	wxCommandEvent ev(evtMouseCapture, false);
-	wxPostEvent(this, ev);
-//	wxLogDebug(_("OnMouseCaptureLost()"));
-}
-//=============================================================================
-//	GLCanvas::OnMouseCaptureChanged
-//-----------------------------------------------------------------------------
-void GLCanvas::OnMouseCaptureChanged(wxMouseCaptureChangedEvent& event)
-{
-	if(event.GetCapturedWindow() != this)
-	{
-		OnMouseCaptureLost();
-	}
-}
-
 
 //=============================================================================
 //	CreateGLCanvas
