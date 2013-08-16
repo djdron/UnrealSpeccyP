@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
+#include "wx_joystick.h"
 
 namespace xPlatform
 {
@@ -50,6 +51,7 @@ class GLCanvas : public wxGLCanvas
 	typedef wxGLCanvas eInherited;
 public:
 	GLCanvas(wxWindow* parent);
+	virtual ~GLCanvas();
 
 private:
 	void OnPaint(wxPaintEvent& event);
@@ -61,10 +63,14 @@ private:
 	void OnKillFocus(wxFocusEvent& event);
 	void OnMouseKey(wxMouseEvent& event);
 	void OnMouseCapture(wxCommandEvent& event);
+	void OnJoystickEvent(wxJoystickEvent& event);
+
+private:
 	static int canvas_attr[];
 	DECLARE_EVENT_TABLE()
 	
 	wxWindow* mouse_capture;
+	eWxJoystick* joysticks[2];
 };
 int GLCanvas::canvas_attr[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, 0 };
 
@@ -80,14 +86,26 @@ BEGIN_EVENT_TABLE(GLCanvas, wxGLCanvas)
 	EVT_LEFT_DOWN(GLCanvas::OnMouseKey)
 	EVT_KILL_FOCUS(GLCanvas::OnKillFocus)
 	EVT_COMMAND(wxID_ANY, evtMouseCapture, GLCanvas::OnMouseCapture)
+	EVT_JOYSTICK_EVENTS(GLCanvas::OnJoystickEvent)
 END_EVENT_TABLE()
 
 //=============================================================================
 //	GLCanvas::GLCanvas
 //-----------------------------------------------------------------------------
 GLCanvas::GLCanvas(wxWindow* parent)
-	: eInherited(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, _("GLCanvas"), canvas_attr), mouse_capture(NULL)
+	: eInherited(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, _("GLCanvas"), canvas_attr)
+	, mouse_capture(NULL)
 {
+	joysticks[0] = new eWxJoystick(this, wxJOYSTICK1);
+	joysticks[1] = new eWxJoystick(this, wxJOYSTICK2);
+}
+//=============================================================================
+//	GLCanvas::~GLCanvas
+//-----------------------------------------------------------------------------
+GLCanvas::~GLCanvas()
+{
+	delete joysticks[0];
+	delete joysticks[1];
 }
 //=============================================================================
 //	GLCanvas::OnPaint
@@ -204,6 +222,17 @@ void GLCanvas::OnMouseCapture(wxCommandEvent& event)
 	event.Skip();
 	if(!event.GetId())
 		mouse_capture = NULL;
+}
+//=============================================================================
+//	GLCanvas::OnJoystickEvent
+//-----------------------------------------------------------------------------
+void GLCanvas::OnJoystickEvent(wxJoystickEvent& event)
+{
+	switch(event.GetJoystick())
+	{
+	case wxJOYSTICK1: joysticks[0]->OnEvent(event); break;
+	case wxJOYSTICK2: joysticks[1]->OnEvent(event); break;
+	}
 }
 
 //=============================================================================

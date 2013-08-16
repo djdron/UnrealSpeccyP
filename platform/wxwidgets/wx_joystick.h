@@ -16,44 +16,46 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __WX_CMDLINE_H__
-#define __WX_CMDLINE_H__
+#ifndef __WX_JOYSTICK_H__
+#define __WX_JOYSTICK_H__
 
 #pragma once
 
 #ifdef USE_WXWIDGETS
 
-#undef self
-#include <wx/string.h>
-
-class wxCmdLineParser;
+class wxWindow;
+class wxJoystick;
+class wxJoystickEvent;
 
 namespace xPlatform
 {
 
 //=============================================================================
-//	eCmdLine
+//	eWxJoystick
 //-----------------------------------------------------------------------------
-struct eCmdLine
+class eWxJoystick
 {
-	eCmdLine() : true_speed(V_DEFAULT), mode_48k(V_DEFAULT), full_screen(V_DEFAULT), size_percent(-1) {}
+public:
+	eWxJoystick(wxWindow* owner, int id);
+	~eWxJoystick();
+	void OnEvent(wxJoystickEvent& event);
 
-	enum eOptionValue { V_DEFAULT = -1, V_OFF = 0, V_ON = 1 };
-	void Init(wxCmdLineParser& parser) const;
-	void Parse(wxCmdLineParser& parser);
-	void GetOptionValue(eOptionValue* v, wxCmdLineParser& parser, const char* opt) const;
+private:
+	enum eButtonId { JB_LEFT, JB_UP, JB_RIGHT, JB_DOWN, JB_FIRE, JB_COUNT };
+	struct eState
+	{
+		eState() { memset(buttons, 0, sizeof(buttons)); }
+		bool buttons[JB_COUNT];
+	};
+	void ProcessButton(dword button, bool state_new, byte key);
 
-	wxString file_to_open;
-	wxString joystick;
-
-	eOptionValue true_speed;
-	eOptionValue mode_48k;
-	eOptionValue full_screen;
-	int size_percent;
+private:
+	eState state;
+	wxJoystick* joy;
 };
 
 }//namespace xPlatform
 
 #endif//USE_WXWIDGETS
 
-#endif//__WX_CMDLINE_H__
+#endif//__WX_JOYSTICK_H__
