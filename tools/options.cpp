@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform/platform.h"
 
 #ifdef USE_CONFIG
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include "../platform/io.h"
 #endif//USE_CONFIG
 
@@ -177,16 +177,17 @@ static const char* XmlNameToOptName(const char* name)
 //-----------------------------------------------------------------------------
 void Load()
 {
+	using namespace tinyxml2;
 	eOA::SortByOrder();
-	TiXmlDocument doc;
-	if(!doc.LoadFile(FileName()))
+	XMLDocument doc;
+	if(doc.LoadFile(FileName()) != XML_SUCCESS)
 		return;
 
-	TiXmlElement* root = doc.RootElement();
+	XMLElement* root = doc.RootElement();
 	if(!root)
 		return;
 
-	TiXmlElement* opts = root->FirstChild("Options")->FirstChildElement();
+	XMLElement* opts = root->FirstChildElement("Options")->FirstChildElement();
 	if(!opts)
 		return;
 
@@ -209,22 +210,22 @@ void Load()
 //-----------------------------------------------------------------------------
 void Store()
 {
-	TiXmlDocument doc;
-	TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "UTF-8", "");
+	using namespace tinyxml2;
+	XMLDocument doc;
+	XMLDeclaration* decl = doc.NewDeclaration();
 	doc.LinkEndChild(decl);
-
-	TiXmlElement* root = new TiXmlElement("UnrealSpeccyPortable");
+	XMLElement* root = doc.NewElement("UnrealSpeccyPortable");
 	doc.LinkEndChild(root);
-	TiXmlElement* opts = new TiXmlElement("Options");
+	XMLElement* opts = doc.NewElement("Options");
 	root->LinkEndChild(opts);
 
 	for(eOptionB* o = eOptionB::First(); o; o = o->Next())
 	{
 		if(!o->Storeable())
 			continue;
-		TiXmlElement* msg;
-		msg = new TiXmlElement(OptNameToXmlName(o->Name()));
-		msg->LinkEndChild(new TiXmlText(o->Value()));
+		XMLElement* msg;
+		msg = doc.NewElement(OptNameToXmlName(o->Name()));
+		msg->LinkEndChild(doc.NewText(o->Value()));
 		opts->LinkEndChild(msg);
 	}
 	doc.SaveFile(FileName());

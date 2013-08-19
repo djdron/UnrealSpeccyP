@@ -10,10 +10,7 @@ SOURCES += ../../speccy.cpp \
 	../../z80/z80_op_tables.cpp \
 	../../z80/z80_opcodes.cpp \
 	../../z80/z80.cpp \
-	../../3rdparty/tinyxml/tinyxmlparser.cpp \
-	../../3rdparty/tinyxml/tinyxmlerror.cpp \
-	../../3rdparty/tinyxml/tinyxml.cpp \
-	../../3rdparty/tinyxml/tinystr.cpp \
+	../../3rdparty/tinyxml2/tinyxml2.cpp \
 	../../3rdparty/zlib/zutil.c \
 	../../3rdparty/zlib/uncompr.c \
 	../../3rdparty/zlib/trees.c \
@@ -72,8 +69,7 @@ HEADERS  += \
 	../../z80/z80_op_cb.h \
 	../../z80/z80_op.h \
 	../../z80/z80.h \
-	../../3rdparty/tinyxml/tinyxml.h \
-	../../3rdparty/tinyxml/tinystr.h \
+	../../3rdparty/tinyxml2/tinyxml2.h \
 	../../3rdparty/zlib/zutil.h \
 	../../3rdparty/zlib/zlib.h \
 	../../3rdparty/zlib/zconf.h \
@@ -130,7 +126,7 @@ QMAKE_CFLAGS_WARN_ON    = -Wall
 
 DEFINES += USE_QT USE_CONFIG USE_ZIP USE_EXTERN_RESOURCES USE_TUI
 
-INCLUDEPATH += "../../3rdparty/tinyxml"
+INCLUDEPATH += "../../3rdparty/tinyxml2"
 INCLUDEPATH += "../../3rdparty/zlib"
 INCLUDEPATH += "../../3rdparty/minizip"
 

@@ -2,7 +2,7 @@ SRC_PATH = ../..
 OBJ_BASE = Release
 
 PROJECT_NAME = unreal_speccy_portable
-SRCFOLDERS = . z80 tools 3rdparty/minizip 3rdparty/tinyxml snapshot ui platform platform/custom_ui platform/psp devices devices/fdd devices/input devices/sound
+SRCFOLDERS = . z80 tools 3rdparty/minizip 3rdparty/tinyxml2 snapshot ui platform platform/custom_ui platform/psp devices devices/fdd devices/input devices/sound
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
@@ -19,7 +19,7 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
-STD_OPTS  = -G0 -Wall -c -fmessage-length=0 -D_PSP_FW_VERSION=150 -DUSE_FILE32API -I`psp-config --pspsdk-path`/include -I. -I$(SRC_PATH)/3rdparty/minizip
+STD_OPTS  = -G0 -Wall -c -fmessage-length=0 -D_PSP_FW_VERSION=150 -DUSE_FILE32API -I`psp-config --pspsdk-path`/include -I. -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml2
 CXXFLAGS  = $(STD_OPTS) -fno-exceptions -fno-rtti -D_POSIX -D_PSP -DUSE_CONFIG -DUSE_ZIP -DUSE_UI -DUI_REAL_ALPHA -DUSE_EMBEDDED_RESOURCES
 CFLAGS    = $(STD_OPTS)
 LFLAGS    = -L`psp-config --pspsdk-path`/lib -lstdc++ -lc -lz -lpspgu -lpspge -lpspaudiolib -lpspaudio -lpspdisplay -lpspctrl -lpspsdk -lpspuser -lpspkernel 

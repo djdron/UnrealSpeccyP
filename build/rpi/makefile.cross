@@ -2,7 +2,7 @@ SRC_PATH = ../..
 OBJ_BASE = Release
 
 PROJECT_NAME = unreal_speccy_portable
-SRCFOLDERS = . z80 tools 3rdparty/minizip 3rdparty/tinyxml snapshot ui platform platform/custom_ui platform/gles2 platform/rpi platform/sdl platform/linux devices devices/fdd devices/input devices/sound
+SRCFOLDERS = . z80 tools 3rdparty/minizip 3rdparty/tinyxml2 snapshot ui platform platform/custom_ui platform/gles2 platform/rpi platform/sdl platform/linux devices devices/fdd devices/input devices/sound
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
@@ -16,7 +16,7 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
-CXXCFLAGS = -O3 -g0 -Wall -c -fmessage-length=0 -I$(RPI_SDK)/include -I$(RPI_SDK)/include/SDL -I$(RPI_SDK)/include/interface/vmcs_host/linux -I$(RPI_SDK)/include/interface/vcos/pthreads -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml
+CXXCFLAGS = -O3 -g0 -Wall -c -fmessage-length=0 -I$(RPI_SDK)/include -I$(RPI_SDK)/include/SDL -I$(RPI_SDK)/include/interface/vmcs_host/linux -I$(RPI_SDK)/include/interface/vcos/pthreads -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml2
 
 CXXFLAGS := $(CXXCFLAGS) -D_LINUX -DUSE_GLES2 -D_RPI -DUI_REAL_ALPHA -DUSE_SDL -DSDL_UNUSE_VIDEO -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON
 CFLAGS := $(CXXCFLAGS)

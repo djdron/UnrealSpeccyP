@@ -23,7 +23,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.323391444" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.767517083" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
-									<listOptionValue builtIn="false" value="../3rdparty/tinyxml"/>
+									<listOptionValue builtIn="false" value="../3rdparty/tinyxml2"/>
 									<listOptionValue builtIn="false" value="../3rdparty/minizip"/>
 									<listOptionValue builtIn="false" value="../3rdparty/zlib"/>
 									<listOptionValue builtIn="false" value="../3rdparty/libpng"/>
@@ -91,7 +91,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.315714686" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.1327472212" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
-									<listOptionValue builtIn="false" value="../3rdparty/tinyxml"/>
+									<listOptionValue builtIn="false" value="../3rdparty/tinyxml2"/>
 									<listOptionValue builtIn="false" value="../3rdparty/minizip"/>
 									<listOptionValue builtIn="false" value="../3rdparty/zlib"/>
 									<listOptionValue builtIn="false" value="../3rdparty/libpng"/>
