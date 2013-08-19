@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml;3rdparty\libpng"
+				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml2;3rdparty\libpng"
 				PreprocessorDefinitions="_WINDOWS"
 				DebugInformationFormat="1"
 			/>
@@ -194,7 +194,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml;3rdparty\libpng"
+				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml2;3rdparty\libpng"
 				PreprocessorDefinitions="_WINDOWS"
 				ExceptionHandling="1"
 				BufferSecurityCheck="false"
@@ -579,7 +579,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\platform\wxwidgets\wx_joystick.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_joystick.h"
+					>
+				</File>
+				<File
 					RelativePath=".\platform\wxwidgets\wx_keys.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_mouse.cpp"
 					>
 				</File>
 			</Filter>
@@ -747,11 +759,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\platform\chrome_nacl\nacl_gamepad.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\platform\chrome_nacl\nacl_gl_context.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\platform\chrome_nacl\nacl_gl_context.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\chrome_nacl\nacl_keys.cpp"
 					>
 				</File>
 				<File
@@ -1236,30 +1256,14 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="tinyxml"
+				Name="tinyxml2"
 				>
 				<File
-					RelativePath=".\3rdparty\tinyxml\tinystr.cpp"
+					RelativePath=".\3rdparty\tinyxml2\tinyxml2.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\3rdparty\tinyxml\tinystr.h"
-					>
-				</File>
-				<File
-					RelativePath=".\3rdparty\tinyxml\tinyxml.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\3rdparty\tinyxml\tinyxml.h"
-					>
-				</File>
-				<File
-					RelativePath=".\3rdparty\tinyxml\tinyxmlerror.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\3rdparty\tinyxml\tinyxmlparser.cpp"
+					RelativePath=".\3rdparty\tinyxml2\tinyxml2.h"
 					>
 				</File>
 			</Filter>
