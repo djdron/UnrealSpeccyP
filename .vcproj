@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml2;3rdparty\libpng"
+				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;&quot;..\lib\wxWidgets-2.8.12\include\msvc&quot;;&quot;..\lib\wxWidgets-2.8.12\include&quot;;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml2;3rdparty\libpng"
 				PreprocessorDefinitions="_WINDOWS"
 				DebugInformationFormat="1"
 			/>
@@ -58,9 +58,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib"
+				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib Winmm.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_lib"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;&quot;..\lib\wxWidgets-2.8.12\lib\vc_lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 			/>
@@ -194,7 +194,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml2;3rdparty\libpng"
+				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;&quot;..\lib\wxWidgets-2.8.12\include\msvc&quot;;&quot;..\lib\wxWidgets-2.8.12\include&quot;;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml2;3rdparty\libpng"
 				PreprocessorDefinitions="_WINDOWS"
 				ExceptionHandling="1"
 				BufferSecurityCheck="false"
@@ -211,8 +211,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib"
-				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_lib"
+				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib Winmm.lib"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;&quot;..\lib\wxWidgets-2.8.12\lib\vc_lib&quot;"
 				SubSystem="2"
 			/>
 			<Tool
