@@ -15,13 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_2BDC04399B4A4895B77BCE50EB324F03"
+        "MsmKey" = "8:_2FDF2ACB0E6A40AAB94D897A38D06AE5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_3633F422E217402B8409FBE9717E8D7C"
+        "MsmKey" = "8:_30B7C966BCBF4FA99EFE0EE8AF5EA03D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -33,43 +33,55 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_5FDE8DC675534DA7A57E19096BDE7677"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_72195C4CA1554570AC64811041739E99"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_7E905F61DB2A498B9B614A65368B2328"
+        "MsmKey" = "8:_938EE2C0C04C4937841A6AA40316CEEF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_89C63EC2AC374197A7DD053323E240AB"
+        "MsmKey" = "8:_9B1101384D7D4AF9B76BE494D2E7A3C3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_C7434300D3C04535958659FDF6D9DF7C"
+        "MsmKey" = "8:_A6E5E9C53C0C4E8BBB10AE3976AEA754"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
+        "MsmKey" = "8:_CA33E56019D547EF95102492DB809DE6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_E21DD36AF1564A56A3DC0FF8DA78A8FA"
+        "MsmKey" = "8:_E0F091DFA73F4837B49E90FC4C8187D8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F611D172E79641C699D3FFC85AFF137E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -128,10 +140,10 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2BDC04399B4A4895B77BCE50EB324F03"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2FDF2ACB0E6A40AAB94D897A38D06AE5"
             {
-            "SourcePath" = "8:..\\..\\..\\OpenAL32.dll"
-            "TargetName" = "8:OpenAL32.dll"
+            "SourcePath" = "8:..\\..\\cmake\\build\\Release\\wrap_oal.dll"
+            "TargetName" = "8:wrap_oal.dll"
             "Tag" = "8:"
             "Folder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
             "Condition" = "8:"
@@ -148,10 +160,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3633F422E217402B8409FBE9717E8D7C"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_30B7C966BCBF4FA99EFE0EE8AF5EA03D"
             {
-            "SourcePath" = "8:..\\..\\..\\res\\rom\\dos513f.rom"
-            "TargetName" = "8:dos513f.rom"
+            "SourcePath" = "8:..\\..\\..\\res\\rom\\sos128_0.rom"
+            "TargetName" = "8:sos128_0.rom"
             "Tag" = "8:"
             "Folder" = "8:_6DF88BF8FAE34DF984E74BACF6E80025"
             "Condition" = "8:"
@@ -188,6 +200,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5FDE8DC675534DA7A57E19096BDE7677"
+            {
+            "SourcePath" = "8:..\\..\\..\\res\\rom\\sos48.rom"
+            "TargetName" = "8:sos48.rom"
+            "Tag" = "8:"
+            "Folder" = "8:_6DF88BF8FAE34DF984E74BACF6E80025"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_72195C4CA1554570AC64811041739E99"
             {
             "SourcePath" = "8:..\\..\\..\\README"
@@ -208,12 +240,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7E905F61DB2A498B9B614A65368B2328"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_938EE2C0C04C4937841A6AA40316CEEF"
             {
-            "SourcePath" = "8:..\\..\\..\\res\\rom\\128_low.rom"
-            "TargetName" = "8:128_low.rom"
+            "SourcePath" = "8:..\\..\\cmake\\build\\Release\\unreal_speccy_portable.exe"
+            "TargetName" = "8:unreal_speccy_portable.exe"
             "Tag" = "8:"
-            "Folder" = "8:_6DF88BF8FAE34DF984E74BACF6E80025"
+            "Folder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -228,7 +260,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_89C63EC2AC374197A7DD053323E240AB"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B1101384D7D4AF9B76BE494D2E7A3C3"
             {
             "SourcePath" = "8:..\\..\\..\\res\\rom\\service.rom"
             "TargetName" = "8:service.rom"
@@ -248,52 +280,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C7434300D3C04535958659FDF6D9DF7C"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A6E5E9C53C0C4E8BBB10AE3976AEA754"
             {
-            "SourcePath" = "8:..\\..\\..\\res\\rom\\sos.rom"
-            "TargetName" = "8:sos.rom"
+            "SourcePath" = "8:..\\..\\cmake\\build\\Release\\OpenAL32.dll"
+            "TargetName" = "8:OpenAL32.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CA33E56019D547EF95102492DB809DE6"
+            {
+            "SourcePath" = "8:unreal_speccy_portable.bmp"
+            "TargetName" = "8:unreal_speccy_portable.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E0F091DFA73F4837B49E90FC4C8187D8"
+            {
+            "SourcePath" = "8:..\\..\\..\\res\\rom\\dos513f.rom"
+            "TargetName" = "8:dos513f.rom"
             "Tag" = "8:"
             "Folder" = "8:_6DF88BF8FAE34DF984E74BACF6E80025"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CBB35AF8D3FD44D2B356934E80E54352"
-            {
-            "SourcePath" = "8:..\\..\\..\\Release\\unreal_speccy_portable.exe"
-            "TargetName" = "8:unreal_speccy_portable.exe"
-            "Tag" = "8:"
-            "Folder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E21DD36AF1564A56A3DC0FF8DA78A8FA"
-            {
-            "SourcePath" = "8:..\\..\\..\\wrap_oal.dll"
-            "TargetName" = "8:wrap_oal.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -328,6 +360,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F611D172E79641C699D3FFC85AFF137E"
+            {
+            "SourcePath" = "8:..\\..\\..\\res\\rom\\sos128_1.rom"
+            "TargetName" = "8:sos128_1.rom"
+            "Tag" = "8:"
+            "Folder" = "8:_6DF88BF8FAE34DF984E74BACF6E80025"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
@@ -341,11 +393,34 @@
             "IconIndex" = "3:0"
                 "Command"
                 {
-                "Command" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
+                "Command" = "8:_938EE2C0C04C4937841A6AA40316CEEF"
                 }
                 "Verbs"
                 {
                     "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_42062EF391DE4749A8B816064446ADE5"
+                    {
+                    "Command" = "8:&Open"
+                    "Verb" = "8:open"
+                    "Arguments" = "8:\"%1\""
+                    "Order" = "3:0"
+                    }
+                }
+            }
+            "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_568697722CC84B768F0F4C01F0A436D9"
+            {
+            "Name" = "8:ZX-Spectrum replay"
+            "Description" = "8:ZX-Spectrum replay"
+            "Extensions" = "8:.rzx"
+            "MIME" = "8:"
+            "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
+            "IconIndex" = "3:0"
+                "Command"
+                {
+                "Command" = "8:_938EE2C0C04C4937841A6AA40316CEEF"
+                }
+                "Verbs"
+                {
+                    "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_9D265FBDC7F64E68832D5765D541A0FE"
                     {
                     "Command" = "8:&Open"
                     "Verb" = "8:open"
@@ -364,7 +439,7 @@
             "IconIndex" = "3:0"
                 "Command"
                 {
-                "Command" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
+                "Command" = "8:_938EE2C0C04C4937841A6AA40316CEEF"
                 }
                 "Verbs"
                 {
@@ -381,13 +456,13 @@
             {
             "Name" = "8:ZX-Spectrum disk image"
             "Description" = "8:ZX-Spectrum disk image"
-            "Extensions" = "8:.trd;.scl"
+            "Extensions" = "8:.trd;.scl;.fdi"
             "MIME" = "8:"
             "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
             "IconIndex" = "3:0"
                 "Command"
                 {
-                "Command" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
+                "Command" = "8:_938EE2C0C04C4937841A6AA40316CEEF"
                 }
                 "Verbs"
                 {
@@ -486,22 +561,22 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Unreal Speccy Portable"
-        "ProductCode" = "8:{C8DC918B-A654-4DDC-A508-FB3C5D76BDE2}"
-        "PackageCode" = "8:{2D6EC208-4097-46AB-AD3D-E41A2FB2C63A}"
+        "ProductCode" = "8:{686D1369-D46C-416E-9028-22D5E66B8755}"
+        "PackageCode" = "8:{E90477A9-E0A9-440F-912C-E9C4391D2D4A}"
         "UpgradeCode" = "8:{1C6A5F89-A251-4B7D-908B-4142CDC8A49D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.0.14"
-        "Manufacturer" = "8:ZX-Spectrum"
+        "ProductVersion" = "8:0.0.49"
+        "Manufacturer" = "8:djdron"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/unrealspeccyp/issues/list"
         "Title" = "8:Unreal Speccy Portable"
         "Subject" = "8:"
         "ARPCONTACT" = "8:SMT, Dexus, Alone Coder, deathsoft, djdron, scor"
-        "Keywords" = "8:zx-spectrum, emulator, portable, pentagon, speccy, unreal, zx, spectrum, sinclair"
-        "ARPCOMMENTS" = "8:ZX-Spectrum 128K emulator"
+        "Keywords" = "8:zx spectrum, emulator, portable, pentagon, speccy, unreal, zx, spectrum, sinclair"
+        "ARPCOMMENTS" = "8:ZX Spectrum 128K emulator"
         "ARPURLINFOABOUT" = "8:http://code.google.com/p/unrealspeccyp/"
         "ARPPRODUCTICON" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
         "ARPIconIndex" = "3:0"
@@ -614,7 +689,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
+            "Target" = "8:_938EE2C0C04C4937841A6AA40316CEEF"
             "Folder" = "8:_D3579BA6F42D40698DEC71E0CB3AF421"
             "WorkingFolder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
             "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
@@ -628,7 +703,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_CBB35AF8D3FD44D2B356934E80E54352"
+            "Target" = "8:_938EE2C0C04C4937841A6AA40316CEEF"
             "Folder" = "8:_C14BA0CBBF1F431997E4594802928026"
             "WorkingFolder" = "8:_F2D7314D1BAE45E6AAA46314D9DDDE77"
             "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
@@ -667,7 +742,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_CA33E56019D547EF95102492DB809DE6"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "CopyrightWarning"
@@ -715,7 +791,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_CA33E56019D547EF95102492DB809DE6"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "InstallAllUsersVisible"
@@ -750,7 +827,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_CA33E56019D547EF95102492DB809DE6"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -781,7 +859,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_CA33E56019D547EF95102492DB809DE6"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "UpdateText"
@@ -825,7 +904,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_CA33E56019D547EF95102492DB809DE6"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "ShowProgress"
@@ -869,7 +949,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_CA33E56019D547EF95102492DB809DE6"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -906,7 +987,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_CA33E56019D547EF95102492DB809DE6"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "ShowProgress"
@@ -950,7 +1032,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_CA33E56019D547EF95102492DB809DE6"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "CopyrightWarning"
@@ -998,7 +1081,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_CA33E56019D547EF95102492DB809DE6"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -1020,7 +1104,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_CA33E56019D547EF95102492DB809DE6"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
