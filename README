@@ -1,6 +1,8 @@
-Portable ZX-Spectrum emulator supports Z80 128K (Pentagon) AY/YM, Beeper, Beta Disk, Tape, Kempston Joystick/Mouse, Snapshots.
-Based on UnrealSpeccy 0.37.3 by SMT
-Created to be ported to many platforms such as Windows/Linux/Mac/Symbian/WinMobile/Dingoo/...
+Portable ZX-Spectrum emulator supports Z80 128K (Pentagon) AY/YM, Beeper, Beta Disk, Tape, Kempston Joystick/Mouse, Snapshots, Replays.
+
+Supported formats: sna, z80, rzx, tap, tzx, csw, trd, scl, fdi, zip.
+
+Created to be ported to many platforms such as Windows/Linux/Mac/Symbian/WinMobile/Dingoo A320/Android/PSP/Raspberry Pi, ...
 
 Authors : SMT, Dexus, Alone Coder, deathsoft.
 Portable version : djdron, scor.

@@ -348,7 +348,7 @@ void Frame::OnAbout(wxCommandEvent& event)
 {
 	wxAboutDialogInfo info;
 	info.SetName(GetTitle());
-	info.SetVersion(_("0.0.49"));
+	info.SetVersion(_("0.0.50"));
 	info.SetDescription(_("Portable ZX-Spectrum emulator."));
 	info.SetCopyright(_("Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor."));
 	info.SetWebSite(_("http://code.google.com/p/unrealspeccyp/"));

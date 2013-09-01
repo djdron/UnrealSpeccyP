@@ -385,8 +385,8 @@
         {
             "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_45AC933AE9A34E17B79D7A9F530D45D3"
             {
-            "Name" = "8:ZX-Spectrum tape file"
-            "Description" = "8:ZX-Spectrum tape file"
+            "Name" = "8:ZX Spectrum tape file"
+            "Description" = "8:ZX Spectrum tape file"
             "Extensions" = "8:.tap;.tzx;.scw"
             "MIME" = "8:"
             "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
@@ -408,8 +408,8 @@
             }
             "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_568697722CC84B768F0F4C01F0A436D9"
             {
-            "Name" = "8:ZX-Spectrum replay"
-            "Description" = "8:ZX-Spectrum replay"
+            "Name" = "8:ZX Spectrum replay"
+            "Description" = "8:ZX Spectrum replay"
             "Extensions" = "8:.rzx"
             "MIME" = "8:"
             "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
@@ -431,8 +431,8 @@
             }
             "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_872F38B7626D4C05B3EACFD8AEC14221"
             {
-            "Name" = "8:ZX-Spectrum snapshot"
-            "Description" = "8:ZX-Spectrum Snapshot"
+            "Name" = "8:ZX Spectrum snapshot"
+            "Description" = "8:ZX Spectrum Snapshot"
             "Extensions" = "8:.z80;.sna"
             "MIME" = "8:"
             "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
@@ -454,8 +454,8 @@
             }
             "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_D1C65A9B50994B8DA42A75228D09F722"
             {
-            "Name" = "8:ZX-Spectrum disk image"
-            "Description" = "8:ZX-Spectrum disk image"
+            "Name" = "8:ZX Spectrum disk image"
+            "Description" = "8:ZX Spectrum disk image"
             "Extensions" = "8:.trd;.scl;.fdi"
             "MIME" = "8:"
             "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
@@ -568,7 +568,7 @@
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.0.49"
+        "ProductVersion" = "8:0.0.50"
         "Manufacturer" = "8:djdron"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/unrealspeccyp/issues/list"
