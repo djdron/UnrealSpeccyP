@@ -149,6 +149,14 @@ struct eOA : public eOptionB // access to protected members hack
 	}
 };
 
+static void Apply()
+{
+	for(eOptionB* o = eOptionB::First(); o; o = o->Next())
+	{
+		o->Apply();
+	}
+}
+
 #ifdef USE_CONFIG
 static const char* FileName() { return xIo::ProfilePath("unreal_speccy_portable.xml"); }
 static char buf[256];
@@ -180,30 +188,23 @@ void Load()
 	using namespace tinyxml2;
 	eOA::SortByOrder();
 	XMLDocument doc;
-	if(doc.LoadFile(FileName()) != XML_SUCCESS)
-		return;
-
-	XMLElement* root = doc.RootElement();
-	if(!root)
-		return;
-
-	XMLElement* opts = root->FirstChildElement("Options")->FirstChildElement();
-	if(!opts)
-		return;
-
-	for(; opts; opts = opts->NextSiblingElement())
+	if(doc.LoadFile(FileName()) == XML_SUCCESS)
 	{
-		eOptionB* o = eOptionB::Find(XmlNameToOptName(opts->Value()));
-		if(!o)
-			continue;
-		const char* v = opts->GetText();
-		o->Value(v ? v : "");
+		XMLElement* root = doc.RootElement();
+		if(root)
+		{
+			XMLElement* opts = root->FirstChildElement("Options")->FirstChildElement();
+			for(; opts; opts = opts->NextSiblingElement())
+			{
+				eOptionB* o = eOptionB::Find(XmlNameToOptName(opts->Value()));
+				if(!o)
+					continue;
+				const char* v = opts->GetText();
+				o->Value(v ? v : "");
+			}
+		}
 	}
-
-	for(eOptionB* o = eOptionB::First(); o; o = o->Next())
-	{
-		o->Apply();
-	}
+	Apply();
 }
 //=============================================================================
 //	Store
@@ -233,7 +234,7 @@ void Store()
 
 #else//USE_CONFIG
 
-void Load() { eOA::SortByOrder(); }
+void Load() { eOA::SortByOrder(); Apply(); }
 void Store() {}
 
 #endif//USE_CONFIG
