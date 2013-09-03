@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.os.Environment;
+
 interface FileSelectorProgress
 {
 	abstract public void OnProgress(Integer current, Integer max);
@@ -55,6 +57,7 @@ abstract class FileSelectorSource
 
 abstract class FSSWeb extends FileSelectorSource
 {
+	static final String StoragePath() { return Environment.getExternalStorageDirectory().getPath() + "/usp/"; }
 	protected boolean LoadFile(final String _url, final File _name, FileSelectorProgress progress)
 	{
 		try
@@ -133,7 +136,7 @@ abstract class FSSHtml extends FSSWeb
 {
 	abstract String Root();
 	abstract String BaseURL();
-	abstract String HtmlExt();
+	abstract String FullURL(final String _url);
 	abstract String HtmlEncoding();
 	abstract String[] Items2();
 	abstract String[] Items2URLs();
@@ -180,7 +183,7 @@ abstract class FSSHtml extends FSSWeb
 	}
 	protected GetItemsResult ParseURL(String _url, List<Item> items, final String _name, FileSelectorProgress progress)
 	{
-		String s = LoadText(BaseURL() + _url + HtmlExt(), HtmlEncoding(), progress);
+		String s = LoadText(FullURL(_url), HtmlEncoding(), progress);
 		if(s == null)
 			return GetItemsResult.UNABLE_CONNECT;
 		if(progress.Canceled())

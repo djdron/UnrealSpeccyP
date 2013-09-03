@@ -40,9 +40,9 @@ public class FileSelectorRZX extends FileSelector
 	}
 	class FSSRZX extends FSSHtml
 	{
-		private static final String RZX_FS = "/sdcard/usp/rzx";
+		private final String RZX_FS = StoragePath() + "rzx";
 		public String BaseURL() { return "http://www.rzxarchive.co.uk"; }
-		public String HtmlExt() { return ".php"; }
+		public String FullURL(final String _url) { return BaseURL() + _url + ".php"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{

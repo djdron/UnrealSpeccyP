@@ -43,9 +43,9 @@ public class FileSelectorVtrdos extends FileSelector
 	}
 	abstract class FSSVtrdos extends FSSHtml
 	{
-		private static final String VTRDOS_FS = "/sdcard/usp/vtrdos";
+		private final String VTRDOS_FS = StoragePath() + "vtrdos";
 		public String BaseURL() { return "http://vtrdos.ru"; }
-		public String HtmlExt() { return ".htm"; }
+		public String FullURL(final String _url) { return BaseURL() + _url + ".htm"; }
 		public String HtmlEncoding() { return "windows-1251"; }
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
@@ -67,6 +67,10 @@ public class FileSelectorVtrdos extends FileSelector
 	}
 	class ParserGames extends FSSVtrdos
 	{
+		@Override
+		public String FullURL(final String _url) { return BaseURL() + "/games.php?t=" + _url; }
+		@Override
+		public String HtmlEncoding() { return "utf-8"; }
 		private final String[] ITEMS2 = new String[]
 			{	"/russian", "/demo", "/translate", "/remix", "/123", "/A", "/B",
 				"/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L",
@@ -74,14 +78,9 @@ public class FileSelectorVtrdos extends FileSelector
 				"/W", "/X", "/Y", "/Z"
 			};
 		private final String[] ITEMS2URLS = new String[]
-		    {	"/g/game_full_ver", "/g/game_demo_ver", "/g/game_translat",
-				"/g/game_remix", "/g/game_123", "/g/game_a", "/g/game_b",
-				"/g/game_c", "/g/game_d", "/g/game_e", "/g/game_f",
-				"/g/game_g", "/g/game_h", "/g/game_i", "/g/game_j",
-				"/g/game_k", "/g/game_l", "/g/game_m", "/g/game_n",
-				"/g/game_o", "/g/game_p", "/g/game_q", "/g/game_r",
-				"/g/game_s", "/g/game_t", "/g/game_u", "/g/game_v",
-				"/g/game_w", "/g/game_x", "/g/game_y", "/g/game_z"
+		    {	"full_ver", "demo_ver", "translat", "remix", "123",
+				"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+				"n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
 		    };
 		private final String[] PATTERNS = new String[] { "<a href=\"(.+)\">&nbsp;&nbsp;(.+)</a></td><td>(.+)</td><td>(.+)</td><td>(.+)</td>" };
 		@Override
@@ -94,8 +93,7 @@ public class FileSelectorVtrdos extends FileSelector
 			Item item = new Item();
 			item.name = m.group(2);
 			item.desc = m.group(3) + " / " + m.group(4) + " [" + m.group(5) + "]";
-			File f = new File(url);
-			item.url = f.getParent() + "/" + m.group(1);
+			item.url = m.group(1);
 			items.add(item);
 		}
 		@Override
@@ -119,7 +117,9 @@ public class FileSelectorVtrdos extends FileSelector
 				"/Raww Orgy'2008", "/Forever 9", "/Di:Halt'2008", "/International Vodka Party'2008", "/RetroEuskal'2008", "/Arok 10", "/Chaos Constructions'2008", "/ASCii'2008", "/ArtFiled'2008",
 				"/Raww Orgy'2009", "/Forever10", "/ArtField'2009", "/HT'2009 SE", "/DiHalt'2009", "/CC'2009", "/International Vodka Party'2009",
 				"/Raww Orgy'2010", "/FOReVER:2010", "/HT'2010 SE", "/ArtField'2010", "/DiHalt'2010", "/Chaos Constructions'2010", "/tUM'2010",
-				"/FOReVER C", "/ArtField'2011", "/DiHalt'2011", "/CC'2011", "/IVP'2011",
+				"/FOReVER C", "/ArtField'2011", "/DiHalt'2011", "/CC'2011", "/IVP'2011", "/JHcon'2011",
+				"/Forever XIII", "/DiHalt'2012", "/3BM Openair'2012", "/Chaos Constructions'2012", "/JHCon'2012", "/Next Castle'2012", "/New Year Gift'2013",
+				"/ZX-1 Bit 2013", "/Forever 14", "/ArtField'2013"
 			};
 		private final String[] ITEMS2URLS = new String[]
 			{	"/demos/russian", "/demos/other", "/demos/demob95", "/demos/enl96", "/demos/enl97", "/demos/doxy98", "/demos/ft98",
@@ -135,7 +135,9 @@ public class FileSelectorVtrdos extends FileSelector
 				"/demos/r_orgy08", "/demos/forever9", "/demos/dihalt08", "/demos/ivp08", "/demos/reuskal8", "/demos/arok10", "/demos/cc08", "/demos/ascii08", "/demos/kidsoft8",
 				"/demos/r_orgy09", "/demos/foreverx", "/demos/kidsoft9", "/demos/ht09se", "/demos/dihalt09", "/demos/cc09", "/demos/ivp09",
 				"/demos/r_orgy10", "/demos/foreve10", "/demos/ht10se", "/demos/kidsof10", "/demos/dihalt10", "/demos/cc10", "/demos/tum10",
-				"/demos/foreverc", "/demos/kidsof11", "/demos/dihalt11", "/demos/cc11", "/demos/ivp11",
+				"/demos/foreverc", "/demos/kidsof11", "/demos/dihalt11", "/demos/cc11", "/demos/ivp11", "/demos/jhcon11",
+				"/demos/forev13", "/demos/dihalt12", "/demos/3bm12", "/demos/cc12", "/demos/jhcon12", "/demos/ncp12", "/demos/newyear13",
+				"/demos/zx1bit13", "/demos/forev14", "/demos/kidsof13"
 			};
 		private final String[] PATTERNS = new String[]
 			{	"<div align=\"center\">.*(?:<b>)?<a href=\"(.+?)\">([\\s\\S]+?)(?:</a>)?(?:</b>)?</div>",

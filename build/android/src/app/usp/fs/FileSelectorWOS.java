@@ -47,9 +47,9 @@ public class FileSelectorWOS extends FileSelector
 	}
 	abstract class FSSWOS extends FSSHtml
 	{
-		private static final String WOS_FS = "/sdcard/usp/wos";
+		private final String WOS_FS = StoragePath() + "wos";
 		public String BaseURL() { return "http://www.worldofspectrum.org"; }
-		public String HtmlExt() { return ".html"; }
+		public String FullURL(final String _url) { return BaseURL() + _url + ".html"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }
 		final static String FTP_URL = "ftp://ftp.worldofspectrum.org/pub/sinclair/";
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)

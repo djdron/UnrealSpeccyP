@@ -43,7 +43,7 @@ public class FileSelectorZXAAA extends FileSelector
 	}
 	class FSSZXAAA extends FSSWeb
 	{
-		private static final String ZXAAA_FS = "/sdcard/usp/zxaaa";
+		private final String ZXAAA_FS = StoragePath() + "zxaaa";
 		private static final String GET_URL = "http://zxaaa.untergrund.net/get.php?f=";
 		public String JsonEncoding() { return "iso-8859-1"; }
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
