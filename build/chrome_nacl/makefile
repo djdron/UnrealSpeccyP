@@ -24,6 +24,8 @@ endif #X86
 
 endif #ARM
 
+LIB_PATH = $(NACL_PEPPER)/lib/newlib$(PLATFORM)/Release
+
 export PATH = $(PATH_BIN)
 
 SRC_PATH = ../..
@@ -46,7 +48,7 @@ CXXCFLAGS = -O3 -Wall -c -fmessage-length=0 -I$(NACL_PEPPER)/include -I$(SRC_PAT
 
 CXXFLAGS += $(CXXCFLAGS) -D_CHROME_NACL -DUSE_GLES2 -DUSE_ZIP -DUSE_EXTERN_RESOURCES -I$(SRC_PATH)/3rdparty/minizip
 CFLAGS += $(CXXCFLAGS)
-LFLAGS += -s -lppapi -lppapi_cpp -lppapi_gles2
+LFLAGS += -s -L$(LIB_PATH) -lppapi -lppapi_cpp -lppapi_gles2
 
 all: build
 
