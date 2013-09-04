@@ -14,6 +14,7 @@
         <Preference android:title="@string/tape" android:key="tape"></Preference>
         <CheckBoxPreference android:title="@string/tape_fast" android:summary="@string/tape_fast_desc" android:key="fast tape"></CheckBoxPreference>
         <CheckBoxPreference android:title="@string/mode_48k" android:key="mode 48k"></CheckBoxPreference>
+        <CheckBoxPreference android:title="@string/reset_to_service_rom" android:summary="@string/service_rom_desc" android:key="reset to service rom"></CheckBoxPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_view">
         <ListPreference android:entries="@array/zoom_names" android:entryValues="@array/zoom_values" android:key="zoom" android:title="@string/zoom"></ListPreference>

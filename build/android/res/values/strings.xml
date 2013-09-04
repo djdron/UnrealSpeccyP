@@ -37,6 +37,8 @@
     <string name="drive_c">C</string>
     <string name="drive_d">D</string>
     <string name="mode_48k">Mode 48K</string>
+    <string name="reset_to_service_rom">Reset to service ROM</string>
+    <string name="service_rom_desc">MadRom v3.5 by AXLR</string>
     <string name="file_selector">Select File</string>
     <string name="tape">Tape</string>
     <string name="tape_na">Not Available (open tape file first)</string>
