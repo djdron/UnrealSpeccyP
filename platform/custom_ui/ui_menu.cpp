@@ -81,7 +81,7 @@ void eMenu::Init()
 {
 	background = COLOR_BACKGROUND;
 	ePoint margin(6, 6);
-	eRect r_dlg(ePoint(130, 2*margin.y));
+	eRect r_dlg(ePoint(160, 2*margin.y));
 	r_dlg.Move(ePoint(8, 8));
 	eRect r(ePoint(r_dlg.Width() - margin.x * 2, margin.y));
 	r.Move(margin);
