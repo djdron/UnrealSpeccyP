@@ -108,8 +108,6 @@ static struct eOptionPause : public xOptions::eOptionBool
 	virtual int Order() const { return 70; }
 } op_pause;
 
-#if defined(USE_UI)
-
 static struct eOptionSound : public xOptions::eOptionInt
 {
 	eOptionSound() { Set(S_AY); }
@@ -147,16 +145,6 @@ void OpVolume(eVolume v) { op_volume.Set(v); }
 
 eSound	OpSound() { return (eSound)(int)op_sound; }
 void OpSound(eSound s) { op_sound.Set(s); }
-
-#else//USE_UI
-
-eVolume	OpVolume() { return V_100; }
-void OpVolume(eVolume v) {}
-
-eSound	OpSound() { return S_AY; }
-void OpSound(eSound s) {}
-
-#endif//USE_UI || USE_OPTIONS_COMMON
 
 static struct eOptionJoy : public xOptions::eOptionInt
 {

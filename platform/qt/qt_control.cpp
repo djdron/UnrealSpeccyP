@@ -115,8 +115,8 @@ void eControl::paintEvent(QPaintEvent* event)
 	if(landscape_mode)
 		return;
 	QPainter painter(this);
-	painter.fillRect(keyboard.rect(), Qt::black);
-	painter.drawImage(QPointF(0, 0), op_use_keyboard ? keyboard : joystick);
+	QPoint p((width() - keyboard.width())/2, (height() - keyboard.height())/2);
+	painter.drawImage(p, op_use_keyboard ? keyboard : joystick);
 }
 //=============================================================================
 //	eControl::keyPressEvent
