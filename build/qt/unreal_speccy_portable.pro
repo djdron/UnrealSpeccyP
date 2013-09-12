@@ -1,10 +1,9 @@
-QT += multimedia
-
 greaterThan(QT_MAJOR_VERSION, 4) {
-	QT += widgets
+	QT += widgets multimedia
 }
 
 isEqual(QT_MAJOR_VERSION, 4) {
+	!unix: QT += multimedia
 	CONFIG   += mobility
 	MOBILITY += multimedia
 }
