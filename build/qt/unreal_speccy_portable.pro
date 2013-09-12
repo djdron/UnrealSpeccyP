@@ -1,5 +1,7 @@
+QT += multimedia
+
 greaterThan(QT_MAJOR_VERSION, 4) {
-	QT += multimedia widgets
+	QT += widgets
 }
 
 isEqual(QT_MAJOR_VERSION, 4) {
