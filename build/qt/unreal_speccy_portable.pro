@@ -1,6 +1,11 @@
-QT       += core gui network multimediakit
-CONFIG   += mobility
-MOBILITY += multimedia
+greaterThan(QT_MAJOR_VERSION, 4) {
+	QT += multimedia widgets
+}
+
+isEqual(QT_MAJOR_VERSION, 4) {
+	CONFIG   += mobility
+	MOBILITY += multimedia
+}
 
 TARGET = unreal_speccy_portable
 TEMPLATE = app

@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QAudioOutput>
 #include <QPainter>
+
 #include "qt_view.h"
 #include "../platform.h"
 #include "../../tools/options.h"
@@ -53,8 +54,13 @@ eView::eView(QWidget* parent) : QWidget(parent), screen(320, 240, QImage::Format
 	Handler()->OnInit();
 	startTimer(10);
 	QAudioFormat fmt;
+#if(QT_VERSION >= 0x050000)
+	fmt.setSampleRate(44100);
+	fmt.setChannelCount(2);
+#else//QT_VERSION
 	fmt.setFrequency(44100);
 	fmt.setChannels(2);
+#endif//QT_VERSION
 	fmt.setSampleSize(16);
 	fmt.setCodec("audio/pcm");
 	fmt.setByteOrder(QAudioFormat::LittleEndian);

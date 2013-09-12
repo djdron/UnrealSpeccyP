@@ -18,15 +18,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_QT
 
-#include <QtGui>
+#include <QMouseEvent>
+#include <QPainter>
 
-#include "../../std_types.h"
+#include "qt_control.h"
 #include "../platform.h"
 #include "../../tools/options.h"
 #include "../../options_common.h"
 #include "../touch_ui/tui_keyboard.h"
 #include "../touch_ui/tui_joystick.h"
-#include "qt_control.h"
 
 namespace xPlatform
 {

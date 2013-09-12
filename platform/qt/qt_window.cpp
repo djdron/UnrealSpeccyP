@@ -18,7 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_QT
 
-#include <QtGui>
+#include <QMenu>
+#include <QMenuBar>
+#include <QVBoxLayout>
+#include <QFileDialog>
+#include <QResizeEvent>
 
 #include "qt_window.h"
 #include "qt_control.h"
