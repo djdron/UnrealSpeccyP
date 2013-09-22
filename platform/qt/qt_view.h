@@ -19,7 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef QT_VIEW_H
 #define QT_VIEW_H
 
+#ifdef Q_WS_S60
 #include <QWidget>
+typedef QWidget eBaseViewWidget;
+#else//Q_WS_S60
+#include <QGLWidget>
+typedef QGLWidget eBaseViewWidget;
+#endif//Q_WS_S60
 #include "qt_sound.h"
 
 #pragma once
@@ -32,7 +38,7 @@ namespace xPlatform
 //=============================================================================
 //	eView
 //-----------------------------------------------------------------------------
-class eView : public QWidget
+class eView : public eBaseViewWidget
 {
 	Q_OBJECT
 
@@ -40,21 +46,26 @@ public:
 	eView(QWidget* parent = NULL);
 	~eView();
 
-	void			LandscapeMode(bool on) {}
+	void			Paused(bool on);
 
 protected:
+	virtual void	keyPressEvent(QKeyEvent* event);
+	virtual void	keyReleaseEvent(QKeyEvent* event);
 	virtual void	paintEvent(QPaintEvent* event);
 	virtual void	timerEvent(QTimerEvent* event);
-	virtual QSize	sizeHint() const;
 	virtual QSize	minimumSizeHint() const;
 
+	void			EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const;
+	void			TranslateKey(int& key, dword& flags) const;
 	void			UpdateScreen(uchar* data) const;
 	void			UpdateSound();
+
 protected:
 	QImage			screen;
 	QAudioOutput*	audio;
 	QIODevice*		stream;
 	eAudioBuffer	audio_buffer;
+	int				timer_id;
 };
 
 }

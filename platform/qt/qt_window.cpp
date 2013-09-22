@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -165,7 +165,7 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 	layout->addWidget(view = new eView);
 	layout->addWidget(control = new eControl);
 	setCentralWidget(w);
-	control->setFocus();
+	view->setFocus();
 
 	switch(OpJoystick())
 	{
@@ -203,6 +203,7 @@ eWindow::eWindow(QWidget* parent) : QMainWindow(parent)
 //-----------------------------------------------------------------------------
 void eWindow::OnOpenFile()
 {
+	view->Paused(true);
 	QString name = QFileDialog::getOpenFileName(this, tr("Open file"), OpLastFolder(),
 		tr(	"Supported files (*.sna *.z80 *.rzx *.trd *.scl *.fdi *.tap *.csw *.tzx *.zip);;"
 			"All files (*.*);;"
@@ -213,28 +214,16 @@ void eWindow::OnOpenFile()
 			"ZIP archives (*.zip)"
 			));
 
+	view->Paused(false);
 	if(!name.isEmpty())
 		Handler()->OnOpenFile(name.toUtf8().data());
 }
 //=============================================================================
-//	eWindow::eventFilter
+//	eWindow::resizeEvent
 //-----------------------------------------------------------------------------
-bool eWindow::eventFilter(QObject* receiver, QEvent* event)
+void eWindow::resizeEvent(QResizeEvent* event)
 {
-	if(event->type() == QEvent::Resize && receiver == this)
-	{
-		QResizeEvent* r = (QResizeEvent*)event;
-		bool l = r->size().width() > r->size().height();
-		view->LandscapeMode(l);
-		control->LandscapeMode(l);
-		view->updateGeometry();
-		control->updateGeometry();
-		if(l)
-			layout->removeWidget(control);
-		else
-			layout->addWidget(control);
-	}
-	return false;
+	control->setVisible(event->size().width() < event->size().height());
 }
 //=============================================================================
 //	eWindow::OnReset

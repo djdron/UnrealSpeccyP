@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -41,13 +41,12 @@ static struct eOptionUseKeyboard : public xOptions::eOptionBool
 //=============================================================================
 //	eControl::eControl
 //-----------------------------------------------------------------------------
-eControl::eControl(QWidget* parent) : QWidget(parent), landscape_mode(false)
+eControl::eControl(QWidget* parent) : QWidget(parent)
 {
 	keyboard.load(":/image/keyboard.png");
 	joystick.load(":/image/joystick.png");
 	setAttribute(Qt::WA_NoSystemBackground, true);
 	setAttribute(Qt::WA_AcceptTouchEvents);
-	setFocusPolicy(Qt::StrongFocus);
 	setContextMenuPolicy(Qt::NoContextMenu);
 }
 //=============================================================================
@@ -112,179 +111,19 @@ bool eControl::event(QEvent* event)
 //-----------------------------------------------------------------------------
 void eControl::paintEvent(QPaintEvent* event)
 {
-	if(landscape_mode)
-		return;
 	QPainter painter(this);
-	QPoint p((width() - keyboard.width())/2, (height() - keyboard.height())/2);
-	painter.drawImage(p, op_use_keyboard ? keyboard : joystick);
+	painter.setRenderHint(QPainter::SmoothPixmapTransform);
+	QRect rect = painter.viewport();
+	QSize size = keyboard.size();
+	size.scale(rect.size(), Qt::KeepAspectRatio);
+	painter.setViewport((rect.width() - size.width())/2, (rect.height() - size.height())/2, size.width(), size.height());
+	painter.setWindow(keyboard.rect());
+	painter.drawImage(0, 0, op_use_keyboard ? keyboard : joystick);
 }
 //=============================================================================
-//	eControl::keyPressEvent
+//	eControl::minimumSizeHint
 //-----------------------------------------------------------------------------
-void eControl::keyPressEvent(QKeyEvent* event)
-{
-	if(event->isAutoRepeat())
-	{
-		event->ignore();
-		return;
-	}
-	int key = 0;
-	dword flags = KF_DOWN|OpJoyKeyFlags();
-	EventKeyFlags(event, &key, &flags);
-	TranslateKey(key, flags);
-	Handler()->OnKey(key, flags);
-	key > 0 ? event->accept() : event->ignore();
-}
-//=============================================================================
-//	eControl::keyReleaseEvent
-//-----------------------------------------------------------------------------
-void eControl::keyReleaseEvent(QKeyEvent* event)
-{
-	if(event->isAutoRepeat())
-	{
-		event->ignore();
-		return;
-	}
-	int key = 0;
-	dword flags = 0;
-	EventKeyFlags(event, &key, &flags);
-	TranslateKey(key, flags);
-	Handler()->OnKey(key, OpJoyKeyFlags());
-	key > 0 ? event->accept() : event->ignore();
-}
-//=============================================================================
-//	eControl::EventKeyFlags
-//-----------------------------------------------------------------------------
-void eControl::EventKeyFlags(QKeyEvent* event, int* key, dword* flags) const
-{
-	*key = event->key();
-#ifdef Q_WS_S60
-	if((event->nativeModifiers() & 0x3000) != 0x3000) // blue arrow not held down
-	{
-		int nsc = event->nativeScanCode();
-		if(nsc >= 'A' && nsc <= 'Z')
-			*key = nsc;
-	}
-	if((event->nativeModifiers() & 0x2800) == 0x2800) *flags |= KF_ALT; // 'sym' key held down
-	if(event->modifiers()&Qt::CTRL)		*flags |= KF_ALT;
-#else//Q_WS_S60
-	if(event->modifiers()&Qt::ALT)		*flags |= KF_ALT;
-#endif//Q_WS_S60
-	if(event->modifiers()&Qt::SHIFT)	*flags |= KF_SHIFT;
-}
-//=============================================================================
-//	eControl::TranslateKey
-//-----------------------------------------------------------------------------
-void eControl::TranslateKey(int& key, dword& flags) const
-{
-	switch(key)
-	{
-	case Qt::Key_Shift:		key = 'c';	break;
-	case Qt::Key_Alt:		key = 's';	break;
-	case Qt::Key_Return:
-	case Qt::Key_Enter:		key = 'e';	break;
-	case Qt::Key_Tab:
-		key = '\0';
-		flags |= KF_ALT;
-		flags |= KF_SHIFT;
-		break;
-	case Qt::Key_Backspace:
-		key = '0';
-		flags |= KF_SHIFT;
-		break;
-	case Qt::Key_Left:		key = 'l';	break;
-	case Qt::Key_Right:		key = 'r';	break;
-	case Qt::Key_Up:		key = 'u';	break;
-	case Qt::Key_Down:		key = 'd';	break;
-	case Qt::Key_Select:	key = 'f';	break;
-	case Qt::Key_Control:	key = 'f';	flags &= ~KF_CTRL; break;
-	case '!':	key = '1';		break;
-	case '@':	key = '2';		break;
-	case '#':	key = '3';		break;
-	case '$':	key = '4';		break;
-	case '%':	key = '5';		break;
-	case '^':	key = '6';		break;
-	case '&':	key = '7';		break;
-	case '*':	key = '8';		break;
-	case '(':	key = '9';		break;
-	case ')':	key = '0';		break;
-	case Qt::Key_Escape:
-	case '~':
-	case '`':	key = 'm';		break;
-	case '\\':	key = 'k';		break;
-	case ']':	key = 'p';		break;
-	case '\'':
-		key = '7';
-		flags |= KF_ALT;
-		break;
-	case '\"':
-		key = 'P';
-		flags &= ~KF_SHIFT;
-		flags |= KF_ALT;
-		break;
-	case '<':
-		key = 'R';
-		flags &= ~KF_SHIFT;
-		flags |= KF_ALT;
-		break;
-	case '>':
-		key = 'T';
-		flags &= ~KF_SHIFT;
-		flags |= KF_ALT;
-		break;
-	case ',':
-		key = 'N';
-		flags |= KF_ALT;
-		break;
-	case '.':
-		key = 'M';
-		flags |= KF_ALT;
-		break;
-	case ';':
-		key = 'O';
-		flags |= KF_ALT;
-		break;
-	case ':':
-		key = 'Z';
-		flags &= ~KF_SHIFT;
-		flags |= KF_ALT;
-		break;
-	case '/':
-		key = 'V';
-		flags |= KF_ALT;
-		break;
-	case '?':
-		key = 'C';
-		flags &= ~KF_SHIFT;
-		flags |= KF_ALT;
-		break;
-	case '-':
-		key = 'J';
-		flags |= KF_ALT;
-		break;
-	case '_':
-		key = '0';
-		flags &= ~KF_SHIFT;
-		flags |= KF_ALT;
-		break;
-	case '=':
-		key = 'L';
-		flags |= KF_ALT;
-		break;
-	case '+':
-		key = 'K';
-		flags &= ~KF_SHIFT;
-		flags |= KF_ALT;
-		break;
-	}
-	if(key > 127 || key < 32)
-		key = 0;
-}
-//=============================================================================
-//	eControl::sizeHint
-//-----------------------------------------------------------------------------
-QSize eControl::sizeHint() const { return landscape_mode ? QSize(0, 0) : keyboard.size(); }
-QSize eControl::minimumSizeHint() const { return landscape_mode ? QSize(0, 0) : keyboard.size(); }
+QSize eControl::minimumSizeHint() const { return keyboard.size(); }
 
 }
 //namespace xPlatform

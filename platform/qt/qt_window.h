@@ -63,7 +63,7 @@ protected:
 #endif//Q_WS_S60
 
 protected:
-	bool eventFilter(QObject* receiver, QEvent* event);
+	void resizeEvent(QResizeEvent* event);
 
 protected:
 	eView*		view;
