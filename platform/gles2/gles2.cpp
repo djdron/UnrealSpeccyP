@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_GLES2
 
-#include <GLES2/gl2.h>
 #include "gles2_shader.h"
 #include "gles2.h"
 #include "../platform.h"

@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef _WINDOWS
 #include <al.h>
 #include <alc.h>
-#elif defined(_MAC)
+#elif defined(_MAC) || defined(_IOS)
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #else//_MAC
@@ -71,7 +71,7 @@ struct eSource
 };
 eSource::eUpdateResult eSource::Update(dword data_ready, void* data)
 {
-	const float fps = op_true_speed && *op_true_speed ? 50.0f : 60.0f;
+	const float fps = !op_true_speed || *op_true_speed ? 50.0f : 60.0f;
 	const float fps_org = 50.0f;
 	dword frame_data = 44100*2*2/fps_org;
 	if(data_ready < frame_data*2)

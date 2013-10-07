@@ -18,7 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_GLES2
 
+#ifndef _IOS
 #include <GLES2/gl2.h>
+#else//_IOS
+#include <OpenGLES/ES2/gl.h>
+#endif//_IOS
 
 namespace xPlatform
 {
