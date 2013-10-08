@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef _LINUX
+#if defined(_LINUX) || defined(_POSIX)
 
 #include "../../std.h"
 #include "../../tools/io_select.h"
@@ -74,4 +74,4 @@ bool PathIsRoot(const char* path) {	return !strcmp(path, "/"); }
 }
 //namespace xIo
 
-#endif//_LINUX
+#endif//_LINUX || _POSIX

@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xIo
 {
 
-struct eFileSelectI
+class eFileSelectI
 {
 public:
 	virtual ~eFileSelectI() {}

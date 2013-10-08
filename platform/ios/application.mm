@@ -1,11 +1,9 @@
 #import "application.h"
+#import "view.h"
 #import "../platform.h"
 #import "../gles2/gles2.h"
 #import "../../options_common.h"
 #import "../io.h"
-#import "../touch_ui/tui_keyboard.h"
-#import <vector>
-#import <algorithm>
 #undef self
 
 namespace xPlatform
@@ -17,87 +15,6 @@ void OnLoopSound();
 //namespace xPlatform
 
 using namespace xPlatform;
-
-@interface MyGLView : GLKView
-@end
-
-@implementation MyGLView
-
-class eTouchTracker
-{
-public:
-	int Process(const void* touch, bool on)
-	{
-		int id = -1;
-		eTouches::iterator i = std::find(touches.begin(), touches.end(), touch);
-		if(i == touches.end())
-		{
-			if(on)
-			{
-				i = std::find(touches.begin(), touches.end(), (void*)NULL);
-				if(i == touches.end())
-				{
-					id = touches.size();
-					touches.push_back(touch);
-				}
-				else
-				{
-					id = i - touches.begin();
-					*i = touch;
-				}
-			}
-		}
-		else
-		{
-			id = i - touches.begin();
-			if(!on)
-			{
-				*i = NULL;
-			}
-		}
-		return id;
-	}
-private:
-	typedef std::vector<const void*> eTouches;
-	eTouches touches;
-};
-
-eTouchTracker touch_tracker;
-
--(void) processTouches:(NSSet*)touches pressed:(bool)on
-{
-	for(UITouch* touch in touches)
-	{
-		int id = touch_tracker.Process(touch, on);
-		if(id != -1)
-		{
-			CGPoint loc = [touch locationInView:self];
-			OnTouchKey(loc.x/self.bounds.size.width, loc.y/self.bounds.size.height, on, id);
-		}
-	}
-}
-
-- (void) touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
-{
-	[self processTouches:touches pressed:true];
-}
- 
-- (void) touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
-{
-	[self processTouches:touches pressed:true];
-}
-
-- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
-{
-	[self processTouches:touches pressed:false];
-}
-
-- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event
-{
-	[self processTouches:touches pressed:false];
-}
-
-@end
 
 @interface MyGLController : GLKViewController
 @end

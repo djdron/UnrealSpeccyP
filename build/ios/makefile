@@ -2,7 +2,7 @@ SRC_PATH = ../..
 OBJ_BASE = Release
 
 PROJECT_NAME = UnrealSpeccyPortable
-SRCFOLDERS = . z80 tools 3rdparty/libpng 3rdparty/zlib 3rdparty/tinyxml2 3rdparty/minizip snapshot platform platform/ios platform/gles2 platform/oal platform/touch_ui devices devices/fdd devices/input devices/sound
+SRCFOLDERS = . z80 tools 3rdparty/libpng 3rdparty/zlib 3rdparty/tinyxml2 3rdparty/minizip snapshot platform platform/ios platform/gles2 platform/oal platform/touch_ui platform/custom_ui platform/linux ui devices devices/fdd devices/input devices/sound
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 MMSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.mm))
@@ -20,7 +20,7 @@ BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
 BASEFLAGS = -O3 -Wall -c -fmessage-length=0 -objc-arc -fblocks
 
-CXXFLAGS += $(BASEFLAGS) -DUSE_CONFIG -DUSE_ZIP -D_IOS -DUSE_GLES2 -DUSE_OAL -DUSE_TUI -I$(SRC_PATH)/3rdparty/libpng -I$(SRC_PATH)/3rdparty/zlib -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml2
+CXXFLAGS += $(BASEFLAGS) -D_POSIX -DUSE_PNG -DUSE_CONFIG -DUSE_ZIP -DUSE_OAL -D_IOS -DUSE_GLES2 -DUSE_TUI -DUSE_UI -DUI_REAL_ALPHA -D_LINUX -I$(SRC_PATH)/3rdparty/libpng -I$(SRC_PATH)/3rdparty/zlib -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml2
 CFLAGS += $(BASEFLAGS) -DUSE_FILE32API
 LFLAGS = -framework Foundation -framework UIKit -framework GLKit -framework OpenGLES -framework OpenAL
 
