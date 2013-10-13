@@ -110,7 +110,7 @@ eGLES2Sprite::~eGLES2Sprite()
 	glDeleteProgram(shader.program);
 }
 
-void eGLES2Sprite::Draw(eGLES2* context, const ePoint& pos, const ePoint& size, float alpha)
+void eGLES2Sprite::Draw(const ePoint& pos, const ePoint& size, float alpha)
 {
 	glViewport(pos.x, pos.y, size.x, size.y);
 	glUseProgram(shader.program);

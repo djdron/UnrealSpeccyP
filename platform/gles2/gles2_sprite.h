@@ -30,14 +30,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-class eGLES2;
-
 class eGLES2Sprite
 {
 public:
 	eGLES2Sprite(GLuint texture, const ePoint& size);
 	virtual ~eGLES2Sprite();
-	virtual void Draw(eGLES2* context, const ePoint& pos, const ePoint& size, float alpha = 1.0f);
+	virtual void Draw(const ePoint& pos, const ePoint& size, float alpha = 1.0f);
 
 private:
 	GLuint	texture;

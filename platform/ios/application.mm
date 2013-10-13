@@ -18,9 +18,8 @@ void OnLoopSound();
 using namespace xPlatform;
 
 @interface Overlay : NSObject
-@property eGLES2* gles2;
 @property ePoint keyboard_size;
--(void)Draw:(ePoint)size: (eTick)last_touch_time;
+-(void)Draw:(ePoint)size :(eTick)last_touch_time;
 @end
 
 @implementation Overlay
@@ -70,7 +69,7 @@ using namespace xPlatform;
 	[super dealloc];
 }
 
--(void)Draw:(ePoint)size: (eTick)last_touch_time
+-(void)Draw:(ePoint)size :(eTick)last_touch_time
 {
 	float alpha = 1.0f;
 	if(size.x > size.y) // landscape
@@ -87,7 +86,7 @@ using namespace xPlatform;
 	}
 	if(alpha > 0.0f)
 	{
-		keyboard_sprite->Draw([self gles2], ePoint(0, 0), ePoint(size.x, _keyboard_size.y), alpha);
+		keyboard_sprite->Draw(ePoint(0, 0), ePoint(size.x, _keyboard_size.y), alpha);
 	}
 }
 @end
@@ -133,7 +132,6 @@ using namespace xPlatform;
 //	Handler()->OnOpenFile(xIo::ResourcePath("rick1.rzx"));
 	gles2 = eGLES2::Create();
 	overlay = [[Overlay alloc] init];
-	overlay.gles2 = gles2;
 	view.overlay_size = overlay.keyboard_size;
 
 	InitSound();
