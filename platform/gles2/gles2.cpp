@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -159,7 +159,7 @@ class eGLES2Impl : public eGLES2
 public:
 	eGLES2Impl();
 	virtual ~eGLES2Impl();
-	virtual void Draw(int w, int h);
+	virtual void Draw(const ePoint& pos, const ePoint& size);
 
 protected:
 	struct eShaderInfo
@@ -183,7 +183,7 @@ protected:
 		GLint u_texture;
 		GLint u_palette;
 	};
-	void DrawQuad(const eShaderInfo& sh, GLuint textures[2]);
+	void DrawQuad(const eShaderInfo& sh, GLuint texture_palette);
 
 	eShaderInfo shader;
 	eShaderInfo shader_filtering;
@@ -250,7 +250,7 @@ eGLES2Impl::~eGLES2Impl()
 #endif//USE_UI
 }
 
-static void SetOrtho(float m[4][4], float left, float right, float bottom, float top, float near, float far, float scale_x, float scale_y)
+void SetOrtho(float m[4][4], float left, float right, float bottom, float top, float near, float far, float scale_x, float scale_y)
 {
 	memset(m, 0, 4*4*sizeof(float));
 	m[0][0] = 2.0f/(right - left)*scale_x;
@@ -262,14 +262,14 @@ static void SetOrtho(float m[4][4], float left, float right, float bottom, float
 	m[3][3] = 1;
 }
 
-void eGLES2Impl::DrawQuad(const eShaderInfo& sh, GLuint textures[2])
+void eGLES2Impl::DrawQuad(const eShaderInfo& sh, GLuint texture_palette)
 {
 	glUniform1i(sh.u_texture, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);//@note : GL_LINEAR must be implemented in shader because of palette indexes in texture
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, textures[1]);
+    glBindTexture(GL_TEXTURE_2D, texture_palette);
 	glUniform1i(sh.u_palette, 1);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -287,7 +287,7 @@ void eGLES2Impl::DrawQuad(const eShaderInfo& sh, GLuint textures[2])
 	glDrawElements(GL_TRIANGLES, kIndexCount, GL_UNSIGNED_SHORT, 0);
 }
 
-void eGLES2Impl::Draw(int _w, int _h)
+void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 {
 	if(!shader.program || !shader_filtering.program)
 		return;
@@ -296,22 +296,22 @@ void eGLES2Impl::Draw(int _w, int _h)
 	float sx, sy;
 #ifdef USE_UI
 	float sx1, sy1;
-	GetScaleWithAspectRatio43(&sx1, &sy1, _w, _h);
+	GetScaleWithAspectRatio43(&sx1, &sy1, size.x, size.y);
 #endif//USE_UI
 	switch(op_zoom)
 	{
 	case 0:
 	    filtering = false;
-	    sx = ((float)WIDTH) / _w;
-	    sy = ((float)HEIGHT) / _h;
+	    sx = ((float)WIDTH) / size.x;
+	    sy = ((float)HEIGHT) / size.y;
 		break;
 	default:
-		GetScaleWithAspectRatio43(&sx, &sy, _w, _h);
+		GetScaleWithAspectRatio43(&sx, &sy, size.x, size.y);
 		break;
 	}
 
 	glClear(GL_COLOR_BUFFER_BIT);
-	glViewport(0, 0, _w, _h);
+	glViewport(pos.x, pos.y, size.x, size.y);
 
 	const eShaderInfo& sh = filtering ? shader_filtering : shader;
 
@@ -324,7 +324,7 @@ void eGLES2Impl::Draw(int _w, int _h)
 	glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, Handler()->VideoData());
-	DrawQuad(sh, textures);
+	DrawQuad(sh, textures[1]);
 
 #ifdef USE_UI
 	void* data_ui = Handler()->VideoDataUI();
@@ -338,7 +338,7 @@ void eGLES2Impl::Draw(int _w, int _h)
 		glActiveTexture(GL_TEXTURE0);
 	    glBindTexture(GL_TEXTURE_2D, textures_ui[0]);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, data_ui);
-		DrawQuad(shader_filtering, textures_ui);
+		DrawQuad(shader_filtering, textures_ui[1]);
 	}
 #endif//USE_UI
 

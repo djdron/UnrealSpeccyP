@@ -4,4 +4,3 @@
 @interface USPApplication : UIResponder <UIApplicationDelegate, GLKViewDelegate, GLKViewControllerDelegate>
 @property (nonatomic, retain) UIWindow* window;
 @end
-

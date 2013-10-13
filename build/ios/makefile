@@ -20,9 +20,9 @@ BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
 BASEFLAGS = -O3 -Wall -c -fmessage-length=0 -objc-arc -fblocks
 
-CXXFLAGS += $(BASEFLAGS) -D_POSIX -DUSE_PNG -DUSE_CONFIG -DUSE_ZIP -DUSE_OAL -D_IOS -DUSE_GLES2 -DUSE_TUI -DUSE_UI -DUI_REAL_ALPHA -D_LINUX -I$(SRC_PATH)/3rdparty/libpng -I$(SRC_PATH)/3rdparty/zlib -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml2
+CXXFLAGS += $(BASEFLAGS) -D_POSIX -DUSE_PNG -DUSE_CONFIG -DUSE_ZIP -DUSE_OAL -D_IOS -DUSE_GLES2 -DUSE_GLES2_SPRITE -DUSE_TUI -DUSE_UI -DUI_REAL_ALPHA -I$(SRC_PATH)/3rdparty/libpng -I$(SRC_PATH)/3rdparty/zlib -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml2
 CFLAGS += $(BASEFLAGS) -DUSE_FILE32API
-LFLAGS = -framework Foundation -framework UIKit -framework GLKit -framework OpenGLES -framework OpenAL
+LFLAGS = -framework Foundation -framework CoreGraphics -framework UIKit -framework GLKit -framework OpenGLES -framework OpenAL
 
 IPHONE_IP:=192.168.0.101
 APPFOLDER = $(PROJECT_NAME).app
@@ -64,9 +64,13 @@ clean:
 	
 dist: build
 	mkdir -p $(APPFOLDER)
+	mkdir -p $(APPFOLDER)/res
 ifneq ($(RESOURCES),)
 	cp -r $(RESOURCES) $(APPFOLDER)
 endif
+	cp -r ../../res/rom $(APPFOLDER)/res
+	cp -r ../../res/font $(APPFOLDER)/res
+	rm $(APPFOLDER)/res/rom/test.rom
 	cp $(INFOPLIST) $(APPFOLDER)/Info.plist
 	cp $(BIN_TARGET) $(APPFOLDER)
 	find $(APPFOLDER) -name \*.png|xargs ios-pngcrush -c

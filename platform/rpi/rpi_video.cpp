@@ -140,7 +140,7 @@ void UpdateScreen()
 {
 	{
 		PROFILER_SECTION(u_vid0);
-		gles2->Draw(screen_width, screen_height);
+		gles2->Draw(ePoint(), ePoint(screen_width, screen_height));
 	}
 	{
 		PROFILER_SECTION(u_vid1);

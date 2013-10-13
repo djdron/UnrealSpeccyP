@@ -204,7 +204,7 @@ event_loop(Display *dpy, Window win,
       }
 
       if (redraw) {
-         gles2->Draw(width, height);
+         gles2->Draw(ePoint(), ePoint(width, height));
          eglSwapBuffers(egl_dpy, egl_surf);
       }
    }

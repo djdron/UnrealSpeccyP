@@ -36,19 +36,6 @@ void DoneSound();
 
 wxWindow* CreateGLCanvas(wxWindow* parent);
 
-static struct eOptionTrueSpeed : public xOptions::eOptionBool
-{
-	eOptionTrueSpeed() { Set(true); }
-	virtual const char* Name() const { return "true speed"; }
-	virtual void Change(bool next = true)
-	{
-		eOptionBool::Change();
-		DoneSound();
-		InitSound();
-	}
-	virtual int Order() const { return 75; }
-} op_true_speed;
-
 static struct eOptionWindowSize : public xOptions::eOptionInt
 {
 	eOptionWindowSize() { customizable = false; Set(1); }
@@ -286,10 +273,11 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	gl_canvas->SetFocus();
 
 	UpdateBetaDiskMenu();
-	if(cmdline.true_speed != eCmdLine::V_DEFAULT)
+	xOptions::eOption<bool>* op_true_speed = xOptions::eOption<bool>::Find("true speed");
+	if(cmdline.true_speed != eCmdLine::V_DEFAULT && op_true_speed)
 	{
-		op_true_speed.Set(cmdline.true_speed == eCmdLine::V_ON);
-		op_true_speed.Apply();
+		op_true_speed->Set(cmdline.true_speed == eCmdLine::V_ON);
+		op_true_speed->Apply();
 	}
 	if(cmdline.full_screen != eCmdLine::V_DEFAULT)
 		op_full_screen.Set(cmdline.full_screen == eCmdLine::V_ON);
@@ -305,7 +293,7 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 		SAFE_CALL(op_joy)->Value(wxConvertWX2MB(cmdline.joystick));
 	}
 	UpdateJoyMenu();
-	menu_true_speed->Check(op_true_speed);
+	menu_true_speed->Check(op_true_speed && *op_true_speed);
 	menu_mode_48k->Check(op_mode_48k && *op_mode_48k);
 
 	UpdateBoolOption(menu_tape_fast, "fast tape");

@@ -16,26 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __GLES2_SHADER_H__
-#define __GLES2_SHADER_H__
+#ifndef __POINT_H__
+#define __POINT_H__
 
-#ifdef USE_GLES2
+#include "../std_types.h"
 
-#ifndef _IOS
-#include <GLES2/gl2.h>
-#else//_IOS
-#include <OpenGLES/ES2/gl.h>
-#endif//_IOS
+#pragma once
 
-namespace xPlatform
+struct ePoint
 {
+	ePoint(int _x = 0, int _y = 0) : x(_x), y(_y) {}
+	ePoint& operator+=(const ePoint& p) { x += p.x; y += p.y; return self; }
+	ePoint& operator-=(const ePoint& p) { x -= p.x; y -= p.y; return self; }
+	ePoint operator+(const ePoint& p) const { ePoint t = self; t += p; return t; }
+	ePoint operator-(const ePoint& p) const { ePoint t = self; t -= p; return t; }
+	int x, y;
+};
 
-GLuint CreateShader(GLenum type, const char* shader_src);
-GLuint CreateProgram(const char* vertex_shader_src, const char* fragment_shader_src);
-
-}
-//namespace xPlatform
-
-#endif//USE_GLES2
-
-#endif//__GLES2_SHADER_H__
+#endif//__POINT_H__

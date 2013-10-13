@@ -16,29 +16,56 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __GLES2_H__
-#define __GLES2_H__
+#ifndef __GLES2_SPRITE_H__
+#define __GLES2_SPRITE_H__
 
 #pragma once
 
 #ifdef USE_GLES2
+#ifdef USE_GLES2_SPRITE
 
+#include "gles2_shader.h"
 #include "../../tools/point.h"
 
 namespace xPlatform
 {
 
-class eGLES2
+class eGLES2;
+
+class eGLES2Sprite
 {
 public:
-	static eGLES2* Create();
-	virtual ~eGLES2() {}
-	virtual void Draw(const ePoint& pos, const ePoint& size) = 0;
+	eGLES2Sprite(GLuint texture, const ePoint& size);
+	virtual ~eGLES2Sprite();
+	virtual void Draw(eGLES2* context, const ePoint& pos, const ePoint& size, float alpha = 1.0f);
+
+private:
+	GLuint	texture;
+	GLuint	buffer_vertices;
+	GLuint	buffer_uv;
+	GLuint	buffer_indices;
+	ePoint	size;
+
+	struct eShaderInfo
+	{
+		eShaderInfo(const char* vs, const char* fs);
+		GLuint program;
+		GLint a_position;
+		GLint a_texcoord;
+		GLint u_vp_matrix;
+		GLint u_texture;
+		GLint u_alpha;
+	};
+	eShaderInfo shader;
 };
+
+int NextPot(int v);
+inline ePoint NextPot(const ePoint& v) { return ePoint(NextPot(v.x), NextPot(v.y)); }
 
 }
 //namespace xPlatform
 
+#endif//USE_GLES2_SPRITE
 #endif//USE_GLES2
 
-#endif//__GLES2_H__
+#endif//__GLES2_SPRITE_H__

@@ -238,7 +238,7 @@ void eUSPInstance::Draw()
 	if(!inited || !gl_context)
 		return;
 	gl_context->MakeCurrent(this);
-	gles2->Draw(size.width(), size.height());
+	gles2->Draw(ePoint(), ePoint(size.width(), size.height()));
 	gl_context->Flush();
 }
 

@@ -7,8 +7,9 @@
 using namespace xPlatform;
 
 @implementation MyGLView
-
-eTouchTracker touch_tracker;
+{
+	eTouchTracker touch_tracker;
+}
 
 -(void) processTouches:(NSSet*)touches pressed:(bool)on
 {
@@ -18,22 +19,23 @@ eTouchTracker touch_tracker;
 		if(id != -1)
 		{
 			CGPoint loc = [touch locationInView:self];
-			int w = self.bounds.size.width, h = self.bounds.size.height;
-			if(loc.y < h/2)
+			ePoint size(self.bounds.size.width, self.bounds.size.height);
+			if(loc.y < size.y/2)
 			{
-				if(loc.x < w/2)
+				if(loc.x < size.x/2)
 				{
 					Handler()->OnKey('m', on ? KF_DOWN : 0);
 				}
-				else if(loc.x > w/2)
+				else if(loc.x > size.x/2)
 				{
 					//toggle keyboard/joystick
 				}
 			}
 			else
 			{
-				loc.y -= h/2;
-				OnTouchKey(loc.x/w, loc.y*2/h, on, id);
+				loc.y -= (size.y - _overlay_size.y);
+				OnTouchKey(loc.x/size.x, loc.y/_overlay_size.y, on, id);
+				_last_touch_time.SetCurrent();
 			}
 		}
 	}

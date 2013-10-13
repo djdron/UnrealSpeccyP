@@ -35,7 +35,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-static xOptions::eOption<bool>* op_true_speed = NULL;
+void InitSound();
+void DoneSound();
+
+static struct eOptionTrueSpeed : public xOptions::eOptionBool
+{
+	eOptionTrueSpeed() { Set(true); }
+	virtual const char* Name() const { return "true speed"; }
+	virtual void Change(bool next = true)
+	{
+		eOptionBool::Change();
+		DoneSound();
+		InitSound();
+	}
+	virtual int Order() const { return 75; }
+} op_true_speed;
 
 struct eSource
 {
@@ -71,7 +85,7 @@ struct eSource
 };
 eSource::eUpdateResult eSource::Update(dword data_ready, void* data)
 {
-	const float fps = !op_true_speed || *op_true_speed ? 50.0f : 60.0f;
+	const float fps = op_true_speed ? 50.0f : 60.0f;
 	const float fps_org = 50.0f;
 	dword frame_data = 44100*2*2/fps_org;
 	if(data_ready < frame_data*2)
@@ -121,7 +135,6 @@ static ALCcontext* context = NULL;
 
 void InitSound()
 {
-	op_true_speed = xOptions::eOption<bool>::Find("true speed");
 	device = alcOpenDevice(NULL);
 	if(!device)
 		return;

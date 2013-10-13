@@ -1,6 +1,8 @@
 #ifndef __TOUCH_TRACKER_H__
 #define __TOUCH_TRACKER_H__
 
+#pragma once
+
 #include <vector>
 
 #pragma once
