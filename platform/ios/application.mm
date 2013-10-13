@@ -4,6 +4,7 @@
 #import "../gles2/gles2.h"
 #import "../gles2/gles2_sprite.h"
 #import "../../options_common.h"
+#import "../../tools/options.h"
 #import "../io.h"
 #undef self
 
@@ -128,6 +129,19 @@ using namespace xPlatform;
 	NSString* bundle_res_path = [[[NSBundle mainBundle] resourcePath] stringByAppendingString:@"/"];
 	xIo::SetResourcePath([bundle_res_path UTF8String]);
 	OpLastFile("/");
+
+	using namespace xOptions;
+	struct eOptionBX : public eOptionB
+	{
+		void Unuse() { customizable = false; storeable = false; }
+	};
+	eOptionBX* o = (eOptionBX*)eOptionB::Find("sound");
+	SAFE_CALL(o)->Unuse();
+	o = (eOptionBX*)eOptionB::Find("volume");
+	SAFE_CALL(o)->Unuse();
+	o = (eOptionBX*)eOptionB::Find("quit");
+	SAFE_CALL(o)->Unuse();
+
 	Handler()->OnInit();
 //	Handler()->OnOpenFile(xIo::ResourcePath("rick1.rzx"));
 	gles2 = eGLES2::Create();
