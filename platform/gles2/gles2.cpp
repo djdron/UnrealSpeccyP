@@ -73,24 +73,26 @@ static const char* vertex_shader =
 	"	gl_Position = u_vp_matrix * a_position;				\n"
 	"}														\n";
 
+#ifndef USE_GLES2_SIMPLE_SHADER
+
 static const char* fragment_shader =
-	"varying mediump vec2 v_texcoord;												\n"
-	"uniform sampler2D u_texture;													\n"
-	"uniform sampler2D u_palette;													\n"
-	"void main()																	\n"
-	"{																				\n"
-	"	mediump vec4 p0 = texture2D(u_texture, v_texcoord);									\n" // use paletted texture
-	"	mediump vec4 c0 = texture2D(u_palette, vec2(p0.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
-	"	gl_FragColor = c0;											 				\n"
-	"}																				\n";
+	"varying mediump vec2 v_texcoord;						\n"
+	"uniform sampler2D u_texture;							\n"
+	"uniform sampler2D u_palette;							\n"
+	"void main()											\n"
+	"{														\n"
+	"	mediump vec4 p0 = texture2D(u_texture, v_texcoord);	\n" // use paletted texture
+	"	mediump vec4 c0 = texture2D(u_palette, vec2(p0.r*16.0 + 1.0/16.0*0.5, 0.5)); \n"
+	"	gl_FragColor = c0;									\n"
+	"}														\n";
 
 static const char* fragment_shader_filtering =
-	"varying mediump vec2 v_texcoord;												\n"
-	"uniform sampler2D u_texture;													\n"
-	"uniform sampler2D u_palette;													\n"
-	"void main()																	\n"
-	"{																				\n"
-	"	mediump vec4 p0 = texture2D(u_texture, v_texcoord);									\n" // manually linear filtering of paletted texture is awful
+	"varying mediump vec2 v_texcoord;						\n"
+	"uniform sampler2D u_texture;							\n"
+	"uniform sampler2D u_palette;							\n"
+	"void main()											\n"
+	"{														\n"
+	"	mediump vec4 p0 = texture2D(u_texture, v_texcoord);	\n" // manually linear filtering of paletted texture is awful
 	"	mediump vec4 p1 = texture2D(u_texture, v_texcoord + vec2(1.0/512.0, 0)); 			\n"
 	"	mediump vec4 p2 = texture2D(u_texture, v_texcoord + vec2(0, 1.0/256.0)); 			\n"
 	"	mediump vec4 p3 = texture2D(u_texture, v_texcoord + vec2(1.0/512.0, 1.0/256.0)); 	\n"
@@ -99,8 +101,20 @@ static const char* fragment_shader_filtering =
 	"	mediump vec4 c2 = texture2D(u_palette, vec2(p2.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
 	"	mediump vec4 c3 = texture2D(u_palette, vec2(p3.r*16.0 + 1.0/16.0*0.5, 0.5)); 		\n"
 	"	mediump vec2 l = vec2(fract(512.0*v_texcoord.x), fract(256.0*v_texcoord.y)); 		\n"
-	"	gl_FragColor = mix(mix(c0, c1, l.x), mix(c2, c3, l.x), l.y); 				\n"
-	"}																				\n";
+	"	gl_FragColor = mix(mix(c0, c1, l.x), mix(c2, c3, l.x), l.y); \n"
+	"}														\n";
+
+#else//USE_GLES2_SIMPLE_SHADER
+
+static const char* fragment_shader =
+	"varying mediump vec2 v_texcoord;						\n"
+	"uniform sampler2D u_texture;							\n"
+	"void main()											\n"
+	"{														\n"
+	"	gl_FragColor = texture2D(u_texture, v_texcoord);	\n"
+	"}														\n";
+
+#endif//USE_GLES2_SIMPLE_SHADER
 
 static const GLfloat vertices[] =
 {
@@ -183,10 +197,19 @@ protected:
 		GLint u_texture;
 		GLint u_palette;
 	};
-	void DrawQuad(const eShaderInfo& sh, GLuint texture_palette);
+	void DrawQuad(const eShaderInfo& sh, GLuint texture_palette, bool filtering);
 
 	eShaderInfo shader;
+#ifndef USE_GLES2_SIMPLE_SHADER
 	eShaderInfo shader_filtering;
+#else//USE_GLES2_SIMPLE_SHADER
+	void UpdateScreenTexture();
+#ifdef USE_UI
+	void UpdateUiTexture();
+#endif//USE_UI
+	dword texture_buffer[WIDTH*HEIGHT*4];
+#endif//USE_GLES2_SIMPLE_SHADER
+
 	GLuint buffers[3];
 	GLuint textures[2];
 #ifdef USE_UI
@@ -196,14 +219,24 @@ protected:
 
 eGLES2Impl::eGLES2Impl()
 	: shader(vertex_shader, fragment_shader)
+#ifndef USE_GLES2_SIMPLE_SHADER
 	, shader_filtering(vertex_shader, fragment_shader_filtering)
+#endif//USE_GLES2_SIMPLE_SHADER
 {
-	if(!shader.program || !shader_filtering.program)
+	if(!shader.program)
 		return;
+#ifndef USE_GLES2_SIMPLE_SHADER
+	if(!shader_filtering.program)
+		return;
+#endif//USE_GLES2_SIMPLE_SHADER
 
 	glGenTextures(2, textures);
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
+#ifndef USE_GLES2_SIMPLE_SHADER
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, TEX_WIDTH, TEX_HEIGHT, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+#else//USE_GLES2_SIMPLE_SHADER
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
+#endif//USE_GLES2_SIMPLE_SHADER
 
 	glBindTexture(GL_TEXTURE_2D, textures[1]); // color palette
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 16, 2, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, color_cache.items);
@@ -211,7 +244,11 @@ eGLES2Impl::eGLES2Impl()
 #ifdef USE_UI
 	glGenTextures(2, textures_ui);
 	glBindTexture(GL_TEXTURE_2D, textures_ui[0]);
+#ifndef USE_GLES2_SIMPLE_SHADER
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, TEX_WIDTH, TEX_HEIGHT, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+#else//USE_GLES2_SIMPLE_SHADER
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+#endif//USE_GLES2_SIMPLE_SHADER
 
 	dword ui_pal[2][16];
 	memcpy(&ui_pal[0][0], xUi::palette, xUi::PALETTE_SIZE*sizeof(dword));
@@ -239,9 +276,13 @@ eGLES2Impl::~eGLES2Impl()
 {
 	if(shader.program)
 		glDeleteProgram(shader.program);
+#ifndef USE_GLES2_SIMPLE_SHADER
 	if(shader_filtering.program)
 		glDeleteProgram(shader_filtering.program);
-	if(!shader.program || !shader_filtering.program)
+	else
+		return;
+#endif//USE_GLES2_SIMPLE_SHADER
+	if(!shader.program)
 		return;
 	glDeleteBuffers(3, buffers);
 	glDeleteTextures(2, textures);
@@ -262,17 +303,20 @@ void SetOrtho(float m[4][4], float left, float right, float bottom, float top, f
 	m[3][3] = 1;
 }
 
-void eGLES2Impl::DrawQuad(const eShaderInfo& sh, GLuint texture_palette)
+void eGLES2Impl::DrawQuad(const eShaderInfo& sh, GLuint texture_palette, bool filtering)
 {
 	glUniform1i(sh.u_texture, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);//@note : GL_LINEAR must be implemented in shader because of palette indexes in texture
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//@note : GL_LINEAR must be implemented in shader when palette indexes in texture
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering ? GL_LINEAR : GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering ? GL_LINEAR : GL_NEAREST);
 
+#ifndef USE_GLES2_SIMPLE_SHADER
 	glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture_palette);
 	glUniform1i(sh.u_palette, 1);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering ? GL_LINEAR : GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering ? GL_LINEAR : GL_NEAREST);
+#endif//USE_GLES2_SIMPLE_SHADER
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
 	glVertexAttribPointer(sh.a_position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
@@ -289,8 +333,12 @@ void eGLES2Impl::DrawQuad(const eShaderInfo& sh, GLuint texture_palette)
 
 void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 {
-	if(!shader.program || !shader_filtering.program)
+	if(!shader.program)
 		return;
+#ifndef USE_GLES2_SIMPLE_SHADER
+	if(!shader_filtering.program)
+		return;
+#endif//USE_GLES2_SIMPLE_SHADER
 
 	bool filtering = op_filtering;
 	float sx, sy;
@@ -313,7 +361,13 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glViewport(pos.x, pos.y, size.x, size.y);
 
+#ifndef USE_GLES2_SIMPLE_SHADER
 	const eShaderInfo& sh = filtering ? shader_filtering : shader;
+	filtering = false;
+#else//USE_GLES2_SIMPLE_SHADER
+	const eShaderInfo& sh = shader;
+	UpdateScreenTexture();
+#endif//USE_GLES2_SIMPLE_SHADER
 
 	float z = OpZoom();
 	float proj[4][4];
@@ -323,22 +377,38 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 	glUniformMatrix4fv(sh.u_vp_matrix, 1, GL_FALSE, &proj[0][0]);
 	glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
+#ifndef USE_GLES2_SIMPLE_SHADER
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, Handler()->VideoData());
-	DrawQuad(sh, textures[1]);
+#else//USE_GLES2_SIMPLE_SHADER
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer);
+#endif//USE_GLES2_SIMPLE_SHADER
+	DrawQuad(sh, textures[1], filtering);
 
 #ifdef USE_UI
 	void* data_ui = Handler()->VideoDataUI();
 	if(data_ui)
 	{
+#ifndef USE_GLES2_SIMPLE_SHADER
+		const eShaderInfo& sh = shader_filtering;
+		filtering = false;
+#else//USE_GLES2_SIMPLE_SHADER
+		const eShaderInfo& sh = shader;
+		filtering = true;
+		UpdateUiTexture();
+#endif//USE_GLES2_SIMPLE_SHADER
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glUseProgram(shader_filtering.program);
+		glUseProgram(sh.program);
 		SetOrtho(proj, -0.5f, +0.5f, +0.5f, -0.5f, -1.0f, 1.0f, sx1, sy1); // scale 'fill screen'
-		glUniformMatrix4fv(shader_filtering.u_vp_matrix, 1, GL_FALSE, &proj[0][0]);
+		glUniformMatrix4fv(sh.u_vp_matrix, 1, GL_FALSE, &proj[0][0]);
 		glActiveTexture(GL_TEXTURE0);
 	    glBindTexture(GL_TEXTURE_2D, textures_ui[0]);
+#ifndef USE_GLES2_SIMPLE_SHADER
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, data_ui);
-		DrawQuad(shader_filtering, textures_ui[1]);
+#else//USE_GLES2_SIMPLE_SHADER
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, texture_buffer);
+#endif//
+		DrawQuad(sh, textures_ui[1], filtering);
 	}
 #endif//USE_UI
 
@@ -346,6 +416,31 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 //	glFlush();
 }
+
+#ifdef USE_GLES2_SIMPLE_SHADER
+void eGLES2Impl::UpdateScreenTexture()
+{
+	byte* src = (byte*)Handler()->VideoData();
+	word* dst = (word*)texture_buffer;
+	for(int i = WIDTH*HEIGHT; --i >= 0;)
+	{
+		*dst++ = color_cache.items[0][*src++];
+	}
+}
+
+#ifdef USE_UI
+void eGLES2Impl::UpdateUiTexture()
+{
+	byte* src = (byte*)Handler()->VideoDataUI();
+	dword* dst = (dword*)texture_buffer;
+	for(int i = WIDTH*HEIGHT; --i >= 0;)
+	{
+		*dst++ = xUi::palette[*src++].rgba;
+	}
+}
+#endif//USE_UI
+#endif//USE_GLES2_SIMPLE_SHADER
+
 
 eGLES2* eGLES2::Create() { return new eGLES2Impl; }
 

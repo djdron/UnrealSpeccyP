@@ -30,6 +30,10 @@ struct ePoint
 	ePoint& operator-=(const ePoint& p) { x -= p.x; y -= p.y; return self; }
 	ePoint operator+(const ePoint& p) const { ePoint t = self; t += p; return t; }
 	ePoint operator-(const ePoint& p) const { ePoint t = self; t -= p; return t; }
+	ePoint& operator*=(float s) { x *= s; y *= s; return self; }
+	ePoint operator*(float s) const { ePoint t = self; t *= s; return t; }
+	ePoint& operator/=(float s) { x /= s; y /= s; return self; }
+	ePoint operator/(float s) const { ePoint t = self; t /= s; return t; }
 	int x, y;
 };
 

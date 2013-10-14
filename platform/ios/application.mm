@@ -33,13 +33,14 @@ using namespace xPlatform;
 {
 	UIImage* image = [UIImage imageNamed:name];
 	*size = ePoint(image.size.width, image.size.height);
-	ePoint size_pot = NextPot(*size);
 	GLubyte* imageData = new GLubyte[size->x*size->y*4];
-	CGContextRef imageContext = CGBitmapContextCreate(imageData, size->x, size->y, 8, size->x * 4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedLast);
+	memset(imageData, 0, size->x*size->y*4);
+	CGContextRef imageContext = CGBitmapContextCreate(imageData, size->x, size->y, 8, size->x * 4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaNoneSkipLast);
 	CGContextSetBlendMode(imageContext, kCGBlendModeCopy);
 	CGContextDrawImage(imageContext, CGRectMake(0.0, 0.0, size->x, size->y), image.CGImage);
 	CGContextRelease(imageContext);
 
+	ePoint size_pot = NextPot(*size);
 	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -113,9 +114,10 @@ using namespace xPlatform;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application
 {
-	_window		= [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	MyGLView* view	= [[MyGLView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	_window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	MyGLView* view = [[MyGLView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[view setMultipleTouchEnabled:YES];
+	view.contentScaleFactor = 2;
 	EAGLContext* context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 	[EAGLContext setCurrentContext:context];
 	view.context = context;
@@ -146,7 +148,7 @@ using namespace xPlatform;
 //	Handler()->OnOpenFile(xIo::ResourcePath("rick1.rzx"));
 	gles2 = eGLES2::Create();
 	overlay = [[Overlay alloc] init];
-	view.overlay_size = overlay.keyboard_size;
+	view.overlay_size = overlay.keyboard_size/view.contentScaleFactor;
 
 	InitSound();
 
@@ -168,6 +170,7 @@ using namespace xPlatform;
 - (void)glkView:(MyGLView*)view drawInRect:(CGRect)rect
 {
 	ePoint size(rect.size.width, rect.size.height);
+	size *= view.contentScaleFactor;
 	if(size.x > size.y) // landscape
 		gles2->Draw(ePoint(), size);
 	else

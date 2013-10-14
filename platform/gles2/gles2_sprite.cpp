@@ -39,14 +39,14 @@ static const char* vertex_shader =
 	"}														\n";
 
 static const char* fragment_shader =
-	"varying mediump vec2 v_texcoord;												\n"
-	"uniform sampler2D u_texture;													\n"
-	"uniform mediump float u_alpha;													\n"
-	"void main()																	\n"
-	"{																				\n"
-	"	gl_FragColor = texture2D(u_texture, v_texcoord);							\n"
-	"	gl_FragColor.a = u_alpha;													\n"
-	"}																				\n";
+	"varying mediump vec2 v_texcoord;						\n"
+	"uniform sampler2D u_texture;							\n"
+	"uniform mediump float u_alpha;							\n"
+	"void main()											\n"
+	"{														\n"
+	"	gl_FragColor = texture2D(u_texture, v_texcoord);	\n"
+	"	gl_FragColor.a = u_alpha;							\n"
+	"}														\n";
 
 
 eGLES2Sprite::eShaderInfo::eShaderInfo(const char* vs, const char* fs) : program(0), a_position(0), a_texcoord(0), u_vp_matrix(0), u_texture(0), u_alpha(0)
