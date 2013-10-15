@@ -117,7 +117,6 @@ using namespace xPlatform;
 	_window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	MyGLView* view = [[MyGLView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[view setMultipleTouchEnabled:YES];
-	view.contentScaleFactor = 2;
 	EAGLContext* context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 	[EAGLContext setCurrentContext:context];
 	view.context = context;
