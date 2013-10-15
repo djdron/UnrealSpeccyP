@@ -28,6 +28,7 @@ namespace xPlatform
 struct eOptionState : public xOptions::eOptionBool
 {
 	eOptionState() { storeable = false; }
+	virtual const char*	Value() const { return NULL; }
 	const char* SnapshotName() const
 	{
 		static char name[xIo::MAX_PATH_LEN];

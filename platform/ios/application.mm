@@ -6,6 +6,7 @@
 #import "../../options_common.h"
 #import "../../tools/options.h"
 #import "../io.h"
+#import <sys/stat.h>
 #undef self
 
 namespace xPlatform
@@ -129,7 +130,13 @@ using namespace xPlatform;
 	
 	NSString* bundle_res_path = [[[NSBundle mainBundle] resourcePath] stringByAppendingString:@"/"];
 	xIo::SetResourcePath([bundle_res_path UTF8String]);
-	OpLastFile("/");
+	
+//	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//	const char* path = paths.count ? [[paths objectAtIndex: 0] UTF8String] : NULL;
+	const char* path = "/User/Documents/";
+	xIo::SetProfilePath(path);
+	mkdir(path, 0755);
+	OpLastFile(path);
 
 	using namespace xOptions;
 	struct eOptionBX : public eOptionB
@@ -144,7 +151,6 @@ using namespace xPlatform;
 	SAFE_CALL(o)->Unuse();
 
 	Handler()->OnInit();
-//	Handler()->OnOpenFile(xIo::ResourcePath("rick1.rzx"));
 	gles2 = eGLES2::Create();
 	overlay = [[Overlay alloc] init];
 	view.overlay_size = overlay.keyboard_size/view.contentScaleFactor;
@@ -154,6 +160,11 @@ using namespace xPlatform;
 	[_window setRootViewController:viewController];
 	[_window makeKeyAndVisible];
 	application.idleTimerDisabled = YES;
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+	xOptions::Store();
 }
 
 - (void)dealloc
