@@ -14,13 +14,21 @@ namespace xPlatform
 void InitSound();
 void DoneSound();
 void OnLoopSound();
+
+static struct eOptionUseKeyboard : public xOptions::eOptionBool
+{
+	eOptionUseKeyboard() { Set(true); customizable = false; }
+	virtual const char* Name() const { return "use keyboard"; }
+	virtual int Order() const { return 6; }
+} op_use_keyboard;
+
 }
 //namespace xPlatform
 
 using namespace xPlatform;
 
 @interface Overlay : NSObject
-@property ePoint keyboard_size;
+@property ePoint size;
 -(void)Draw:(ePoint)size :(eTick)last_touch_time;
 @end
 
@@ -28,6 +36,8 @@ using namespace xPlatform;
 {
 	GLuint keyboard_texture;
 	eGLES2Sprite* keyboard_sprite;
+	GLuint joystick_texture;
+	eGLES2Sprite* joystick_sprite;
 }
 
 -(GLuint)LoadTexture:(NSString*)name :(ePoint*)size
@@ -59,8 +69,11 @@ using namespace xPlatform;
 	self = [super init];
 	if(self)
 	{
-		keyboard_texture = [self LoadTexture:@"keyboard.png" :&_keyboard_size];
-		keyboard_sprite = new eGLES2Sprite(keyboard_texture, _keyboard_size);
+		keyboard_texture = [self LoadTexture:@"keyboard.png" :&_size];
+		keyboard_sprite = new eGLES2Sprite(keyboard_texture, _size);
+		ePoint joystick_size;
+		joystick_texture = [self LoadTexture:@"joystick.png" :&joystick_size];
+		joystick_sprite = new eGLES2Sprite(joystick_texture, joystick_size);
 	}
 	return self;
 }
@@ -69,6 +82,8 @@ using namespace xPlatform;
 {
 	delete keyboard_sprite;
 	glDeleteTextures(1, &keyboard_texture);
+	delete joystick_sprite;
+	glDeleteTextures(1, &joystick_texture);
 	[super dealloc];
 }
 
@@ -89,7 +104,10 @@ using namespace xPlatform;
 	}
 	if(alpha > 0.0f)
 	{
-		keyboard_sprite->Draw(ePoint(0, 0), ePoint(size.x, _keyboard_size.y), alpha);
+		if(op_use_keyboard)
+			keyboard_sprite->Draw(ePoint(0, 0), ePoint(size.x, _size.y), alpha);
+		else
+			joystick_sprite->Draw(ePoint(0, 0), ePoint(size.x, _size.y), alpha);
 	}
 }
 @end
@@ -153,7 +171,7 @@ using namespace xPlatform;
 	Handler()->OnInit();
 	gles2 = eGLES2::Create();
 	overlay = [[Overlay alloc] init];
-	view.overlay_size = overlay.keyboard_size/view.contentScaleFactor;
+	view.overlay_size = overlay.size/view.contentScaleFactor;
 
 	InitSound();
 
@@ -184,7 +202,7 @@ using namespace xPlatform;
 	if(size.x > size.y) // landscape
 		gles2->Draw(ePoint(), size);
 	else
-		gles2->Draw(ePoint(0, overlay.keyboard_size.y), ePoint(size.x, size.y - overlay.keyboard_size.y));
+		gles2->Draw(ePoint(0, overlay.size.y), ePoint(size.x, size.y - overlay.size.y));
 	[overlay Draw:size :view.last_touch_time];
 }
 

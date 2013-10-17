@@ -71,7 +71,7 @@ void OnTouchJoy(float _x, float _y, bool down, int pointer_id)
 	int y = _y*5.625f;
 	if(x < 0 || x >= 10)
 		return;
-	if(y < 0 || y >= 5)
+	if(y < 0 || y >= 6)
 		return;
 
 	using namespace xPlatform;
