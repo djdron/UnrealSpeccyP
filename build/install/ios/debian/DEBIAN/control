@@ -1,0 +1,9 @@
+Package: unreal-speccy-portable
+Priority: optional
+Depends: firmware (>= 6.0)
+Version: 0.0.53
+Architecture: iphoneos-arm
+Description: portable ZX-Spectrum emulator based on UnrealSpeccy 0.37.3 by SMT
+Homepage: http://code.google.com/p/unrealspeccyp/
+Maintainer: Andrey Dj <djdron@gmail.com>
+Section: games

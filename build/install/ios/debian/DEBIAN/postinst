@@ -1,0 +1,3 @@
+#!/bin/sh
+
+chown -R mobile:mobile /Applications/UnrealSpeccyPortable.app

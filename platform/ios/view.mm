@@ -33,7 +33,8 @@ using namespace xPlatform;
 		{
 			CGPoint loc = [touch locationInView:self];
 			ePoint size(self.bounds.size.width, self.bounds.size.height);
-			if(loc.y < size.y/2)
+			loc.y -= size.y - _overlay_size.y;
+			if(loc.y < 0)
 			{
 				if(loc.x < size.x/2)
 				{
@@ -47,7 +48,6 @@ using namespace xPlatform;
 			}
 			else
 			{
-				loc.y -= (size.y - _overlay_size.y);
 				if(!op_use_keyboard || *op_use_keyboard)
 					OnTouchKey(loc.x/size.x, loc.y/_overlay_size.y, down, id);
 				else
