@@ -43,7 +43,7 @@ using namespace xPlatform;
 -(GLuint)LoadTexture:(NSString*)name :(ePoint*)size
 {
 	UIImage* image = [UIImage imageNamed:name];
-	*size = ePoint(image.size.width, image.size.height);
+	*size = ePoint(image.size.width*image.scale, image.size.height*image.scale);
 	GLubyte* imageData = new GLubyte[size->x*size->y*4];
 	memset(imageData, 0, size->x*size->y*4);
 	CGContextRef imageContext = CGBitmapContextCreate(imageData, size->x, size->y, 8, size->x * 4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaNoneSkipLast);
