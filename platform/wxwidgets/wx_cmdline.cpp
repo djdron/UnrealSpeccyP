@@ -33,13 +33,13 @@ void eCmdLine::Init(wxCmdLineParser& parser) const
 {
 	static const wxCmdLineEntryDesc g_cmdLineDesc[] =
 	{
-		{ wxCMD_LINE_SWITCH, wxT("h"), wxT("help"), wxT("displays help on the command line parameters"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
-		{ wxCMD_LINE_PARAM, NULL, NULL, wxT("input file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
-		{ wxCMD_LINE_OPTION, wxT("t"), wxT("true_speed"), wxT("true speed (50Hz) mode (0 or 1)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
-		{ wxCMD_LINE_OPTION, wxT("m"), wxT("mode_48k"), wxT("mode 48k (0 or 1)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
-		{ wxCMD_LINE_OPTION, wxT("f"), wxT("full_screen"), wxT("full screen mode (0 or 1)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
-		{ wxCMD_LINE_OPTION, wxT("s"), wxT("size"), wxT("window size (in percent)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
-		{ wxCMD_LINE_OPTION, wxT("j"), wxT("joystick"), wxT("use joystick (kempston, cursor, qaop, sinclair2)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
+		{ wxCMD_LINE_SWITCH, wxT_2("h"), wxT_2("help"), wxT_2("displays help on the command line parameters"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
+		{ wxCMD_LINE_PARAM, NULL, NULL, wxT_2("input file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
+		{ wxCMD_LINE_OPTION, wxT_2("t"), wxT_2("true_speed"), wxT_2("true speed (50Hz) mode (0 or 1)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
+		{ wxCMD_LINE_OPTION, wxT_2("m"), wxT_2("mode_48k"), wxT_2("mode 48k (0 or 1)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
+		{ wxCMD_LINE_OPTION, wxT_2("f"), wxT_2("full_screen"), wxT_2("full screen mode (0 or 1)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
+		{ wxCMD_LINE_OPTION, wxT_2("s"), wxT_2("size"), wxT_2("window size (in percent)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL  },
+		{ wxCMD_LINE_OPTION, wxT_2("j"), wxT_2("joystick"), wxT_2("use joystick (kempston, cursor, qaop, sinclair2)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL  },
 		{ wxCMD_LINE_NONE }
 	};
 	parser.SetDesc(g_cmdLineDesc);
@@ -58,13 +58,13 @@ void eCmdLine::Parse(wxCmdLineParser& parser)
 	GetOptionValue(&mode_48k, 	parser, "m");
 	GetOptionValue(&full_screen, parser, "f");
 	long size = 0;
-	if(parser.Found(wxT("s"), &size))
+	if(parser.Found(wxT_2("s"), &size))
 	{
 		if(size >= 100 && size < 500)
 			size_percent = size;
 	}
 	wxString joy;
-	if(parser.Found(wxT("j"), &joy))
+	if(parser.Found(wxT_2("j"), &joy))
 	{
 		joystick = joy;
 	}

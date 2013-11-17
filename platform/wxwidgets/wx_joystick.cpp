@@ -33,24 +33,29 @@ namespace xPlatform
 //=============================================================================
 //	eWxJoystick::eWxJoystick
 //-----------------------------------------------------------------------------
-eWxJoystick::eWxJoystick(wxWindow* owner, int id)
+eWxJoystick::eWxJoystick(wxWindow* owner, int id) : joy(NULL)
 {
+#if wxUSE_JOYSTICK
 	joy = new wxJoystick(id);
 	joy->SetCapture(owner);
+#endif//wxUSE_JOYSTICK
 }
 //=============================================================================
 //	eWxJoystick::~eWxJoystick
 //-----------------------------------------------------------------------------
 eWxJoystick::~eWxJoystick()
 {
+#if wxUSE_JOYSTICK
 	joy->ReleaseCapture();
 	delete joy;
+#endif//wxUSE_JOYSTICK
 }
 //=============================================================================
 //	eWxJoystick::OnEvent
 //-----------------------------------------------------------------------------
 void eWxJoystick::OnEvent(wxJoystickEvent& event)
 {
+#if wxUSE_JOYSTICK
 	if(event.GetEventType() == wxEVT_JOY_BUTTON_DOWN || event.GetEventType() == wxEVT_JOY_BUTTON_UP)
 	{
 		ProcessButton(JB_FIRE, event.ButtonIsDown(), 'f');
@@ -64,12 +69,14 @@ void eWxJoystick::OnEvent(wxJoystickEvent& event)
 		ProcessButton(JB_LEFT,	event.GetPosition().x < joy->GetXMin() + range_x/4, 'l');
 		ProcessButton(JB_RIGHT,	event.GetPosition().x > joy->GetXMax() - range_x/4, 'r');
 	}
+#endif//wxUSE_JOYSTICK
 }
 //=============================================================================
 //	eWxJoystick::ProcessButton
 //-----------------------------------------------------------------------------
 void eWxJoystick::ProcessButton(dword button, bool state_new, byte key)
 {
+#if wxUSE_JOYSTICK
 	if(state.buttons[button] != state_new)
 	{
 		state.buttons[button] = state_new;
@@ -78,6 +85,7 @@ void eWxJoystick::ProcessButton(dword button, bool state_new, byte key)
 		else // released
 			Handler()->OnKey(key, OpJoyKeyFlags());
 	}
+#endif//wxUSE_JOYSTICK
 }
 
 }
