@@ -205,8 +205,10 @@ void GLCanvas::OnKeyup(wxKeyEvent& event)
 void GLCanvas::OnMouseKey(wxMouseEvent& event)
 {
 	event.Skip();
+#ifndef _MAC
 	if(!mouse_capture)
 		mouse_capture = CreateMouseCapture(this);
+#endif//_MAC
 }
 //=============================================================================
 //	GLCanvas::OnKillFocus

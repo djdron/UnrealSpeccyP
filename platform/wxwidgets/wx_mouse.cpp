@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform.h"
 
 #ifdef USE_WXWIDGETS
+#ifndef _MAC
 
 #undef self
 
@@ -194,4 +195,5 @@ wxWindow* CreateMouseCapture(wxWindow* parent)
 }
 //namespace xPlatform
 
+#endif//_MAC
 #endif//USE_WXWIDGETS
