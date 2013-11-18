@@ -64,7 +64,7 @@
 		5C6525771428C7540060688D /* z80_opcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6525741428C7540060688D /* z80_opcodes.cpp */; };
 		5C6525801428C7880060688D /* options_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6525791428C7880060688D /* options_common.cpp */; };
 		5C6525811428C7880060688D /* speccy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C65257B1428C7880060688D /* speccy.cpp */; };
-		5C6525841428C8070060688D /* unreal_speccy_portable.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5C6525821428C8070060688D /* unreal_speccy_portable.icns */; };
+		5C6525841428C8070060688D /* UnrealSpeccyPortable.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5C6525821428C8070060688D /* UnrealSpeccyPortable.icns */; };
 		5C9485ED15F0116100985CF2 /* file_type_zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485E915F0116100985CF2 /* file_type_zip.cpp */; };
 		5C9485EE15F0116100985CF2 /* file_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485EA15F0116100985CF2 /* file_type.cpp */; };
 		5C9485EF15F0116100985CF2 /* speccy_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485EC15F0116100985CF2 /* speccy_handler.cpp */; };
@@ -186,13 +186,13 @@
 		5C65257C1428C7880060688D /* speccy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = speccy.h; path = ../../speccy.h; sourceTree = SOURCE_ROOT; };
 		5C65257D1428C7880060688D /* std_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = std_types.h; path = ../../std_types.h; sourceTree = SOURCE_ROOT; };
 		5C65257E1428C7880060688D /* std.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = std.h; path = ../../std.h; sourceTree = SOURCE_ROOT; };
-		5C6525821428C8070060688D /* unreal_speccy_portable.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = unreal_speccy_portable.icns; sourceTree = "<group>"; };
-		5C6525831428C8070060688D /* unreal_speccy_portable-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "unreal_speccy_portable-Info.plist"; sourceTree = "<group>"; };
+		5C6525821428C8070060688D /* UnrealSpeccyPortable.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = UnrealSpeccyPortable.icns; sourceTree = "<group>"; };
+		5C6525831428C8070060688D /* UnrealSpeccyPortable-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "UnrealSpeccyPortable-Info.plist"; sourceTree = "<group>"; };
 		5C9485E915F0116100985CF2 /* file_type_zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_type_zip.cpp; path = ../../file_type_zip.cpp; sourceTree = SOURCE_ROOT; };
 		5C9485EA15F0116100985CF2 /* file_type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_type.cpp; path = ../../file_type.cpp; sourceTree = SOURCE_ROOT; };
 		5C9485EB15F0116100985CF2 /* file_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = file_type.h; path = ../../file_type.h; sourceTree = SOURCE_ROOT; };
 		5C9485EC15F0116100985CF2 /* speccy_handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = speccy_handler.cpp; path = ../../speccy_handler.cpp; sourceTree = SOURCE_ROOT; };
-		5CA765F8119DD606000C0142 /* unreal_speccy_portable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = unreal_speccy_portable.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5CA765F8119DD606000C0142 /* UnrealSpeccyPortable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnrealSpeccyPortable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,8 +212,8 @@
 				5C6524431428C55E0060688D /* res */,
 				5CA7718A119DE435000C0142 /* Source */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
-				5C6525821428C8070060688D /* unreal_speccy_portable.icns */,
-				5C6525831428C8070060688D /* unreal_speccy_portable-Info.plist */,
+				5C6525821428C8070060688D /* UnrealSpeccyPortable.icns */,
+				5C6525831428C8070060688D /* UnrealSpeccyPortable-Info.plist */,
 			);
 			name = usp;
 			sourceTree = "<group>";
@@ -221,7 +221,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5CA765F8119DD606000C0142 /* unreal_speccy_portable.app */,
+				5CA765F8119DD606000C0142 /* UnrealSpeccyPortable.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -499,9 +499,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5CA765F7119DD606000C0142 /* unreal_speccy_portable */ = {
+		5CA765F7119DD606000C0142 /* UnrealSpeccyPortable */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5CA765FD119DD608000C0142 /* Build configuration list for PBXNativeTarget "unreal_speccy_portable" */;
+			buildConfigurationList = 5CA765FD119DD608000C0142 /* Build configuration list for PBXNativeTarget "UnrealSpeccyPortable" */;
 			buildPhases = (
 				5CA765F4119DD606000C0142 /* Resources */,
 				5CA765F5119DD606000C0142 /* Sources */,
@@ -511,9 +511,9 @@
 			);
 			dependencies = (
 			);
-			name = unreal_speccy_portable;
+			name = UnrealSpeccyPortable;
 			productName = unreal_speccy_portable;
-			productReference = 5CA765F8119DD606000C0142 /* unreal_speccy_portable.app */;
+			productReference = 5CA765F8119DD606000C0142 /* UnrealSpeccyPortable.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -538,7 +538,7 @@
 			projectDirPath = "";
 			projectRoot = ../../;
 			targets = (
-				5CA765F7119DD606000C0142 /* unreal_speccy_portable */,
+				5CA765F7119DD606000C0142 /* UnrealSpeccyPortable */,
 			);
 		};
 /* End PBXProject section */
@@ -549,7 +549,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C65244F1428C55E0060688D /* res in Resources */,
-				5C6525841428C8070060688D /* unreal_speccy_portable.icns in Resources */,
+				5C6525841428C8070060688D /* UnrealSpeccyPortable.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -734,8 +734,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				INFOPLIST_FILE = "unreal_speccy_portable-Info.plist";
-				PRODUCT_NAME = unreal_speccy_portable;
+				INFOPLIST_FILE = "UnrealSpeccyPortable-Info.plist";
+				PRODUCT_NAME = UnrealSpeccyPortable;
 			};
 			name = Debug;
 		};
@@ -743,8 +743,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				INFOPLIST_FILE = "unreal_speccy_portable-Info.plist";
-				PRODUCT_NAME = unreal_speccy_portable;
+				INFOPLIST_FILE = "UnrealSpeccyPortable-Info.plist";
+				PRODUCT_NAME = UnrealSpeccyPortable;
 			};
 			name = Release;
 		};
@@ -760,7 +760,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		5CA765FD119DD608000C0142 /* Build configuration list for PBXNativeTarget "unreal_speccy_portable" */ = {
+		5CA765FD119DD608000C0142 /* Build configuration list for PBXNativeTarget "UnrealSpeccyPortable" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5CA765FB119DD607000C0142 /* Debug */,

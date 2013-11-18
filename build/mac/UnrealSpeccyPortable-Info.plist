@@ -16,13 +16,11 @@
 				<string>fdi</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>unreal_speccy_portable</string>
+			<string>UnrealSpeccyPortable</string>
 			<key>CFBundleTypeName</key>
-			<string>ZX-Spectrum disk Image</string>
+			<string>ZX Spectrum disk Image</string>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSHandlerRank</key>
-			<string>Default</string>
+			<string>Viewer</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -32,13 +30,11 @@
 				<string>tap</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>unreal_speccy_portable</string>
+			<string>UnrealSpeccyPortable</string>
 			<key>CFBundleTypeName</key>
-			<string>ZX-Spectrum tape file</string>
+			<string>ZX Spectrum tape file</string>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSHandlerRank</key>
-			<string>Default</string>
+			<string>Viewer</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -47,13 +43,23 @@
 				<string>sna</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>unreal_speccy_portable</string>
+			<string>UnrealSpeccyPortable</string>
 			<key>CFBundleTypeName</key>
-			<string>ZX-Spectrum snapshot</string>
+			<string>ZX Spectrum snapshot</string>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSHandlerRank</key>
-			<string>Default</string>
+			<string>Viewer</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>rzx</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>UnrealSpeccyPortable</string>
+			<key>CFBundleTypeName</key>
+			<string>ZX Spectrum replay</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
@@ -62,7 +68,7 @@
 	<string>Portable ZX-Spectrum emulator.
 Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</string>
 	<key>CFBundleIconFile</key>
-	<string>unreal_speccy_portable</string>
+	<string>UnrealSpeccyPortable</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.djdron.${PRODUCT_NAME:rfc1034identifier}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -76,7 +82,7 @@ Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</strin
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>Version 0.0.53</string>
+	<string>0</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
 	<key>NSHumanReadableCopyright</key>
