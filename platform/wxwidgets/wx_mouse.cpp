@@ -50,6 +50,7 @@ private:
 	void PostClose();
 	void OnPostClose(wxCommandEvent& event) { Close(); }
 	void OnClose(wxCloseEvent& event);
+	virtual bool AcceptsFocus() const { return false; }
 
 private:
 	struct eMouseDelta
