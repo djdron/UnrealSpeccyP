@@ -81,9 +81,7 @@ public:
 private:
 	void OnReset(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event)	{ Close(true); };
-#ifndef _MAC
 	void OnAbout(wxCommandEvent& event);
-#endif//_MAC
 	void OnOpenFile(wxCommandEvent& event);
 	void OnSaveFile(wxCommandEvent& event);
 	void SetFullScreen(bool on);
@@ -145,9 +143,7 @@ private:
 //-----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(wxID_EXIT,				Frame::OnQuit)
-#ifndef _MAC
 	EVT_MENU(wxID_ABOUT,			Frame::OnAbout)
-#endif//_MAC
 	EVT_MENU(wxID_OPEN,				Frame::OnOpenFile)
 	EVT_MENU(wxID_SAVE,				Frame::OnSaveFile)
 	EVT_MENU(Frame::ID_Reset,		Frame::OnReset)
@@ -328,7 +324,6 @@ void Frame::OnReset(wxCommandEvent& event)
 	else
 		SetStatusText(_("Reset FAILED"));
 }
-#ifndef _MAC
 //=============================================================================
 //	Frame::OnAbout
 //-----------------------------------------------------------------------------
@@ -336,9 +331,10 @@ void Frame::OnAbout(wxCommandEvent& event)
 {
 	wxAboutDialogInfo info;
 	info.SetName(GetTitle());
-	info.SetVersion(_("0.0.50"));
-	info.SetDescription(_("Portable ZX-Spectrum emulator."));
+	info.SetDescription(_("Portable ZX Spectrum emulator."));
 	info.SetCopyright(_("Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor."));
+#ifndef _MAC
+	info.SetVersion(_("0.0.53"));
 	info.SetWebSite(_("http://code.google.com/p/unrealspeccyp/"));
 	info.SetLicense(_(
 "This program is free software: you can redistribute it and/or modify\n\
@@ -354,9 +350,9 @@ GNU General Public License for more details.\n\
 You should have received a copy of the GNU General Public License\n\
 along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
 			));
+#endif//_MAC
 	wxAboutBox(info);
 }
-#endif//_MAC
 //=============================================================================
 //	Frame::OnOpenFile
 //-----------------------------------------------------------------------------
