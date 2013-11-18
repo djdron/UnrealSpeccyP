@@ -69,6 +69,7 @@ private:
 	static int canvas_attr[];
 	DECLARE_EVENT_TABLE()
 	
+    wxGLContext* gl_context;
 	wxWindow* mouse_capture;
 	eWxJoystick* joysticks[2];
 };
@@ -92,10 +93,9 @@ END_EVENT_TABLE()
 //=============================================================================
 //	GLCanvas::GLCanvas
 //-----------------------------------------------------------------------------
-GLCanvas::GLCanvas(wxWindow* parent)
-	: eInherited(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, _("GLCanvas"), canvas_attr)
-	, mouse_capture(NULL)
+GLCanvas::GLCanvas(wxWindow* parent) : eInherited(parent, wxID_ANY, canvas_attr), mouse_capture(NULL)
 {
+    gl_context = new wxGLContext(this);
 	joysticks[0] = new eWxJoystick(this, wxJOYSTICK1);
 	joysticks[1] = new eWxJoystick(this, wxJOYSTICK2);
 }
@@ -106,6 +106,7 @@ GLCanvas::~GLCanvas()
 {
 	delete joysticks[0];
 	delete joysticks[1];
+    delete gl_context;
 }
 //=============================================================================
 //	GLCanvas::OnPaint
@@ -122,7 +123,7 @@ void GLCanvas::Paint(wxDC& dc)
 {
 	int w, h;
 	GetClientSize(&w, &h);
-	SetCurrent();
+    SetCurrent(*gl_context);
 	DrawGL(w, h);
 	SwapBuffers();
 }
