@@ -56,6 +56,8 @@ class App : public wxApp
 			xIo::SetResourcePath(buf);
 		}
 #endif//_WINDOWS
+		const char* c = Handler()->WindowCaption();
+        SetAppDisplayName(wxConvertMB2WX(c));
 		if(!wxApp::OnInit())
 			return false;
 		wxString cfg_dir = wxStandardPaths::Get().GetUserDataDir() + L"/";
@@ -63,7 +65,6 @@ class App : public wxApp
 			wxMkdir(cfg_dir);
 		xIo::SetProfilePath(wxConvertWX2MB(cfg_dir));
 		Handler()->OnInit();
-		const char* c = Handler()->WindowCaption();
 		CreateFrame(wxConvertMB2WX(c), wxPoint(100, 100), cmdline);
 		InitSound();
 		return true;

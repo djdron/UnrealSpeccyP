@@ -33,12 +33,6 @@
 		5C24EBF1183982EC00771FDD /* sound_mixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C24EBE7183982EC00771FDD /* sound_mixer.cpp */; };
 		5C24EBF41839831200771FDD /* rzx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C24EBF21839831200771FDD /* rzx.cpp */; };
 		5C65244F1428C55E0060688D /* res in Resources */ = {isa = PBXBuildFile; fileRef = 5C6524431428C55E0060688D /* res */; };
-		5C65245D1428C5970060688D /* ui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6524511428C5970060688D /* ui.cpp */; };
-		5C65245E1428C5970060688D /* ui_button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6524531428C5970060688D /* ui_button.cpp */; };
-		5C65245F1428C5970060688D /* ui_control.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6524551428C5970060688D /* ui_control.cpp */; };
-		5C6524601428C5970060688D /* ui_desktop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6524571428C5970060688D /* ui_desktop.cpp */; };
-		5C6524611428C5970060688D /* ui_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6524591428C5970060688D /* ui_dialog.cpp */; };
-		5C6524621428C5970060688D /* ui_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C65245B1428C5970060688D /* ui_list.cpp */; };
 		5C6524671428C61C0060688D /* screenshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6524641428C61C0060688D /* screenshot.cpp */; };
 		5C6524681428C61C0060688D /* snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6524651428C61C0060688D /* snapshot.cpp */; };
 		5C6524C71428C6440060688D /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6524831428C6440060688D /* draw.cpp */; };
@@ -120,18 +114,6 @@
 		5C24EBF21839831200771FDD /* rzx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rzx.cpp; sourceTree = "<group>"; };
 		5C24EBF31839831200771FDD /* rzx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rzx.h; sourceTree = "<group>"; };
 		5C6524431428C55E0060688D /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; name = res; path = ../../res; sourceTree = SOURCE_ROOT; };
-		5C6524511428C5970060688D /* ui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ui.cpp; sourceTree = "<group>"; };
-		5C6524521428C5970060688D /* ui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui.h; sourceTree = "<group>"; };
-		5C6524531428C5970060688D /* ui_button.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ui_button.cpp; sourceTree = "<group>"; };
-		5C6524541428C5970060688D /* ui_button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_button.h; sourceTree = "<group>"; };
-		5C6524551428C5970060688D /* ui_control.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ui_control.cpp; sourceTree = "<group>"; };
-		5C6524561428C5970060688D /* ui_control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_control.h; sourceTree = "<group>"; };
-		5C6524571428C5970060688D /* ui_desktop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ui_desktop.cpp; sourceTree = "<group>"; };
-		5C6524581428C5970060688D /* ui_desktop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_desktop.h; sourceTree = "<group>"; };
-		5C6524591428C5970060688D /* ui_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ui_dialog.cpp; sourceTree = "<group>"; };
-		5C65245A1428C5970060688D /* ui_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_dialog.h; sourceTree = "<group>"; };
-		5C65245B1428C5970060688D /* ui_list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ui_list.cpp; sourceTree = "<group>"; };
-		5C65245C1428C5970060688D /* ui_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_list.h; sourceTree = "<group>"; };
 		5C6524641428C61C0060688D /* screenshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = screenshot.cpp; sourceTree = "<group>"; };
 		5C6524651428C61C0060688D /* snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = snapshot.cpp; sourceTree = "<group>"; };
 		5C6524661428C61C0060688D /* snapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = snapshot.h; sourceTree = "<group>"; };
@@ -321,26 +303,6 @@
 			path = ../../tools;
 			sourceTree = "<group>";
 		};
-		5C6524501428C5970060688D /* ui */ = {
-			isa = PBXGroup;
-			children = (
-				5C6524511428C5970060688D /* ui.cpp */,
-				5C6524521428C5970060688D /* ui.h */,
-				5C6524531428C5970060688D /* ui_button.cpp */,
-				5C6524541428C5970060688D /* ui_button.h */,
-				5C6524551428C5970060688D /* ui_control.cpp */,
-				5C6524561428C5970060688D /* ui_control.h */,
-				5C6524571428C5970060688D /* ui_desktop.cpp */,
-				5C6524581428C5970060688D /* ui_desktop.h */,
-				5C6524591428C5970060688D /* ui_dialog.cpp */,
-				5C65245A1428C5970060688D /* ui_dialog.h */,
-				5C65245B1428C5970060688D /* ui_list.cpp */,
-				5C65245C1428C5970060688D /* ui_list.h */,
-			);
-			name = ui;
-			path = ../../ui;
-			sourceTree = SOURCE_ROOT;
-		};
 		5C6524631428C61C0060688D /* snapshot */ = {
 			isa = PBXGroup;
 			children = (
@@ -481,7 +443,6 @@
 				5C6524E71428C6DE0060688D /* devices */,
 				5C6524691428C6440060688D /* platform */,
 				5C6524631428C61C0060688D /* snapshot */,
-				5C6524501428C5970060688D /* ui */,
 				5C9485E915F0116100985CF2 /* file_type_zip.cpp */,
 				5C9485EA15F0116100985CF2 /* file_type.cpp */,
 				5C9485EB15F0116100985CF2 /* file_type.h */,
@@ -563,18 +524,12 @@
 				5C24EBF0183982EC00771FDD /* profiler.cpp in Sources */,
 				5C24EB9A183962AD00771FDD /* pngget.c in Sources */,
 				5C24EBA3183962AD00771FDD /* unzip.c in Sources */,
-				5C65245D1428C5970060688D /* ui.cpp in Sources */,
 				5C24EBC318396A8300771FDD /* wx_cmdline.cpp in Sources */,
-				5C65245E1428C5970060688D /* ui_button.cpp in Sources */,
 				5C24EB9F183962AD00771FDD /* pngwrite.c in Sources */,
 				5C24EBC618396A8300771FDD /* wx_keys.cpp in Sources */,
 				5C24EBA0183962AD00771FDD /* pngwtran.c in Sources */,
 				5C24EB9E183962AD00771FDD /* pngwio.c in Sources */,
-				5C65245F1428C5970060688D /* ui_control.cpp in Sources */,
 				5C24EB99183962AD00771FDD /* pngerror.c in Sources */,
-				5C6524601428C5970060688D /* ui_desktop.cpp in Sources */,
-				5C6524611428C5970060688D /* ui_dialog.cpp in Sources */,
-				5C6524621428C5970060688D /* ui_list.cpp in Sources */,
 				5C6524671428C61C0060688D /* screenshot.cpp in Sources */,
 				5C24EBC418396A8300771FDD /* wx_frame.cpp in Sources */,
 				5C24EBA1183962AD00771FDD /* pngwutil.c in Sources */,

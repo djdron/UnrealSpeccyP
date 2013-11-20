@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>Portable ZX-Spectrum emulator</string>
+	<string>Unreal Speccy Portable</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
