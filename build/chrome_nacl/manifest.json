@@ -1,6 +1,6 @@
 {
   "name": "Unreal Speccy Portable",
-  "version": "0.0.49",
+  "version": "0.0.53",
   "manifest_version": 2,
   "description": "Portable ZX Spectrum emulator supports Z80 128K (Pentagon) AY/YM, Beeper, BetaDisk, Tape, Kempston Joystick/Mouse, Snapshots.",
   "icons": {
@@ -14,12 +14,13 @@
     }
   },
   "permissions": [
-	"http://vtrdos.ru/"
+	"http://vtrdos.ru/",
+	"http://rzxarchive.co.uk/"
   ],
   "requirements": {
     "3D": {
     	"features": ["webgl"]
   	}
   },
-  "minimum_chrome_version": "26"
+  "minimum_chrome_version": "31"
 }

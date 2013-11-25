@@ -258,7 +258,23 @@ var browser_items =
 						return item_html;
 					},
 		url:		url_std
-	}
+	},
+	{
+		root:		"/replays",
+		items:		[ "/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L", "/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z" ],
+		urls:		[ "123", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ],
+		patterns:	[ "<tr><td><font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"http://www.thunderstats.com/download.cgi\\?http://www.rzxarchive.co.uk(.+?)\"|<font size=2 color=red>).+?" ],
+		parser:		function parser_press(path, elem)
+					{
+						if(elem[3] == null)
+							return ""
+						var item_name = elem[1];
+						var item_desc = elem[2];
+						var item_url = path + elem[3];
+						return "<li id=\"" + item_url + "\"><b>" + item_name + "</b><br /><sup>" + item_desc + "</sup></li>";
+					},
+		url:		function(u) { return "http://rzxarchive.co.uk/" + u + ".php"; }
+	},
 ];
 
 function updateBrowser()
