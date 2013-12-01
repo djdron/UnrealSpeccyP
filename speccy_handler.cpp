@@ -472,6 +472,10 @@ static struct eFileTypeZ80 : public eFileType
 	}
 	virtual const char* Type() { return "z80"; }
 } ft_z80;
+static struct eFileTypeSZX : public eFileTypeZ80
+{
+	virtual const char* Type() { return "szx"; }
+} ft_szx;
 static struct eFileTypeSNA : public eFileTypeZ80
 {
 	virtual bool Store(const char* name)
