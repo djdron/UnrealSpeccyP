@@ -134,6 +134,19 @@ typedef struct _tagZXSTRAMPAGE
 	BYTE chData[1];
 } ZXSTRAMPAGE, *LPZXSTRAMPAGE;
 
+// AY Block flags
+#define ZXSTAYF_FULLERBOX  1
+#define ZXSTAYF_128AY      2
+
+// AY Block. Contains the AY register values
+typedef struct _tagZXSTAYBLOCK
+{
+	ZXSTBLOCK blk;
+	BYTE chFlags;
+	BYTE chCurrentRegister;
+	BYTE chAyRegs[16];
+} ZXSTAYBLOCK, *LPZXSTAYBLOCK;
+
 #pragma pack(pop)
 
 struct eZ80AccessorSZX : public xZ80::eZ80
@@ -277,6 +290,15 @@ bool eZ80AccessorSZX::SetState(xIo::eStreamMemory& is)
 				SAFE_DELETE(buf);
 				if(!ok)
 					return false;
+			}
+			break;
+		case FOURCC('A', 'Y', '\0', '\0'):
+			{
+				ZXSTAYBLOCK ay_state;
+				if(!ReadBlock(is, &ay_state, block))
+					return false;
+				devices->Get<eAY>()->SetRegs(ay_state.chAyRegs);
+				devices->Get<eAY>()->Select(ay_state.chCurrentRegister);
 			}
 			break;
 		default:

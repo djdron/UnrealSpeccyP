@@ -88,6 +88,7 @@ public:
 	void SetTimings(dword system_clock_rate, dword chip_clock_rate, dword sample_rate);
 	void SetVolumes(dword global_vol, const SNDCHIP_VOLTAB *voltab, const SNDCHIP_PANTAB *stereo);
 	void SetRegs(const byte _reg[16]) { memcpy(reg, _reg, sizeof(reg)); ApplyRegs(0); }
+	void Select(byte nreg);
 
 	virtual void Reset() { _Reset(); }
 	virtual void FrameStart(dword tacts);
@@ -95,8 +96,8 @@ public:
 
 	static eDeviceId Id() { return D_AY; }
 	virtual dword IoNeed() const { return ION_WRITE|ION_READ; }
+
 protected:
-	void Select(byte nreg);
 	void Write(dword timestamp, byte val);
 	byte Read();
 
