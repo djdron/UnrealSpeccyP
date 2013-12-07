@@ -34,7 +34,7 @@ SOURCES += ../../speccy.cpp \
 	../../3rdparty/minizip/ioapi.c \
 	../../3rdparty/minizip/unzip.c \
 	../../snapshot/snapshot.cpp \
-	../../snapshot/snapshot_rzx.cpp \
+	../../snapshot/snapshot_szx.cpp \
 	../../snapshot/screenshot.cpp \
 	../../platform/touch_ui/tui_keyboard.cpp \
 	../../platform/touch_ui/tui_joystick.cpp \
