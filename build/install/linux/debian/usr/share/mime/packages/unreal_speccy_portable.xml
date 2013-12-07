@@ -4,11 +4,17 @@
     <comment>ZX-Spectrum snapshot</comment>
     <glob pattern="*.sna"/>
     <glob pattern="*.z80"/>
+    <glob pattern="*.szx"/>
   </mime-type>
   <mime-type type="application/usp-zx-disk">
     <comment>ZX-Spectrum disk image</comment>
     <glob pattern="*.trd"/>
     <glob pattern="*.scl"/>
+    <glob pattern="*.fdi"/>
+  </mime-type>
+  <mime-type type="application/usp-zx-replay">
+    <comment>ZX-Spectrum replay file</comment>
+    <glob pattern="*.rzx"/>
   </mime-type>
   <mime-type type="application/usp-zx-tape">
     <comment>ZX-Spectrum tape file</comment>

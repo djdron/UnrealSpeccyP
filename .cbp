@@ -107,6 +107,7 @@
 		<Unit filename="platform/wxwidgets/main_wx.cpp" />
 		<Unit filename="snapshot/screenshot.cpp" />
 		<Unit filename="snapshot/snapshot.cpp" />
+		<Unit filename="snapshot/snapshot_szx.cpp" />
 		<Unit filename="snapshot/snapshot.h" />
 		<Unit filename="speccy.cpp" />
 		<Unit filename="speccy.h" />

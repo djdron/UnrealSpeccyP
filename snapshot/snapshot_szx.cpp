@@ -185,14 +185,7 @@ bool eZ80AccessorSZX::SetState(xIo::eStreamMemory& is)
 		model48k = true;
 		break;
 	case ZXSTMID_128K:
-	case ZXSTMID_PLUS2:
-	case ZXSTMID_PLUS2A:
-	case ZXSTMID_PLUS3:
-	case ZXSTMID_PLUS3E:
 	case ZXSTMID_PENTAGON128:
-	case ZXSTMID_SCORPION:
-	case ZXSTMID_PENTAGON512:
-	case ZXSTMID_PENTAGON1024:
 		break;
 	default:
 		return false;

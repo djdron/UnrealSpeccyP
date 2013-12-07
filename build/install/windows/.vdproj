@@ -433,7 +433,7 @@
             {
             "Name" = "8:ZX Spectrum snapshot"
             "Description" = "8:ZX Spectrum Snapshot"
-            "Extensions" = "8:.z80;.sna"
+            "Extensions" = "8:.z80;.sna;.szx"
             "MIME" = "8:"
             "Icon" = "8:_EF9AE5BED3E0438896A49127AA819AC4"
             "IconIndex" = "3:0"

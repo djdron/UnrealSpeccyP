@@ -41,6 +41,7 @@
 			<array>
 				<string>z80</string>
 				<string>sna</string>
+				<string>szx</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>UnrealSpeccyPortable</string>

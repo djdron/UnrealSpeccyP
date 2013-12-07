@@ -976,6 +976,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\snapshot\snapshot_szx.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\snapshot\snapshot.h"
 				>
 			</File>
