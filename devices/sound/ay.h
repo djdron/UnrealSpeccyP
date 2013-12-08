@@ -110,7 +110,7 @@ private:
 	dword fa, fb, fc, fn, fe;
 	dword mult_const;
 
-	byte activereg, r13_reloaded;
+	byte activereg;
 
 	dword vols[6][32];
 	CHIP_TYPE chiptype;

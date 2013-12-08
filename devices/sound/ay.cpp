@@ -28,7 +28,7 @@ eAY::eAY() : t(0), ta(0), tb(0), tc(0), tn(0), te(0), env(0), denv(0)
 	,bit0(0), bit1(0), bit2(0), bit3(0), bit4(0), bit5(0)
 	,ea(0), eb(0), ec(0), va(0), vb(0), vc(0)
 	,fa(0), fb(0), fc(0), fn(0), fe(0)
-	,activereg(0), r13_reloaded(0)
+	,activereg(0)
 {
 	SetChip(CHIP_AY);
 	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
@@ -86,7 +86,6 @@ const dword MULT_C_1 = 14; // fixed point precision for 'system tick -> ay tick'
 //-----------------------------------------------------------------------------
 void eAY::FrameStart(dword tacts)
 {
-	r13_reloaded = 0;
 	t = tacts * chip_clock_rate / system_clock_rate;
 	eInherited::FrameStart(t);
 }
@@ -218,7 +217,6 @@ void eAY::Write(dword timestamp, byte val)
 		fe = SwapWord(r.envT);
 		break;
 	case 13:
-		r13_reloaded = 1;
 		te = 0;
 		if(r.env & 4) env = 0, denv = 1; // attack
 		else env = 31, denv = -1; // decay
@@ -272,6 +270,7 @@ void eAY::_Reset(dword timestamp)
 //-----------------------------------------------------------------------------
 void eAY::ApplyRegs(dword timestamp)
 {
+	byte ar = activereg;
 	for(byte r = 0; r < 16; r++)
 	{
 		Select(r);
@@ -280,6 +279,7 @@ void eAY::ApplyRegs(dword timestamp)
 		Write(timestamp, p ^ 1);
 		Write(timestamp, p);
 	}
+	activereg = ar;
 }
 
 // corresponds enum CHIP_TYPE
