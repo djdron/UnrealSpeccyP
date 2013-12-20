@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Unreal Speccy Portable</string>
-    <string name="open_file">Open File</string>
-    <string name="save_state">Save State</string>
-    <string name="load_state">Load State</string>
-    <string name="select_joystick">Select Joystick</string>
+    <string name="open_file">Open file</string>
+    <string name="save_state">Save state</string>
+    <string name="load_state">Load state</string>
+    <string name="select_joystick">Joystick</string>
     <string name="joystick_kempston">Kempston</string>
     <string name="joystick_cursor">Cursor</string>
     <string name="joystick_qaop">QAOP</string>
     <string name="joystick_sinclair2">Sinclair 2</string>
-    <string name="use_sensor">Use Sensor</string>
-    <string name="use_sensor_desc">Control Via Orientation Sensor</string>
+    <string name="use_sensor">Use sensor</string>
+    <string name="use_sensor_desc">Control via orientation sensor</string>
     <string name="reset">Reset</string>
     <string name="quit">Quit</string>
     <string name="preferences">Preferences</string>
     <string name="pref_control">Controls</string>
     <string name="pref_sound">Sound</string>
-    <string name="sound_chip">Sound Chip Type</string>
+    <string name="sound_chip">Sound chip type</string>
     <string name="sound_chip_ay">AY</string>
     <string name="sound_chip_ym">YM</string>
-    <string name="sound_chip_stereo">Chip Stereo Mode</string>
+    <string name="sound_chip_stereo">Chip stereo mode</string>
     <string name="sound_chip_stereo_abc">ABC</string>
     <string name="sound_chip_stereo_acb">ACB</string>
     <string name="sound_chip_stereo_bac">BAC</string>
@@ -29,9 +29,9 @@
     <string name="sound_chip_stereo_mono">mono</string>
     <string name="pref_peripherals">Peripherals</string>
 
-    <string name="auto_play_image">Auto Launch Programs</string>
-    <string name="auto_play_image_desc">After Opening Files</string>
-    <string name="drive">Beta Disk Drive</string>
+    <string name="auto_play_image">Auto launch programs</string>
+    <string name="auto_play_image_desc">After opening files</string>
+    <string name="drive">Beta disk drive</string>
     <string name="drive_a">A</string>
     <string name="drive_b">B</string>
     <string name="drive_c">C</string>
@@ -39,24 +39,24 @@
     <string name="mode_48k">Mode 48K</string>
     <string name="reset_to_service_rom">Reset to service ROM</string>
     <string name="service_rom_desc">MadRom v3.5 by AXLR</string>
-    <string name="file_selector">Select File</string>
+    <string name="file_selector">Select file</string>
     <string name="tape">Tape</string>
-    <string name="tape_na">Not Available (open tape file first)</string>
+    <string name="tape_na">Not available (open tape file first)</string>
     <string name="tape_started">Started (press to stop)</string>
     <string name="tape_stopped">Stopped (press to start)</string>
-    <string name="tape_fast">Fast Tape</string>
-    <string name="tape_fast_desc">Use Tape Traps</string>
+    <string name="tape_fast">Fast tape</string>
+    <string name="tape_fast_desc">Use tape traps</string>
 
     <string name="pref_view">View</string>
-    <string name="zoom">Zoom Mode</string>
+    <string name="zoom">Zoom mode</string>
     <string name="zoom_none">None</string>
-    <string name="zoom_fill">Fill Screen</string>
-    <string name="zoom_small_border">Small Border</string>
-    <string name="zoom_no_border">No Border</string>
+    <string name="zoom_fill">Fill screen</string>
+    <string name="zoom_small_border">Small border</string>
+    <string name="zoom_no_border">No border</string>
     <string name="filtering">Filtering</string>
-    <string name="av_timer_sync">A/V Sync By Timer</string>
+    <string name="av_timer_sync">A/V sync by timer</string>
     <string name="av_timer_sync_desc">Smoother playback on some devices</string>
-    <string name="skip_frames">Skip Frames</string>
+    <string name="skip_frames">Skip frames</string>
     <string name="skip_frames_none">None</string>
     <string name="skip_frames_1">1</string>
     <string name="skip_frames_2">2</string>
@@ -71,9 +71,9 @@
     <string name="zxaaa">ZXAAA</string>
 
     <string name="accessing_web">Accessing web</string>
-    <string name="downloading_image">Downloading image...</string>
-    <string name="gathering_list">Gathering list...</string>
-    <string name="canceling">Canceling...</string>
+    <string name="downloading_image">Downloading image&#8230;</string>
+    <string name="gathering_list">Gathering list&#8230;</string>
+    <string name="canceling">Canceling&#8230;</string>
 
     <string name= "file_select_open_error">"Open error : "</string>
     <string name= "file_select_update_error">"Update error : "</string>
@@ -84,8 +84,8 @@
     <string name= "file_select_not_available">not available</string>
     <string name= "file_select_unsupported_format">unsupported format</string>
 
-    <string name= "rzx_finished">RZX playback finished</string>
-    <string name= "rzx_sync_lost">RZX error - sync lost</string>
-    <string name= "rzx_invalid">RZX error - invalid data</string>
-    <string name= "rzx_unsupported">RZX error - unsupported format</string>
+    <string name= "rzx_finished">RZX - playback finished</string>
+    <string name= "rzx_sync_lost">RZX - sync lost</string>
+    <string name= "rzx_invalid">RZX - invalid data</string>
+    <string name= "rzx_unsupported">RZX - unsupported format</string>
 </resources>
