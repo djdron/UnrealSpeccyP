@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="opening">Abriendo \"%s\"</string>
+    <string name="open_file">Abrir archivo</string>
+    <string name="save_state">Guardar estado</string>
+    <string name="load_state">Cargar estado</string>
+    <string name="use_sensor">Usar sensor</string>
+    <string name="use_sensor_desc">Controlar a través del sensor de orientación</string>
+    <string name="reset">Reiniciar</string>
+    <string name="quit">Salir</string>
+    <string name="preferences">Preferencias</string>
+    <string name="pref_control">Controles</string>
+    <string name="pref_sound">Sonido</string>
+    <string name="sound_chip">Tipo de chip de sonido</string>
+    <string name="sound_chip_stereo">Modo de estéreo</string>
+    <string name="pref_peripherals">Periféricos</string>
+
+    <string name="auto_play_image">Auto-iniciar programas</string>
+    <string name="auto_play_image_desc">Luego de abrir archivos</string>
+    <string name="drive">Unidad de discos Beta</string>
+    <string name="mode_48k">Modo 48K</string>
+    <string name="reset_to_service_rom">Reiniciar a ROM de servicio</string>
+    <string name="service_rom_desc">MadRom v3.5 por AXLR</string>
+    <string name="file_selector">Seleccionar archivo</string>
+    <string name="tape">Cinta</string>
+    <string name="tape_na">No disponible (abrir cinta previamente)</string>
+    <string name="tape_started">Iniciado (presionar para detener)</string>
+    <string name="tape_stopped">Detenido (presionar para iniciar)</string>
+    <string name="tape_fast">Cinta rápida</string>
+    <string name="tape_fast_desc">Usar "tape traps"</string>
+
+    <string name="pref_view">Vista</string>
+    <string name="zoom">Modo de zoom</string>
+    <string name="zoom_none">Ninguno</string>
+    <string name="zoom_fill">Llenar pantalla</string>
+    <string name="zoom_small_border">Borde pequeño</string>
+    <string name="zoom_no_border">Sin borde</string>
+    <string name="filtering">Filtrado</string>
+    <string name="av_timer_sync">Sincronismo A/V por temporizador</string>
+    <string name="av_timer_sync_desc">Visualización más fluida en algunos dispositivos</string>
+    <string name="skip_frames">Saltear cuadros</string>
+    <string name="skip_frames_none">Ninguno</string>
+
+    <string name="file_system">Archivos</string>
+
+    <string name="accessing_web">Accediendo web</string>
+    <string name="downloading_image">Descargando imagen&#8230;</string>
+    <string name="gathering_list">Descargando lista&#8230;</string>
+    <string name="canceling">Cancelando&#8230;</string>
+
+    <string name= "file_select_open_error">"Error al abrir : %s"</string>
+    <string name= "file_select_update_error">"Error al actualizar : %s"</string>
+    <string name= "file_select_failed">falló</string>
+    <string name= "file_select_unable_connect1">fallo al conectarse al servidor</string>
+    <string name= "file_select_unable_connect2">fallo al descargar</string>
+    <string name= "file_select_invalid_info">información inválida</string>
+    <string name= "file_select_not_available">no disponible</string>
+    <string name= "file_select_unsupported_format">formato no soportado</string>
+
+    <string name= "rzx_finished">RZX - reproducción finalizada</string>
+    <string name= "rzx_sync_lost">RZX - sincronismo perdido</string>
+    <string name= "rzx_invalid">RZX - datos inválidos</string>
+    <string name= "rzx_unsupported">RZX - formato no soportado</string>
+</resources>
