@@ -77,6 +77,7 @@ class Frame : public wxFrame
 {
 public:
 	Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline);
+    void ShowFullScreen(bool on);
 
 private:
 	void OnReset(wxCommandEvent& event);
@@ -300,6 +301,23 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 		Handler()->OnOpenFile(wxConvertWX2MB(cmdline.file_to_open));
 }
 //=============================================================================
+//	Frame::ShowFullScreen
+//-----------------------------------------------------------------------------
+void Frame::ShowFullScreen(bool on)
+{
+#ifdef _MAC
+    if(on)
+    {
+        GetStatusBar()->Hide();
+    }
+    else
+    {
+        GetStatusBar()->Show();
+    }
+#endif//_MAC
+    wxFrame::ShowFullScreen(on, wxFULLSCREEN_ALL);
+}
+//=============================================================================
 //	Frame::UpdateBoolOption
 //-----------------------------------------------------------------------------
 bool Frame::UpdateBoolOption(wxMenuItem* o, const char* name, bool toggle) const
@@ -415,7 +433,7 @@ void Frame::SetFullScreen(bool on)
 	op_full_screen.Set(on);
 	if(IsFullScreen() != op_full_screen)
 	{
-		ShowFullScreen(op_full_screen, wxFULLSCREEN_ALL);
+		ShowFullScreen(op_full_screen);
 	}
 }
 //=============================================================================
@@ -445,7 +463,7 @@ void Frame::OnResize(wxCommandEvent& event)
 	}
 	if(IsFullScreen())
 	{
-		ShowFullScreen(false, wxFULLSCREEN_ALL);
+		ShowFullScreen(false);
 		op_full_screen.Set(false);
 	}
 	if(IsMaximized())
@@ -641,7 +659,7 @@ wxWindow* CreateFrame(const wxString& title, const wxPoint& pos, const eCmdLine&
 	Frame* frame = new Frame(title, pos, cmdline);
 	frame->Show(true);
 	if(op_full_screen)
-		frame->ShowFullScreen(true, wxFULLSCREEN_ALL);
+		frame->ShowFullScreen(true);
 	return frame;
 }
 
