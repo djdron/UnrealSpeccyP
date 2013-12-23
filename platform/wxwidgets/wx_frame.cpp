@@ -77,7 +77,7 @@ class Frame : public wxFrame
 {
 public:
 	Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline);
-    void ShowFullScreen(bool on);
+	void ShowFullScreen(bool on);
 
 private:
 	void OnReset(wxCommandEvent& event);
@@ -306,16 +306,16 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 void Frame::ShowFullScreen(bool on)
 {
 #ifdef _MAC
-    if(on)
-    {
-        GetStatusBar()->Hide();
-    }
-    else
-    {
-        GetStatusBar()->Show();
-    }
+	if(on)
+	{
+		GetStatusBar()->Hide();
+	}
+	else
+	{
+		GetStatusBar()->Show();
+	}
 #endif//_MAC
-    wxFrame::ShowFullScreen(on, wxFULLSCREEN_ALL);
+	wxFrame::ShowFullScreen(on, wxFULLSCREEN_ALL);
 }
 //=============================================================================
 //	Frame::UpdateBoolOption
