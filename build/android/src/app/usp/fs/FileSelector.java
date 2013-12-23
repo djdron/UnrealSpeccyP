@@ -261,7 +261,7 @@ public abstract class FileSelector extends ListActivity
 			}
 			if(e != null)
 			{
-				String me = getString(R.string.file_select_open_error) + e;
+				String me = String.format(getString(R.string.file_select_open_error), e);
 				Toast.makeText(getApplicationContext(), me, Toast.LENGTH_LONG).show();
 			}
 			async_task = false;
@@ -333,7 +333,7 @@ public abstract class FileSelector extends ListActivity
 			}
 			if(e != null)
 			{
-				String me = getString(R.string.file_select_update_error) + e;
+				String me = String.format(getString(R.string.file_select_update_error), e);
 				Toast.makeText(getApplicationContext(), me, Toast.LENGTH_LONG).show();
 			}
 			async_task = false;

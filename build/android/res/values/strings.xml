@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Unreal Speccy Portable</string>
+    <string name="opening">Opening \"%s\"</string>
     <string name="open_file">Open file</string>
     <string name="save_state">Save state</string>
     <string name="load_state">Load state</string>
@@ -75,11 +76,11 @@
     <string name="gathering_list">Gathering list&#8230;</string>
     <string name="canceling">Canceling&#8230;</string>
 
-    <string name= "file_select_open_error">"Open error : "</string>
-    <string name= "file_select_update_error">"Update error : "</string>
+    <string name= "file_select_open_error">"Open error : %s"</string>
+    <string name= "file_select_update_error">"Update error : %s"</string>
     <string name= "file_select_failed">failed</string>
     <string name= "file_select_unable_connect1">unable to connect to server</string>
-    <string name= "file_select_unable_connect2">unable download</string>
+    <string name= "file_select_unable_connect2">unable to download</string>
     <string name= "file_select_invalid_info">invalid info</string>
     <string name= "file_select_not_available">not available</string>
     <string name= "file_select_unsupported_format">unsupported format</string>

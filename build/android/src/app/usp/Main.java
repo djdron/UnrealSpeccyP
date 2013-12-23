@@ -68,7 +68,7 @@ public class Main extends Activity
 		String file = Uri.parse(getIntent().toUri(0)).getPath();
 		if(file.length() != 0)
 		{
-			Toast.makeText(getApplicationContext(), "Opening \"" + file + "\"", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), String.format(getString(R.string.opening), file), Toast.LENGTH_LONG).show();
 			Emulator.the.Open(file);
 		}
     }

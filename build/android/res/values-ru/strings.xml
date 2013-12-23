@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="opening">Открытие \"%s\"</string>
     <string name="open_file">Открыть файл</string>
     <string name="save_state">Сохранить состояние</string>
     <string name="load_state">Загрузить состояние</string>
@@ -52,8 +53,8 @@
     <string name="gathering_list">Создание списка&#8230;</string>
     <string name="canceling">Отмена&#8230;</string>
 
-    <string name= "file_select_open_error">"Ошибка открытия : "</string>
-    <string name= "file_select_update_error">"Ошибка обновления : "</string>
+    <string name= "file_select_open_error">"Ошибка открытия : %s"</string>
+    <string name= "file_select_update_error">"Ошибка обновления : %s"</string>
     <string name= "file_select_failed">не удалось</string>
     <string name= "file_select_unable_connect1">не могу подключиться к серверу</string>
     <string name= "file_select_unable_connect2">невозможно загрузить</string>

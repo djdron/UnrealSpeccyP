@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.List;
@@ -103,27 +102,28 @@ abstract class FSSWeb extends FileSelectorSource
 	{
 		try
 		{
-			Charset charset = Charset.forName(_encoding);
-			CharsetDecoder decoder = charset.newDecoder();
 			URLConnection connection = new URL(_url).openConnection();
 			InputStream is = connection.getInputStream();
 			int len = connection.getContentLength();
 			byte buffer[] = new byte[16384];
-			String s = "";
-			int size = 0;
+			ByteBuffer buf = ByteBuffer.allocate(0);
 			int r = -1;
 			while((r = is.read(buffer)) != -1)
 			{
-				CharBuffer cb = decoder.decode(ByteBuffer.wrap(buffer, 0, r));
-				s += cb;
-				size += r;
+				ByteBuffer buf1 = ByteBuffer.allocate(buf.capacity() + r);
+				buf1.put(buf);
+				buf1.put(buffer, 0, r);
+				buf = buf1;
+				buf.rewind();
 				if(progress.Canceled())
-					break;
+					return "";
 				if(len > 0)
-					progress.OnProgress(size, len);
+					progress.OnProgress(buf.capacity(), len);
 			}
 			is.close();
-			return s;
+			Charset charset = Charset.forName(_encoding);
+			CharsetDecoder decoder = charset.newDecoder();
+			return decoder.decode(buf).toString(); 
 		}
 		catch(Exception e)
 		{
