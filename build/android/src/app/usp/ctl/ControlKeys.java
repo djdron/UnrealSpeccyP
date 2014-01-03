@@ -29,7 +29,7 @@ public class ControlKeys implements View.OnKeyListener
 		boolean shift;
 		boolean alt;
 	}
-	private final char TranslateKey(final int keyCode, KeyModifiers m)
+	private final int TranslateKey(final int keyCode, KeyModifiers m)
 	{
 		switch(keyCode)
 		{
@@ -93,20 +93,71 @@ public class ControlKeys implements View.OnKeyListener
 			return '0';
 		case KeyEvent.KEYCODE_COMMA:
 			m.alt = true;
+			if(m.shift)
+			{
+				m.shift = false;
+				return 'R';
+			}
 			return 'N';
 		case KeyEvent.KEYCODE_PERIOD:
 			m.alt = true;
+			if(m.shift)
+			{
+				m.shift = false;
+				return 'T';
+			}
 			return 'M';
 		case KeyEvent.KEYCODE_SLASH:
 			m.alt = true;
+			if(m.shift)
+			{
+				m.shift = false;
+				return 'C';
+			}
 			return 'V';
+		case KeyEvent.KEYCODE_TAB:
+			m.alt = true;
+			m.shift = true;
+			return 0;
+		case KeyEvent.KEYCODE_SEMICOLON:
+			m.alt = true;
+			if(m.shift)
+			{
+				m.shift = false;
+				return 'Z';
+			}
+			return 'O';
+		case KeyEvent.KEYCODE_APOSTROPHE:
+			m.alt = true;
+			if(m.shift)
+			{
+				m.shift = false;
+				return 'P';
+			}
+			return '7';
+		case KeyEvent.KEYCODE_EQUALS:
+			m.alt = true;
+			if(m.shift)
+			{
+				m.shift = false;
+				return 'K';
+			}
+			return 'L';
+		case KeyEvent.KEYCODE_MINUS:
+			m.alt = true;
+			if(m.shift)
+			{
+				m.shift = false;
+				return '0';
+			}
+			return 'J';
 
 		case KeyEvent.KEYCODE_BUTTON_A:			return 'f';
 		case KeyEvent.KEYCODE_BUTTON_B:			return 'e';
 		case KeyEvent.KEYCODE_BUTTON_X:			return '1';
 		case KeyEvent.KEYCODE_BUTTON_Y:			return ' ';
 		default:
-			return 0;
+			return -1;
 		}
 	}
 	@Override
@@ -114,14 +165,14 @@ public class ControlKeys implements View.OnKeyListener
 	{
 		KeyModifiers m = new KeyModifiers();
 		m.shift = event.isShiftPressed();
-		m.alt = event.isAltPressed();
-		final char k = TranslateKey(keyCode, m);
-		if(k == 0)
+		m.alt = event.isAltPressed() || event.isSymPressed();
+		final int k = TranslateKey(keyCode, m);
+		if(k < 0)
 			return false;
 		if(event.getAction() == KeyEvent.ACTION_DOWN)
-			Emulator.the.OnKey(k, true, m.shift, m.alt);
+			Emulator.the.OnKey((char)k, true, m.shift, m.alt);
 		else
-			Emulator.the.OnKey(k, false, false, false);
+			Emulator.the.OnKey((char)k, false, false, false);
 		return true;
     }
 }
