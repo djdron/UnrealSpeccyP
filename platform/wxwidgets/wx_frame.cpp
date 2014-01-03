@@ -87,8 +87,10 @@ private:
 	void OnSaveFile(wxCommandEvent& event);
 	void SetFullScreen(bool on);
 	void OnExitFullScreen(wxCommandEvent& event);
-	void OnToggleFullScreen(wxCommandEvent& event);
+	void OnFullScreenToggle(wxCommandEvent& event);
 	void OnResize(wxCommandEvent& event);
+	void OnViewMode(wxCommandEvent& event);
+	void OnViewFilteringToggle(wxCommandEvent& event);
 	void OnTapeToggle(wxCommandEvent& event);
 	void OnTapeFastToggle(wxCommandEvent& event);
 	void OnBetaDiskDrive(wxCommandEvent& event);
@@ -104,11 +106,13 @@ private:
 	void OnQuickSave(wxCommandEvent& event);
 	void UpdateBetaDiskMenu();
 	void UpdateJoyMenu();
+	void UpdateViewZoomMenu();
 	bool UpdateBoolOption(wxMenuItem* o, const char* name, bool toggle = false) const; // returns option value
 
 	enum
 	{
-		ID_Reset = 1, ID_ResetToServiceRomToggle, ID_Size200, ID_Size300, ID_FullScreenToggle,
+		ID_Reset = 1, ID_ResetToServiceRomToggle, ID_Size200, ID_Size300,
+		ID_ViewFillScreen, ID_ViewSmallBorder, ID_ViewNoBorder, ID_ViewFilteringToggle, ID_FullScreenToggle,
 		ID_TapeToggle, ID_TapeFastToggle, ID_AutoPlayImageToggle,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
 		ID_PauseToggle, ID_TrueSpeedToggle, ID_Mode48kToggle,
@@ -122,7 +126,15 @@ private:
 		wxMenuItem* qaop;
 		wxMenuItem* sinclair2;
 	};
+	struct eViewMenuItems
+	{
+		wxMenuItem* fill_screen;
+		wxMenuItem* small_border;
+		wxMenuItem* no_border;
+		wxMenuItem* filtering;
+	};
 	eJoyMenuItems menu_joy;
+	eViewMenuItems menu_view;
 	wxMenuItem* menu_beta_disk_drive[4];
 	wxMenuItem* menu_pause;
 	wxMenuItem* menu_true_speed;
@@ -151,7 +163,11 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(wxID_ZOOM_100,			Frame::OnResize)
 	EVT_MENU(Frame::ID_Size200,		Frame::OnResize)
 	EVT_MENU(Frame::ID_Size300,		Frame::OnResize)
-	EVT_MENU(Frame::ID_FullScreenToggle, Frame::OnToggleFullScreen)
+	EVT_MENU(Frame::ID_ViewFillScreen, Frame::OnViewMode)
+	EVT_MENU(Frame::ID_ViewSmallBorder, Frame::OnViewMode)
+	EVT_MENU(Frame::ID_ViewNoBorder, Frame::OnViewMode)
+	EVT_MENU(Frame::ID_ViewFilteringToggle, Frame::OnViewFilteringToggle)
+	EVT_MENU(Frame::ID_FullScreenToggle, Frame::OnFullScreenToggle)
 	EVT_MENU(Frame::ID_TapeToggle,	Frame::OnTapeToggle)
 	EVT_MENU(Frame::ID_TapeFastToggle,Frame::OnTapeFastToggle)
 	EVT_MENU(Frame::ID_BetaDiskDriveA, Frame::OnBetaDiskDrive)
@@ -235,10 +251,17 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menuWindow->Append(wxID_ZOOM_100, _("Size &100%\tCtrl+1"));
 	menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
 	menuWindow->Append(ID_Size300, _("Size &300%\tCtrl+3"));
-	menuWindow->Append(ID_FullScreenToggle, _("&Full screen\tCtrl+F"));
+
+	wxMenu* menuView = new wxMenu;
+	menu_view.fill_screen = menuView->Append(ID_ViewFillScreen, _("Fill screen\tCtrl+Shift+1"), _(""), wxITEM_CHECK);
+	menu_view.small_border = menuView->Append(ID_ViewSmallBorder, _("Small border\tCtrl+Shift+2"), _(""), wxITEM_CHECK);
+	menu_view.no_border = menuView->Append(ID_ViewNoBorder, _("No border\tCtrl+Shift+3"), _(""), wxITEM_CHECK);
+	menu_view.filtering = menuView->Append(ID_ViewFilteringToggle, _("Filtering\tCtrl+Shift+F"), _(""), wxITEM_CHECK);
+	menuView->Append(ID_FullScreenToggle, _("&Full screen\tCtrl+F"));
 
 	wxMenuBar* menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, _("File"));
+	menuBar->Append(menuView, _("View"));
 	menuBar->Append(menuDevice, _("Device"));
 	menuBar->Append(menuWindow, _("Window"));
 
@@ -296,6 +319,8 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	UpdateBoolOption(menu_tape_fast, "fast tape");
 	UpdateBoolOption(menu_reset_to_service_rom, "reset to service rom");
 	UpdateBoolOption(menu_auto_play_image, "auto play image");
+	UpdateBoolOption(menu_view.filtering, "filtering");
+	UpdateViewZoomMenu();
 
 	if(!cmdline.file_to_open.empty())
 		Handler()->OnOpenFile(wxConvertWX2MB(cmdline.file_to_open));
@@ -352,7 +377,7 @@ void Frame::OnAbout(wxCommandEvent& event)
 	info.SetDescription(_("Portable ZX Spectrum emulator."));
 	info.SetCopyright(_("Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor."));
 #ifndef _MAC
-	info.SetVersion(_("0.0.53"));
+	info.SetVersion(_("0.0.56"));
 	info.SetWebSite(_("http://code.google.com/p/unrealspeccyp/"));
 	info.SetLicense(_(
 "This program is free software: you can redistribute it and/or modify\n\
@@ -446,7 +471,7 @@ void Frame::OnExitFullScreen(wxCommandEvent& event)
 //=============================================================================
 //	Frame::OnToggleFullScreen
 //-----------------------------------------------------------------------------
-void Frame::OnToggleFullScreen(wxCommandEvent& event)
+void Frame::OnFullScreenToggle(wxCommandEvent& event)
 {
 	SetFullScreen(!op_full_screen);
 }
@@ -471,14 +496,29 @@ void Frame::OnResize(wxCommandEvent& event)
 	SetClientSize(org_size*(op_window_size + 1));
 }
 //=============================================================================
+//	Frame::OnViewMode
+//-----------------------------------------------------------------------------
+void Frame::OnViewMode(wxCommandEvent& event)
+{
+	using namespace xOptions;
+	eOption<int>* op_zoom = eOption<int>::Find("zoom");
+	switch(event.GetId())
+	{
+	case ID_ViewFillScreen:		op_zoom->Set(0);		break;
+	case ID_ViewSmallBorder:	op_zoom->Set(1);		break;
+	case ID_ViewNoBorder:		op_zoom->Set(2);		break;
+	}
+	UpdateViewZoomMenu();
+}
+//=============================================================================
 //	Frame::OnTapeToggle
 //-----------------------------------------------------------------------------
 void Frame::OnTapeToggle(wxCommandEvent& event)
 {
 	switch(Handler()->OnAction(A_TAPE_TOGGLE))
 	{
-	case AR_TAPE_STARTED:	SetStatusText(_("Tape started"));	break;
-	case AR_TAPE_STOPPED:	SetStatusText(_("Tape stopped"));	break;
+	case AR_TAPE_STARTED:		SetStatusText(_("Tape started"));	break;
+	case AR_TAPE_STOPPED:		SetStatusText(_("Tape stopped"));	break;
 	case AR_TAPE_NOT_INSERTED:	SetStatusText(_("Tape not inserted"));	break;
 	default: break;
 	}
@@ -538,6 +578,16 @@ void Frame::OnPauseToggle(wxCommandEvent& event)
 		Handler()->VideoPaused(false);
 		SetStatusText(_("Ready..."));
 	}
+}
+//=============================================================================
+//	Frame::OnViewFilteringToggle
+//-----------------------------------------------------------------------------
+void Frame::OnViewFilteringToggle(wxCommandEvent& event)
+{
+	if(UpdateBoolOption(menu_view.filtering, "filtering", true))
+		SetStatusText(_("Filtering on"));
+	else
+		SetStatusText(_("Filtering off"));
 }
 //=============================================================================
 //	Frame::OnTrueSpeedToggle
@@ -649,6 +699,17 @@ void Frame::UpdateJoyMenu()
 	menu_joy.cursor->Check(joy == J_CURSOR);
 	menu_joy.qaop->Check(joy == J_QAOP);
 	menu_joy.sinclair2->Check(joy == J_SINCLAIR2);
+}
+//=============================================================================
+//	Frame::UpdateViewZoomMenu
+//-----------------------------------------------------------------------------
+void Frame::UpdateViewZoomMenu()
+{
+	using namespace xOptions;
+	eOption<int>* op_zoom = eOption<int>::Find("zoom");
+	menu_view.fill_screen->Check(*op_zoom == 0);
+	menu_view.small_border->Check(*op_zoom == 1);
+	menu_view.no_border->Check(*op_zoom == 2);
 }
 
 //=============================================================================

@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform.h"
 #include "../../ui/ui.h"
 #include "../../tools/profiler.h"
+#include "../../tools/options.h"
 
 #ifdef USE_GL
 
@@ -38,6 +39,40 @@ PROFILER_DECLARE(draw);
 
 namespace xPlatform
 {
+
+static struct eOptionZoom : public xOptions::eOptionInt
+{
+	virtual const char* Name() const { return "zoom"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "fill screen", "small border", "no border", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		eOptionInt::Change(0, 3, next);
+	}
+	virtual int Order() const { return 35; }
+	float Zoom() const
+	{
+		switch(*this)
+		{
+			case 1: return 300.0f/256.0f;
+			case 2: return 320.0f/256.0f;
+			default: return 1.0f;
+		}
+	}
+} op_zoom;
+
+float OpZoom() { return op_zoom.Zoom(); }
+
+static struct eOptionFiltering : public xOptions::eOptionBool
+{
+	eOptionFiltering() { Set(true); }
+	virtual const char* Name() const { return "filtering"; }
+	virtual int Order() const { return 36; }
+} op_filtering;
+
 
 static dword tex[512*256];
 
@@ -120,10 +155,10 @@ void DrawGL(int _w, int _h)
 
 	float sx, sy;
 	GetScaleWithAspectRatio43(&sx, &sy, _w, _h);
-	int w = sx * _w;
-	int h = sy * _h;
+	int w = sx * _w * OpZoom();
+	int h = sy * _h * OpZoom();
 
-	GLint filter = w % 320 ? GL_LINEAR : GL_NEAREST;
+	GLint filter = op_filtering ? GL_LINEAR : GL_NEAREST;
 
 	glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_TEXTURE);
