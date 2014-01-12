@@ -59,6 +59,7 @@
 		5C6525801428C7880060688D /* options_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6525791428C7880060688D /* options_common.cpp */; };
 		5C6525811428C7880060688D /* speccy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C65257B1428C7880060688D /* speccy.cpp */; };
 		5C6525841428C8070060688D /* UnrealSpeccyPortable.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5C6525821428C8070060688D /* UnrealSpeccyPortable.icns */; };
+		5C75ACE01868D66C0000E921 /* snapshot_szx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C75ACDF1868D66C0000E921 /* snapshot_szx.cpp */; };
 		5C9485ED15F0116100985CF2 /* file_type_zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485E915F0116100985CF2 /* file_type_zip.cpp */; };
 		5C9485EE15F0116100985CF2 /* file_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485EA15F0116100985CF2 /* file_type.cpp */; };
 		5C9485EF15F0116100985CF2 /* speccy_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485EC15F0116100985CF2 /* speccy_handler.cpp */; };
@@ -170,6 +171,7 @@
 		5C65257E1428C7880060688D /* std.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = std.h; path = ../../std.h; sourceTree = SOURCE_ROOT; };
 		5C6525821428C8070060688D /* UnrealSpeccyPortable.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = UnrealSpeccyPortable.icns; sourceTree = "<group>"; };
 		5C6525831428C8070060688D /* UnrealSpeccyPortable-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "UnrealSpeccyPortable-Info.plist"; sourceTree = "<group>"; };
+		5C75ACDF1868D66C0000E921 /* snapshot_szx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = snapshot_szx.cpp; sourceTree = "<group>"; };
 		5C9485E915F0116100985CF2 /* file_type_zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_type_zip.cpp; path = ../../file_type_zip.cpp; sourceTree = SOURCE_ROOT; };
 		5C9485EA15F0116100985CF2 /* file_type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_type.cpp; path = ../../file_type.cpp; sourceTree = SOURCE_ROOT; };
 		5C9485EB15F0116100985CF2 /* file_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = file_type.h; path = ../../file_type.h; sourceTree = SOURCE_ROOT; };
@@ -309,6 +311,7 @@
 				5C24EBF21839831200771FDD /* rzx.cpp */,
 				5C24EBF31839831200771FDD /* rzx.h */,
 				5C6524641428C61C0060688D /* screenshot.cpp */,
+				5C75ACDF1868D66C0000E921 /* snapshot_szx.cpp */,
 				5C6524651428C61C0060688D /* snapshot.cpp */,
 				5C6524661428C61C0060688D /* snapshot.h */,
 			);
@@ -570,6 +573,7 @@
 				5C6525771428C7540060688D /* z80_opcodes.cpp in Sources */,
 				5C6525801428C7880060688D /* options_common.cpp in Sources */,
 				5C6525811428C7880060688D /* speccy.cpp in Sources */,
+				5C75ACE01868D66C0000E921 /* snapshot_szx.cpp in Sources */,
 				5C24EBC218396A8300771FDD /* wx_canvas.cpp in Sources */,
 				5C9485ED15F0116100985CF2 /* file_type_zip.cpp in Sources */,
 				5C9485EE15F0116100985CF2 /* file_type.cpp in Sources */,
