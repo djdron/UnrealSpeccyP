@@ -94,6 +94,8 @@ private:
 	void OnTapeToggle(wxCommandEvent& event);
 	void OnTapeFastToggle(wxCommandEvent& event);
 	void OnBetaDiskDrive(wxCommandEvent& event);
+	void OnSoundChip(wxCommandEvent& event);
+	void OnSoundChipStereo(wxCommandEvent& event);
 	void OnJoy(wxCommandEvent& event);
 	void OnPauseToggle(wxCommandEvent& event);
 	void OnTrueSpeedToggle(wxCommandEvent& event);
@@ -105,6 +107,8 @@ private:
 	void OnQuickLoad(wxCommandEvent& event);
 	void OnQuickSave(wxCommandEvent& event);
 	void UpdateBetaDiskMenu();
+	void UpdateSoundChipMenu();
+	void UpdateSoundChipStereoMenu();
 	void UpdateJoyMenu();
 	void UpdateViewZoomMenu();
 	bool UpdateBoolOption(wxMenuItem* o, const char* name, bool toggle = false) const; // returns option value
@@ -117,6 +121,9 @@ private:
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
 		ID_PauseToggle, ID_TrueSpeedToggle, ID_Mode48kToggle,
 		ID_BetaDiskDriveA, ID_BetaDiskDriveB, ID_BetaDiskDriveC, ID_BetaDiskDriveD,
+		ID_SoundChipAY, ID_SoundChipYM,
+		ID_SoundChipStereoABC, ID_SoundChipStereoACB, ID_SoundChipStereoBAC, ID_SoundChipStereoBCA,
+		ID_SoundChipStereoCAB, ID_SoundChipStereoCBA, ID_SoundChipStereoMONO,
 		ID_QuickSave, ID_QuickLoad,
 	};
 	struct eJoyMenuItems
@@ -136,6 +143,8 @@ private:
 	eJoyMenuItems menu_joy;
 	eViewMenuItems menu_view;
 	wxMenuItem* menu_beta_disk_drive[4];
+	wxMenuItem* menu_sound_chip[2];
+	wxMenuItem* menu_sound_chip_stereo[7];
 	wxMenuItem* menu_pause;
 	wxMenuItem* menu_true_speed;
 	wxMenuItem* menu_mode_48k;
@@ -174,6 +183,15 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_BetaDiskDriveB, Frame::OnBetaDiskDrive)
 	EVT_MENU(Frame::ID_BetaDiskDriveC, Frame::OnBetaDiskDrive)
 	EVT_MENU(Frame::ID_BetaDiskDriveD, Frame::OnBetaDiskDrive)
+	EVT_MENU(Frame::ID_SoundChipAY, Frame::OnSoundChip)
+	EVT_MENU(Frame::ID_SoundChipYM, Frame::OnSoundChip)
+	EVT_MENU(Frame::ID_SoundChipStereoABC, Frame::OnSoundChipStereo)
+	EVT_MENU(Frame::ID_SoundChipStereoACB, Frame::OnSoundChipStereo)
+	EVT_MENU(Frame::ID_SoundChipStereoBAC, Frame::OnSoundChipStereo)
+	EVT_MENU(Frame::ID_SoundChipStereoBCA, Frame::OnSoundChipStereo)
+	EVT_MENU(Frame::ID_SoundChipStereoCAB, Frame::OnSoundChipStereo)
+	EVT_MENU(Frame::ID_SoundChipStereoCBA, Frame::OnSoundChipStereo)
+	EVT_MENU(Frame::ID_SoundChipStereoMONO, Frame::OnSoundChipStereo)
 	EVT_MENU(Frame::ID_JoyKempston,	Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoyCursor,	Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoyQAOP,		Frame::OnJoy)
@@ -234,6 +252,20 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menu_beta_disk_drive[3] = menuBetaDisk->Append(ID_BetaDiskDriveD, _("&D"), _(""), wxITEM_CHECK);
 	menuDevice->Append(-1, _("Beta disk &drive"), menuBetaDisk);
 
+	wxMenu* menuSoundChip = new wxMenu;
+	menu_sound_chip[0] = menuSoundChip->Append(ID_SoundChipAY, _("&AY-3-8910"), _(""), wxITEM_CHECK);
+	menu_sound_chip[1] = menuSoundChip->Append(ID_SoundChipYM, _("&YM2149F"), _(""), wxITEM_CHECK);
+	wxMenu* menuSoundChipStereo = new wxMenu;
+	menu_sound_chip_stereo[0] = menuSoundChipStereo->Append(ID_SoundChipStereoABC, _("&ABC"), _(""), wxITEM_CHECK);
+	menu_sound_chip_stereo[1] = menuSoundChipStereo->Append(ID_SoundChipStereoACB, _("&ACB"), _(""), wxITEM_CHECK);
+	menu_sound_chip_stereo[2] = menuSoundChipStereo->Append(ID_SoundChipStereoBAC, _("&BAC"), _(""), wxITEM_CHECK);
+	menu_sound_chip_stereo[3] = menuSoundChipStereo->Append(ID_SoundChipStereoBCA, _("&BCA"), _(""), wxITEM_CHECK);
+	menu_sound_chip_stereo[4] = menuSoundChipStereo->Append(ID_SoundChipStereoCAB, _("&CAB"), _(""), wxITEM_CHECK);
+	menu_sound_chip_stereo[5] = menuSoundChipStereo->Append(ID_SoundChipStereoCBA, _("&CBA"), _(""), wxITEM_CHECK);
+	menu_sound_chip_stereo[6] = menuSoundChipStereo->Append(ID_SoundChipStereoMONO, _("&Mono"), _(""), wxITEM_CHECK);
+	menuSoundChip->Append(-1, _("&Stereo mode"), menuSoundChipStereo);
+	menuDevice->Append(-1, _("Sound &chip"), menuSoundChip);
+
 	menu_pause = menuDevice->Append(ID_PauseToggle, _("&Pause\tF7"), _(""), wxITEM_CHECK);
 	menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, _("&True speed\tF8"), _(""), wxITEM_CHECK);
 	menu_mode_48k = menuDevice->Append(ID_Mode48kToggle, _("Mode &48k\tF9"), _(""), wxITEM_CHECK);
@@ -293,6 +325,8 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	gl_canvas->SetFocus();
 
 	UpdateBetaDiskMenu();
+	UpdateSoundChipMenu();
+	UpdateSoundChipStereoMenu();
 	xOptions::eOption<bool>* op_true_speed = xOptions::eOption<bool>::Find("true speed");
 	if(cmdline.true_speed != eCmdLine::V_DEFAULT && op_true_speed)
 	{
@@ -550,6 +584,32 @@ void Frame::OnBetaDiskDrive(wxCommandEvent& event)
 	UpdateBetaDiskMenu();
 }
 //=============================================================================
+//	Frame::OnSoundChip
+//-----------------------------------------------------------------------------
+void Frame::OnSoundChip(wxCommandEvent& event)
+{
+	using namespace xOptions;
+	eOption<int>* op_sound_chip = eOption<int>::Find("sound chip");
+	switch(event.GetId())
+	{
+	case ID_SoundChipAY: op_sound_chip->Set(0); SetStatusText(_("Sound chip type AY-3-8910 selected"));	break;
+	case ID_SoundChipYM: op_sound_chip->Set(1); SetStatusText(_("Sound chip type YM2149F selected"));	break;
+	}
+	op_sound_chip->Apply();
+	UpdateSoundChipMenu();
+}
+//=============================================================================
+//	Frame::OnSoundChipStereo
+//-----------------------------------------------------------------------------
+void Frame::OnSoundChipStereo(wxCommandEvent& event)
+{
+	using namespace xOptions;
+	eOption<int>* op_ay_stereo = eOption<int>::Find("ay stereo");
+	op_ay_stereo->Set(event.GetId() - ID_SoundChipStereoABC);
+	op_ay_stereo->Apply();
+	UpdateSoundChipStereoMenu();
+}
+//=============================================================================
 //	Frame::OnJoy
 //-----------------------------------------------------------------------------
 void Frame::OnJoy(wxCommandEvent& event)
@@ -688,6 +748,28 @@ void Frame::UpdateBetaDiskMenu()
 	menu_beta_disk_drive[1]->Check(drive == D_B);
 	menu_beta_disk_drive[2]->Check(drive == D_C);
 	menu_beta_disk_drive[3]->Check(drive == D_D);
+}
+//=============================================================================
+//	Frame::UpdateSoundChipMenu
+//-----------------------------------------------------------------------------
+void Frame::UpdateSoundChipMenu()
+{
+	using namespace xOptions;
+	eOption<int>* op_sound_chip = eOption<int>::Find("sound chip");
+	menu_sound_chip[0]->Check(*op_sound_chip == 0);
+	menu_sound_chip[1]->Check(*op_sound_chip == 1);
+}
+//=============================================================================
+//	Frame::UpdateSoundChipMenu
+//-----------------------------------------------------------------------------
+void Frame::UpdateSoundChipStereoMenu()
+{
+	using namespace xOptions;
+	eOption<int>* op_ay_stereo = eOption<int>::Find("ay stereo");
+	for(int i = 0; i < 7; ++i)
+	{
+		menu_sound_chip_stereo[i]->Check(*op_ay_stereo == i);
+	}
 }
 //=============================================================================
 //	Frame::UpdateJoyMenu
