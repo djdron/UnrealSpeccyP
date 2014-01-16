@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <wx/wx.h>
 #include <wx/dnd.h>
 #include <wx/aboutdlg.h>
+#include <wx/persist/toplevel.h>
 
 namespace xPlatform
 {
@@ -35,17 +36,6 @@ void InitSound();
 void DoneSound();
 
 wxWindow* CreateGLCanvas(wxWindow* parent);
-
-static struct eOptionWindowSize : public xOptions::eOptionInt
-{
-	eOptionWindowSize() { customizable = false; Set(1); }
-	virtual const char* Name() const { return "window size"; }
-	virtual const char** Values() const
-	{
-		static const char* values[] = { "100%", "200%", "300%", NULL };
-		return values;
-	}
-} op_window_size;
 
 static struct eOptionFullScreen : public xOptions::eOptionBool
 {
@@ -311,14 +301,15 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	SetClientSize(org_size);
 	SetMinSize(GetSize());
 
+	SetName("unreal_speccy_portable");
+	if(!wxPersistenceManager::Get().RegisterAndRestore(this))
+	{
+		SetClientSize(org_size*2);
+	}
 	if(cmdline.size_percent >= 0)
 	{
 		op_full_screen.Set(false);
 		SetClientSize(org_size*cmdline.size_percent/100);
-	}
-	else
-	{
-		SetClientSize(org_size*(op_window_size + 1));
 	}
 
 	gl_canvas = CreateGLCanvas(this);
@@ -364,6 +355,14 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 //-----------------------------------------------------------------------------
 void Frame::ShowFullScreen(bool on)
 {
+	if(on)
+	{
+		wxPersistenceManager::Get().SaveAndUnregister(this);
+	}
+	else
+	{
+		wxPersistenceManager::Get().Register(this);
+	}
 #ifdef _MAC
 	if(on)
 	{
@@ -514,11 +513,12 @@ void Frame::OnFullScreenToggle(wxCommandEvent& event)
 //-----------------------------------------------------------------------------
 void Frame::OnResize(wxCommandEvent& event)
 {
+	int size = 1;
 	switch(event.GetId())
 	{
-	case wxID_ZOOM_100:	op_window_size.Set(0);	break;
-	case ID_Size200:	op_window_size.Set(1);	break;
-	case ID_Size300:	op_window_size.Set(2);	break;
+	case wxID_ZOOM_100:	size = 1;	break;
+	case ID_Size200:	size = 2;	break;
+	case ID_Size300:	size = 3;	break;
 	}
 	if(IsFullScreen())
 	{
@@ -527,7 +527,7 @@ void Frame::OnResize(wxCommandEvent& event)
 	}
 	if(IsMaximized())
 		Maximize(false);
-	SetClientSize(org_size*(op_window_size + 1));
+	SetClientSize(org_size*size);
 }
 //=============================================================================
 //	Frame::OnViewMode
