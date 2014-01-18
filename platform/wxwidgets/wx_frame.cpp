@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <wx/wx.h>
 #include <wx/dnd.h>
 #include <wx/aboutdlg.h>
-#include <wx/persist/toplevel.h>
 
 namespace xPlatform
 {
@@ -36,6 +35,13 @@ void InitSound();
 void DoneSound();
 
 wxWindow* CreateGLCanvas(wxWindow* parent);
+
+static struct eOptionWindowState : public xOptions::eOptionString
+{
+	eOptionWindowState() { customizable = false; }
+	virtual const char* Name() const { return "window state"; }
+	const char* FormatStr() const { return "position(%d, %d); client_size(%d, %d)"; }
+} op_window_state;
 
 static struct eOptionFullScreen : public xOptions::eOptionBool
 {
@@ -67,6 +73,7 @@ class Frame : public wxFrame
 {
 public:
 	Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline);
+	virtual ~Frame();
 	void ShowFullScreen(bool on);
 
 private:
@@ -102,6 +109,8 @@ private:
 	void UpdateJoyMenu();
 	void UpdateViewZoomMenu();
 	bool UpdateBoolOption(wxMenuItem* o, const char* name, bool toggle = false) const; // returns option value
+	bool RestoreWindowState();
+	void StoreWindowState() const;
 
 	enum
 	{
@@ -301,8 +310,7 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	SetClientSize(org_size);
 	SetMinSize(GetSize());
 
-	SetName("unreal_speccy_portable");
-	if(!wxPersistenceManager::Get().RegisterAndRestore(this))
+	if(!RestoreWindowState())
 	{
 		SetClientSize(org_size*2);
 	}
@@ -351,17 +359,23 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 		Handler()->OnOpenFile(wxConvertWX2MB(cmdline.file_to_open));
 }
 //=============================================================================
+//	Frame::~Frame
+//-----------------------------------------------------------------------------
+Frame::~Frame()
+{
+	if(!IsFullScreen())
+	{
+		StoreWindowState();
+	}
+}
+//=============================================================================
 //	Frame::ShowFullScreen
 //-----------------------------------------------------------------------------
 void Frame::ShowFullScreen(bool on)
 {
 	if(on)
 	{
-		wxPersistenceManager::Get().SaveAndUnregister(this);
-	}
-	else
-	{
-		wxPersistenceManager::Get().Register(this);
+		StoreWindowState();
 	}
 #ifdef _MAC
 	if(on)
@@ -793,7 +807,32 @@ void Frame::UpdateViewZoomMenu()
 	menu_view.small_border->Check(*op_zoom == 1);
 	menu_view.no_border->Check(*op_zoom == 2);
 }
-
+//=============================================================================
+//	Frame::StoreWindowState
+//-----------------------------------------------------------------------------
+bool Frame::RestoreWindowState()
+{
+	wxPoint position;
+	wxSize client_size;
+	if(sscanf(op_window_state, op_window_state.FormatStr(), &position.x, &position.y, &client_size.x, &client_size.y) == 4)
+	{
+		SetPosition(position);
+		SetClientSize(client_size);
+		return true;
+	}
+	return false;
+}
+//=============================================================================
+//	Frame::StoreWindowState
+//-----------------------------------------------------------------------------
+void Frame::StoreWindowState() const
+{
+	wxPoint position = GetPosition();
+	wxSize client_size = GetClientSize();
+	char buf[512];
+	sprintf(buf, op_window_state.FormatStr(), position.x, position.y, client_size.x, client_size.y);
+	op_window_state.Value(buf);
+}
 //=============================================================================
 //	CreateFrame
 //-----------------------------------------------------------------------------
