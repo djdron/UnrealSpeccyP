@@ -103,6 +103,8 @@ private:
 	void OnSetStatusText(wxCommandEvent& event);
 	void OnQuickLoad(wxCommandEvent& event);
 	void OnQuickSave(wxCommandEvent& event);
+	void OnMinimize(wxCommandEvent& event);
+	void OnZoom(wxCommandEvent& event);
 	void UpdateBetaDiskMenu();
 	void UpdateSoundChipMenu();
 	void UpdateSoundChipStereoMenu();
@@ -114,7 +116,7 @@ private:
 
 	enum
 	{
-		ID_Reset = 1, ID_ResetToServiceRomToggle, ID_Size200, ID_Size300,
+		ID_Reset = 1, ID_ResetToServiceRomToggle, ID_Size200, ID_Size300, ID_Minimize, ID_Zoom,
 		ID_ViewFillScreen, ID_ViewSmallBorder, ID_ViewNoBorder, ID_ViewFilteringToggle, ID_FullScreenToggle,
 		ID_TapeToggle, ID_TapeFastToggle, ID_AutoPlayImageToggle,
 		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
@@ -168,6 +170,8 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(wxID_OPEN,				Frame::OnOpenFile)
 	EVT_MENU(wxID_SAVE,				Frame::OnSaveFile)
 	EVT_MENU(Frame::ID_Reset,		Frame::OnReset)
+	EVT_MENU(Frame::ID_Minimize,	Frame::OnMinimize)
+	EVT_MENU(Frame::ID_Zoom,		Frame::OnZoom)
 	EVT_MENU(wxID_ZOOM_100,			Frame::OnResize)
 	EVT_MENU(Frame::ID_Size200,		Frame::OnResize)
 	EVT_MENU(Frame::ID_Size300,		Frame::OnResize)
@@ -234,8 +238,8 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menuFile->Append(wxID_ABOUT, _("About ") + title);
 #else//_MAC
 	SetDropTarget(new DropFilesTarget);
-	menuFile->AppendSeparator();
 #endif//_MAC
+	menuFile->AppendSeparator();
 	menu_auto_play_image = menuFile->Append(ID_AutoPlayImageToggle, _("&Auto launch programs"), _(""), wxITEM_CHECK);
 	menuFile->AppendSeparator();
 	menuFile->Append(wxID_EXIT, _("E&xit"));
@@ -243,6 +247,7 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	wxMenu* menuDevice = new wxMenu;
 	menuDevice->Append(ID_TapeToggle, _("&Start/Stop tape\tF5"));
 	menu_tape_fast = menuDevice->Append(ID_TapeFastToggle, _("Tape &fast"), _(""), wxITEM_CHECK);
+	menuDevice->AppendSeparator();
 
 	wxMenu* menuBetaDisk = new wxMenu;
 	menu_beta_disk_drive[0] = menuBetaDisk->Append(ID_BetaDiskDriveA, _("&A"), _(""), wxITEM_CHECK);
@@ -254,6 +259,7 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	wxMenu* menuSoundChip = new wxMenu;
 	menu_sound_chip[0] = menuSoundChip->Append(ID_SoundChipAY, _("&AY-3-8910"), _(""), wxITEM_CHECK);
 	menu_sound_chip[1] = menuSoundChip->Append(ID_SoundChipYM, _("&YM2149F"), _(""), wxITEM_CHECK);
+
 	wxMenu* menuSoundChipStereo = new wxMenu;
 	menu_sound_chip_stereo[0] = menuSoundChipStereo->Append(ID_SoundChipStereoABC, _("&ABC"), _(""), wxITEM_CHECK);
 	menu_sound_chip_stereo[1] = menuSoundChipStereo->Append(ID_SoundChipStereoACB, _("&ACB"), _(""), wxITEM_CHECK);
@@ -265,12 +271,6 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menuSoundChip->Append(-1, _("&Stereo mode"), menuSoundChipStereo);
 	menuDevice->Append(-1, _("Sound &chip"), menuSoundChip);
 
-	menu_pause = menuDevice->Append(ID_PauseToggle, _("&Pause\tF7"), _(""), wxITEM_CHECK);
-	menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, _("&True speed\tF8"), _(""), wxITEM_CHECK);
-	menu_mode_48k = menuDevice->Append(ID_Mode48kToggle, _("Mode &48k\tF9"), _(""), wxITEM_CHECK);
-	menu_reset_to_service_rom = menuDevice->Append(ID_ResetToServiceRomToggle, _("Reset to service R&OM"), _(""), wxITEM_CHECK);
-	menuDevice->Append(ID_Reset, _("&Reset\tF12"));
-
 	wxMenu* menuJoy = new wxMenu;
 	menu_joy.cursor = menuJoy->Append(ID_JoyCursor, _("&Cursor"), _(""), wxITEM_CHECK);
 	menu_joy.kempston = menuJoy->Append(ID_JoyKempston, _("&Kempston"), _(""), wxITEM_CHECK);
@@ -278,7 +278,19 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menu_joy.sinclair2 = menuJoy->Append(ID_JoySinclair2, _("&Sinclair 2"), _(""), wxITEM_CHECK);
 	menuDevice->Append(-1, _("&Joystick"), menuJoy);
 
+	menuDevice->AppendSeparator();
+	menu_pause = menuDevice->Append(ID_PauseToggle, _("&Pause\tF7"), _(""), wxITEM_CHECK);
+	menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, _("&True speed\tF8"), _(""), wxITEM_CHECK);
+	menu_mode_48k = menuDevice->Append(ID_Mode48kToggle, _("Mode &48k\tF9"), _(""), wxITEM_CHECK);
+	menu_reset_to_service_rom = menuDevice->Append(ID_ResetToServiceRomToggle, _("Reset to service R&OM"), _(""), wxITEM_CHECK);
+	menuDevice->Append(ID_Reset, _("&Reset\tF12"));
+
 	wxMenu* menuWindow = new wxMenu;
+#ifdef _MAC
+	menuWindow->Append(ID_Minimize, _("Minimize\tCtrl+M"));
+	menuWindow->Append(ID_Zoom, _("Zoom"));
+	menuWindow->AppendSeparator();
+#endif//_MAC
 	menuWindow->Append(wxID_ZOOM_100, _("Size &100%\tCtrl+1"));
 	menuWindow->Append(ID_Size200, _("Size &200%\tCtrl+2"));
 	menuWindow->Append(ID_Size300, _("Size &300%\tCtrl+3"));
@@ -287,7 +299,9 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menu_view.fill_screen = menuView->Append(ID_ViewFillScreen, _("Fill screen\tCtrl+Shift+1"), _(""), wxITEM_CHECK);
 	menu_view.small_border = menuView->Append(ID_ViewSmallBorder, _("Small border\tCtrl+Shift+2"), _(""), wxITEM_CHECK);
 	menu_view.no_border = menuView->Append(ID_ViewNoBorder, _("No border\tCtrl+Shift+3"), _(""), wxITEM_CHECK);
+	menuView->AppendSeparator();
 	menu_view.filtering = menuView->Append(ID_ViewFilteringToggle, _("Filtering\tCtrl+Shift+F"), _(""), wxITEM_CHECK);
+	menuView->AppendSeparator();
 	menuView->Append(ID_FullScreenToggle, _("&Full screen\tCtrl+F"));
 
 	wxMenuBar* menuBar = new wxMenuBar;
@@ -751,6 +765,20 @@ void Frame::OnQuickSave(wxCommandEvent& event)
 		o->Change();
 		SetStatusText(*o ? _("Quick save OK") : _("Quick save FAILED"));
 	}
+}
+//=============================================================================
+//	Frame::OnMinimize
+//-----------------------------------------------------------------------------
+void Frame::OnMinimize(wxCommandEvent& event)
+{
+	Iconize();
+}
+//=============================================================================
+//	Frame::OnZoom
+//-----------------------------------------------------------------------------
+void Frame::OnZoom(wxCommandEvent& event)
+{
+	Maximize(!IsMaximized());
 }
 //=============================================================================
 //	Frame::UpdateBetaDiskMenu
