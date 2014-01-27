@@ -65,7 +65,7 @@ class App : public wxApp
 		Handler()->OnInit();
 		const char* c = Handler()->WindowCaption();
 #if wxMAJOR_VERSION >= 3
-        SetAppDisplayName(wxConvertMB2WX(c));
+		SetAppDisplayName(wxConvertMB2WX(c));
 #endif//wxMAJOR_VERSION
 		CreateFrame(wxConvertMB2WX(c), wxPoint(100, 100), cmdline);
 		InitSound();

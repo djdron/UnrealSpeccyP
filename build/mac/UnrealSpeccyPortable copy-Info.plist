@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>LSHasLocalizedDisplayName</key>
-	<true/>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -73,7 +71,7 @@ Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</strin
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>UnrealSpeccyPortable</string>
+	<string>Unreal Speccy Portable</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -82,6 +80,8 @@ Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</strin
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>0</string>
+	<key>LSHasLocalizedDisplayName</key>
+	<true/>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
 	<key>NSHumanReadableCopyright</key>
