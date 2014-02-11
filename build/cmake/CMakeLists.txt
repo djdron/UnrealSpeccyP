@@ -87,6 +87,12 @@ source_group("platform" FILES ${SRCCXX_PLATFORM} ${SRCH_PLATFORM})
 
 if(MSVC)
 add_definitions("/wd4244 /wd4996 /wd4800")
+set(variables CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
+foreach(variable ${variables})
+	if(${variable} MATCHES "/MD")
+    	string(REGEX REPLACE "/MD" "/MT" ${variable} "${${variable}}")
+	endif()
+endforeach()
 endif(MSVC)
 
 if(UNIX)
