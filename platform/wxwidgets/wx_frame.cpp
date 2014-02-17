@@ -439,7 +439,7 @@ void Frame::OnAbout(wxCommandEvent& event)
 	info.SetCopyright(_("Copyright (C) 2001-2014 SMT, Dexus, Alone Coder, deathsoft, djdron, scor."));
 #ifndef _MAC
 	info.SetVersion(_("0.0.56"));
-	info.SetWebSite(_("http://code.google.com/p/unrealspeccyp/"));
+	info.SetWebSite(_("https://bitbucket.org/djdron/unrealspeccyp"));
 	info.SetLicense(_(
 "This program is free software: you can redistribute it and/or modify\n\
 it under the terms of the GNU General Public License as published by\n\

@@ -65,7 +65,7 @@
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleGetInfoString</key>
 	<string>Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</string>
+Copyright (C) 2001-2014 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</string>
 	<key>CFBundleIconFile</key>
 	<string>UnrealSpeccyPortable</string>
 	<key>CFBundleIdentifier</key>

@@ -6,5 +6,5 @@ Architecture: amd64
 Depends: libopenal1, libwxgtk2.8-0 (>= 2.8.7)
 Installed-Size: 2048
 Maintainer: Andrey Dj <djdron@gmail.com>
-Homepage: http://code.google.com/p/unrealspeccyp/
+Homepage: https://bitbucket.org/djdron/unrealspeccyp
 Description: portable ZX-Spectrum emulator based on UnrealSpeccy 0.37.3 by SMT
