@@ -629,13 +629,9 @@
 					"-framework",
 					OpenGL,
 					"-framework",
-					AGL,
-					"-framework",
 					OpenAL,
 					"-lwx_osx_cocoau-3.0",
 					"-lwx_osx_cocoau_gl-3.0",
-					"-lwxpng-3.0",
-					"-liconv",
 					"-lz",
 				);
 				PREBINDING = NO;
@@ -680,13 +676,9 @@
 					"-framework",
 					OpenGL,
 					"-framework",
-					AGL,
-					"-framework",
 					OpenAL,
 					"-lwx_osx_cocoau-3.0",
 					"-lwx_osx_cocoau_gl-3.0",
-					"-lwxpng-3.0",
-					"-liconv",
 					"-lz",
 				);
 				SDKROOT = macosx10.8;
