@@ -264,12 +264,12 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	SetIcon(wxIcon(wxT("unreal_speccy_portable.xpm")));
 #endif//_LINUX
 	wxMenu* menuFile = new wxMenu;
-	menuFile->Append(wxID_OPEN, _("&Open...\t" SHORTCUT_OPEN));
-	menuFile->Append(wxID_SAVE, _("&Save...\t" SHORTCUT_SAVE));
+	menuFile->Append(wxID_OPEN, wxString(_("&Open...\t")) + _(SHORTCUT_OPEN));
+	menuFile->Append(wxID_SAVE, wxString(_("&Save...\t")) + _(SHORTCUT_SAVE));
 
 	menuFile->AppendSeparator();
-	menuFile->Append(ID_QuickLoad, _("Quick &Load\t" SHORTCUT_QUICK_LOAD));
-	menu_quick_save = menuFile->Append(ID_QuickSave, _("&Quick Save\t" SHORTCUT_QUICK_SAVE));
+	menuFile->Append(ID_QuickLoad, wxString(_("Quick &Load\t")) + _(SHORTCUT_QUICK_LOAD));
+	menu_quick_save = menuFile->Append(ID_QuickSave, wxString(_("&Quick Save\t")) + _(SHORTCUT_QUICK_SAVE));
 	menu_quick_save->Enable(false);
 
 #ifdef _MAC
@@ -283,7 +283,7 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menuFile->Append(wxID_EXIT, _("E&xit"));
 
 	wxMenu* menuDevice = new wxMenu;
-	menuDevice->Append(ID_TapeToggle, _("&Start/Stop tape\t" SHORTCUT_START_STOP_TAPE));
+	menuDevice->Append(ID_TapeToggle, wxString(_("&Start/Stop tape\t")) + _(SHORTCUT_START_STOP_TAPE));
 	menu_tape_fast = menuDevice->Append(ID_TapeFastToggle, _("Tape &fast"), _(""), wxITEM_CHECK);
 	menuDevice->AppendSeparator();
 
@@ -317,11 +317,11 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menuDevice->Append(-1, _("&Joystick"), menuJoy);
 
 	menuDevice->AppendSeparator();
-	menu_pause = menuDevice->Append(ID_PauseToggle, _("&Pause\t" SHORTCUT_PAUSE), _(""), wxITEM_CHECK);
-	menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, _("&True speed\t" SHORTCUT_TRUE_SPEED), _(""), wxITEM_CHECK);
-	menu_mode_48k = menuDevice->Append(ID_Mode48kToggle, _("Mode &48k\t" SHORTCUT_MODE_48K), _(""), wxITEM_CHECK);
+	menu_pause = menuDevice->Append(ID_PauseToggle, wxString(_("&Pause\t")) + _(SHORTCUT_PAUSE), _(""), wxITEM_CHECK);
+	menu_true_speed = menuDevice->Append(ID_TrueSpeedToggle, wxString(_("&True speed\t")) + _(SHORTCUT_TRUE_SPEED), _(""), wxITEM_CHECK);
+	menu_mode_48k = menuDevice->Append(ID_Mode48kToggle, wxString(_("Mode &48k\t")) + _(SHORTCUT_MODE_48K), _(""), wxITEM_CHECK);
 	menu_reset_to_service_rom = menuDevice->Append(ID_ResetToServiceRomToggle, _("Reset to service R&OM"), _(""), wxITEM_CHECK);
-	menuDevice->Append(ID_Reset, _("&Reset\t" SHORTCUT_RESET));
+	menuDevice->Append(ID_Reset, wxString(_("&Reset\t")) + _(SHORTCUT_RESET));
 
 	wxMenu* menuWindow = new wxMenu;
 #ifdef _MAC
@@ -329,18 +329,18 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	menuWindow->Append(ID_Zoom, _("Zoom"));
 	menuWindow->AppendSeparator();
 #endif//_MAC
-	menuWindow->Append(wxID_ZOOM_100, _("Size &100%\t" SHORTCUT_SIZE100));
-	menuWindow->Append(ID_Size200, _("Size &200%\t" SHORTCUT_SIZE200));
-	menuWindow->Append(ID_Size300, _("Size &300%\t" SHORTCUT_SIZE300));
+	menuWindow->Append(wxID_ZOOM_100, wxString(_("Size &100%\t")) + _(SHORTCUT_SIZE100));
+	menuWindow->Append(ID_Size200, wxString(_("Size &200%\t")) + _(SHORTCUT_SIZE200));
+	menuWindow->Append(ID_Size300, wxString(_("Size &300%\t")) + _(SHORTCUT_SIZE300));
 
 	wxMenu* menuView = new wxMenu;
-	menu_view.fill_screen = menuView->Append(ID_ViewFillScreen, _("Fill screen\t" SHORTCUT_VIEW_FILL_SCREEN), _(""), wxITEM_CHECK);
-	menu_view.small_border = menuView->Append(ID_ViewSmallBorder, _("Small border\t" SHORTCUT_VIEW_SMALL_BORDER), _(""), wxITEM_CHECK);
-	menu_view.no_border = menuView->Append(ID_ViewNoBorder, _("No border\t" SHORTCUT_VIEW_NO_BORDER), _(""), wxITEM_CHECK);
+	menu_view.fill_screen = menuView->Append(ID_ViewFillScreen, wxString(_("Fill screen\t")) + _(SHORTCUT_VIEW_FILL_SCREEN), _(""), wxITEM_CHECK);
+	menu_view.small_border = menuView->Append(ID_ViewSmallBorder, wxString(_("Small border\t")) + _(SHORTCUT_VIEW_SMALL_BORDER), _(""), wxITEM_CHECK);
+	menu_view.no_border = menuView->Append(ID_ViewNoBorder, wxString(_("No border\t")) + _(SHORTCUT_VIEW_NO_BORDER), _(""), wxITEM_CHECK);
 	menuView->AppendSeparator();
-	menu_view.filtering = menuView->Append(ID_ViewFilteringToggle, _("Filtering\t" SHORTCUT_VIEW_FILTERING), _(""), wxITEM_CHECK);
+	menu_view.filtering = menuView->Append(ID_ViewFilteringToggle, wxString(_("Filtering\t")) + _(SHORTCUT_VIEW_FILTERING), _(""), wxITEM_CHECK);
 	menuView->AppendSeparator();
-	menuView->Append(ID_FullScreenToggle, _("&Full screen\t" SHORTCUT_VIEW_FULLSCREEN));
+	menuView->Append(ID_FullScreenToggle, wxString(_("&Full screen\t")) + _(SHORTCUT_VIEW_FULLSCREEN));
 
 	wxMenuBar* menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, _("File"));
