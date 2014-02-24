@@ -476,7 +476,7 @@ void Frame::OnAbout(wxCommandEvent& event)
 	info.SetDescription(_("Portable ZX Spectrum emulator."));
 	info.SetCopyright(_("Copyright (C) 2001-2014 SMT, Dexus, Alone Coder, deathsoft, djdron, scor."));
 #ifndef _MAC
-	info.SetVersion(_("0.0.56"));
+	info.SetVersion(_("0.0.57"));
 	info.SetWebSite(_("https://bitbucket.org/djdron/unrealspeccyp"));
 	info.SetLicense(_(
 "This program is free software: you can redistribute it and/or modify\n\
