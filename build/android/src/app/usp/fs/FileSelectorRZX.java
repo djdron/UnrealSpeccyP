@@ -21,6 +21,7 @@ package app.usp.fs;
 import java.io.File;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.os.Bundle;
 import app.usp.Emulator;
@@ -95,22 +96,36 @@ public class FileSelectorRZX extends FileSelector
 				"/i", "/j", "/k", "/l", "/m", "/n", "/o", "/p", "/q",
 				"/r", "/s", "/t", "/u", "/v", "/w", "/x", "/y", "/z"
 		    };
-		private final String[] PATTERNS = new String[] { "<tr><td><font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"http://www.thunderstats.com/download.cgi\\?http://www.rzxarchive.co.uk(.+?)\"|<font size=2 color=red>).+?" };
+		private final String[] PATTERNS = new String[] { "<tr><td><font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"http://www.rzxarchive.co.uk(.+?)\"|<font size=2 color=red>).+?" };
 		@Override
 		public final String Root() { return null; }
 		@Override
-		public final String[] Patterns() { return PATTERNS; }		
+		public final String[] Patterns() { return PATTERNS; }
+		
+		private final String UnescapeHTML(String s)
+		{
+			String r = s;
+			Pattern p = Pattern.compile("&#([0-9]+);");
+			Matcher m = p.matcher(r);
+			int x = 0;
+			while(m.find())
+			{
+				String c = new String(Character.toChars(Integer.parseInt(m.group(1))));
+				r = r.substring(0,  m.start() - x) + c + r.substring(m.end() - x);
+				x += m.end() - m.start() - c.length();
+			}
+			r = r.replaceAll("&amp;", "&");
+			return r;
+		}
+		
 		@Override
 		public void Get(List<Item> items, Matcher m, final String url, final String _name)
 		{
 			if(m.group(3) != null)
 			{
 				Item item = new Item();
-				item.name = m.group(1);
-				item.name = item.name.replaceAll("&#39;", "'");
-				item.name = item.name.replaceAll("&amp;", "&");
-				item.desc = m.group(2);
-				item.desc = item.desc.replaceAll("&#237;", "i");
+				item.name = UnescapeHTML(m.group(1));
+				item.desc = UnescapeHTML(m.group(2));
 				item.url = m.group(3);
 				items.add(item);
 			}
