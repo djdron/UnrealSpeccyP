@@ -46,7 +46,7 @@ public class FileSelectorVtrdos extends FileSelector
 		private final String VTRDOS_FS = StoragePath() + "vtrdos";
 		public String BaseURL() { return "http://vtrdos.ru"; }
 		public String FullURL(final String _url) { return BaseURL() + _url + ".htm"; }
-		public String HtmlEncoding() { return "windows-1251"; }
+        public String HtmlEncoding() { return "utf-8"; }
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
 			try
@@ -69,8 +69,6 @@ public class FileSelectorVtrdos extends FileSelector
 	{
 		@Override
 		public String FullURL(final String _url) { return BaseURL() + "/games.php?t=" + _url; }
-		@Override
-		public String HtmlEncoding() { return "utf-8"; }
 		private final String[] ITEMS2 = new String[]
 			{	"/russian", "/demo", "/translate", "/remix", "/123", "/A", "/B",
 				"/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L",
@@ -103,6 +101,8 @@ public class FileSelectorVtrdos extends FileSelector
 	}
 	class ParserDemos extends FSSVtrdos
 	{
+        @Override
+        public String HtmlEncoding() { return "windows-1251"; }
 		private final String[] ITEMS2 = new String[]
 			{	"/Russian", "/Other", "/Demobit'1995", "/Enlight'1996", "/Enlight'1997", "/Doxycon'1998", "/Funtop'1998",
 				"/Doxycon'1999", "/Chaos Constructions'1999", "/Paradox'1999", "/CAFe'1999", "/Di:Halt'1999", "/Phat9",
@@ -167,16 +167,18 @@ public class FileSelectorVtrdos extends FileSelector
 	}
 	class ParserPress extends FSSVtrdos
 	{
+        @Override
+        public String FullURL(final String _url) { return BaseURL() + "/press.php?l=" + _url; }
 		private final String[] ITEMS2 = new String[]
 			{	"/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L",
 				"/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z"
 			};
 		private final String[] ITEMS2URLS = new String[]
-			{	"/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an",
-				"/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz"
+			{	"1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1",
+				"2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2"
 			};
 		private final String[] PATTERNS = new String[]
-			{	"<td>&nbsp;&nbsp;<b>(.+)</b></td>(?s)(.+?)</td></tr>" };
+			{	"<td class=\"nowrap\"><b>(.+?)</b></td>\n<td>(?s)(.+?)\n</td>\n</tr>" };
 		@Override
 		public final String Root() { return "/press"; }
 		@Override
@@ -195,14 +197,13 @@ public class FileSelectorVtrdos extends FileSelector
 			else if(ch0 != ch1)
 				return;
 
-			Pattern pt = Pattern.compile("<a href=\"(.+)\">(.+)</a>");
+			Pattern pt = Pattern.compile("<a class=\"rpad\" href=\"(.+)\">(.+)</a>");
 			Matcher m2 = pt.matcher(m.group(2));
 			while(m2.find())
 			{
 				Item item = new Item();
 				item.name = name + " - " + m2.group(2);
-				File f = new File(url);
-				item.url = f.getParent() + "/" + m2.group(1);
+				item.url = m2.group(1);
 				items.add(item);
 			}
 		}
