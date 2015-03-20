@@ -50,7 +50,7 @@ abstract class FileSelectorSource
 	};
 	enum GetItemsResult { OK, FAIL, UNABLE_CONNECT, INVALID_INFO, CANCELED }
 	abstract public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress);
-	enum ApplyResult { OK, FAIL, UNABLE_CONNECT1, UNABLE_CONNECT2, INVALID_INFO, NOT_AVAILABLE, UNSUPPORTED_FORMAT, CANCELED }
+	enum ApplyResult { OK, FAIL, UNABLE_CONNECT1, UNABLE_CONNECT2, INVALID_INFO, NOT_AVAILABLE, UNSUPPORTED_FORMAT, CANCELED, TRY_OTHER_SOURCE }
 	abstract public ApplyResult ApplyItem(Item item, FileSelectorProgress progress);
 }
 

@@ -236,7 +236,10 @@ public abstract class FileSelector extends ListActivity
 		{
 			for(FileSelectorSource s : sources)
 			{
-				return s.ApplyItem(item, progress);
+				FileSelectorSource.ApplyResult r = s.ApplyItem(item, progress);
+				if(r == FileSelectorSource.ApplyResult.TRY_OTHER_SOURCE)
+					continue;
+				return r;
 			}
 			return FileSelectorSource.ApplyResult.FAIL;
 		}

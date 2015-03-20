@@ -43,11 +43,12 @@ public class FileSelectorVtrdos extends FileSelector
 	}
 	abstract class FSSVtrdos extends FSSHtml
 	{
-		private final String VTRDOS_FS = StoragePath() + "vtrdos";
+		protected final String VTRDOS_FS = StoragePath() + "vtrdos";
 		public String BaseURL() { return "http://vtrdos.ru"; }
 		public String FullURL(final String _url) { return BaseURL() + _url + ".htm"; }
         public String HtmlEncoding() { return "utf-8"; }
-		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
+		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress) { return ApplyResult.TRY_OTHER_SOURCE; }
+		public ApplyResult ApplyItemBase(Item item, FileSelectorProgress progress)
 		{
 			try
 			{
@@ -101,48 +102,26 @@ public class FileSelectorVtrdos extends FileSelector
 	}
 	class ParserDemos extends FSSVtrdos
 	{
-        @Override
-        public String HtmlEncoding() { return "windows-1251"; }
+		@Override
+		public String FullURL(final String _url)
+		{
+			if(_url.charAt(0) == '/')
+				return BaseURL() + _url + ".php";
+			return BaseURL() + "/skin/party.php?year=" + _url;
+		}
 		private final String[] ITEMS2 = new String[]
-			{	"/Russian", "/Other", "/Demobit'1995", "/Enlight'1996", "/Enlight'1997", "/Doxycon'1998", "/Funtop'1998",
-				"/Doxycon'1999", "/Chaos Constructions'1999", "/Paradox'1999", "/CAFe'1999", "/Di:Halt'1999", "/Phat9",
-				"/Forever 2e3", "/Millenium'1900", "/ZX-Party 2000", "/Paradox'2k", "/Chaos Constructions'2000", "/Phat0",
-				"/Forever 2e3SE", "/ASCii'2001", "/Millenium'1901", "/Paradox'2k+1", "/Chaos Constructions'2001", "/Phat1",
-				"/Forever 3", "/Millenium'1902", "/Twilight'2002", "/CAFe'2002", "/ASCii'2002", "/Paradox'2002", "/International Vodka Party'2002",
-				"/Forever 4", "/ASCii'2003", "/ParaDIGMus'2003", "/Syndeecate Apocalypse'2003", "/CAFe'2003", "/International Vodka Party'2003", "/Millenium'1903",
-				"/Forever 5", "/Chaos Constructions'2004", "/ASCii'2004", "/Kidsoft'2004",
-				"/Raww Orgy'2005", "/Forever 6", "/Assembly 2005", "/DiHalt'2005", "/Chaos Constructions'2005", "/ZX-Spectrum Party'2005",
-				"/Raww Orgy'2006", "/Forever 7", "/International Vodka Party'2006", "/DiHalt'2006", "/Chaos Constructions'2006", "/Sundown'2006", "/ArtFiled'2006",
-				"/Raww Orgy'2007", "/Forever 8", "/Di:Halt'2007", "/CCA'2007", "/Sundown'2007", "/ASCii'2007", "/ArtFiled'2007",
-				"/Raww Orgy'2008", "/Forever 9", "/Di:Halt'2008", "/International Vodka Party'2008", "/RetroEuskal'2008", "/Arok 10", "/Chaos Constructions'2008", "/ASCii'2008", "/ArtFiled'2008",
-				"/Raww Orgy'2009", "/Forever10", "/ArtField'2009", "/HT'2009 SE", "/DiHalt'2009", "/CC'2009", "/International Vodka Party'2009",
-				"/Raww Orgy'2010", "/FOReVER:2010", "/HT'2010 SE", "/ArtField'2010", "/DiHalt'2010", "/Chaos Constructions'2010", "/tUM'2010",
-				"/FOReVER C", "/ArtField'2011", "/DiHalt'2011", "/CC'2011", "/IVP'2011", "/JHcon'2011",
-				"/Forever XIII", "/DiHalt'2012", "/3BM Openair'2012", "/Chaos Constructions'2012", "/JHCon'2012", "/Next Castle'2012", "/New Year Gift'2013",
-				"/ZX-1 Bit 2013", "/Forever 14", "/ArtField'2013"
+			{	"/Russian", "/Other", "/1995", "/1996", "/1997", "/1998", "/1999", "/2000", "/2001",
+				"/2002", "/2003", "/2004", "/2005", "/2006", "/2007", "/2008", "/2009", "/2010",
+				"/2011", "/2012", "/2013", "/2014", "/2015"
 			};
 		private final String[] ITEMS2URLS = new String[]
-			{	"/demos/russian", "/demos/other", "/demos/demob95", "/demos/enl96", "/demos/enl97", "/demos/doxy98", "/demos/ft98",
-				"/demos/doxy99", "/demos/cc999", "/demos/pdox99", "/demos/cafe99", "/demos/dihalt99", "/demos/phat9",
-				"/demos/forev2e3", "/demos/mln00", "/demos/zxp2000", "/demos/pdx00", "/demos/cc00", "/demos/phat0",
-				"/demos/for2e3se", "/demos/ascii01", "/demos/mln1901", "/demos/pdx01", "/demos/cc01", "/demos/phat1",
-				"/demos/forever3", "/demos/mln1902", "/demos/twilight", "/demos/cafe02", "/demos/ascii02", "/demos/pdx02", "/demos/ivp02",
-				"/demos/forever4", "/demos/ascii03", "/demos/paradig3", "/demos/synd03", "/demos/cafe03", "/demos/ivp03", "/demos/mln1903",
-				"/demos/forever5", "/demos/cc04", "/demos/ascii04", "/demos/kidsoft4",
-				"/demos/r_orgy05", "/demos/forever6", "/demos/asm2005", "/demos/dihalt05", "/demos/cc05", "/demos/kidsoft5",
-				"/demos/r_orgy06", "/demos/forever7", "/demos/ivp06", "/demos/dihalt06", "/demos/cc06", "/demos/sd2006", "/demos/kidsoft6",
-				"/demos/r_orgy07", "/demos/forever8", "/demos/dihalt07", "/demos/cca07", "/demos/sd2007", "/demos/ascii07", "/demos/kidsoft7",
-				"/demos/r_orgy08", "/demos/forever9", "/demos/dihalt08", "/demos/ivp08", "/demos/reuskal8", "/demos/arok10", "/demos/cc08", "/demos/ascii08", "/demos/kidsoft8",
-				"/demos/r_orgy09", "/demos/foreverx", "/demos/kidsoft9", "/demos/ht09se", "/demos/dihalt09", "/demos/cc09", "/demos/ivp09",
-				"/demos/r_orgy10", "/demos/foreve10", "/demos/ht10se", "/demos/kidsof10", "/demos/dihalt10", "/demos/cc10", "/demos/tum10",
-				"/demos/foreverc", "/demos/kidsof11", "/demos/dihalt11", "/demos/cc11", "/demos/ivp11", "/demos/jhcon11",
-				"/demos/forev13", "/demos/dihalt12", "/demos/3bm12", "/demos/cc12", "/demos/jhcon12", "/demos/ncp12", "/demos/newyear13",
-				"/demos/zx1bit13", "/demos/forev14", "/demos/kidsof13"
+			{	"/russian", "/other", "1995", "1996", "1997", "1998", "1999", "2000", "2001",
+				"2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010",
+				"2011", "2012", "2013", "2014", "2015"
 			};
 		private final String[] PATTERNS = new String[]
-			{	"<div align=\"center\">.*(?:<b>)?<a href=\"(.+?)\">([\\s\\S]+?)(?:</a>)?(?:</b>)?</div>",
-				"<a href=\"(.+)\">&nbsp;&nbsp;(.+)</a></td>\\s+<td>(.+)</td>",
-				"<a href=\"(.+)\">(.+)</a></td>\\s+<td width=\"45%\">(.+)</td>",
+			{   "<a href=\"(.+?)\" target=\"demozdown\">(.+?)</a>",
+				"<a href=\"(.+?)\">&nbsp;&nbsp;(.+)</a></td><td>(.+?)</td>",
 			};
 		@Override
 		public final String Root() { return "/demos"; }
@@ -153,17 +132,50 @@ public class FileSelectorVtrdos extends FileSelector
 		{
 			Item item = new Item();
 			item.name = m.group(2);
-			item.name = item.name.replaceAll("\\s+", " ");
+			item.url = "/" + m.group(1);
 			if(m.groupCount() > 2)
+			{
 				item.desc = m.group(3);
-			File f = new File(url);
-			item.url = f.getParent() + "/" + m.group(1);
+			}
 			items.add(item);
 		}
 		@Override
 		public final String[] Items2() { return ITEMS2; }
 		@Override
 		public final String[] Items2URLs() { return ITEMS2URLS; }
+		@Override
+		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
+		{
+			final String demo_sign = "demo.php?party=";
+			int idx = item.url.indexOf(demo_sign);
+			if(idx < 0)
+				return ApplyItemBase(item, progress);
+			try
+			{
+				String s = LoadText(BaseURL() + "/" + demo_sign + item.url.substring(idx + demo_sign.length()), HtmlEncoding(), progress);
+				if(s == null)
+					return ApplyResult.UNABLE_CONNECT1;
+				if(progress.Canceled())
+					return ApplyResult.CANCELED;
+
+				Pattern pt = Pattern.compile("<a target=\"_blank\" href=\"(.+?)\">(.+?)</a>");
+				Matcher m = pt.matcher(s);
+				if(m.find())
+				{
+					Item item2 = new Item();
+					item2.name = m.group(2);
+					if(m.group(1).startsWith("../"))
+						item2.url = "/" + m.group(1).substring(3);
+					else
+						item2.url = "/" + m.group(1);
+					return ApplyItemBase(item2, progress);
+				}
+			}
+			catch(Exception e)
+			{
+			}
+			return ApplyResult.FAIL;
+		}
 	}
 	class ParserPress extends FSSVtrdos
 	{
@@ -197,13 +209,13 @@ public class FileSelectorVtrdos extends FileSelector
 			else if(ch0 != ch1)
 				return;
 
-			Pattern pt = Pattern.compile("<a class=\"rpad\" href=\"(.+)\">(.+)</a>");
+			Pattern pt = Pattern.compile("<a class=\"rpad\" href=\"(.+?)\">(.+?)</a>");
 			Matcher m2 = pt.matcher(m.group(2));
 			while(m2.find())
 			{
 				Item item = new Item();
 				item.name = name + " - " + m2.group(2);
-				item.url = m2.group(1);
+				item.url = "/" + m2.group(1);
 				items.add(item);
 			}
 		}
