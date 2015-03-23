@@ -21,11 +21,8 @@ package app.usp.fs;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.os.Bundle;
 import app.usp.Emulator;
@@ -43,7 +40,7 @@ public class FileSelectorWOS extends FileSelector
 		super.onCreate(savedInstanceState);
 		sources.add(new ParserGames());
 		sources.add(new ParserAdventures());
-		sources.add(new ParserUtilites());
+		sources.add(new ParserUtilities());
 	}
 	abstract class FSSWOS extends FSSHtml
 	{
@@ -51,68 +48,13 @@ public class FileSelectorWOS extends FileSelector
 		public String BaseURL() { return "http://www.worldofspectrum.org"; }
 		public String FullURL(final String _url) { return BaseURL() + _url + ".html"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }
-		final static String FTP_URL = "ftp://ftp.worldofspectrum.org/pub/sinclair/";
-		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
-		{
-			String s = LoadText("http://www.worldofspectrum.org/api/infoseek_select_json.cgi?id=" + item.url, HtmlEncoding(), progress);
-			if(s == null)
-				return ApplyResult.UNABLE_CONNECT1;
-			if(progress.Canceled())
-				return ApplyResult.CANCELED;
-			JSONObject desc = null;
-			try
-			{
-				desc = new JSONObject(s);
-			}
-			catch(JSONException e) { return ApplyResult.INVALID_INFO; }
-			JSONArray downl = null;
-			try
-			{
-				downl = desc.getJSONArray("downloads");
-			}
-			catch(JSONException e) { return ApplyResult.NOT_AVAILABLE; }
-
-			String url = null;
-			for(int i = 0; i < downl.length(); ++i)
-			{
-				try
-				{
-					JSONObject d  = downl.getJSONObject(i);
-					String l = d.getString("link");
-					if(l != null)
-					{
-						url = l;
-						break;
-					}
-				}
-				catch(JSONException e) {}
-			}
-			if(url == null)
-				return ApplyResult.NOT_AVAILABLE;
-			if(!url.startsWith(FTP_URL))
-				return ApplyResult.FAIL;
-			try
-			{
-				String p = url.substring(FTP_URL.length() - 1);
-				File f = new File(WOS_FS + p).getCanonicalFile();
-				if(!LoadFile(url, f, progress))
-					return ApplyResult.UNABLE_CONNECT2;
-				if(progress.Canceled())
-					return ApplyResult.CANCELED;
-				return Emulator.the.Open(f.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
-			}
-			catch(IOException e) { return ApplyResult.FAIL; }
-		}
-	}
-	abstract class FSSWOS1 extends FSSWOS
-	{
 		private final String[] ITEMS2 = new String[]
-   			{	"/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L",
-   				"/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z"
-   			};
+				{	"/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L",
+						"/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z"
+				};
 		private final String[] PATTERNS = new String[] { "<A HREF=\"/infoseekid.cgi\\?id=(\\d+)\">(.+)</A>\\s+(\\d*) (.+?)\\s+\\s+" };
 		@Override
-		public final String[] Patterns() { return PATTERNS; }		
+		public final String[] Patterns() { return PATTERNS; }
 		@Override
 		public void Get(List<Item> items, Matcher m, final String url, final String _name)
 		{
@@ -124,8 +66,40 @@ public class FileSelectorWOS extends FileSelector
 		}
 		@Override
 		public final String[] Items2() { return ITEMS2; }
+		final static String HTTP_URL = "http://www.worldofspectrum.org/pub/sinclair";
+		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
+		{
+			String s = LoadText("http://www.worldofspectrum.org/infoseekid.cgi?id=" + item.url, HtmlEncoding(), progress);
+			if(s == null)
+				return ApplyResult.UNABLE_CONNECT1;
+			if(progress.Canceled())
+				return ApplyResult.CANCELED;
+
+			String url = null;
+			Pattern pt = Pattern.compile("<A HREF=\"(.+?)\" TITLE=\"Download to play off-line in an emulator\">.+?</A>");
+			Matcher m = pt.matcher(s);
+			if(m.find())
+			{
+				url = BaseURL() + m.group(1);
+			}
+			if(url == null)
+				return ApplyResult.NOT_AVAILABLE;
+			if(!url.startsWith(HTTP_URL))
+				return ApplyResult.FAIL;
+			try
+			{
+				String p = url.substring(HTTP_URL.length());
+				File f = new File(WOS_FS + p).getCanonicalFile();
+				if(!LoadFile(url, f, progress))
+					return ApplyResult.UNABLE_CONNECT2;
+				if(progress.Canceled())
+					return ApplyResult.CANCELED;
+				return Emulator.the.Open(f.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
+			}
+			catch(IOException e) { return ApplyResult.FAIL; }
+		}
 	}
-	class ParserGames extends FSSWOS1
+	class ParserGames extends FSSWOS
 	{
 		private final String[] ITEMS2URLS = new String[]
 		    {	"/games/1", "/games/a", "/games/b", "/games/c", "/games/d", "/games/e", "/games/f",
@@ -138,7 +112,7 @@ public class FileSelectorWOS extends FileSelector
 		@Override
 		public final String[] Items2URLs() { return ITEMS2URLS; }
 	}
-	class ParserAdventures extends FSSWOS1
+	class ParserAdventures extends FSSWOS
 	{
 		private final String[] ITEMS2URLS = new String[]
 		    {	"/textadv/1", "/textadv/a", "/textadv/b", "/textadv/c", "/textadv/d", "/textadv/e", "/textadv/f",
@@ -151,7 +125,7 @@ public class FileSelectorWOS extends FileSelector
 		@Override
 		public final String[] Items2URLs() { return ITEMS2URLS; }
 	}
-	class ParserUtilites extends FSSWOS1
+	class ParserUtilities extends FSSWOS
 	{
 		private final String[] ITEMS2URLS = new String[]
 		    {	"/utils/1", "/utils/a", "/utils/b", "/utils/c", "/utils/d", "/utils/e", "/utils/f",
@@ -160,7 +134,7 @@ public class FileSelectorWOS extends FileSelector
 				"/utils/u", "/utils/v", "/utils/w", "/utils/x", "/utils/y", "/utils/z"
 		    };
 		@Override
-		public final String Root() { return "/utilites"; }
+		public final String Root() { return "/utilities"; }
 		@Override
 		public final String[] Items2URLs() { return ITEMS2URLS; }
 	}
