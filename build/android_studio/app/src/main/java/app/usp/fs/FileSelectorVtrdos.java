@@ -143,16 +143,16 @@ public class FileSelectorVtrdos extends FileSelector
 		public final String[] Items2() { return ITEMS2; }
 		@Override
 		public final String[] Items2URLs() { return ITEMS2URLS; }
+		final String DEMO_SIGN = "demo.php?party=";
 		@Override
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
-			final String demo_sign = "demo.php?party=";
-			int idx = item.url.indexOf(demo_sign);
+			int idx = item.url.indexOf(DEMO_SIGN);
 			if(idx < 0)
 				return ApplyItemBase(item, progress);
 			try
 			{
-				String s = LoadText(BaseURL() + "/" + demo_sign + item.url.substring(idx + demo_sign.length()), HtmlEncoding(), progress);
+				String s = LoadText(BaseURL() + "/" + DEMO_SIGN + item.url.substring(idx + DEMO_SIGN.length()), HtmlEncoding(), progress);
 				if(s == null)
 					return ApplyResult.UNABLE_CONNECT1;
 				if(progress.Canceled())
