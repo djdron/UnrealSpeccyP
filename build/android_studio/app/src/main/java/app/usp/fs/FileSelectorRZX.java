@@ -96,7 +96,7 @@ public class FileSelectorRZX extends FileSelector
 				"/i", "/j", "/k", "/l", "/m", "/n", "/o", "/p", "/q",
 				"/r", "/s", "/t", "/u", "/v", "/w", "/x", "/y", "/z"
 		    };
-		private final String[] PATTERNS = new String[] { "<tr><td><font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"http://www.rzxarchive.co.uk(.+?)\"|<font size=2 color=red>).+?" };
+		private final String[] PATTERNS = new String[] { "<tr><td><font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"(.+?)\"|<font size=2 color=red>).+?" };
 		@Override
 		public final String Root() { return null; }
 		@Override
