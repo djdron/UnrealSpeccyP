@@ -29,6 +29,7 @@ namespace xPlatform
 struct eFileType : public eList<eFileType>
 {
 	virtual bool Open(const void* data, size_t data_size) = 0;
+	virtual bool Open(const char* name);
 	virtual bool Store(const char* name) { return false; }
 	virtual bool AbleOpen() { return true; }
 	virtual const char* Type() = 0;

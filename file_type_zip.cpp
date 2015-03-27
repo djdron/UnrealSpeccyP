@@ -31,7 +31,10 @@ namespace xPlatform
 static struct eFileTypeZIP : public eFileType
 {
 	virtual bool Open(const void* data, size_t data_size);
+	virtual bool Open(const char* name);
 	virtual const char* Type() { return "zip"; }
+private:
+	bool Open(unzFile h);
 } ft_zip;
 
 static voidpf ZOpen(voidpf opaque, const void* filename, int mode)
@@ -69,6 +72,11 @@ static int ZClose(voidpf opaque, voidpf stream)
 	return f->Close();
 }
 
+bool eFileTypeZIP::Open(const char* name)
+{
+	return Open(unzOpen64(name));
+}
+
 bool eFileTypeZIP::Open(const void* data, size_t data_size)
 {
 	xIo::eStreamMemory mf(data, data_size);
@@ -78,8 +86,11 @@ bool eFileTypeZIP::Open(const void* data, size_t data_size)
 	zfuncs.ztell64_file = ZTell;
 	zfuncs.zseek64_file = ZSeek;
 	zfuncs.zclose_file = ZClose;
+	return Open(unzOpen2_64(&mf, &zfuncs));
+}
 
-	unzFile h = unzOpen2_64(&mf, &zfuncs);
+bool eFileTypeZIP::Open(unzFile h)
+{
 	if(!h)
 		return false;
 	bool ok = false;

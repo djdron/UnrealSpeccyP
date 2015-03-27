@@ -272,23 +272,7 @@ bool eSpeccyHandler::OpenFile(const char* name, const void* data, size_t data_si
 	if(data && data_size)
 		return t->Open(data, data_size);
 
-	FILE* f = fopen(name, "rb");
-	if(!f)
-		return false;
-	fseek(f, 0, SEEK_END);
-	size_t size = ftell(f);
-	fseek(f, 0, SEEK_SET);
-	byte* buf = new byte[size];
-	size_t r = fread(buf, 1, size, f);
-	fclose(f);
-	if(r != size)
-	{
-		delete[] buf;
-		return false;
-	}
-	bool ok = t->Open(buf, size);
-	delete[] buf;
-	return ok;
+	return t->Open(name);
 }
 bool eSpeccyHandler::OnSaveFile(const char* name)
 {
