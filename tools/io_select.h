@@ -41,6 +41,7 @@ protected:
 };
 
 bool PathIsRoot(const char* path);
+bool PathCreate(const char* path);
 
 }
 //namespace xIo

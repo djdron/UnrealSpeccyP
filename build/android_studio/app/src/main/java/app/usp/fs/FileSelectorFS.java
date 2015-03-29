@@ -19,24 +19,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package app.usp.fs;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipEntry;
 
 import android.os.Bundle;
+import android.webkit.MimeTypeMap;
+
 import app.usp.Emulator;
+import app.usp.R;
 
 public class FileSelectorFS extends FileSelector
 {
 	private static State state = new State();
+	private FSSFS fssfs = new FSSFS();
 	@Override
 	State State() { return state; }
-	boolean LongUpdate(final File path) { return false; }
+	@Override
+	boolean LongUpdate(final File path) { return false; } //fssfs.ZipPath(path) != null;
+	@Override
+	int LongUpdateTitle() { return R.string.reading_archive; }
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
 		super.onCreate(savedInstanceState);
-		sources.add(new FSSFS());
+		sources.add(fssfs);
     }
 	@Override
 	protected void onResume()
@@ -45,7 +58,13 @@ public class FileSelectorFS extends FileSelector
 		File last_file = new File(Emulator.the.GetLastFile());
 		State().last_name = last_file.getName();
 		State().current_path = last_file.getParentFile();
-		if(State().current_path == null || !State().current_path.exists())
+		boolean reset_path = State().current_path == null;
+		if(!reset_path)
+		{
+			File zip_path = fssfs.ZipPath(State().current_path);
+			reset_path = (zip_path == null && !State().current_path.exists());
+		}
+		if(reset_path)
 		{
 			State().current_path = new File("/");
 			State().last_name = "";
@@ -54,43 +73,96 @@ public class FileSelectorFS extends FileSelector
 	}
 	class FSSFS extends FileSelectorSource
 	{
+		static final String ZIP_EXT = "zip";
+		private boolean IsZipName(final String name)
+		{
+			return MimeTypeMap.getFileExtensionFromUrl(name).equalsIgnoreCase(ZIP_EXT);
+		}
+		public final File ZipPath(final File path)
+		{
+			File zip_path = new File(path.getPath());
+			for(;zip_path != null;)
+			{
+				if(zip_path.canRead() && !zip_path.isDirectory() && IsZipName(zip_path.toString()))
+				{
+					break;
+				}
+				zip_path = zip_path.getParentFile();
+			}
+			return zip_path;
+		}
 		public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress)
 		{
 			if(path.getParent() != null)
 			{
 				items.add(new Item("/.."));
 			}
-			if(path.canRead())
+			//try open ZIP
+			File zip_path = ZipPath(path);
+			if(zip_path != null)
+			{
+				// read items from zip
+				try
+				{
+					ZipFile zif = new ZipFile(zip_path, ZipFile.OPEN_READ);
+					for(Enumeration<? extends ZipEntry> e = zif.entries(); e.hasMoreElements();)
+					{
+						ZipEntry ze = e.nextElement();
+
+//					ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip_path)));
+//					ZipEntry ze;
+//					while((ze = zis.getNextEntry()) != null)
+//					{
+						File zef = new File(zip_path.getPath() + "/" + ze.getName());
+						File zef_ok = zef.getParentFile();
+						if(zef_ok.compareTo(path) == 0)
+						{
+							File zname = new File(ze.getName());
+							if(ze.isDirectory())
+								items.add(new Item("/" + zname.getName()));
+							else if(!IsZipName(zname.getName()) // skip zip's inside zip
+									&& Emulator.the.FileTypeSupported(zname.getName()))
+								items.add(new Item(zname.getName()));
+						}
+						if(progress.Canceled())
+							return GetItemsResult.CANCELED;
+					}
+				}
+				catch(Exception ex)
+				{
+				}
+			}
+			else if(path.canRead())
 			{
 				File[] files = path.listFiles();
 				for(File f : files)
 				{
 					String name = f.getName();
-					if(f.isDirectory())
+					if(f.isDirectory() || IsZipName(name))
 						items.add(new Item("/" + name));
 					else if(Emulator.the.FileTypeSupported(name))
 						items.add(new Item(name));
 				}
-				class CmpNames implements Comparator<Item>
-				{
-					@Override
-					public int compare(final Item _a, final Item _b)
-					{
-						final String a = _a.name;
-						final String b = _b.name;
-						if(a.length() == 0 || b.length() == 0)
-							return a.compareToIgnoreCase(b);
-						final boolean adir = a.charAt(0) == '/';
-						final boolean bdir = b.charAt(0) == '/';
-						if(adir != bdir)
-						{
-							return adir ? -1 : +1;
-						}
-						return a.compareToIgnoreCase(b);
-					}
-				}
-				Collections.sort(items, new CmpNames());
 			}
+			class CmpNames implements Comparator<Item>
+			{
+				@Override
+				public int compare(final Item _a, final Item _b)
+				{
+					final String a = _a.name;
+					final String b = _b.name;
+					if(a.length() == 0 || b.length() == 0)
+						return a.compareToIgnoreCase(b);
+					final boolean adir = a.charAt(0) == '/';
+					final boolean bdir = b.charAt(0) == '/';
+					if(adir != bdir)
+					{
+						return adir ? -1 : +1;
+					}
+					return a.compareToIgnoreCase(b);
+				}
+			}
+			Collections.sort(items, new CmpNames());
 			return GetItemsResult.OK;
 		}
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)

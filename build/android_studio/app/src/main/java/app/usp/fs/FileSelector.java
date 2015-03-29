@@ -48,6 +48,7 @@ public abstract class FileSelector extends ListActivity
 	abstract State State();
 	List<FileSelectorSource.Item> Items() { return State().items; }
 	abstract boolean LongUpdate(final File path);
+	abstract int LongUpdateTitle();
 
 	private boolean async_task = false;
 
@@ -79,7 +80,7 @@ public abstract class FileSelector extends ListActivity
 		}
 		else
 		{
-			new UpdateAsync(this, State().current_path, State().last_name).execute();
+			new UpdateAsync(this, State().current_path, State().last_name, LongUpdateTitle()).execute();
 		}
 	}
 	private void SetItems()
@@ -116,14 +117,14 @@ public abstract class FileSelector extends ListActivity
 			File parent = State().current_path.getParentFile();
 			if(parent != null)
 			{
-				new UpdateAsync(this, parent, "/" + State().current_path.getName()).execute();
+				new UpdateAsync(this, parent, "/" + State().current_path.getName(), LongUpdateTitle()).execute();
 			}
 		}
 		else
 		{
 			if(f.startsWith("/"))
 			{
-				new UpdateAsync(this, new File(State().current_path.getPath() + f), "").execute();
+				new UpdateAsync(this, new File(State().current_path.getPath() + f), "", LongUpdateTitle()).execute();
 			}
 			else
 			{
@@ -280,12 +281,12 @@ public abstract class FileSelector extends ListActivity
 		private String select_after_update;
 		private FSSProgressDialog progress;
 		private List<FileSelectorSource.Item> items = new ArrayList<FileSelectorSource.Item>();
-		UpdateAsync(FileSelector _owner, final File _path, final String _select_after_update)
+		UpdateAsync(FileSelector _owner, final File _path, final String _select_after_update, final int _res_title)
 		{
 			owner = _owner;
 			path = _path;
 			select_after_update = _select_after_update;
-			progress = new FSSProgressDialog(owner, R.string.accessing_web, R.string.gathering_list)
+			progress = new FSSProgressDialog(owner, _res_title, R.string.gathering_list)
 			{
 				@Override
 				public void OnProgress(Integer current, Integer max) { publishProgress(current, max); }

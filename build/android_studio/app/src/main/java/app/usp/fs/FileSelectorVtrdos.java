@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import android.os.Bundle;
 import app.usp.Emulator;
+import app.usp.R;
 
 public class FileSelectorVtrdos extends FileSelector
 {
@@ -33,6 +34,8 @@ public class FileSelectorVtrdos extends FileSelector
 	State State() { return state; }
 	@Override
 	boolean LongUpdate(final File path) { return PathLevel(path) >= 2; }
+	@Override
+	int LongUpdateTitle() { return R.string.accessing_web; }
     @Override
 	public void onCreate(Bundle savedInstanceState)
 	{

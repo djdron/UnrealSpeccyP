@@ -105,13 +105,13 @@ namespace xPlatform
 
 static struct eFileTypePNG : public eFileType
 {
-	virtual bool Open(const void* data, size_t data_size) { return false; }
-	virtual bool Store(const char* name)
+	virtual bool Open(const void* data, size_t data_size) const { return false; }
+	virtual bool Store(const char* name) const
 	{
 		return xScreenshot::Store(name);
 	}
-	virtual const char* Type() { return "png"; }
-	virtual bool AbleOpen() { return false; }
+	virtual const char* Type() const { return "png"; }
+	virtual bool AbleOpen() const { return false; }
 } ft_png;
 
 }

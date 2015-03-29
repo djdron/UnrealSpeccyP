@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/errno.h>
 
 namespace xIo
 {
@@ -70,6 +71,35 @@ bool eFileSelect::IsDir() const { return impl->IsDir(); }
 bool eFileSelect::IsFile() const { return impl->IsFile(); }
 
 bool PathIsRoot(const char* path) {	return !strcmp(path, "/"); }
+
+static bool MkDir(const char* path)
+{
+	if(mkdir(path, 0777) != 0)
+	{
+		if(errno != EEXIST)
+			return false;
+	}
+	return true;
+}
+
+bool PathCreate(const char* path)
+{
+	char buf[MAX_PATH_LEN];
+	int p = 0;
+	int l = strlen(path);
+	for(int i = 0; i < l; ++i)
+	{
+		if(path[i] == '\\' || path[i] == '/')
+		{
+			strncpy(buf + p, path + p, i - p);
+			buf[i] = 0;
+			p = i;
+			if(i > 0 && !MkDir(buf))
+				return false;
+		}
+	}
+	return MkDir(path);
+}
 
 }
 //namespace xIo

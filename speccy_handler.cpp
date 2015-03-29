@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "platform/custom_ui/ui_main.h"
 #include "tools/profiler.h"
 #include "tools/options.h"
+#include "tools/io_select.h"
 #include "options_common.h"
 #include "file_type.h"
 #include "snapshot/rzx.h"
@@ -77,7 +78,7 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 	virtual void OnMouse(eMouseAction action, byte a, byte b);
 	virtual bool FileTypeSupported(const char* name)
 	{
-		eFileType* t = eFileType::FindByName(name);
+		const eFileType* t = eFileType::FindByName(name);
 		return t && t->AbleOpen();
 	}
 	virtual bool OnOpenFile(const char* name, const void* data, size_t data_size);
@@ -265,7 +266,7 @@ bool eSpeccyHandler::OnOpenFile(const char* name, const void* data, size_t data_
 }
 bool eSpeccyHandler::OpenFile(const char* name, const void* data, size_t data_size)
 {
-	eFileType* t = eFileType::FindByName(name);
+	const eFileType* t = eFileType::FindByName(name);
 	if(!t)
 		return false;
 
@@ -277,10 +278,20 @@ bool eSpeccyHandler::OpenFile(const char* name, const void* data, size_t data_si
 bool eSpeccyHandler::OnSaveFile(const char* name)
 {
 	OpLastFile(name);
-	eFileType* t = eFileType::FindByName(name);
+	const eFileType* t = eFileType::FindByName(name);
 	if(!t)
 		return false;
-	return t->Store(name);
+
+	char path[xIo::MAX_PATH_LEN];
+	strcpy(path, name);
+	int l = strlen(path);
+	char* e = path + l;
+	while(e > path && *e != '\\' && *e != '/')
+		--e;
+	*e = 0;
+	if(xIo::PathCreate(path))
+		return t->Store(name);
+	return false;
 }
 
 static struct eOptionTapeFast : public xOptions::eOptionBool
@@ -429,7 +440,7 @@ void SetupSoundChip()
 
 static struct eFileTypeRZX : public eFileType
 {
-	virtual bool Open(const void* data, size_t data_size)
+	virtual bool Open(const void* data, size_t data_size) const
 	{
 		eRZX* rzx = new eRZX;
 		if(rzx->Open(data, data_size, &sh) == eRZX::E_OK)
@@ -444,29 +455,29 @@ static struct eFileTypeRZX : public eFileType
 		}
 		return false;
 	}
-	virtual const char* Type() { return "rzx"; }
+	virtual const char* Type() const { return "rzx"; }
 } ft_rzx;
 
 static struct eFileTypeZ80 : public eFileType
 {
-	virtual bool Open(const void* data, size_t data_size)
+	virtual bool Open(const void* data, size_t data_size) const
 	{
 		sh.OnAction(A_RESET);
 		return xSnapshot::Load(sh.speccy, Type(), data, data_size);
 	}
-	virtual const char* Type() { return "z80"; }
+	virtual const char* Type() const { return "z80"; }
 } ft_z80;
 static struct eFileTypeSZX : public eFileTypeZ80
 {
-	virtual const char* Type() { return "szx"; }
+	virtual const char* Type() const { return "szx"; }
 } ft_szx;
 static struct eFileTypeSNA : public eFileTypeZ80
 {
-	virtual bool Store(const char* name)
+	virtual bool Store(const char* name) const
 	{
 		return xSnapshot::Store(sh.speccy, name);
 	}
-	virtual const char* Type() { return "sna"; }
+	virtual const char* Type() const { return "sna"; }
 } ft_sna;
 
 class eMacroDiskRun : public eMacro
@@ -494,7 +505,7 @@ class eMacroDiskRun : public eMacro
 
 static struct eFileTypeTRD : public eFileType
 {
-	virtual bool Open(const void* data, size_t data_size)
+	virtual bool Open(const void* data, size_t data_size) const
 	{
 		eWD1793* wd = sh.speccy->Device<eWD1793>();
 		bool ok = wd->Open(Type(), OpDrive(), data, data_size);
@@ -511,15 +522,15 @@ static struct eFileTypeTRD : public eFileType
 		}
 		return ok;
 	}
-	virtual const char* Type() { return "trd"; }
+	virtual const char* Type() const { return "trd"; }
 } ft_trd;
 static struct eFileTypeSCL : public eFileTypeTRD
 {
-	virtual const char* Type() { return "scl"; }
+	virtual const char* Type() const { return "scl"; }
 } ft_scl;
 static struct eFileTypeFDI : public eFileTypeTRD
 {
-	virtual const char* Type() { return "fdi"; }
+	virtual const char* Type() const { return "fdi"; }
 } ft_fdi;
 
 class eMacroTapeLoad : public eMacro
@@ -558,7 +569,7 @@ class eMacroTapeLoad : public eMacro
 
 static struct eFileTypeTAP : public eFileType
 {
-	virtual bool Open(const void* data, size_t data_size)
+	virtual bool Open(const void* data, size_t data_size) const
 	{
 		bool ok = sh.speccy->Device<eTape>()->Open(Type(), data, data_size);
 		if(ok && op_auto_play_image)
@@ -569,15 +580,15 @@ static struct eFileTypeTAP : public eFileType
 		}
 		return ok;
 	}
-	virtual const char* Type() { return "tap"; }
+	virtual const char* Type() const { return "tap"; }
 } ft_tap;
 static struct eFileTypeCSW : public eFileTypeTAP
 {
-	virtual const char* Type() { return "csw"; }
+	virtual const char* Type() const { return "csw"; }
 } ft_csw;
 static struct eFileTypeTZX : public eFileTypeTAP
 {
-	virtual const char* Type() { return "tzx"; }
+	virtual const char* Type() const { return "tzx"; }
 } ft_tzx;
 
 }

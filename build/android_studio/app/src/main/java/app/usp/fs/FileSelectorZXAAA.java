@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 import app.usp.Emulator;
+import app.usp.R;
 
 public class FileSelectorZXAAA extends FileSelector
 {
@@ -35,6 +36,8 @@ public class FileSelectorZXAAA extends FileSelector
 	State State() { return state; }
 	@Override
 	boolean LongUpdate(final File path) { return PathLevel(path) >= 1; }
+	@Override
+	int LongUpdateTitle() { return R.string.accessing_web; }
     @Override
 	public void onCreate(Bundle savedInstanceState)
 	{

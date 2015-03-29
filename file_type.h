@@ -28,21 +28,24 @@ namespace xPlatform
 
 struct eFileType : public eList<eFileType>
 {
-	virtual bool Open(const void* data, size_t data_size) = 0;
-	virtual bool Open(const char* name);
-	virtual bool Store(const char* name) { return false; }
-	virtual bool AbleOpen() { return true; }
-	virtual const char* Type() = 0;
-	static eFileType* Find(const char* type)
+	static const eFileType* First() { return _First(); }
+	virtual bool Open(const void* data, size_t data_size) const = 0;
+	virtual bool Open(const char* name) const;
+	virtual bool Store(const char* name) const { return false; }
+	virtual bool AbleOpen() const { return true; }
+	virtual bool Contain(const char* name, char* contain_path, char* contain_name) const { return false; }
+	virtual const char* Type() const = 0;
+
+	static const eFileType* Find(const char* type)
 	{
-		for(eFileType* t = First(); t; t = t->Next())
+		for(const eFileType* t = First(); t; t = t->Next())
 		{
 			if(strcmp(t->Type(), type) == 0)
 				return t;
 		}
 		return NULL;
 	}
-	static eFileType* FindByName(const char* name);
+	static const eFileType* FindByName(const char* name);
 };
 
 }

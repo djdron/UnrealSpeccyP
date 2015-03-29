@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-eFileType* eFileType::FindByName(const char* name)
+const eFileType* eFileType::FindByName(const char* name)
 {
 	int l = strlen(name);
 	if(!l)
@@ -45,25 +45,36 @@ eFileType* eFileType::FindByName(const char* name)
 	return Find(type);
 }
 
-bool eFileType::Open(const char* name)
+bool eFileType::Open(const char* name) const
 {
 	FILE* f = fopen(name, "rb");
-	if(!f)
-		return false;
-	fseek(f, 0, SEEK_END);
-	size_t size = ftell(f);
-	fseek(f, 0, SEEK_SET);
-	byte* buf = new byte[size];
-	size_t r = fread(buf, 1, size, f);
-	fclose(f);
-	if(r != size)
+	if(f)
 	{
+		fseek(f, 0, SEEK_END);
+		size_t size = ftell(f);
+		fseek(f, 0, SEEK_SET);
+		byte* buf = new byte[size];
+		size_t r = fread(buf, 1, size, f);
+		fclose(f);
+		if(r != size)
+		{
+			delete[] buf;
+			return false;
+		}
+		bool ok = Open(buf, size);
 		delete[] buf;
-		return false;
+		return ok;
 	}
-	bool ok = Open(buf, size);
-	delete[] buf;
-	return ok;
+	for(const eFileType* t = First(); t; t = t->Next())
+	{
+		char contain_path[xIo::MAX_PATH_LEN];
+		char contain_name[xIo::MAX_PATH_LEN];
+		if(t->Contain(name, contain_path, contain_name))
+		{
+			return t->Open(name);
+		}
+	}
+	return false;
 }
 
 }

@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools/options.h"
 #include "ui/ui.h"
 #include "options_common.h"
+#include "file_type.h"
 
 namespace xPlatform
 {
@@ -36,6 +37,18 @@ struct eOptionState : public xOptions::eOptionBool
 		int l = strlen(name);
 		if(!l || name[l - 1] == '/' || name[l - 1] == '\\')
 			return NULL;
+		for(const eFileType* t = eFileType::First(); t; t = t->Next())
+		{
+			char contain_path[xIo::MAX_PATH_LEN];
+			char contain_name[xIo::MAX_PATH_LEN];
+			if(t->Contain(name, contain_path, contain_name))
+			{
+				strcpy(name, contain_path);
+				strcat(name, "#/");
+				strcat(name, contain_name);
+				l = strlen(name);
+			}
+		}
 		char* e = name + l;
 		while(e > name && *e != '.' && *e != '\\' && *e != '/')
 			--e;
