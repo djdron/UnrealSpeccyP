@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,21 +19,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package app.usp.fs;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.BufferedInputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipEntry;
 
 import android.os.Bundle;
-import android.webkit.MimeTypeMap;
 
 import app.usp.Emulator;
-import app.usp.R;
 
 public class FileSelectorFS extends FileSelector
 {
@@ -44,7 +39,7 @@ public class FileSelectorFS extends FileSelector
 	@Override
 	boolean LongUpdate(final File path) { return false; } //fssfs.ZipPath(path) != null;
 	@Override
-	int LongUpdateTitle() { return R.string.reading_archive; }
+	int LongUpdateTitle() { return 0; } //R.string.reading_archive; }
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -76,7 +71,7 @@ public class FileSelectorFS extends FileSelector
 		static final String ZIP_EXT = "zip";
 		private boolean IsZipName(final String name)
 		{
-			return MimeTypeMap.getFileExtensionFromUrl(name).equalsIgnoreCase(ZIP_EXT);
+			return FilenameUtils.getExtension(name).equalsIgnoreCase(ZIP_EXT);
 		}
 		public final File ZipPath(final File path)
 		{
