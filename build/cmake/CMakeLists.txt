@@ -4,8 +4,8 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
 project (USP)
 
-option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" ON)
-option(USE_SDL "SDL version" OFF)
+option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" OFF)
+option(USE_SDL "SDL version" ON)
 option(USE_BENCHMARK "benchmark mode (console)" OFF)
 
 #core
@@ -143,7 +143,7 @@ elseif(USE_SDL)
 find_package(SDL REQUIRED)
 include_directories("${SDL_INCLUDE_DIR}")
 file(GLOB SRCCXX_PLATFORM_SDL "../../platform/sdl/*.cpp")
-add_definitions(-DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON)
+add_definitions(-DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON -DUSE_FILE32API)
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL})
 source_group("platform\\sdl" FILES ${SRCCXX_PLATFORM_SDL})
 

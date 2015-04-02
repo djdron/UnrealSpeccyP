@@ -23,6 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+namespace xIo
+{
+class eFileSelect;
+}
+//namespace xIo
+
 namespace xPlatform
 {
 
@@ -35,6 +41,7 @@ struct eFileType : public eList<eFileType>
 	virtual bool AbleOpen() const { return true; }
 	virtual bool Contain(const char* name, char* contain_path, char* contain_name) const { return false; }
 	virtual const char* Type() const = 0;
+	virtual xIo::eFileSelect* FileSelect(const char* path) const { return NULL; }
 
 	static const eFileType* Find(const char* type)
 	{

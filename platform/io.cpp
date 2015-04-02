@@ -58,6 +58,25 @@ const char* ProfilePath(const char* _path)
 	strcat(buf, _path);
 	return buf;
 }
+//=============================================================================
+//	GetPathParent
+//-----------------------------------------------------------------------------
+void GetPathParent(char* parent, const char* path)
+{
+	strcpy(parent, path);
+	int i = strlen(parent);
+	if(i > 0 && (parent[i - 1] == '\\' || parent[i - 1] == '/')) // if last char of the path is /
+		--i;
+	for(; --i >= 0;)
+	{
+		if(parent[i] == '\\' || parent[i] == '/')
+		{
+			parent[i] = 0;
+			return;
+		}
+	}
+	parent[0] = 0;
+}
 
 }
 //namespace xIo

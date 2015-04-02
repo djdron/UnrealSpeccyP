@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/io_select.h"
 #include "../platform.h"
 #include "../../options_common.h"
+#include "../../file_type.h"
 #include <ctype.h>
 
 #ifdef USE_UI
@@ -36,7 +37,6 @@ namespace xUi
 eFileOpenDialog::eFileOpenDialog(const char* _path) : list(NULL), selected(NULL)
 {
 	strcpy(path, _path);
-	memset(folders, 0, sizeof(folders));
 }
 //=============================================================================
 //	eFileOpenDialog::Init
@@ -81,61 +81,57 @@ static int NameCmp(const void* _a, const void* _b)
 void eFileOpenDialog::OnChangePath()
 {
 	list->Clear();
-	memset(folders, 0, sizeof(folders));
 
 	int i = 0;
 	if(!xIo::PathIsRoot(path))
 	{
-		list->Insert("..");
-		folders[i++] = true;
+		list->Insert("/..");
 	}
-	// put folder first
-	for(xIo::eFileSelect ds(path); i < MAX_ITEMS && ds.Valid(); ds.Next())
+
+	xIo::eFileSelect* fs = NULL;
+	for(const xPlatform::eFileType* t = xPlatform::eFileType::First(); t && !fs; t = t->Next())
 	{
-		if(!ds.IsDir())
-			continue;
-		if(!strcmp(ds.Name(), ".") || !strcmp(ds.Name(), ".."))
-			continue;
-		list->Insert(ds.Name());
-		folders[i++] = true;
+		fs = t->FileSelect(path);
 	}
-	int folder_count = list->Size();
-	qsort(list->Items(), folder_count, sizeof(const char*), NameCmp);
-	for(xIo::eFileSelect fs(path); i < MAX_ITEMS && fs.Valid(); fs.Next())
+	if(!fs)
+		fs = xIo::FileSelect(path);
+
+	for(; i < MAX_ITEMS && fs->Valid(); fs->Next())
 	{
-		if(!fs.IsFile() || !xPlatform::Handler()->FileTypeSupported(fs.Name()))
+		if(!strcmp(fs->Name(), ".") || !strcmp(fs->Name(), ".."))
 			continue;
-		list->Insert(fs.Name());
-		folders[i++] = false;
-	}
-	qsort(list->Items() + folder_count, list->Size() - folder_count, sizeof(const char*), NameCmp);
-}
-//=============================================================================
-//	GetUpLevel
-//-----------------------------------------------------------------------------
-static const char* GetUpLevel(char* path)
-{
-	static char level_name[xIo::MAX_PATH_LEN];
-	level_name[0] = '\0';
-	int l = strlen(path);
-	if(!l)
-		return level_name;
-	char* path_end = path + l - 1;
-	*path_end = '\0';
-	while(path_end > path)
-	{
-		--path_end;
-		if(*path_end == '\\' || *path_end == '/')
+		if(fs->IsFile() && !xPlatform::Handler()->FileTypeSupported(fs->Name()))
+			continue;
+		bool dir = fs->IsDir();
+		if(!dir)
 		{
-			++path_end;
-			strcpy(level_name, path_end);
-			*path_end = '\0';
-			return level_name;
+			char name[xIo::MAX_PATH_LEN];
+			strcpy(name, path);
+			strcat(name, fs->Name());
+			strcat(name, "/");
+			for(const xPlatform::eFileType* t = xPlatform::eFileType::First(); t; t = t->Next())
+			{
+				char contain_path[xIo::MAX_PATH_LEN];
+				char contain_name[xIo::MAX_PATH_LEN];
+				if(t->Contain(name, contain_path, contain_name))
+				{
+					dir = strlen(contain_name) == 0;
+					break;
+				}
+			}
 		}
+		if(dir)
+		{
+			char name[xIo::MAX_PATH_LEN];
+			strcpy(name, "/");
+			strcat(name, fs->Name());
+			list->Insert(name);
+		}
+		else
+			list->Insert(fs->Name());
 	}
-	strcpy(level_name, path);
-	*path = '\0';
-	return level_name;
+	qsort(list->Items(), list->Size(), sizeof(const char*), NameCmp);
+	delete fs;
 }
 //=============================================================================
 //	eFileOpenDialog::OnNotify
@@ -144,20 +140,26 @@ void eFileOpenDialog::OnNotify(byte n, byte from)
 {
 	if(!list->Item())
 		return;
-	if(folders[list->Selected()])
+	if(list->Item()[0] == '/')
 	{
-		const char* item = NULL;
-		if(!strcmp(list->Item(), ".."))
+		const char* select_item = NULL;
+		char item[xIo::MAX_PATH_LEN];
+		if(!strcmp(list->Item(), "/.."))
 		{
-			item = GetUpLevel(path);
+			char parent[xIo::MAX_PATH_LEN];
+			xIo::GetPathParent(parent, path);
+			strcpy(item, path + strlen(parent));
+			item[strlen(item) - 1] = 0; // remove last /
+			select_item = item;
+			strcpy(path, parent);
 		}
 		else
 		{
-			strcat(path, list->Item());
-			strcat(path, "/");
+			strcat(path, list->Item() + 1);
 		}
+		strcat(path, "/");
 		OnChangePath();
-		if(item)
+		if(select_item)
 			list->Item(item);
 		return;
 	}

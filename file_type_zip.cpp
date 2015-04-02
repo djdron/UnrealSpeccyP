@@ -25,6 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools/stream_memory.h"
 #include "file_type.h"
 
+namespace xIo
+{
+eFileSelect* FileSelectZIP(char* contain_path, char* contain_name);
+}
+//namespace xIo
+
 namespace xPlatform
 {
 
@@ -34,6 +40,14 @@ static struct eFileTypeZIP : public eFileType
 	virtual bool Open(const char* name) const;
 	virtual bool Contain(const char* name, char* contain_path, char* contain_name) const;
 	virtual const char* Type() const { return "zip"; }
+	virtual xIo::eFileSelect* FileSelect(const char* path) const
+	{
+		char contain_path[xIo::MAX_PATH_LEN];
+		char contain_name[xIo::MAX_PATH_LEN];
+		if(Contain(path, contain_path, contain_name))
+			return xIo::FileSelectZIP(contain_path, contain_name);
+		return NULL;
+	}
 private:
 	bool Open(unzFile h) const;
 	bool Open(unzFile h, const char* contain_name) const;
