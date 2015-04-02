@@ -39,7 +39,7 @@ public:
 		if(dir)
 			Next();
 	}
-	virtual ~eFileSelectPosix() { closedir(dir); }
+	virtual ~eFileSelectPosix() { if(dir) closedir(dir); }
 	virtual bool Valid() const { return dir && dir_ent; }
 	virtual void Next() { dir_ent = readdir(dir); FillStat(); }
 	virtual const char* Name() const { return dir_ent->d_name; }

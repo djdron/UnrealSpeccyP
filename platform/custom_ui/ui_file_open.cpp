@@ -150,11 +150,10 @@ void eFileOpenDialog::OnNotify(byte n, byte from)
 		{
 			char parent[xIo::MAX_PATH_LEN];
 			xIo::GetPathParent(parent, path);
-			int plen = strlen(parent);
-			strcpy(item + 1, path + plen);
+			strcpy(item + 1, path + strlen(parent));
 			item[strlen(item + 1)] = 0; // remove last /
 			strcpy(path, parent);
-			if(plen)
+			if(!xIo::PathIsRoot(path))
 			{
 				select_item = item + 1;
 				strcat(path, "/");
