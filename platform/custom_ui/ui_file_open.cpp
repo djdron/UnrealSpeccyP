@@ -83,9 +83,11 @@ void eFileOpenDialog::OnChangePath()
 	list->Clear();
 
 	int i = 0;
+	int skip_sort = 0;
 	if(!xIo::PathIsRoot(path))
 	{
 		list->Insert("/..");
+		skip_sort = 1; // do not sort this item
 	}
 
 	xIo::eFileSelect* fs = NULL;
@@ -130,7 +132,7 @@ void eFileOpenDialog::OnChangePath()
 		else
 			list->Insert(fs->Name());
 	}
-	qsort(list->Items(), list->Size(), sizeof(const char*), NameCmp);
+	qsort(list->Items() + skip_sort, list->Size() - skip_sort, sizeof(const char*), NameCmp);
 	delete fs;
 }
 //=============================================================================
@@ -148,19 +150,29 @@ void eFileOpenDialog::OnNotify(byte n, byte from)
 		{
 			char parent[xIo::MAX_PATH_LEN];
 			xIo::GetPathParent(parent, path);
-			strcpy(item, path + strlen(parent));
-			item[strlen(item) - 1] = 0; // remove last /
-			select_item = item;
+			int plen = strlen(parent);
+			strcpy(item + 1, path + plen);
+			item[strlen(item + 1)] = 0; // remove last /
 			strcpy(path, parent);
+			if(plen)
+			{
+				select_item = item + 1;
+				strcat(path, "/");
+			}
+			else
+			{
+				item[0] = '/';
+				select_item = item;
+			}
 		}
 		else
 		{
 			strcat(path, list->Item() + 1);
+			strcat(path, "/");
 		}
-		strcat(path, "/");
 		OnChangePath();
 		if(select_item)
-			list->Item(item);
+			list->Item(select_item);
 		return;
 	}
 	strcat(path, list->Item());

@@ -32,6 +32,7 @@ const char* ResourcePath(const char* path);
 void SetProfilePath(const char* profile_path);
 const char* ProfilePath(const char* path);
 
+bool PathCreate(const char* path);
 void GetPathParent(char* parent, const char* path);
 
 }

@@ -38,7 +38,6 @@ public:
 eFileSelect* FileSelect(const char* path);
 
 bool PathIsRoot(const char* path);
-bool PathCreate(const char* path);
 
 }
 //namespace xIo

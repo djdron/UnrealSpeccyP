@@ -219,15 +219,13 @@ const char* OpLastFolder()
 {
 	static char lf[xIo::MAX_PATH_LEN];
 	strcpy(lf, OpLastFile());
-	char* n = lf;
-	char* n_end = n + strlen(n);
-	while(n_end > n && *n_end != '\\' && *n_end != '/')
-		--n_end;
-	if(*n_end == '\\' || *n_end == '/')
-	{
-		++n_end;
-		*n_end = '\0';
-	}
+	int l = strlen(lf);
+	if(!l || lf[l - 1] == '\\' || lf[l - 1] == '/')
+		return lf;
+	char parent[xIo::MAX_PATH_LEN];
+	xIo::GetPathParent(parent, lf);
+	strcpy(lf, parent);
+	strcat(lf, "/");
 	return lf;
 }
 void OpLastFile(const char* name) { op_last_file.Set(name); }

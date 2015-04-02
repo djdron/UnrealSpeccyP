@@ -67,7 +67,7 @@ eFileSelect* FileSelect(const char* path) { return new eFileSelectPosix(path); }
 
 bool PathIsRoot(const char* path) {	return !strcmp(path, "/"); }
 
-static bool MkDir(const char* path)
+bool MkDir(const char* path)
 {
 	if(mkdir(path, 0777) != 0)
 	{
@@ -75,25 +75,6 @@ static bool MkDir(const char* path)
 			return false;
 	}
 	return true;
-}
-
-bool PathCreate(const char* path)
-{
-	char buf[MAX_PATH_LEN];
-	int p = 0;
-	int l = strlen(path);
-	for(int i = 0; i < l; ++i)
-	{
-		if(path[i] == '\\' || path[i] == '/')
-		{
-			strncpy(buf + p, path + p, i - p);
-			buf[i] = 0;
-			p = i;
-			if(i > 0 && !MkDir(buf))
-				return false;
-		}
-	}
-	return MkDir(path);
 }
 
 }

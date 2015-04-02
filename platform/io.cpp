@@ -58,6 +58,28 @@ const char* ProfilePath(const char* _path)
 	strcat(buf, _path);
 	return buf;
 }
+bool MkDir(const char* path); // platform-specific
+//=============================================================================
+//	PathCreate
+//-----------------------------------------------------------------------------
+bool PathCreate(const char* path)
+{
+	char buf[MAX_PATH_LEN];
+	int p = 0;
+	int l = strlen(path);
+	for(int i = 0; i < l; ++i)
+	{
+		if(path[i] == '\\' || path[i] == '/')
+		{
+			strncpy(buf + p, path + p, i - p);
+			buf[i] = 0;
+			p = i;
+			if(i > 0 && !MkDir(buf))
+				return false;
+		}
+	}
+	return MkDir(path);
+}
 //=============================================================================
 //	GetPathParent
 //-----------------------------------------------------------------------------
