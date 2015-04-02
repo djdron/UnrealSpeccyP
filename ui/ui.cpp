@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../std.h"
 #include "ui.h"
 #include "../platform/io.h"
+#include <ctype.h>
 
 #ifdef USE_UI
 
@@ -114,6 +115,8 @@ public:
 	}
 	void Draw(int _char, const ePoint& p)
 	{
+		if(_char >= 128) // non-ASCII
+			_char = '?';
 		int pitch = 256;
 		byte* src = data + _char + pitch*1;
 		for(int y = 0; y < h; ++y)
@@ -141,9 +144,9 @@ void DrawText(const eRect& r, const char* s)
 	{
 		if(p.x + font.w > r.right)
 			break;
-		char c = s[i];
-		if(c >= 96)
-			c -= 32;
+		char c = toupper(s[i]);
+		if(byte(c) >= 128) // non-ASCII
+			c = '?';
 		font.Draw(c, p);
 		p.x += font.w;
 	}
