@@ -4,8 +4,8 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
 project (USP)
 
-option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" OFF)
-option(USE_SDL "SDL version" ON)
+option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" ON)
+option(USE_SDL "SDL version" OFF)
 option(USE_BENCHMARK "benchmark mode (console)" OFF)
 
 #core
@@ -96,7 +96,9 @@ foreach(variable ${variables})
 endforeach()
 endif(MSVC)
 
-if(UNIX)
+if(APPLE)
+add_definitions(-D_MAC)
+elseif(UNIX)
 add_definitions(-D_LINUX)
 endif(UNIX)
 

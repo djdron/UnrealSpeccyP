@@ -104,8 +104,7 @@ namespace xIo
 bool MkDir(const char* path)
 {
 	wxString p(wxConvertMB2WX(path));
-	if(!wxDirExists(p))
-		wxFileName::Mkdir(p);
+	return wxDirExists(p) || wxFileName::Mkdir(p);
 }
 }
 //namespace xIo
