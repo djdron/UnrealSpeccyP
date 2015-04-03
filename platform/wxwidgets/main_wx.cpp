@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
+#include <wx/filename.h>
 
 namespace xPlatform
 {
@@ -97,5 +98,16 @@ class App : public wxApp
 //namespace xPlatform
 
 IMPLEMENT_APP(xPlatform::App)
+
+namespace xIo
+{
+bool MkDir(const char* path)
+{
+	wxString p(wxConvertMB2WX(path));
+	if(!wxDirExists(p))
+		wxFileName::Mkdir(p);
+}
+}
+//namespace xIo
 
 #endif//USE_WXWIDGETS
