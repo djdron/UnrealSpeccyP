@@ -461,7 +461,6 @@ void Frame::OnReset(wxCommandEvent& event)
 	if(Handler()->OnAction(A_RESET) == AR_OK)
 	{
 		SetStatusText(_("Reset OK"));
-		menu_quick_save->Enable(false);
 	}
 	else
 		SetStatusText(_("Reset FAILED"));
