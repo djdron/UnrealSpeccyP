@@ -71,7 +71,7 @@ public:
 	}
 	virtual void Next()
 	{
-		drives &= 0xfffe;
+		drives &= ~1;
 		Update();
 	}
 	virtual const char* Name() const { return drive; }
