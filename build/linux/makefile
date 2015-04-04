@@ -2,7 +2,17 @@ SRC_PATH = ../..
 OBJ_BASE = Release
 
 PROJECT_NAME = unreal_speccy_portable
-SRCFOLDERS = . z80 tools 3rdparty/tinyxml2 3rdparty/minizip snapshot ui platform platform/custom_ui platform/gl platform/oal platform/wxwidgets platform/linux platform/sdl platform/benchmark devices devices/fdd devices/input devices/sound
+SRCFOLDERS = . z80 tools 3rdparty/tinyxml2 3rdparty/minizip snapshot platform devices devices/fdd devices/input devices/sound
+ifdef BENCHMARK
+SRCFOLDERS += platform/benchmark platform/linux
+else
+ifdef SDL
+SRCFOLDERS += platform/sdl platform/linux platform/custom_ui ui
+else
+SRCFOLDERS += platform/wxwidgets platform/gl platform/oal
+endif
+endif
+
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
 
