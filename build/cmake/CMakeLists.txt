@@ -164,7 +164,7 @@ elseif(USE_SDL)
 find_package(SDL REQUIRED)
 include_directories("${SDL_INCLUDE_DIR}")
 file(GLOB SRCCXX_PLATFORM_SDL "../../platform/sdl/*.cpp")
-add_definitions(-DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON)
+add_definitions(-DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON -DUSE_CONFIG -DUSE_ZIP)
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL})
 source_group("platform\\sdl" FILES ${SRCCXX_PLATFORM_SDL})
 
