@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef _WINDOWS
+#ifdef _WINAPI
 
 #include "../../std.h"
 #include "../../tools/io_select.h"
@@ -106,4 +106,4 @@ bool MkDir(const char* path)
 }
 //namespace xIo
 
-#endif//_WINDOWS
+#endif//_WINAPI

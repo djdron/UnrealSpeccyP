@@ -31,13 +31,13 @@ CFLAGS = -O3 -Wall -c -fmessage-length=0
 LFLAGS = -s -lz -lpng
 
 ifdef BENCHMARK
-CXXFLAGS := $(CXXFLAGS) -DUSE_BENCHMARK
+CXXFLAGS := $(CXXFLAGS) -DUSE_BENCHMARK -D_POSIX
 else
 ifdef SDL
-CXXFLAGS := $(CXXFLAGS) -DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON `sdl-config --cflags`
+CXXFLAGS := $(CXXFLAGS) -DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON -D_POSIX `sdl-config --cflags`
 LFLAGS := $(LFLAGS) `sdl-config --libs`
 else
-CXXFLAGS := $(CXXFLAGS) `wx-config --cxxflags`
+CXXFLAGS := $(CXXFLAGS) -D_LINUX `wx-config --cxxflags`
 LFLAGS := $(LFLAGS) -lGL -lopenal `wx-config --libs core,base,gl,adv`
 endif
 endif

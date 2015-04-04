@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if defined(_LINUX) || defined(_POSIX)
+#if defined(_POSIX)
 
 #include "../../std.h"
 #include "../../tools/io_select.h"
@@ -80,4 +80,4 @@ bool MkDir(const char* path)
 }
 //namespace xIo
 
-#endif//_LINUX || _POSIX
+#endif//_POSIX

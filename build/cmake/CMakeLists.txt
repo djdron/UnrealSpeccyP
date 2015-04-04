@@ -4,8 +4,8 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
 project (USP)
 
-option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" ON)
-option(USE_SDL "SDL version" OFF)
+option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" OFF)
+option(USE_SDL "SDL version" ON)
 option(USE_BENCHMARK "benchmark mode (console)" OFF)
 
 #core
@@ -96,13 +96,31 @@ foreach(variable ${variables})
 endforeach()
 endif(MSVC)
 
+macro(add_platform_io_stuff)
+if(WIN32)
+file(GLOB SRCCXX_PLATFORM_WINDOWS "../../platform/win/*.cpp")
+file(GLOB SRCH_PLATFORM_WINDOWS "../../platform/win/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_WINDOWS})
+list(APPEND SRCH ${SRCH_PLATFORM_WINDOWS})
+source_group("platform\\windows" FILES ${SRCCXX_PLATFORM_WINDOWS} ${SRCH_PLATFORM_WINDOWS})
+add_definitions(-D_WINAPI)
+elseif(UNIX)
+file(GLOB SRCCXX_PLATFORM_LINUX "../../platform/linux/*.cpp")
+file(GLOB SRCH_PLATFORM_LINUX "../../platform/linux/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_LINUX})
+list(APPEND SRCH ${SRCH_PLATFORM_LINUX})
+source_group("platform\\linux" FILES ${SRCCXX_PLATFORM_LINUX} ${SRCH_PLATFORM_LINUX})
+add_definitions(-D_POSIX)
+endif(WIN32)
+endmacro()
+
+if(USE_WX_WIDGETS)
+
 if(APPLE)
 add_definitions(-D_MAC)
 elseif(UNIX)
 add_definitions(-D_LINUX)
 endif(UNIX)
-
-if(USE_WX_WIDGETS)
 
 #wxWidgets
 find_package(wxWidgets COMPONENTS core base adv gl REQUIRED)
@@ -163,19 +181,10 @@ list(APPEND SRCH ${SRCH_PLATFORM_CUSTOM_UI})
 source_group("platform\\custom_ui" FILES ${SRCCXX_PLATFORM_CUSTOM_UI} ${SRCH_PLATFORM_CUSTOM_UI})
 
 if(WIN32)
-file(GLOB SRCCXX_PLATFORM_WINDOWS "../../platform/win/*.cpp")
-file(GLOB SRCH_PLATFORM_WINDOWS "../../platform/win/*.h")
-list(APPEND SRCCXX ${SRCCXX_PLATFORM_WINDOWS})
-list(APPEND SRCH ${SRCH_PLATFORM_WINDOWS})
-source_group("platform\\windows" FILES ${SRCCXX_PLATFORM_WINDOWS} ${SRCH_PLATFORM_WINDOWS})
 add_definitions(-DSDL_DEFAULT_FOLDER="")
-elseif(UNIX)
-file(GLOB SRCCXX_PLATFORM_LINUX "../../platform/linux/*.cpp")
-file(GLOB SRCH_PLATFORM_LINUX "../../platform/linux/*.h")
-list(APPEND SRCCXX ${SRCCXX_PLATFORM_LINUX})
-list(APPEND SRCH ${SRCH_PLATFORM_LINUX})
-source_group("platform\\linux" FILES ${SRCCXX_PLATFORM_LINUX} ${SRCH_PLATFORM_LINUX})
 endif(WIN32)
+
+add_platform_io_stuff()
 
 add_executable(unreal_speccy_portable WIN32 ${SRCCXX} ${SRCC} ${SRCH})
 target_link_libraries(unreal_speccy_portable ${SDL_LIBRARY})
@@ -187,6 +196,8 @@ file(GLOB SRCCXX_PLATFORM_BENCHMARK "../../platform/benchmark/*.cpp")
 add_definitions(-DUSE_BENCHMARK)
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_BENCHMARK})
 source_group("platform\\benchmark" FILES ${SRCCXX_PLATFORM_BENCHMARK})
+
+add_platform_io_stuff()
 
 add_executable(unreal_speccy_portable ${SRCCXX} ${SRCC} ${SRCH})
 
