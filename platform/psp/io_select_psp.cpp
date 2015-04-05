@@ -60,7 +60,7 @@ bool MkDir(const char* path)
 		sceIoDclose(d);
 		return true;
 	}
-	return sceIoMkdir(path, 0777);
+	return sceIoMkdir(path, 0777) == 0;
 }
 
 }
