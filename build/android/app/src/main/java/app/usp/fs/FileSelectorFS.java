@@ -115,8 +115,7 @@ public class FileSelectorFS extends FileSelector
 							File zname = new File(ze.getName());
 							if(ze.isDirectory())
 								items.add(new Item("/" + zname.getName()));
-							else if(!IsZipName(zname.getName()) // skip zip's inside zip
-									&& Emulator.the.FileTypeSupported(zname.getName()))
+							else if(Emulator.the.FileTypeSupported(zname.getName()))
 								items.add(new Item(zname.getName()));
 						}
 						if(progress.Canceled())
