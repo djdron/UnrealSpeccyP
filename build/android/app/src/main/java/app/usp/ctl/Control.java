@@ -47,15 +47,17 @@ public class Control extends ImageView
 			width = context.getResources().getDisplayMetrics().widthPixels;
 		else
 			width = context.getResources().getDisplayMetrics().heightPixels;
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inScaled = false;
 		if(width > 480)
 		{
-			keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard_hq);
-			joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick_hq);
+			keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard_hq, options);
+			joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick_hq, options);
 		}
 		else
 		{
-			keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard);
-			joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
+			keyboard = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard, options);
+			joystick = BitmapFactory.decodeResource(getResources(), R.drawable.joystick, options);
 		}
 		keyboard_active = Emulator.the.GetOptionBool(Preferences.use_keyboard_id);
 		sensor = new ControlSensor(context);
