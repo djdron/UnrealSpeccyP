@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,30 +32,17 @@ import app.usp.Emulator;
 import app.usp.R;
 import app.usp.ViewGLES;
 
-public class ControlKeyboard
+public class ControlKeyboard extends ControlOverlay
 {
 	private int width;
 	private int height;
 	private final float scale_x, scale_y;
-	private boolean active = false;
-	private long touch_time = 0;
 	private int pid_activator = -1;
 	static final int HIDE_TIME_MS = 4000; 
 
 	private int[] textures = new int[1];
 	private Bitmap keyboard = null;
 	
-	static int NextPot(int v)
-	{
-		--v;
-		v |= (v >> 1);
-		v |= (v >> 2);
-		v |= (v >> 4);
-		v |= (v >> 8);
-		v |= (v >> 16);
-		return ++v;
-	}
-
 	public ControlKeyboard(Context context)
 	{
 		//@note : width & height may vary at runtime a little ;-) 
@@ -119,6 +106,8 @@ public class ControlKeyboard
 	{
 		if(!active)
 			return;
+		if(Emulator.the.ReplayProgress() != null)
+			return;
 		width = _w;
 		height = _h;
 		final long passed_time = SystemClock.uptimeMillis() - touch_time;
@@ -143,13 +132,5 @@ public class ControlKeyboard
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		quad.Draw(gl);
-	}
-	public void Active(boolean on)
-	{
-		if(!active && on)
-		{
-			touch_time = SystemClock.uptimeMillis();
-		}
-		active = on;
 	}
 }

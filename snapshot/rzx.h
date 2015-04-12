@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ public:
 	eError Update(int* icount);
 	eError IoRead(byte* data);
 	eError CheckSync() const;
+	eError GetProgress(dword* frame_current, dword* frames_total, dword* frames_cached) const;
 
 private:
 	class eImpl;

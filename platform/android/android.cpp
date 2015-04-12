@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ void UpdateScreen(word* scr);
 void ProcessKey(char key, bool down, bool shift, bool alt);
 void InitSound();
 void DoneSound();
-int UpdateSound(byte* buf);
+int UpdateSound(byte* buf, bool skip_data);
 
 static struct eOptionZoom : public xOptions::eOptionInt
 {
@@ -189,11 +189,11 @@ void Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_bu
 	uint16_t* buf = (uint16_t*)env->GetDirectBufferAddress(byte_buffer);
 	xPlatform::UpdateScreen(buf);
 }
-jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer)
+jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer, jboolean skip_data)
 {
 	PROFILER_SECTION(u_aud);
 	byte* buf = (byte*)env->GetDirectBufferAddress(byte_buffer);
-	return xPlatform::UpdateSound(buf);
+	return xPlatform::UpdateSound(buf, skip_data);
 }
 
 void Java_app_usp_Emulator_OnKey(JNIEnv* env, jobject obj, jchar key, jboolean down, jboolean shift, jboolean alt)
@@ -294,6 +294,36 @@ jboolean Java_app_usp_Emulator_FileTypeSupported(JNIEnv* env, jobject obj, jstri
 	bool r = xPlatform::Handler()->FileTypeSupported(name);
     env->ReleaseStringUTFChars(jname, name);
     return r;
+}
+
+jobject Java_app_usp_Emulator_ReplayProgress(JNIEnv* env, jobject obj)
+{
+	dword frame_current = 0, frames_total = 0, frames_cached = 0;
+	if(xPlatform::Handler()->GetReplayProgress(&frame_current, &frames_total, &frames_cached))
+	{
+		if(!frames_total)
+			return NULL;
+		jclass rpc = env->FindClass("app/usp/Emulator$ReplayProgress");
+		if(!rpc)
+			return NULL;
+		jfieldID fc = env->GetFieldID(rpc, "frame_current", "I");
+		if(!fc)
+			return NULL;
+		jfieldID ft = env->GetFieldID(rpc, "frames_total", "I");
+		if(!ft)
+			return NULL;
+		jfieldID fcc = env->GetFieldID(rpc, "frames_cached", "I");
+		if(!fcc)
+			return NULL;
+		jobject rpo = env->AllocObject(rpc);
+		if(!rpo)
+		    return NULL;
+		env->SetIntField(rpo, fc, frame_current);
+		env->SetIntField(rpo, ft, frames_total);
+		env->SetIntField(rpo, fcc, frames_cached);
+		return rpo;
+	}
+    return NULL;
 }
 
 void Java_app_usp_Emulator_ProfilerBegin(JNIEnv* env, jobject obj, jint id)

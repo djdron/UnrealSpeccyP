@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -102,6 +102,14 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 		replay->IoRead(&r);
 		return r;
 	}
+
+	virtual bool GetReplayProgress(dword* frame_current, dword* frames_total, dword* frames_cached)
+	{
+		if(replay)
+			return replay->GetProgress(frame_current, frames_total, frames_cached) == eRZX::E_OK;
+		return false;
+	}
+
 	const char* RZXErrorDesc(eRZX::eError err) const;
 	void Replay(eRZX* r)
 	{

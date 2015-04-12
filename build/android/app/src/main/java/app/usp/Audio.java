@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@ public class Audio
 				AudioTrack.MODE_STREAM);
 		track.play();
 	}
-	void Update()
+	void Update(boolean skip_data)
 	{
-		final int audio_bytes_ready = Emulator.the.UpdateAudio(bbuf);
+		final int audio_bytes_ready = Emulator.the.UpdateAudio(bbuf, skip_data);
 		if(audio_bytes_ready != 0)
 		{
 			Emulator.the.ProfilerBegin(0);

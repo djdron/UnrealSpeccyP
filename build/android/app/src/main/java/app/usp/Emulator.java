@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ public class Emulator
 
 	synchronized native int		Update();
 	synchronized native void	UpdateVideo(ByteBuffer buf);
-	synchronized native int		UpdateAudio(ByteBuffer buf);
+	synchronized native int		UpdateAudio(ByteBuffer buf, boolean skip_data);
 	public synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 	public synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
 
@@ -44,13 +44,21 @@ public class Emulator
 	synchronized native void	Reset();
 	public synchronized native boolean	FileTypeSupported(final String name);
 
-	synchronized native int	GetOptionInt(final String name);
+	public class ReplayProgress
+	{
+		public int frame_current;
+		public int frames_total;
+		public int frames_cached;
+	}
+	public synchronized native ReplayProgress ReplayProgress();
+
+	synchronized native int		GetOptionInt(final String name);
 	synchronized native void	SetOptionInt(final String name, int value);
 	public synchronized native boolean GetOptionBool(final String name);
 	public synchronized native void	SetOptionBool(final String name, boolean value);
 	synchronized native void	StoreOptions();
 
-	synchronized native int	TapeState();
+	synchronized native int		TapeState();
 	synchronized native void	TapeToggle();
 	
 	synchronized native void	ProfilerBegin(int id);

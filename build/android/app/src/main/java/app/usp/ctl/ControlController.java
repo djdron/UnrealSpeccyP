@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -30,12 +30,10 @@ import android.os.SystemClock;
 import app.usp.Emulator;
 import app.usp.ViewGLES;
 
-public class ControlController
+public class ControlController extends ControlOverlay
 {
 	private final int size;
 	private final float scale_pot;
-	private boolean active = false;
-	private long touch_time = 0;
 	private long touch_joy_time = 0;
 	private float dir_x = 0.0f;
 	private float dir_y = 0.0f;
@@ -45,17 +43,6 @@ public class ControlController
 	private Bitmap joy_area = null;
 	private Bitmap joy_ptr = null;
 	
-	static int NextPot(int v)
-	{
-		--v;
-		v |= (v >> 1);
-		v |= (v >> 2);
-		v |= (v >> 4);
-		v |= (v >> 8);
-		v |= (v >> 16);
-		return ++v;
-	}
-
 	public ControlController(Context context)
 	{
 		size = (int)(context.getResources().getDisplayMetrics().density*150);
@@ -122,6 +109,8 @@ public class ControlController
 	{
 		if(!active)
 			return;
+		if(Emulator.the.ReplayProgress() != null)
+			return;
 		final long passed_time = SystemClock.uptimeMillis() - touch_time;
 		if(passed_time > 2000)
 		{
@@ -178,10 +167,6 @@ public class ControlController
 			Emulator.the.OnKey('f', false, false, false);
 			pid_joy = -1;
 		}
-		else if(!active && on)
-		{
-			touch_time = touch_joy_time = SystemClock.uptimeMillis();
-		}
-		active = on;
+		super.Active(on);
 	}
 }

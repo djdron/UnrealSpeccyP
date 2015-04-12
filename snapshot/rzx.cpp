@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class eRZX::eImpl
 {
 public:
-	eImpl() : status(0), file(NULL), handler(NULL), framecount(0), INmax(0), INcount(0), INold(0)
+	eImpl() : status(0), file(NULL), handler(NULL), frames_in_block(0), frames_total(0), frame_current(0), INmax(0), INcount(0), INold(0)
 		, inputbuffer(NULL)
 #ifdef USE_ZIP
 		,zbuf(NULL)
@@ -61,6 +61,13 @@ public:
 	eError Update(int* icount);
 	eError IoRead(byte* data);
 	eError CheckSync() const { return INcount == INmax ? E_OK : E_SYNC_LOST; }
+	eError GetProgress(dword* _frame_current, dword* _frames_total, dword* _frames_cached) const
+	{
+		*_frame_current = frame_current;
+		*_frames_total = frames_total;
+		*_frames_cached = frames_in_block;
+		return E_OK;
+	}
 
 private:
 	class eStream : public xIo::eStreamMemory
@@ -111,7 +118,10 @@ private:
 	};
 
 	RZX_BLKHDR block;
-	dword framecount;
+	dword frames_in_block;
+
+	dword frames_total;
+	dword frame_current;
 
 	word INmax;
 	word INcount;
@@ -126,7 +136,7 @@ private:
 	int ZipRead(byte* buffer, int len);
 	int ZipClose();
 #endif//USE_ZIP
-	eError ReadBlock();
+	eError ReadBlock(bool test_IRB = false);
 	void Close();
 };
 
@@ -177,7 +187,7 @@ int eRZX::eImpl::ZipOpen()
 }
 #endif//USE_ZIP
 
-eRZX::eError eRZX::eImpl::ReadBlock()
+eRZX::eError eRZX::eImpl::ReadBlock(bool test_IRB)
 {
 	int done = 0;
 	long fpos;
@@ -192,6 +202,7 @@ eRZX::eError eRZX::eImpl::ReadBlock()
 		switch(block.type)
 		{
 		case RZXBLK_SNAP:
+			if(!test_IRB)
 			{
 				file->Read(block.buff, 12);
 				char snap_filename[xIo::MAX_PATH_LEN];
@@ -252,8 +263,10 @@ eRZX::eError eRZX::eImpl::ReadBlock()
 		case RZXBLK_DATA:
 			/* recording block found, initialize the values */
 			file->Read(block.buff, 13);
-			framecount = block.buff[0]+256*block.buff[1]+65536*block.buff[2]+16777216*block.buff[3];
+			frames_in_block = block.buff[0]+256*block.buff[1]+65536*block.buff[2]+16777216*block.buff[3];
 			status |= RZX_IRB;
+			if(test_IRB)
+				return E_OK;
 			if(block.buff[9] & 0x01)
 				status |= RZX_PROT;
 			else
@@ -308,6 +321,21 @@ eRZX::eError eRZX::eImpl::Open(const void* _data, size_t _data_size, eHandler* _
 	block.length = 0;
 	block.type = 0;
 	file->Seek(block.start);
+	while(ReadBlock(true) == E_OK)
+	{
+		if(status&RZX_IRB)
+		{
+			frames_total += frames_in_block;
+		}
+		status = 0;
+		block.start += block.length;
+		if(file->Seek(block.start) != 0) // bugfix with possible buffer overread when readed zipped data
+			break;
+	}
+	block.start = 10;
+	block.length = 0;
+	block.type = 0;
+	file->Seek(block.start);
 	eError err = ReadBlock();
 	if(err != E_OK)
 	{
@@ -333,7 +361,7 @@ void eRZX::eImpl::Close()
 eRZX::eError eRZX::eImpl::Update(int* icount)
 {
 	/* check if we are at the beginning */
-	if((status & RZX_IRB) && (!framecount))
+	if((status & RZX_IRB) && (!frames_in_block))
 		status &= ~RZX_IRB;
 	/* need to seek another IRB? */
 	if(!(status & RZX_IRB))
@@ -380,7 +408,8 @@ eRZX::eError eRZX::eImpl::Update(int* icount)
 	else
 		INmax = INold;
 	INcount = 0;
-	--framecount;
+	--frames_in_block;
+	++frame_current;
 	return E_OK;
 }
 eRZX::eError eRZX::eImpl::IoRead(byte* data)
@@ -397,3 +426,4 @@ eRZX::eError eRZX::Open(const void* data, size_t data_size, eHandler* handler) {
 eRZX::eError eRZX::Update(int* icount) { return impl->Update(icount); }
 eRZX::eError eRZX::IoRead(byte* data) { return impl->IoRead(data); }
 eRZX::eError eRZX::CheckSync() const { return impl->CheckSync(); }
+eRZX::eError eRZX::GetProgress(dword* frame_current, dword* frames_total, dword* frames_cached) const { return impl->GetProgress(frame_current, frames_total, frames_cached); }

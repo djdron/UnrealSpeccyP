@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -87,6 +87,8 @@ struct eHandler
 	virtual bool OnSaveFile(const char* name) = 0;
 	virtual bool FileTypeSupported(const char* name) = 0;
 	virtual eActionResult OnAction(eAction action) = 0;
+
+	virtual bool GetReplayProgress(dword* frame_current, dword* frames_total, dword* frames_cached) = 0;
 
 	// data to draw
 	virtual void* VideoData() = 0;

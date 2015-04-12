@@ -16,39 +16,36 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../platform.h"
+package app.usp.ctl;
 
-#ifdef _ANDROID
+import android.os.SystemClock;
 
-#include "../../tools/sound_mixer.h"
+public class ControlOverlay
+{
+	protected boolean active = false;
+	protected long touch_time = 0;
 
-namespace xPlatform
-{
-
-void InitSound()
-{
-}
-void DoneSound()
-{
-}
-static eSoundMixer sound_mixer;
-int UpdateSound(byte* buf, bool skip_data)
-{
-	if(skip_data)
+	static int NextPot(int v)
 	{
-		for(int s = Handler()->AudioSources(); --s >= 0;)
-		{
-			Handler()->AudioDataUse(s, Handler()->AudioDataReady(s));
-		}
-		return 0;
+		--v;
+		v |= (v >> 1);
+		v |= (v >> 2);
+		v |= (v >> 4);
+		v |= (v >> 8);
+		v |= (v >> 16);
+		return ++v;
 	}
-	sound_mixer.Update(buf);
-	dword size = sound_mixer.Ready();
-	sound_mixer.Use(size, buf);
-	return size;
+	public void Active(boolean on)
+	{
+		if(!active && on)
+		{
+			touch_time = SystemClock.uptimeMillis();
+		}
+		active = on;
+	}
+	public void KickVisible()
+	{
+		Active(false);
+		Active(true);
+	}
 }
-
-}
-//namespace xPlatform
-
-#endif//_ANDROID
