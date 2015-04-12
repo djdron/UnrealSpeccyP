@@ -25,6 +25,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.opengl.GLUtils;
 import android.os.SystemClock;
 
@@ -39,6 +40,98 @@ public class ControlReplay extends ControlOverlay
 	private Bitmap pos_fill = null;
 	private Bitmap pos_dot = null;
 	static final int HIDE_TIME_MS = 4000;
+
+	private TimeLabel time_current = null;
+	private TimeLabel time_total = null;
+
+	class TextLabel
+	{
+		Paint paint = null;
+		private Bitmap bmp = null;
+		private int[] textures = new int[1];
+		public int width, height;
+		private float scale_width_pot, scale_height_pot;
+		protected String text;
+
+		TextLabel(Context context, int text_size_dp, String max_text)
+		{
+			text = "";
+			paint = new Paint();
+			paint.setAntiAlias(true);
+			// 10 dp font size
+			int textSize = (int)(text_size_dp * context.getResources().getDisplayMetrics().density + 0.5f);
+			paint.setTextSize(textSize);
+			paint.setTextAlign(Paint.Align.CENTER);
+			width = (int)paint.measureText(max_text) + 5;
+			height = textSize + 5;
+			final int width_pot = NextPot(width);
+			final int height_pot = NextPot(height);
+			bmp = Bitmap.createBitmap(width_pot, height_pot, Bitmap.Config.ARGB_8888);
+			scale_width_pot = ((float)width)/width_pot;
+			scale_height_pot = ((float)height)/height_pot;
+		}
+		public void Init(GL10 gl)
+		{
+			gl.glGenTextures(1, textures, 0);
+			gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
+			GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bmp, 0);
+		}
+		void Draw(GL10 gl, ViewGLES.Quad quad, String _text, int x, int y, float alpha)
+		{
+			if(_text.isEmpty())
+				return;
+
+			gl.glColor4f(1.0f, 1.0f, 1.0f, alpha);
+			gl.glViewport(x, y, width, height);
+			gl.glMatrixMode(GL10.GL_TEXTURE);
+			gl.glLoadIdentity();
+			gl.glScalef(scale_width_pot, scale_height_pot, 1.0f);
+
+			gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
+			if(text.compareTo(_text) != 0)
+			{
+				text = _text;
+				Canvas canvas = new Canvas(bmp);
+				canvas.clipRect(0, 0, width, height);
+				canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+				paint.setColor(Color.BLACK);
+				canvas.drawText(text, width/2 + 3, height - 4, paint);
+				paint.setColor(Color.WHITE);
+				canvas.drawText(text, width/2 + 2, height - 5, paint);
+				GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bmp, 0);
+			}
+			quad.Draw(gl);
+		}
+	}
+
+	class TimeLabel  extends TextLabel
+	{
+		private int seconds = -1;
+		TimeLabel(Context context, int text_size_dp)
+		{
+			super(context, text_size_dp, "88:88:88");
+		}
+		void Draw(GL10 gl, ViewGLES.Quad quad, int _seconds, int x, int y, float alpha)
+		{
+			if(seconds == _seconds)
+			{
+				super.Draw(gl, quad, super.text, x, y, alpha);
+				return;
+			}
+			seconds = _seconds;
+			int h = seconds / 3600;
+			int m = (seconds % 3600) / 60;
+			int s = seconds % 60;
+			String time;
+			if(h > 0)
+				time = String.format("%02d:%02d:%02d", h, m, s);
+			else
+				time = String.format("%02d:%02d", m, s);
+			super.Draw(gl, quad, time, x, y, alpha);
+		}
+	}
 
 	public ControlReplay(Context context)
 	{
@@ -58,6 +151,9 @@ public class ControlReplay extends ControlOverlay
 		canvas = new Canvas(pos_dot);
 		paint.setColor(Color.WHITE);
 		canvas.drawCircle(size*0.5f, size*0.5f, size*0.5f, paint);
+
+		time_current = new TimeLabel(context, 12);
+		time_total = new TimeLabel(context, 12);
 	}
 	public void Init(GL10 gl)
 	{
@@ -66,6 +162,8 @@ public class ControlReplay extends ControlOverlay
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, pos_fill, 0);
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[1]);
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, pos_dot, 0);
+		time_current.Init(gl);
+		time_total.Init(gl);
 	}
 	public void OnTouch(float x, float y, boolean down, int pointer_id)
 	{
@@ -87,7 +185,7 @@ public class ControlReplay extends ControlOverlay
 
 		final float alpha = passed_time > (HIDE_TIME_MS - 1000) ? (float)(HIDE_TIME_MS - passed_time)/1000.0f : 1.0f;
 
-		int px = (int)(_w*0.15f);
+		int px = (int)(time_current.width*1.2f);
 		int py = (int)(_h*0.05f);
 
 		float p = (float)progress.frame_current/progress.frames_total;
@@ -131,5 +229,8 @@ public class ControlReplay extends ControlOverlay
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
 
 		quad.Draw(gl);
+
+		time_current.Draw(gl, quad, progress.frame_current/50, (int)(time_current.width*0.05f), py + size/2 - time_current.height/2, 1.0f*alpha);
+		time_total.Draw(gl, quad, progress.frames_total/50, _w - (int)(time_current.width*1.05f), py + size/2 - time_current.height/2, 1.0f*alpha);
 	}
 }

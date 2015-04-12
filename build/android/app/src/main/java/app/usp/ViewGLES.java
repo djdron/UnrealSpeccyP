@@ -248,10 +248,10 @@ public class ViewGLES extends GLSurfaceView
 				audio.Update(false);
 				for(int frames = 1; frames < 15; ++frames) // do not speedup faster than 15x
 				{
-					ShowMessage(Emulator.the.Update());
-					audio.Update(true);
 					if(System.nanoTime() > time_frame_end)
 						break;
+					ShowMessage(Emulator.the.Update());
+					audio.Update(true);
 				}
 			}
 			else
