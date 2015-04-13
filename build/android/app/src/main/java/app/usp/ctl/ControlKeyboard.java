@@ -106,7 +106,7 @@ public class ControlKeyboard extends ControlOverlay
 	{
 		if(!active)
 			return;
-		if(Emulator.the.ReplayProgress() != null)
+		if(Emulator.the.ReplayActive())
 			return;
 		width = _w;
 		height = _h;

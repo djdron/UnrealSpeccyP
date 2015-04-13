@@ -326,6 +326,16 @@ jobject Java_app_usp_Emulator_ReplayProgress(JNIEnv* env, jobject obj)
     return NULL;
 }
 
+jboolean Java_app_usp_Emulator_ReplayActive(JNIEnv* env, jobject obj)
+{
+	dword frame_current = 0, frames_total = 0, frames_cached = 0;
+	if(xPlatform::Handler()->GetReplayProgress(&frame_current, &frames_total, &frames_cached))
+	{
+		return frames_total > 0;
+	}
+	return false;
+}
+
 void Java_app_usp_Emulator_ProfilerBegin(JNIEnv* env, jobject obj, jint id)
 {
 	switch(id)

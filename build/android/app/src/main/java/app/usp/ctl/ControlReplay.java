@@ -28,6 +28,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.opengl.GLUtils;
 import android.os.SystemClock;
+import android.text.TextUtils;
 
 import app.usp.Emulator;
 import app.usp.ViewGLES;
@@ -78,7 +79,7 @@ public class ControlReplay extends ControlOverlay
 		}
 		void Draw(GL10 gl, ViewGLES.Quad quad, String _text, int x, int y, float alpha)
 		{
-			if(_text.isEmpty())
+			if(TextUtils.isEmpty(_text))
 				return;
 
 			gl.glColor4f(1.0f, 1.0f, 1.0f, alpha);

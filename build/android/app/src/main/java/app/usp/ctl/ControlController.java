@@ -109,7 +109,7 @@ public class ControlController extends ControlOverlay
 	{
 		if(!active)
 			return;
-		if(Emulator.the.ReplayProgress() != null)
+		if(Emulator.the.ReplayActive())
 			return;
 		final long passed_time = SystemClock.uptimeMillis() - touch_time;
 		if(passed_time > 2000)

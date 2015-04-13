@@ -51,6 +51,7 @@ public class Emulator
 		public int frames_cached;
 	}
 	public synchronized native ReplayProgress ReplayProgress();
+	public synchronized native boolean ReplayActive();
 
 	synchronized native int		GetOptionInt(final String name);
 	synchronized native void	SetOptionInt(final String name, int value);
