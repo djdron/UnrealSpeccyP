@@ -146,7 +146,7 @@ public class ControlReplay extends ControlOverlay
 		pos_fill = Bitmap.createBitmap(size_pot, size_pot, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(pos_fill);
 		paint.setColor(Color.WHITE);
-		canvas.drawRect(0, size/4, size, size*3/4, paint);
+		canvas.drawRect(0, size*2/9, size, size*7/9, paint);
 
 		pos_dot = Bitmap.createBitmap(size_pot, size_pot, Bitmap.Config.ARGB_8888);
 		canvas = new Canvas(pos_dot);
