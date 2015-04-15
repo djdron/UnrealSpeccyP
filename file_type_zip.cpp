@@ -98,12 +98,13 @@ bool eFileTypeZIP::Open(const char* name) const
 		unzFile h = unzOpen64(contain_path);
 		if(!h)
 			return false;
+		bool ok = false;
 		if(unzLocateFile(h, contain_name, 0) == UNZ_OK)
 		{
-			return OpenCurrent(h);
+			ok = OpenCurrent(h);
 		}
 		unzClose(h);
-		return false;
+		return ok;
 	}
 	return Open(unzOpen64(name));
 }
