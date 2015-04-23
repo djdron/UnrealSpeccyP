@@ -56,7 +56,8 @@ SOURCES += ../../speccy.cpp \
 	../../tools/profiler.cpp \
 	../../tools/options.cpp \
 	../../tools/log.cpp \
-	../../platform/qt/io_select_qt.cpp \
+        ../../tools/io_select_zip.cpp \
+        ../../platform/qt/io_select_qt.cpp \
 	../../platform/qt/qt_sound.cpp \
 	../../platform/qt/qt_window.cpp \
 	../../platform/qt/qt_control.cpp \
