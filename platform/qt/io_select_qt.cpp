@@ -32,22 +32,22 @@ namespace xIo
 class eFileSelectQt : public eFileSelect
 {
 public:
-    eFileSelectQt(const char* _path)
+	eFileSelectQt(const char* _path)
 	{
 		QDir dir(_path);
 		content = dir.entryInfoList();
 		idx = content.size() ? 0 : -1;
 		UpdateName();
 	}
-    virtual bool Valid() const { return idx >= 0; }
-    virtual void Next()
+	virtual bool Valid() const { return idx >= 0; }
+	virtual void Next()
 	{
 		++idx;
 		if(idx >= content.size())
 			idx = -1;
 		UpdateName();
 	}
-    virtual void UpdateName()
+	virtual void UpdateName()
 	{
 		if(idx < 0)
 			name[0] = '\0';
@@ -55,9 +55,9 @@ public:
 			strcpy(name, qPrintable(content[idx].fileName()));
 	}
 
-    virtual const char* Name() const { return name; }
-    virtual bool IsDir() const { return content[idx].isDir(); }
-    virtual bool IsFile() const { return content[idx].isFile(); }
+	virtual const char* Name() const { return name; }
+	virtual bool IsDir() const { return content[idx].isDir(); }
+	virtual bool IsFile() const { return content[idx].isFile(); }
 private:
 	QFileInfoList content;
 	int idx;
