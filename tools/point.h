@@ -26,14 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 struct ePoint
 {
 	ePoint(int _x = 0, int _y = 0) : x(_x), y(_y) {}
-	ePoint& operator+=(const ePoint& p) { x += p.x; y += p.y; return self; }
-	ePoint& operator-=(const ePoint& p) { x -= p.x; y -= p.y; return self; }
-	ePoint operator+(const ePoint& p) const { ePoint t = self; t += p; return t; }
-	ePoint operator-(const ePoint& p) const { ePoint t = self; t -= p; return t; }
-	ePoint& operator*=(float s) { x *= s; y *= s; return self; }
-	ePoint operator*(float s) const { ePoint t = self; t *= s; return t; }
-	ePoint& operator/=(float s) { x /= s; y /= s; return self; }
-	ePoint operator/(float s) const { ePoint t = self; t /= s; return t; }
+	ePoint& operator+=(const ePoint& p) { x += p.x; y += p.y; return *this; }
+	ePoint& operator-=(const ePoint& p) { x -= p.x; y -= p.y; return *this; }
+	ePoint operator+(const ePoint& p) const { ePoint t = *this; t += p; return t; }
+	ePoint operator-(const ePoint& p) const { ePoint t = *this; t -= p; return t; }
+	ePoint& operator*=(float s) { x *= s; y *= s; return *this; }
+	ePoint operator*(float s) const { ePoint t = *this; t *= s; return t; }
+	ePoint& operator/=(float s) { x /= s; y /= s; return *this; }
+	ePoint operator/(float s) const { ePoint t = *this; t /= s; return t; }
 	int x, y;
 };
 

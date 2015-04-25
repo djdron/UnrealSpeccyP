@@ -42,7 +42,7 @@ struct eRect
 	eRect(int _l, int _t, int _r, int _b) { left = _l; top = _t; right = _r; bottom = _b; }
 	int Width() const { return right - left; }
 	int Height() const { return bottom - top; }
-	eRect& Move(const ePoint& offs) { left += offs.x; right += offs.x; top += offs.y; bottom += offs.y; return self; }
+	eRect& Move(const ePoint& offs) { left += offs.x; right += offs.x; top += offs.y; bottom += offs.y; return *this; }
 	ePoint Beg() const { return ePoint(left, top); }
 	ePoint End() const { return ePoint(right, bottom); }
 	int left, top, right, bottom;
@@ -54,7 +54,7 @@ struct eRGBAColor
 {
 	eRGBAColor(dword c = 0) { rgba = c; }
 	eRGBAColor(byte _r, byte _g, byte _b, byte _a = 0xff) : r(_r), g(_g), b(_b), a(_a) {}
-	eRGBAColor& operator/=(byte v) { r /= v; g /= v; b /= v; return self; }
+	eRGBAColor& operator/=(byte v) { r /= v; g /= v; b /= v; return *this; }
 	union
 	{
 #ifdef USE_BIG_ENDIAN

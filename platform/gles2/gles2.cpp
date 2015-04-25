@@ -43,7 +43,7 @@ static struct eOptionZoom : public xOptions::eOptionInt
 	virtual int Order() const { return 35; }
 	float Zoom() const
 	{
-		switch(self)
+		switch(*this)
 		{
 		case 2: return 300.0f/256.0f;
 		case 3: return 320.0f/256.0f;

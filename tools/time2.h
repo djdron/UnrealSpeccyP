@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef	__TIME_H__
-#define	__TIME_H__
+#ifndef	__TIME2_H__
+#define	__TIME2_H__
 
 #pragma once
 
@@ -34,8 +34,8 @@ public:
 
 	void	SetMks(qword _mks) { mks = _mks; }
 
-	eTime&	operator+=(const eTime& t) { mks += t.mks; return self; }
-	eTime&	operator-=(const eTime& t) { mks -= t.mks; return self; }
+	eTime&	operator+=(const eTime& t) { mks += t.mks; return *this; }
+	eTime&	operator-=(const eTime& t) { mks -= t.mks; return *this; }
 	bool	operator<(const eTime& t) const { return mks < t.mks; }
 	bool	operator>(const eTime& t) const { return mks > t.mks; }
 
@@ -43,4 +43,4 @@ protected:
 	qword	mks;
 };
 
-#endif//__TIME_H__
+#endif//__TIME2_H__

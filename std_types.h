@@ -32,7 +32,6 @@ enum eZeroValue { ZERO };
 #define NULL 0
 #endif
 
-#define self *this
 template<class T> void SAFE_DELETE(T*& p) { if(p) delete p; p = NULL; }
 template<class T> void SAFE_DELETE_ARRAY(T*& p) { if(p) delete[] p; p = NULL; }
 #define SAFE_CALL(p) if(p) p

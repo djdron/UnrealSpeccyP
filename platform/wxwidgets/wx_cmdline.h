@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_WXWIDGETS
 
-#undef self
 #include <wx/string.h>
 
 class wxCmdLineParser;

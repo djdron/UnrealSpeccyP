@@ -20,8 +20,6 @@
 
 #ifdef _MAC
 
-#undef self
-
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
 #include "../io.h"

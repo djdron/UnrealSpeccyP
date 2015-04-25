@@ -117,7 +117,7 @@ static struct eOptionPause : public xOptions::eOptionBool
 	virtual void Change(bool next = true)
 	{
 		eOptionBool::Change();
-		Handler()->VideoPaused(self);
+		Handler()->VideoPaused(*this);
 	}
 	virtual int Order() const { return 70; }
 } op_pause;

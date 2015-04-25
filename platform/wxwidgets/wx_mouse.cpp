@@ -21,8 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_WXWIDGETS
 #ifndef _MAC
 
-#undef self
-
 #include <wx/wx.h>
 #include <wx/popupwin.h>
 

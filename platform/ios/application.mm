@@ -7,7 +7,6 @@
 #import "../../tools/options.h"
 #import "../io.h"
 #import <sys/stat.h>
-#undef self
 
 namespace xPlatform
 {

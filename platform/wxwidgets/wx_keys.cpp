@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_WXWIDGETS
 
-#undef self
-
 #include <wx/wx.h>
 
 namespace xPlatform

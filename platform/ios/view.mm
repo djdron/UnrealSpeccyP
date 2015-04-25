@@ -4,7 +4,6 @@
 #import "../platform.h"
 #import "../../tools/options.h"
 #import "touch_tracker.h"
-#undef self
 
 using namespace xPlatform;
 

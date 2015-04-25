@@ -22,8 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/io_select.h"
 #include "../io.h"
 
-#undef self
-
 #include <QDir>
 
 namespace xIo

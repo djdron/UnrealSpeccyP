@@ -40,14 +40,14 @@ void eOptionInt::Change(int f, int l, bool next)
 {
 	if(next)
 	{
-		Set(self + 1);
-		if(self >= l)
+		Set(*this + 1);
+		if(*this >= l)
 			Set(f);
 	}
 	else
 	{
-		Set(self - 1);
-		if(self < f)
+		Set(*this - 1);
+		if(*this < f)
 			Set(l - 1);
 	}
 }
