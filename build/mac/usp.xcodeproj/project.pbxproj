@@ -33,6 +33,10 @@
 		5C24EBF0183982EC00771FDD /* profiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C24EBE5183982EC00771FDD /* profiler.cpp */; };
 		5C24EBF1183982EC00771FDD /* sound_mixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C24EBE7183982EC00771FDD /* sound_mixer.cpp */; };
 		5C24EBF41839831200771FDD /* rzx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C24EBF21839831200771FDD /* rzx.cpp */; };
+		5C56D8C11AEC4EBF0036B690 /* io_select_zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C56D8C01AEC4EBF0036B690 /* io_select_zip.cpp */; };
+		5C56D8C61AEC51CD0036B690 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C56D8C51AEC51CD0036B690 /* OpenAL.framework */; };
+		5C56D8C81AEC520E0036B690 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C56D8C71AEC520E0036B690 /* OpenGL.framework */; };
+		5C56D8CA1AEC52750036B690 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C56D8C91AEC52750036B690 /* Carbon.framework */; };
 		5C65244F1428C55E0060688D /* res in Resources */ = {isa = PBXBuildFile; fileRef = 5C6524431428C55E0060688D /* res */; };
 		5C6524671428C61C0060688D /* screenshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6524641428C61C0060688D /* screenshot.cpp */; };
 		5C6524681428C61C0060688D /* snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6524651428C61C0060688D /* snapshot.cpp */; };
@@ -112,10 +116,14 @@
 		5C24EBE9183982EC00771FDD /* stream_memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stream_memory.h; sourceTree = "<group>"; };
 		5C24EBEA183982EC00771FDD /* tick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tick.h; sourceTree = "<group>"; };
 		5C24EBEB183982EC00771FDD /* tick_clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tick_clock.h; sourceTree = "<group>"; };
-		5C24EBEC183982EC00771FDD /* time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = time.h; sourceTree = "<group>"; };
+		5C24EBEC183982EC00771FDD /* time2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = time2.h; sourceTree = "<group>"; };
 		5C24EBED183982EC00771FDD /* type_registrator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = type_registrator.h; sourceTree = "<group>"; };
 		5C24EBF21839831200771FDD /* rzx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rzx.cpp; sourceTree = "<group>"; };
 		5C24EBF31839831200771FDD /* rzx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rzx.h; sourceTree = "<group>"; };
+		5C56D8C01AEC4EBF0036B690 /* io_select_zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = io_select_zip.cpp; sourceTree = "<group>"; };
+		5C56D8C51AEC51CD0036B690 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		5C56D8C71AEC520E0036B690 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		5C56D8C91AEC52750036B690 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		5C6524431428C55E0060688D /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; name = res; path = ../../res; sourceTree = SOURCE_ROOT; };
 		5C6524641428C61C0060688D /* screenshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = screenshot.cpp; sourceTree = "<group>"; };
 		5C6524651428C61C0060688D /* snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = snapshot.cpp; sourceTree = "<group>"; };
@@ -186,6 +194,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C56D8CA1AEC52750036B690 /* Carbon.framework in Frameworks */,
+				5C56D8C81AEC520E0036B690 /* OpenGL.framework in Frameworks */,
+				5C56D8C61AEC51CD0036B690 /* OpenAL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,6 +212,7 @@
 				5C00E6341895A90D00D72E58 /* InfoPlist.strings */,
 				5C6525821428C8070060688D /* UnrealSpeccyPortable.icns */,
 				5C6525831428C8070060688D /* UnrealSpeccyPortable-Info.plist */,
+				5C56D8C21AEC51840036B690 /* Frameworks */,
 			);
 			name = usp;
 			sourceTree = "<group>";
@@ -287,6 +299,7 @@
 		5C24EBDD183982EC00771FDD /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				5C56D8C01AEC4EBF0036B690 /* io_select_zip.cpp */,
 				5C24EBDE183982EC00771FDD /* io_select.h */,
 				5C24EBDF183982EC00771FDD /* list.h */,
 				5C24EBE0183982EC00771FDD /* log.cpp */,
@@ -301,11 +314,21 @@
 				5C24EBE9183982EC00771FDD /* stream_memory.h */,
 				5C24EBEA183982EC00771FDD /* tick.h */,
 				5C24EBEB183982EC00771FDD /* tick_clock.h */,
-				5C24EBEC183982EC00771FDD /* time.h */,
+				5C24EBEC183982EC00771FDD /* time2.h */,
 				5C24EBED183982EC00771FDD /* type_registrator.h */,
 			);
 			name = tools;
 			path = ../../tools;
+			sourceTree = "<group>";
+		};
+		5C56D8C21AEC51840036B690 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5C56D8C91AEC52750036B690 /* Carbon.framework */,
+				5C56D8C71AEC520E0036B690 /* OpenGL.framework */,
+				5C56D8C51AEC51CD0036B690 /* OpenAL.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		5C6524631428C61C0060688D /* snapshot */ = {
@@ -539,6 +562,7 @@
 				5C24EB99183962AD00771FDD /* pngerror.c in Sources */,
 				5C6524671428C61C0060688D /* screenshot.cpp in Sources */,
 				5C24EBC418396A8300771FDD /* wx_frame.cpp in Sources */,
+				5C56D8C11AEC4EBF0036B690 /* io_select_zip.cpp in Sources */,
 				5C24EBA1183962AD00771FDD /* pngwutil.c in Sources */,
 				5C6524681428C61C0060688D /* snapshot.cpp in Sources */,
 				5C24EB98183962AD00771FDD /* png.c in Sources */,
@@ -591,97 +615,12 @@
 		1DEB923608733DC60010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = _MAC;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"../../../wxWidgets-3.0.0/include",
-					"../../../wxWidgets-3.0.0/lib/wx/include/osx_cocoa-unicode-static-3.0",
-					../../3rdparty/minizip,
-					../../3rdparty/tinyxml2,
-					../../3rdparty/libpng,
-				);
-				LIBRARY_SEARCH_PATHS = "../../../wxWidgets-3.0.0/lib";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DUSE_FILE32API";
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(OTHER_CFLAGS)",
-					"-D_FILE_OFFSET_BITS=64",
-					"-D__WXOSX_COCOA__",
-					"-D__WXMAC__",
-					"-D__WXOSX__",
-					"-D__WXDEBUG__",
-				);
-				OTHER_LDFLAGS = (
-					"-framework",
-					IOKit,
-					"-framework",
-					Carbon,
-					"-framework",
-					Cocoa,
-					"-framework",
-					System,
-					"-framework",
-					OpenGL,
-					"-framework",
-					OpenAL,
-					"-lwx_osx_cocoau-3.0",
-					"-lwx_osx_cocoau_gl-3.0",
-					"-lz",
-				);
-				PREBINDING = NO;
-				SDKROOT = macosx10.8;
 			};
 			name = Debug;
 		};
 		1DEB923708733DC60010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = _MAC;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"../../../wxWidgets-3.0.0/include",
-					"../../../wxWidgets-3.0.0/lib/wx/include/osx_cocoa-unicode-static-3.0",
-					../../3rdparty/minizip,
-					../../3rdparty/tinyxml2,
-					../../3rdparty/libpng,
-				);
-				LIBRARY_SEARCH_PATHS = "../../../wxWidgets-3.0.0/lib";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				OTHER_CFLAGS = "-DUSE_FILE32API";
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(OTHER_CFLAGS)",
-					"-D_FILE_OFFSET_BITS=64",
-					"-D__WXOSX_COCOA__",
-					"-D__WXMAC__",
-					"-D__WXOSX__",
-				);
-				OTHER_LDFLAGS = (
-					"-framework",
-					IOKit,
-					"-framework",
-					Carbon,
-					"-framework",
-					Cocoa,
-					"-framework",
-					System,
-					"-framework",
-					OpenGL,
-					"-framework",
-					OpenAL,
-					"-lwx_osx_cocoau-3.0",
-					"-lwx_osx_cocoau_gl-3.0",
-					"-lz",
-				);
-				SDKROOT = macosx10.8;
 			};
 			name = Release;
 		};
@@ -689,7 +628,31 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_POSIX,
+					_MAC,
+					USE_FILE32API,
+				);
 				INFOPLIST_FILE = "UnrealSpeccyPortable-Info.plist";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-I/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/lib/wx/include/osx_cocoa-unicode-3.0",
+					"-I/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/include/wx-3.0",
+					"-D_FILE_OFFSET_BITS=64",
+					"-DWXUSINGDLL",
+					"-D__WXMAC__",
+					"-D__WXOSX__",
+					"-D__WXOSX_COCOA__",
+				);
+				OTHER_LDFLAGS = (
+					"-L/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/lib",
+					"-lwx_osx_cocoau_gl-3.0",
+					"-lwx_osx_cocoau_adv-3.0",
+					"-lwx_osx_cocoau_core-3.0",
+					"-lwx_baseu-3.0",
+					"-lz",
+				);
 				PRODUCT_NAME = UnrealSpeccyPortable;
 			};
 			name = Debug;
@@ -698,7 +661,31 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_POSIX,
+					_MAC,
+					USE_FILE32API,
+				);
 				INFOPLIST_FILE = "UnrealSpeccyPortable-Info.plist";
+				LLVM_LTO = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-I/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/lib/wx/include/osx_cocoa-unicode-3.0",
+					"-I/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/include/wx-3.0",
+					"-D_FILE_OFFSET_BITS=64",
+					"-DWXUSINGDLL",
+					"-D__WXMAC__",
+					"-D__WXOSX__",
+					"-D__WXOSX_COCOA__",
+				);
+				OTHER_LDFLAGS = (
+					"-L/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/lib",
+					"-lwx_osx_cocoau_gl-3.0",
+					"-lwx_osx_cocoau_adv-3.0",
+					"-lwx_osx_cocoau_core-3.0",
+					"-lwx_baseu-3.0",
+					"-lz",
+				);
 				PRODUCT_NAME = UnrealSpeccyPortable;
 			};
 			name = Release;
