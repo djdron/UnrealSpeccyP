@@ -155,7 +155,7 @@ public class ControlKeys implements View.OnKeyListener
 		case KeyEvent.KEYCODE_BUTTON_A:			return 'f';
 		case KeyEvent.KEYCODE_BUTTON_B:			return 'e';
 		case KeyEvent.KEYCODE_BUTTON_X:			return '1';
-		case KeyEvent.KEYCODE_BUTTON_Y:			return ' ';
+//		case KeyEvent.KEYCODE_BUTTON_Y:			return ' ';
 		default:
 			return -1;
 		}
