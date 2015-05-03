@@ -209,6 +209,11 @@ void Java_app_usp_Emulator_OnTouch(JNIEnv* env, jobject obj, jboolean keyboard, 
 		xPlatform::OnTouchJoy(x, y, down, pointer_id);
 }
 
+void Java_app_usp_Emulator_VideoPaused(JNIEnv* env, jobject obj, jboolean on)
+{
+	xPlatform::Handler()->VideoPaused(on);
+}
+
 jboolean Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
 {
     const char* file = env->GetStringUTFChars(jfile, NULL);

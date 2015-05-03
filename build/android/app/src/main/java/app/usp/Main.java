@@ -97,9 +97,21 @@ public class Main extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	getMenuInflater().inflate(R.menu.menu, menu);		
+    	getMenuInflater().inflate(R.menu.menu, menu);
     	return true;
     }
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		Emulator.the.VideoPaused(true);
+		return super.onPrepareOptionsMenu(menu);
+	}
+	@Override
+	public void onOptionsMenuClosed(Menu menu)
+	{
+		Emulator.the.VideoPaused(false);
+		super.onOptionsMenuClosed(menu);
+	}
     static final int A_FILE_SELECTOR = 0;
     static final int A_PREFERENCES = 1;
     @Override

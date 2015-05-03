@@ -36,6 +36,7 @@ public class Emulator
 	synchronized native int		UpdateAudio(ByteBuffer buf, boolean skip_data);
 	public synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 	public synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
+	synchronized native void	VideoPaused(boolean on);
 
 	public synchronized native boolean	Open(final String file);
 	public synchronized native String	GetLastFile();
@@ -61,7 +62,7 @@ public class Emulator
 
 	synchronized native int		TapeState();
 	synchronized native void	TapeToggle();
-	
+
 	synchronized native void	ProfilerBegin(int id);
 	synchronized native void	ProfilerEnd(int id);
 
