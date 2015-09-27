@@ -29,18 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xIo
 {
 
-class eFileSelectI
-{
-public:
-	virtual ~eFileSelectI() {}
-	virtual bool Valid() const = 0;
-	virtual void Next() = 0;
-	virtual const char* Name() const = 0;
-	virtual bool IsDir() const = 0;
-	virtual bool IsFile() const = 0;
-};
-
-class eSymbFileSelectI : public eFileSelectI
+class eSymbFileSelectI : public eFileSelect
 {
 public:
 	eSymbFileSelectI(const char* _path) : path(_path), dir_ent(NULL)
@@ -73,7 +62,7 @@ public:
 	int h;
 };
 
-class eSymbDriveSelectI : public eFileSelectI
+class eSymbDriveSelectI : public eFileSelect
 {
 public:
 	eSymbDriveSelectI() : drives(0)
@@ -93,22 +82,25 @@ public:
 	dword drives;
 };
 
-eFileSelect::eFileSelect(const char* path)
+eFileSelect* FileSelect(const char* path)
 {
 	if(PathIsRoot(path))
-		impl = new eSymbDriveSelectI;
+		return new eSymbDriveSelectI;
 	else
-		impl = new eSymbFileSelectI(path);
+		return new eSymbFileSelectI(path);
 }
-eFileSelect::~eFileSelect() { delete impl; }
-bool eFileSelect::Valid() const { return impl->Valid(); }
-void eFileSelect::Next() { impl->Next(); }
-const char* eFileSelect::Name() const { return impl->Name(); }
-bool eFileSelect::IsDir() const { return impl->IsDir(); }
-bool eFileSelect::IsFile() const { return impl->IsFile(); }
 
 bool PathIsRoot(const char* path) {	return !strlen(path); }
 
+bool MkDir(const char* path)
+{
+	if(mkdir(path, 0777) != 0)
+	{
+		if(errno != EEXIST)
+			return false;
+	}
+	return true;
+}
 }
 //namespace xIo
 
