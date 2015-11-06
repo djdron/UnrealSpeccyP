@@ -37,7 +37,6 @@ public class Main extends Activity
 	private RelativeLayout layout;
 	private ViewGLES view;
 	private Control control;
-	private boolean paused = false;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -101,26 +100,6 @@ public class Main extends Activity
     	getMenuInflater().inflate(R.menu.menu, menu);
     	return true;
     }
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu)
-	{
-		if(!paused)
-		{
-			paused = true;
-			Emulator.the.VideoPaused(true);
-		}
-		return super.onPrepareOptionsMenu(menu);
-	}
-	@Override
-	public void onOptionsMenuClosed(Menu menu)
-	{
-		if(paused)
-		{
-			paused = false;
-			Emulator.the.VideoPaused(false);
-		}
-		super.onOptionsMenuClosed(menu);
-	}
     static final int A_FILE_SELECTOR = 0;
     static final int A_PREFERENCES = 1;
     @Override
