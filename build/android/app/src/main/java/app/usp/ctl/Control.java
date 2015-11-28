@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -74,17 +74,20 @@ public class Control extends ImageView
 			}}
 		);
 	}
-	public boolean onKeyDown(int keyCode, KeyEvent event)
+	public boolean onKeyUp(int keyCode, KeyEvent event)
 	{
 		if(keyCode == KeyEvent.KEYCODE_BACK)
 		{
-			keyboard_active = !keyboard_active;
-			Emulator.the.SetOptionBool(Preferences.use_keyboard_id, keyboard_active);
-			setImageBitmap(keyboard_active ? keyboard : joystick);
-			view.OnControlsToggle();
-			return true;
+			if(!event.isLongPress())
+			{
+				keyboard_active = !keyboard_active;
+				Emulator.the.SetOptionBool(Preferences.use_keyboard_id, keyboard_active);
+				setImageBitmap(keyboard_active ? keyboard : joystick);
+				view.OnControlsToggle();
+				return true;
+			}
 		}
-		return false;
+		return super.onKeyUp(keyCode, event);
 	}
 	protected void onMeasure(int w, int h)
 	{
@@ -95,7 +98,7 @@ public class Control extends ImageView
 	}
 	public void OnResume()	{ sensor.Install(); }
 	public void OnPause()	{ sensor.Uninstall(); }
-	
+
 	public static void UpdateJoystickKeys(final boolean left, final boolean right, final boolean up, final boolean down)
 	{
 		// release keys first
