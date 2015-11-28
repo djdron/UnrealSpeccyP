@@ -1,13 +1,15 @@
+SHELL := /bin/bash
+
 ifdef ARM
 
-PATH_BIN := $(PATH):$(NACL_PEPPER)/toolchain/linux_arm_newlib/bin/
+PATH_BIN := $(PATH):$(NACL_PEPPER)/toolchain/mac_arm_newlib/bin/
 CXX = arm-nacl-g++
 C = arm-nacl-gcc
 PLATFORM = _arm
 
 else #ARM
 
-PATH_BIN := $(PATH):$(NACL_PEPPER)/toolchain/linux_x86_newlib/bin/
+PATH_BIN := $(PATH):$(NACL_PEPPER)/toolchain/mac_x86_newlib/bin/
 CXX = i686-nacl-g++
 C = i686-nacl-gcc
 ifdef X86
@@ -44,7 +46,7 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(PROJECT_NAME).nexe
 
-CXXCFLAGS = -O3 -Wall -c -fmessage-length=0 -I$(NACL_PEPPER)/include -I$(SRC_PATH)/3rdparty/zlib
+CXXCFLAGS = -O2 -Wall -c -fmessage-length=0 -I$(NACL_PEPPER)/include -I$(SRC_PATH)/3rdparty/zlib
 
 CXXFLAGS += $(CXXCFLAGS) -D_CHROME_NACL -DUSE_GLES2 -DUSE_GLES2_SIMPLE_SHADER -DUSE_ZIP -DUSE_EXTERN_RESOURCES -I$(SRC_PATH)/3rdparty/minizip
 CFLAGS += $(CXXCFLAGS)

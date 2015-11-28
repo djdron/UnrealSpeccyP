@@ -93,4 +93,9 @@ void LoadResources(pp::Instance* i)
 }
 //namespace xPlatform
 
+namespace xIo
+{
+bool MkDir(const char* path) { return false; }
+}
+
 #endif//_CHROME_NACL
