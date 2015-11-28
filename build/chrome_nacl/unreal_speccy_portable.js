@@ -180,7 +180,7 @@ function parser_std(path, elem)
 
 function url_std(u)
 {
-	return "http://vtrdos.ru" + u + ".htm";
+	return "http://trd.speccy.cz" + u + ".htm";
 }
 
 var browser_items =
@@ -191,7 +191,7 @@ var browser_items =
 		urls:		[ "full_ver", "demo_ver", "translat", "remix", "123", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ],
 		patterns:	[ "<a href=\"(.+)\">&nbsp;&nbsp;(.+)</a></td><td>(.+)</td><td>(.+)</td><td>(.+)</td>" ],
 		parser:		parser_std,
-		url:		function(u) { return "http://vtrdos.ru/games.php?t=" + u; }
+		url:		function(u) { return "http://trd.speccy.cz/games.php?t=" + u; }
 	},
 	{
 		root:		"/demos",
