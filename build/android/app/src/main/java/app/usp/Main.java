@@ -20,10 +20,11 @@ package app.usp;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.view.Menu;
@@ -31,13 +32,15 @@ import android.view.MenuItem;
 import android.content.Context;
 import android.content.Intent;
 import app.usp.ctl.Control;
+import android.support.v7.app.AppCompatActivity;
 
-public class Main extends Activity
+public class Main extends AppCompatActivity
 {
 	private RelativeLayout layout;
 	private ViewGLES view;
 	private Control control;
-    @Override
+
+	@Override
     public void onCreate(Bundle savedInstanceState)
     {
 		super.onCreate(savedInstanceState);
@@ -97,10 +100,22 @@ public class Main extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	getMenuInflater().inflate(R.menu.menu, menu);
-    	return true;
+		getMenuInflater().inflate(R.menu.menu, menu);
+		if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
+			try {
+				Method m = menu.getClass().getDeclaredMethod(
+						"setOptionalIconsVisible", Boolean.TYPE);
+				m.setAccessible(true);
+				m.invoke(menu, true);
+			} catch (NoSuchMethodException e) {
+				Log.d("DEBUG", "onMenuOpened", e);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+    	return super.onCreateOptionsMenu(menu);
     }
-    static final int A_FILE_SELECTOR = 0;
+	static final int A_FILE_SELECTOR = 0;
     static final int A_PREFERENCES = 1;
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -117,7 +132,7 @@ public class Main extends Activity
     	return super.onOptionsItemSelected(item);
     }
     final private void Exit()
-    {
+	{
     	finish();
     }
 	final private ByteBuffer BinRes(int id)

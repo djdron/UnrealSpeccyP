@@ -15,13 +15,14 @@ String getNdkBuildScript() {
 }
 
 android {
-    compileSdkVersion 10
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
 
     defaultConfig {
         applicationId "app.usp"
         minSdkVersion 7
-        targetSdkVersion 7
+        targetSdkVersion 10
 
         ndk {
             moduleName "usp"
@@ -64,4 +65,10 @@ android {
         }
     }
     clean.dependsOn 'ndkClean'
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
 }
