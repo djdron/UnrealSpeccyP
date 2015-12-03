@@ -23,14 +23,9 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 
-import android.app.ActionBar;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.view.Menu;
@@ -50,9 +45,9 @@ public class Main extends Activity
 	private Runnable hide_runnable;
 
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		Emulator.the.InitRom(0, BinRes(R.raw.sos128_0));
 		Emulator.the.InitRom(1, BinRes(R.raw.sos128_1));
 		Emulator.the.InitRom(2, BinRes(R.raw.sos48));
@@ -76,7 +71,7 @@ public class Main extends Activity
 		layout.addView(control, p2);
 		setContentView(layout);
 
-		if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT)
+		if(AbleImmersiveMode())
 		{
 			getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(
 				new View.OnSystemUiVisibilityChangeListener()
@@ -102,6 +97,10 @@ public class Main extends Activity
 			Emulator.the.Open(file);
 		}
     }
+	final private boolean AbleImmersiveMode()
+	{
+		return android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT;
+	}
 	private void RunHideCallback()
 	{
 		CancelHideCallback();
@@ -125,7 +124,7 @@ public class Main extends Activity
 	private void HideSystemUI()
 	{
 		CancelHideCallback();
-		if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT)
+		if(!AbleImmersiveMode())
 			return;
 		getWindow().getDecorView().setSystemUiVisibility(
 				View.SYSTEM_UI_FLAG_LAYOUT_STABLE

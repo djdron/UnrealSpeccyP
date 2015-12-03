@@ -21,8 +21,8 @@ android {
 
     defaultConfig {
         applicationId "app.usp"
-        minSdkVersion 14
-        targetSdkVersion 14
+        minSdkVersion 7
+        targetSdkVersion 10
 
         ndk {
             moduleName "usp"
