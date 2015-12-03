@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,28 +22,37 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+
+import android.app.ActionBar;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.content.Context;
 import android.content.Intent;
+import android.app.Activity;
 import app.usp.ctl.Control;
-import android.support.v7.app.AppCompatActivity;
 
-public class Main extends AppCompatActivity
+public class Main extends Activity
 {
 	private RelativeLayout layout;
 	private ViewGLES view;
 	private Control control;
+	private Handler hide_callback;
+	private Runnable hide_runnable;
 
 	@Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		Emulator.the.InitRom(0, BinRes(R.raw.sos128_0));
 		Emulator.the.InitRom(1, BinRes(R.raw.sos128_1));
 		Emulator.the.InitRom(2, BinRes(R.raw.sos48));
@@ -66,6 +75,24 @@ public class Main extends AppCompatActivity
 		layout.addView(view, p1);
 		layout.addView(control, p2);
 		setContentView(layout);
+
+		if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT)
+		{
+			getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(
+				new View.OnSystemUiVisibilityChangeListener()
+				{
+					@Override
+					public void onSystemUiVisibilityChange(int visibility)
+					{
+						if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
+						{
+							RunHideCallback();
+						}
+					}
+				}
+			);
+		}
+
 		control.requestFocus();
 		view.setKeepScreenOn(true);
 		String file = Uri.parse(getIntent().toUri(0)).getPath();
@@ -75,9 +102,50 @@ public class Main extends AppCompatActivity
 			Emulator.the.Open(file);
 		}
     }
+	private void RunHideCallback()
+	{
+		CancelHideCallback();
+		hide_runnable = new Runnable()
+		{
+			@Override
+			public void run() { HideSystemUI(); }
+		};
+		hide_callback = new Handler(getApplicationContext().getMainLooper());
+		hide_callback.postDelayed(hide_runnable, 3000);
+	}
+	private void CancelHideCallback()
+	{
+		if(hide_callback != null)
+		{
+			hide_callback.removeCallbacks(hide_runnable);
+			hide_callback = null;
+			hide_runnable = null;
+		}
+	}
+	private void HideSystemUI()
+	{
+		CancelHideCallback();
+		if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT)
+			return;
+		getWindow().getDecorView().setSystemUiVisibility(
+				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+						| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+						| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+						| View.SYSTEM_UI_FLAG_FULLSCREEN
+						| View.SYSTEM_UI_FLAG_IMMERSIVE);
+	}
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus)
+	{
+		super.onWindowFocusChanged(hasFocus);
+		if(hasFocus)
+			HideSystemUI();
+	}
     @Override
 	public void onDestroy()
 	{
+		CancelHideCallback();
 		Emulator.the.Done();
 		super.onDestroy();
     	android.os.Process.killProcess(android.os.Process.myPid());
@@ -101,20 +169,25 @@ public class Main extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
 		getMenuInflater().inflate(R.menu.menu, menu);
-		if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
-			try {
-				Method m = menu.getClass().getDeclaredMethod(
-						"setOptionalIconsVisible", Boolean.TYPE);
+		if(menu.getClass().getSimpleName().equals("MenuBuilder"))
+		{
+			try
+			{
+				Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
 				m.setAccessible(true);
 				m.invoke(menu, true);
-			} catch (NoSuchMethodException e) {
-				Log.d("DEBUG", "onMenuOpened", e);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
 			}
+			catch(Exception e)
+			{}
 		}
-    	return super.onCreateOptionsMenu(menu);
+		return super.onCreateOptionsMenu(menu);
     }
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		CancelHideCallback();
+		return super.onPrepareOptionsMenu(menu);
+	}
 	static final int A_FILE_SELECTOR = 0;
     static final int A_PREFERENCES = 1;
     @Override
@@ -131,7 +204,7 @@ public class Main extends AppCompatActivity
     	}
     	return super.onOptionsItemSelected(item);
     }
-    final private void Exit()
+	final private void Exit()
 	{
     	finish();
     }
