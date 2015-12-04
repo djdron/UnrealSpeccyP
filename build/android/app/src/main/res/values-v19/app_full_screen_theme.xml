@@ -5,7 +5,8 @@
         <item name="android:actionBarStyle">@style/Widget.ActionBar.Transparent</item>
         <item name="android:tabWidgetStyle">@android:style/Widget.TabWidget</item>
     </style>
+    <color name="transparent_black">#A0000000</color>
     <style name="Widget.ActionBar.Transparent" parent="@android:style/Widget.DeviceDefault.ActionBar">
-        <item name="android:background">#A0000000</item>
+        <item name="android:background">@color/transparent_black</item>
     </style>
 </resources>
