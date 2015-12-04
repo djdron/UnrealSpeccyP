@@ -2,8 +2,10 @@
 <resources>
     <style name="Theme.AppFullScreen" parent="@android:style/Theme.DeviceDefault">
 		<item name="android:windowActionBar">true</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:actionBarStyle">@style/Widget.ActionBar.Transparent</item>
         <item name="android:tabWidgetStyle">@android:style/Widget.TabWidget</item>
+    </style>
+    <style name="Widget.ActionBar.Transparent" parent="@android:style/Widget.DeviceDefault.ActionBar">
+        <item name="android:background">#A0000000</item>
     </style>
 </resources>

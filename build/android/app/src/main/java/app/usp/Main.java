@@ -172,17 +172,6 @@ public class Main extends Activity
     public boolean onCreateOptionsMenu(Menu menu)
     {
 		getMenuInflater().inflate(R.menu.menu, menu);
-		if(menu.getClass().getSimpleName().equals("MenuBuilder"))
-		{
-			try
-			{
-				Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
-				m.setAccessible(true);
-				m.invoke(menu, true);
-			}
-			catch(Exception e)
-			{}
-		}
 		return super.onCreateOptionsMenu(menu);
     }
 	@Override
