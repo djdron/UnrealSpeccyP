@@ -97,7 +97,11 @@ public class Main extends Activity
 			Emulator.the.Open(file);
 		}
     }
-	final private boolean AbleImmersiveMode()
+	static boolean AbleImmersiveMode()
+	{
+		return android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT;
+	}
+	static boolean AbleActionBar()
 	{
 		return android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT;
 	}

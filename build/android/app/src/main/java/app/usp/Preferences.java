@@ -26,6 +26,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.view.MenuItem;
 
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
@@ -62,6 +63,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		if(Main.AbleActionBar())
+			getActionBar().setDisplayHomeAsUpEnabled(true);
 		addPreferencesFromResource(R.xml.preferences);
         select_joystick = (ListPreference)getPreferenceScreen().findPreference(select_joystick_id);
         use_sensor = (CheckBoxPreference)getPreferenceScreen().findPreference(use_sensor_id);
@@ -176,5 +179,17 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			UpdateDescs();
 		}
 		return super.onPreferenceTreeClick(preferenceScreen, preference);
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		if(Main.AbleActionBar())
+		{
+			switch(item.getItemId())
+			{
+			case android.R.id.home:	onBackPressed(); break;
+			}
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

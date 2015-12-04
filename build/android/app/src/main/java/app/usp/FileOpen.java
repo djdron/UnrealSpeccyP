@@ -22,6 +22,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.TabHost;
 import app.usp.fs.FileSelectorFS;
 import app.usp.fs.FileSelectorRZX;
@@ -36,6 +37,8 @@ public class FileOpen extends TabActivity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		if(Main.AbleActionBar())
+			getActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.file_open);
 
 		Resources res = getResources();
@@ -77,5 +80,17 @@ public class FileOpen extends TabActivity
 	{
     	active_tab = getTabHost().getCurrentTab();
     	super.onDestroy();
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		if(Main.AbleActionBar())
+		{
+			switch(item.getItemId())
+			{
+			case android.R.id.home:	onBackPressed(); break;
+			}
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }
