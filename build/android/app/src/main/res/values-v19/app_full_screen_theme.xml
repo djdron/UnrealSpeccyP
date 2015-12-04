@@ -2,11 +2,11 @@
 <resources>
     <style name="Theme.AppFullScreen" parent="@android:style/Theme.DeviceDefault">
 		<item name="android:windowActionBar">true</item>
-        <item name="android:actionBarStyle">@style/Widget.ActionBar.Transparent</item>
+        <item name="android:actionBarStyle">@style/Widget.ActionBar</item>
         <item name="android:tabWidgetStyle">@android:style/Widget.TabWidget</item>
     </style>
-    <color name="transparent_black">#A0000000</color>
-    <style name="Widget.ActionBar.Transparent" parent="@android:style/Widget.DeviceDefault.ActionBar">
-        <item name="android:background">@color/transparent_black</item>
+    <style name="Widget.ActionBar" parent="@android:style/Widget.DeviceDefault.ActionBar">
+        <item name="android:background">@android:color/black</item>
+        <item name="android:elevation">10dp</item>
     </style>
 </resources>
