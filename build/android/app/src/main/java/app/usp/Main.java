@@ -38,11 +38,11 @@ import app.usp.ctl.Control;
 
 public class Main extends Activity
 {
-	private RelativeLayout layout;
 	private ViewGLES view;
 	private Control control;
 	private Handler hide_callback;
 	private Runnable hide_runnable;
+	private boolean paused = false;
 
 	@Override
     public void onCreate(Bundle savedInstanceState)
@@ -60,7 +60,7 @@ public class Main extends Activity
 		view.setId(1);
 		control = new Control(c, view);
 		control.setId(2);
-		layout = new RelativeLayout(c);
+		RelativeLayout layout = new RelativeLayout(c);
 		RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 		RelativeLayout.LayoutParams p2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		p1.addRule(RelativeLayout.ABOVE, control.getId());
@@ -108,6 +108,7 @@ public class Main extends Activity
 	private void RunHideCallback()
 	{
 		CancelHideCallback();
+		BeginPause();
 		hide_runnable = new Runnable()
 		{
 			@Override
@@ -128,6 +129,7 @@ public class Main extends Activity
 	private void HideSystemUI()
 	{
 		CancelHideCallback();
+		EndPause();
 		if(!AbleImmersiveMode())
 			return;
 		getWindow().getDecorView().setSystemUiVisibility(
@@ -159,6 +161,7 @@ public class Main extends Activity
 		super.onResume();
 		view.OnResume();
 		control.OnResume();
+		EndPause();
 	}
     @Override
 	protected void onPause()
@@ -168,6 +171,24 @@ public class Main extends Activity
 		control.OnPause();
 		super.onPause();
 	}
+
+	private void BeginPause()
+	{
+		if(!paused)
+		{
+			paused = true;
+			Emulator.the.VideoPaused(true);
+		}
+	}
+	private void EndPause()
+	{
+		if(paused)
+		{
+			paused = false;
+			Emulator.the.VideoPaused(false);
+		}
+	}
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -178,13 +199,21 @@ public class Main extends Activity
 	public boolean onPrepareOptionsMenu(Menu menu)
 	{
 		CancelHideCallback();
+		BeginPause();
 		return super.onPrepareOptionsMenu(menu);
+	}
+	@Override
+	public void onOptionsMenuClosed(Menu menu)
+	{
+		EndPause();
+		super.onOptionsMenuClosed(menu);
 	}
 	static final int A_FILE_SELECTOR = 0;
     static final int A_PREFERENCES = 1;
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+		EndPause();
     	switch(item.getItemId())
     	{
     	case R.id.open_file:	startActivityForResult(new Intent(this, FileOpen.class), A_FILE_SELECTOR); return true;
