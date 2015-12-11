@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,14 +23,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+
 #if defined(_WINDOWS) || defined(_LINUX) || defined(_MAC)
 
+#ifndef USE_BENCHMARK
 #ifndef USE_SDL
+
 #define USE_OAL
 #define USE_GL
 //#define USE_GLUT
 #define USE_WXWIDGETS
+
 #endif//USE_SDL
+#endif//USE_BENCHMARK
 
 #define USE_PNG
 #define USE_CONFIG
@@ -83,6 +88,8 @@ struct eHandler
 	virtual bool FileTypeSupported(const char* name) = 0;
 	virtual eActionResult OnAction(eAction action) = 0;
 
+	virtual bool GetReplayProgress(dword* frame_current, dword* frames_total, dword* frames_cached) = 0;
+
 	// data to draw
 	virtual void* VideoData() = 0;
 	virtual void* VideoDataUI() = 0;
@@ -98,6 +105,8 @@ struct eHandler
 };
 
 eHandler* Handler();
+
+void GetScaleWithAspectRatio43(float* sx, float* sy, int _w, int _h);
 
 }
 //namespace xPlatform

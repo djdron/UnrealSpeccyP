@@ -297,6 +297,8 @@ void eZ80Accessor::UnpackPage(byte* dst, int dstlen, byte* src, int srclen)
 	}
 }
 
+bool LoadSZX(eSpeccy* speccy, const void* data, size_t data_size);
+
 bool Load(eSpeccy* speccy, const char* type, const void* data, size_t data_size)
 {
 	speccy->Devices().FrameStart(0);
@@ -306,6 +308,8 @@ bool Load(eSpeccy* speccy, const char* type, const void* data, size_t data_size)
 		ok = z80->SetState((const eSnapshot_SNA*)data, data_size);
 	else if(!strcmp(type, "z80"))
 		ok = z80->SetState((const eSnapshot_Z80*)data, data_size);
+	else if(!strcmp(type, "szx"))
+		ok = LoadSZX(speccy, data, data_size);
 	speccy->Devices().FrameUpdate();
 	speccy->Devices().FrameEnd(z80->FrameTacts() + z80->T());
 	return ok;

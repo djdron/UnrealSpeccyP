@@ -23,11 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //=============================================================================
 //	eAY::eAY
 //-----------------------------------------------------------------------------
-eAY::eAY()
+eAY::eAY() : t(0), ta(0), tb(0), tc(0), tn(0), te(0), env(0), denv(0)
+	,bitA(0), bitB(0), bitC(0), bitN(0), ns(0)
+	,bit0(0), bit1(0), bit2(0), bit3(0), bit4(0), bit5(0)
+	,ea(0), eb(0), ec(0), va(0), vb(0), vc(0)
+	,fa(0), fb(0), fc(0), fn(0), fe(0)
+	,activereg(0)
 {
-	bitA = bitB = bitC = bitN = 0;
-	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 	SetChip(CHIP_AY);
+	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 	SetVolumes(0x7FFF, SNDR_VOL_AY, SNDR_PAN_ABC);
 	_Reset();
 }
@@ -82,7 +86,6 @@ const dword MULT_C_1 = 14; // fixed point precision for 'system tick -> ay tick'
 //-----------------------------------------------------------------------------
 void eAY::FrameStart(dword tacts)
 {
-	r13_reloaded = 0;
 	t = tacts * chip_clock_rate / system_clock_rate;
 	eInherited::FrameStart(t);
 }
@@ -214,7 +217,6 @@ void eAY::Write(dword timestamp, byte val)
 		fe = SwapWord(r.envT);
 		break;
 	case 13:
-		r13_reloaded = 1;
 		te = 0;
 		if(r.env & 4) env = 0, denv = 1; // attack
 		else env = 31, denv = -1; // decay
@@ -244,8 +246,6 @@ void eAY::SetTimings(dword _system_clock_rate, dword _chip_clock_rate, dword _sa
 	eInherited::SetTimings(_chip_clock_rate, _sample_rate);
 	passed_chip_ticks = passed_clk_ticks = 0;
 	t = 0; ns = 0xFFFF;
-
-	ApplyRegs();
 }
 //=============================================================================
 //	eAY::SetVolumes
@@ -261,7 +261,7 @@ void eAY::SetVolumes(dword global_vol, const SNDCHIP_VOLTAB *voltab, const SNDCH
 //-----------------------------------------------------------------------------
 void eAY::_Reset(dword timestamp)
 {
-	for(int i = 0; i < 14; i++)
+	for(int i = 0; i < 16; i++)
 		reg[i] = 0;
 	ApplyRegs(timestamp);
 }
@@ -270,6 +270,7 @@ void eAY::_Reset(dword timestamp)
 //-----------------------------------------------------------------------------
 void eAY::ApplyRegs(dword timestamp)
 {
+	byte ar = activereg;
 	for(byte r = 0; r < 16; r++)
 	{
 		Select(r);
@@ -278,6 +279,7 @@ void eAY::ApplyRegs(dword timestamp)
 		Write(timestamp, p ^ 1);
 		Write(timestamp, p);
 	}
+	activereg = ar;
 }
 
 // corresponds enum CHIP_TYPE
@@ -293,7 +295,7 @@ const SNDCHIP_VOLTAB SNDR_VOL_YM_S =
 { { 0x0000,0x0000,0x00EF,0x01D0,0x0290,0x032A,0x03EE,0x04D2,0x0611,0x0782,0x0912,0x0A36,0x0C31,0x0EB6,0x1130,0x13A0,
 	0x1751,0x1BF5,0x20E2,0x2594,0x2CA1,0x357F,0x3E45,0x475E,0x5502,0x6620,0x7730,0x8844,0xA1D2,0xC102,0xE0A2,0xFFFF } };
 
-static const SNDCHIP_PANTAB SNDR_PAN_MONO_S = {{100,100, 100,100, 100,100}};
+static const SNDCHIP_PANTAB SNDR_PAN_MONO_S = {{ 58, 58,  58,58,   58,58 }};
 static const SNDCHIP_PANTAB SNDR_PAN_ABC_S =  {{ 100,10,  66,66,   10,100}};
 static const SNDCHIP_PANTAB SNDR_PAN_ACB_S =  {{ 100,10,  10,100,  66,66 }};
 static const SNDCHIP_PANTAB SNDR_PAN_BAC_S =  {{ 66,66,   100,10,  10,100}};

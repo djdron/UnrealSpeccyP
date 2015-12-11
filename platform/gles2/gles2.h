@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,7 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef __GLES2_H__
+#define __GLES2_H__
+
+#pragma once
+
 #ifdef USE_GLES2
+
+#include "../../tools/point.h"
 
 namespace xPlatform
 {
@@ -26,10 +33,12 @@ class eGLES2
 public:
 	static eGLES2* Create();
 	virtual ~eGLES2() {}
-	virtual void Draw(int w, int h) = 0;
+	virtual void Draw(const ePoint& pos, const ePoint& size) = 0;
 };
 
 }
 //namespace xPlatform
 
 #endif//USE_GLES2
+
+#endif//__GLES2_H__

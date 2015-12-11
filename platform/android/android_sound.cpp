@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,8 +32,16 @@ void DoneSound()
 {
 }
 static eSoundMixer sound_mixer;
-int UpdateSound(byte* buf)
+int UpdateSound(byte* buf, bool skip_data)
 {
+	if(skip_data)
+	{
+		for(int s = Handler()->AudioSources(); --s >= 0;)
+		{
+			Handler()->AudioDataUse(s, Handler()->AudioDataReady(s));
+		}
+		return 0;
+	}
 	sound_mixer.Update(buf);
 	dword size = sound_mixer.Ready();
 	sound_mixer.Use(size, buf);

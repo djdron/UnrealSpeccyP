@@ -20,18 +20,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_ZIP
 
+#include <unzip.h>
 #include "platform/io.h"
-#include "tools/zlib/unzip.h"
 #include "tools/stream_memory.h"
 #include "file_type.h"
+
+namespace xIo
+{
+eFileSelect* FileSelectZIP(char* contain_path, char* contain_name);
+}
+//namespace xIo
 
 namespace xPlatform
 {
 
 static struct eFileTypeZIP : public eFileType
 {
-	virtual bool Open(const void* data, size_t data_size);
-	virtual const char* Type() { return "zip"; }
+	virtual bool Open(const void* data, size_t data_size) const;
+	virtual bool Open(const char* name) const;
+	virtual bool Contain(const char* name, char* contain_path, char* contain_name) const;
+	virtual const char* Type() const { return "zip"; }
+	virtual xIo::eFileSelect* FileSelect(const char* path) const
+	{
+		char contain_path[xIo::MAX_PATH_LEN];
+		char contain_name[xIo::MAX_PATH_LEN];
+		if(Contain(path, contain_path, contain_name))
+			return xIo::FileSelectZIP(contain_path, contain_name);
+		return NULL;
+	}
+private:
+	bool Open(unzFile h) const;
+	bool Open(unzFile h, const char* contain_name) const;
+	bool OpenCurrent(unzFile h) const;
 } ft_zip;
 
 static voidpf ZOpen(voidpf opaque, const void* filename, int mode)
@@ -69,7 +89,27 @@ static int ZClose(voidpf opaque, voidpf stream)
 	return f->Close();
 }
 
-bool eFileTypeZIP::Open(const void* data, size_t data_size)
+bool eFileTypeZIP::Open(const char* name) const
+{
+	char contain_path[xIo::MAX_PATH_LEN];
+	char contain_name[xIo::MAX_PATH_LEN];
+	if(Contain(name, contain_path, contain_name))
+	{
+		unzFile h = unzOpen64(contain_path);
+		if(!h)
+			return false;
+		bool ok = false;
+		if(unzLocateFile(h, contain_name, 0) == UNZ_OK)
+		{
+			ok = OpenCurrent(h);
+		}
+		unzClose(h);
+		return ok;
+	}
+	return Open(unzOpen64(name));
+}
+
+bool eFileTypeZIP::Open(const void* data, size_t data_size) const
 {
 	xIo::eStreamMemory mf(data, data_size);
 	zlib_filefunc64_def zfuncs;
@@ -78,8 +118,11 @@ bool eFileTypeZIP::Open(const void* data, size_t data_size)
 	zfuncs.ztell64_file = ZTell;
 	zfuncs.zseek64_file = ZSeek;
 	zfuncs.zclose_file = ZClose;
+	return Open(unzOpen2_64(&mf, &zfuncs));
+}
 
-	unzFile h = unzOpen2_64(&mf, &zfuncs);
+bool eFileTypeZIP::Open(unzFile h) const
+{
 	if(!h)
 		return false;
 	bool ok = false;
@@ -87,33 +130,69 @@ bool eFileTypeZIP::Open(const void* data, size_t data_size)
 	{
 		for(;;)
 		{
-			unz_file_info fi;
-			char n[xIo::MAX_PATH_LEN];
-			if(unzGetCurrentFileInfo(h, &fi, n, xIo::MAX_PATH_LEN, NULL, 0, NULL, 0) == UNZ_OK)
+			if(OpenCurrent(h))
 			{
-				eFileType* t = eFileType::FindByName(n);
-				if(t)
-				{
-					if(unzOpenCurrentFile(h) == UNZ_OK)
-					{
-						byte* buf = new byte[fi.uncompressed_size];
-						if(unzReadCurrentFile(h, buf, fi.uncompressed_size) == int(fi.uncompressed_size))
-						{
-							ok = t->Open(buf, fi.uncompressed_size);
-						}
-						delete[] buf;
-						unzCloseCurrentFile(h);
-					}
-				}
-			}
-			if(ok)
+				ok = true;
 				break;
+			}
 			if(unzGoToNextFile(h) == UNZ_END_OF_LIST_OF_FILE)
 				break;
 		}
 	}
 	unzClose(h);
 	return ok;
+}
+
+bool eFileTypeZIP::OpenCurrent(unzFile h) const
+{
+	unz_file_info fi;
+	char n[xIo::MAX_PATH_LEN];
+	if(unzGetCurrentFileInfo(h, &fi, n, xIo::MAX_PATH_LEN, NULL, 0, NULL, 0) != UNZ_OK)
+		return false;
+	const eFileType* t = eFileType::FindByName(n);
+	if(!t)
+		return false;
+	if(unzOpenCurrentFile(h) != UNZ_OK)
+		return false;
+
+	bool ok = false;
+	byte* buf = new byte[fi.uncompressed_size];
+	if(unzReadCurrentFile(h, buf, fi.uncompressed_size) == int(fi.uncompressed_size))
+	{
+		ok = t->Open(buf, fi.uncompressed_size);
+	}
+	delete[] buf;
+	unzCloseCurrentFile(h);
+	return ok;
+}
+
+bool eFileTypeZIP::Contain(const char* name, char* contain_path, char* contain_name) const
+{
+	char n[xIo::MAX_PATH_LEN];
+	strcpy(n, name);
+	int l = strlen(n);
+	for(int i = l; --i >= 0;)
+	{
+		if(n[i] == '/' || n[i] == '\\')
+		{
+			char c = n[i];
+			n[i] = 0;
+			const eFileType* t = FindByName(n);
+			if(t == this) // zip
+			{
+				FILE* f = fopen(n, "rb");
+				if(f)
+				{
+					fclose(f);
+					strcpy(contain_path, n);
+					strcpy(contain_name, n + i + 1);
+					return true;
+				}
+			}
+			n[i] = c;
+		}
+	}
+	return false;
 }
 
 }

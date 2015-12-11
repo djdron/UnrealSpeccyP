@@ -27,25 +27,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xIo
 {
 
-class eFileSelectI
+class eFileSelectQt : public eFileSelect
 {
 public:
-	eFileSelectI(const char* _path)
+	eFileSelectQt(const char* _path)
 	{
 		QDir dir(_path);
 		content = dir.entryInfoList();
 		idx = content.size() ? 0 : -1;
 		UpdateName();
 	}
-	bool Valid() const { return idx >= 0; }
-	void Next()
+	virtual bool Valid() const { return idx >= 0; }
+	virtual void Next()
 	{
 		++idx;
 		if(idx >= content.size())
 			idx = -1;
 		UpdateName();
 	}
-	void UpdateName()
+	virtual void UpdateName()
 	{
 		if(idx < 0)
 			name[0] = '\0';
@@ -53,23 +53,26 @@ public:
 			strcpy(name, qPrintable(content[idx].fileName()));
 	}
 
-	const char* Name() const { return name; }
-	bool IsDir() const { return content[idx].isDir(); }
-	bool IsFile() const { return content[idx].isFile(); }
+	virtual const char* Name() const { return name; }
+	virtual bool IsDir() const { return content[idx].isDir(); }
+	virtual bool IsFile() const { return content[idx].isFile(); }
+private:
 	QFileInfoList content;
 	int idx;
 	char name[MAX_PATH_LEN];
 };
 
-eFileSelect::eFileSelect(const char* path) { impl = new eFileSelectI(path); }
-eFileSelect::~eFileSelect() { delete impl; }
-bool eFileSelect::Valid() const { return impl->Valid(); }
-void eFileSelect::Next() { impl->Next(); }
-const char* eFileSelect::Name() const { return impl->Name(); }
-bool eFileSelect::IsDir() const { return impl->IsDir(); }
-bool eFileSelect::IsFile() const { return impl->IsFile(); }
+eFileSelect* FileSelect(const char* path) { return new eFileSelectQt(path); }
 
 bool PathIsRoot(const char* path) {	return QDir(path).isRoot(); }
+
+bool MkDir(const char* path)
+{
+	QDir dir(path);
+	if(dir.exists())
+		return true;
+	return dir.mkdir(".");
+}
 
 }
 //namespace xIo

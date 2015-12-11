@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef _WINDOWS
+#ifdef _WINAPI
 
 #include "../../std.h"
 #include "../../tools/io_select.h"
@@ -28,21 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xIo
 {
 
-class eFileSelectI
+class eWinFileSelect : public eFileSelect
 {
 public:
-	virtual ~eFileSelectI() {}
-	virtual bool Valid() const = 0;
-	virtual void Next() = 0;
-	virtual const char* Name() const = 0;
-	virtual bool IsDir() const = 0;
-	virtual bool IsFile() const = 0;
-};
-
-class eWinFileSelectI : public eFileSelectI
-{
-public:
-	eWinFileSelectI(const char* _path)
+	eWinFileSelect(const char* _path)
 	{
 		char path[MAX_PATH_LEN];
 		strcpy(path, _path);
@@ -50,7 +39,7 @@ public:
 		handle = _findfirst(path, &fd);
 		valid = handle != -1;
 	}
-	virtual ~eWinFileSelectI() { if(handle != -1) _findclose(handle); }
+	virtual ~eWinFileSelect() { if(handle != -1) _findclose(handle); }
 	virtual bool Valid() const { return valid; }
 	virtual void Next() { valid = _findnext(handle, &fd) == 0; }
 	virtual const char* Name() const { return fd.name; }
@@ -61,10 +50,10 @@ public:
 	bool valid;
 };
 
-class eWinDriveSelectI : public eFileSelectI
+class eWinDriveSelect : public eFileSelect
 {
 public:
-	eWinDriveSelectI() : drives(GetLogicalDrives())
+	eWinDriveSelect() : drives(GetLogicalDrives())
 	{
 		strcpy(drive, "a:");
 		Update();
@@ -82,7 +71,7 @@ public:
 	}
 	virtual void Next()
 	{
-		drives &= 0xfffe;
+		drives &= ~1;
 		Update();
 	}
 	virtual const char* Name() const { return drive; }
@@ -92,23 +81,29 @@ public:
 	char drive[3];
 };
 
-eFileSelect::eFileSelect(const char* path)
+eFileSelect* FileSelect(const char* path)
 {
 	if(PathIsRoot(path))
-		impl = new eWinDriveSelectI;
+		return new eWinDriveSelect;
 	else
-		impl = new eWinFileSelectI(path);
+		return new eWinFileSelect(path);
 }
-eFileSelect::~eFileSelect() { delete impl; }
-bool eFileSelect::Valid() const { return impl->Valid(); }
-void eFileSelect::Next() { impl->Next(); }
-const char* eFileSelect::Name() const { return impl->Name(); }
-bool eFileSelect::IsDir() const { return impl->IsDir(); }
-bool eFileSelect::IsFile() const { return impl->IsFile(); }
 
-bool PathIsRoot(const char* path) {	return !strlen(path); }
+bool PathIsRoot(const char* path) {	return path[0] == 0; }
+
+bool MkDir(const char* path)
+{
+	BOOL rc = CreateDirectoryA(path, NULL);
+	if(!rc)
+	{
+		dword err = GetLastError();
+		if(err != ERROR_ALREADY_EXISTS)
+			return false;
+	}
+	return true;
+}
 
 }
 //namespace xIo
 
-#endif//_WINDOWS
+#endif//_WINAPI

@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ void Op01() { // ld bc,nnnn
 }
 void Op02() { // ld (bc),a
 	mem_h = a;
+	mem_l = bc + 1;
 	t += 3;
 	Write(bc, a); //Alone Coder
 }
@@ -104,6 +105,7 @@ void Op11() { // ld de,nnnn
 }
 void Op12() { // ld (de),a
 	mem_h = a;
+	mem_l = de + 1;
 	t += 3;
 	Write(de, a); //Alone Coder
 }
@@ -284,7 +286,7 @@ void Op36() { // ld (hl),nn
 	Write(hl, Read(pc++));
 }
 void Op37() { // scf
-	f = (f & ~(HF|NF)) | (a & (F3|F5)) | CF;
+	f = (f & (PV|ZF|SF)) | (a & (F3|F5)) | CF;
 }
 void Op38() { // jr c,rr
 	if ((f & CF)) {
@@ -323,7 +325,7 @@ void Op3E() { // ld a,nn
 	t += 3;
 }
 void Op3F() { // ccf
-	f = ((f & ~(NF|HF)) | ((f << 4) & HF) | (a & (F3|F5))) ^ CF;
+	f = (f & (PV|ZF|SF)) | ((f & CF) ? HF : CF) | (a & (F3|F5));
 }
 void Op40() {} // ld b,b
 void Op49() {} // ld c,c
@@ -926,7 +928,7 @@ void OpDA() { // jp c,nnnn
 }
 void OpDB() { // in a,(nn)
 	unsigned port = Read(pc++) + (a << 8);
-	memptr = (a << 8) + port+1;
+	memptr = port+1;
 	t += 7;
 	a = IoRead(port);
 }

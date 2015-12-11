@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform/platform.h"
 
 #ifdef USE_CONFIG
+#include <tinyxml2.h>
 #include "../platform/io.h"
-#include "tinyxml/tinyxml.h"
 #endif//USE_CONFIG
 
 namespace xOptions
@@ -40,14 +40,14 @@ void eOptionInt::Change(int f, int l, bool next)
 {
 	if(next)
 	{
-		Set(self + 1);
-		if(self >= l)
+		Set(*this + 1);
+		if(*this >= l)
 			Set(f);
 	}
 	else
 	{
-		Set(self - 1);
-		if(self < f)
+		Set(*this - 1);
+		if(*this < f)
 			Set(l - 1);
 	}
 }
@@ -149,6 +149,14 @@ struct eOA : public eOptionB // access to protected members hack
 	}
 };
 
+static void Apply()
+{
+	for(eOptionB* o = eOptionB::First(); o; o = o->Next())
+	{
+		o->Apply();
+	}
+}
+
 #ifdef USE_CONFIG
 static const char* FileName() { return xIo::ProfilePath("unreal_speccy_portable.xml"); }
 static char buf[256];
@@ -177,54 +185,48 @@ static const char* XmlNameToOptName(const char* name)
 //-----------------------------------------------------------------------------
 void Load()
 {
+	using namespace tinyxml2;
 	eOA::SortByOrder();
-	TiXmlDocument doc;
-	if(!doc.LoadFile(FileName()))
-		return;
-
-	TiXmlElement* root = doc.RootElement();
-	if(!root)
-		return;
-
-	TiXmlElement* opts = root->FirstChild("Options")->FirstChildElement();
-	if(!opts)
-		return;
-
-	for(; opts; opts = opts->NextSiblingElement())
+	XMLDocument doc;
+	if(doc.LoadFile(FileName()) == XML_SUCCESS)
 	{
-		eOptionB* o = eOptionB::Find(XmlNameToOptName(opts->Value()));
-		if(!o)
-			continue;
-		const char* v = opts->GetText();
-		o->Value(v ? v : "");
+		XMLElement* root = doc.RootElement();
+		if(root)
+		{
+			XMLElement* opts = root->FirstChildElement("Options")->FirstChildElement();
+			for(; opts; opts = opts->NextSiblingElement())
+			{
+				eOptionB* o = eOptionB::Find(XmlNameToOptName(opts->Value()));
+				if(!o)
+					continue;
+				const char* v = opts->GetText();
+				o->Value(v ? v : "");
+			}
+		}
 	}
-
-	for(eOptionB* o = eOptionB::First(); o; o = o->Next())
-	{
-		o->Apply();
-	}
+	Apply();
 }
 //=============================================================================
 //	Store
 //-----------------------------------------------------------------------------
 void Store()
 {
-	TiXmlDocument doc;
-	TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "UTF-8", "");
+	using namespace tinyxml2;
+	XMLDocument doc;
+	XMLDeclaration* decl = doc.NewDeclaration();
 	doc.LinkEndChild(decl);
-
-	TiXmlElement* root = new TiXmlElement("UnrealSpeccyPortable");
+	XMLElement* root = doc.NewElement("UnrealSpeccyPortable");
 	doc.LinkEndChild(root);
-	TiXmlElement* opts = new TiXmlElement("Options");
+	XMLElement* opts = doc.NewElement("Options");
 	root->LinkEndChild(opts);
 
 	for(eOptionB* o = eOptionB::First(); o; o = o->Next())
 	{
 		if(!o->Storeable())
 			continue;
-		TiXmlElement* msg;
-		msg = new TiXmlElement(OptNameToXmlName(o->Name()));
-		msg->LinkEndChild(new TiXmlText(o->Value()));
+		XMLElement* msg;
+		msg = doc.NewElement(OptNameToXmlName(o->Name()));
+		msg->LinkEndChild(doc.NewText(o->Value()));
 		opts->LinkEndChild(msg);
 	}
 	doc.SaveFile(FileName());
@@ -232,7 +234,7 @@ void Store()
 
 #else//USE_CONFIG
 
-void Load() { eOA::SortByOrder(); }
+void Load() { eOA::SortByOrder(); Apply(); }
 void Store() {}
 
 #endif//USE_CONFIG

@@ -21,15 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools/options.h"
 #include "ui/ui.h"
 #include "options_common.h"
+#include "file_type.h"
 
 namespace xPlatform
 {
 
-#if defined(USE_UI) || defined(USE_OPTIONS_COMMON)
-
-struct eOptionState : public xOptions::eOptionB
+struct eOptionState : public xOptions::eOptionBool
 {
 	eOptionState() { storeable = false; }
+	virtual const char*	Value() const { return NULL; }
 	const char* SnapshotName() const
 	{
 		static char name[xIo::MAX_PATH_LEN];
@@ -37,6 +37,18 @@ struct eOptionState : public xOptions::eOptionB
 		int l = strlen(name);
 		if(!l || name[l - 1] == '/' || name[l - 1] == '\\')
 			return NULL;
+		for(const eFileType* t = eFileType::First(); t; t = t->Next())
+		{
+			char contain_path[xIo::MAX_PATH_LEN];
+			char contain_name[xIo::MAX_PATH_LEN];
+			if(t->Contain(name, contain_path, contain_name))
+			{
+				strcpy(name, contain_path);
+				strcat(name, "#/");
+				strcat(name, contain_name);
+				l = strlen(name);
+			}
+		}
 		char* e = name + l;
 		while(e > name && *e != '.' && *e != '\\' && *e != '/')
 			--e;
@@ -55,7 +67,9 @@ static struct eOptionSaveState : public eOptionState
 	{
 		const char* name = SnapshotName();
 		if(name)
-			Handler()->OnSaveFile(name);
+			Set(Handler()->OnSaveFile(name));
+		else
+			Set(false);
 	}
 	virtual int Order() const { return 1; }
 } op_save_state;
@@ -67,7 +81,9 @@ static struct eOptionLoadState : public eOptionState
 	{
 		const char* name = SnapshotName();
 		if(name)
-			Handler()->OnOpenFile(name);
+			Set(Handler()->OnOpenFile(name));
+		else
+			Set(false);
 	}
 	virtual int Order() const { return 2; }
 } op_load_state;
@@ -93,6 +109,18 @@ static struct eOptionTape : public xOptions::eOptionInt
 	}
 	virtual int Order() const { return 40; }
 } op_tape;
+
+static struct eOptionPause : public xOptions::eOptionBool
+{
+	eOptionPause() { storeable = false; }
+	virtual const char* Name() const { return "pause"; }
+	virtual void Change(bool next = true)
+	{
+		eOptionBool::Change();
+		Handler()->VideoPaused(*this);
+	}
+	virtual int Order() const { return 70; }
+} op_pause;
 
 static struct eOptionSound : public xOptions::eOptionInt
 {
@@ -126,33 +154,11 @@ static struct eOptionVolume : public xOptions::eOptionInt
 	virtual int Order() const { return 30; }
 } op_volume;
 
-static struct eOptionPause : public xOptions::eOptionBool
-{
-	eOptionPause() { storeable = false; }
-	virtual const char* Name() const { return "pause"; }
-	virtual void Change(bool next = true)
-	{
-		eOptionBool::Change();
-		Handler()->VideoPaused(self);
-	}
-	virtual int Order() const { return 70; }
-} op_pause;
-
 eVolume	OpVolume() { return (eVolume)(int)op_volume; }
 void OpVolume(eVolume v) { op_volume.Set(v); }
 
 eSound	OpSound() { return (eSound)(int)op_sound; }
 void OpSound(eSound s) { op_sound.Set(s); }
-
-#else//USE_UI || USE_OPTIONS_COMMON
-
-eVolume	OpVolume() { return V_100; }
-void OpVolume(eVolume v) {}
-
-eSound	OpSound() { return S_AY; }
-void OpSound(eSound s) {}
-
-#endif//USE_UI || USE_OPTIONS_COMMON
 
 static struct eOptionJoy : public xOptions::eOptionInt
 {
@@ -213,15 +219,13 @@ const char* OpLastFolder()
 {
 	static char lf[xIo::MAX_PATH_LEN];
 	strcpy(lf, OpLastFile());
-	char* n = lf;
-	char* n_end = n + strlen(n);
-	while(n_end > n && *n_end != '\\' && *n_end != '/')
-		--n_end;
-	if(*n_end == '\\' || *n_end == '/')
-	{
-		++n_end;
-		*n_end = '\0';
-	}
+	int l = strlen(lf);
+	if(!l || lf[l - 1] == '\\' || lf[l - 1] == '/')
+		return lf;
+	char parent[xIo::MAX_PATH_LEN];
+	xIo::GetPathParent(parent, lf);
+	strcpy(lf, parent);
+	strcat(lf, "/");
 	return lf;
 }
 void OpLastFile(const char* name) { op_last_file.Set(name); }

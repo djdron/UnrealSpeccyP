@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //=============================================================================
 //	eDeviceSound::eDeviceSound
 //-----------------------------------------------------------------------------
-eDeviceSound::eDeviceSound() : mix_l(0), mix_r(0)
+eDeviceSound::eDeviceSound() : mix_l(0), mix_r(0), s1_l(0), s1_r(0), s2_l(0), s2_r(0)
 {
 	SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 }

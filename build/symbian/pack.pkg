@@ -2,7 +2,7 @@
 &EN
 
 ;Header
-#{"Unreal Speccy Portable"}, (0xA89FAC37), 0, 0, 30,TYPE=SA
+#{"Unreal Speccy Portable"}, (0xA89FAC37), 0, 0, 52,TYPE=SA
 
 ;Localised Vendor name
 %{"Vendor"}
@@ -21,7 +21,8 @@
 "dist\gcce\unreal_speccy_portable.rsc"	-"!:\resource\apps\unreal_speccy_portable.rsc"
 "dist\gcce\unreal_speccy_portable_reg.rsc"	-"!:\private\10003a3f\import\apps\unreal_speccy_portable_reg.rsc"
 "dist\gcce\unreal_speccy_portable.mbm"	-"!:\resource\apps\unreal_speccy_portable.mbm"
-"..\..\res\rom\sos128.rom"	-"!:\private\A89FAC37\res\rom\sos128.rom"
+"..\..\res\rom\sos128_0.rom"	-"!:\private\A89FAC37\res\rom\sos128_0.rom"
+"..\..\res\rom\sos128_1.rom"	-"!:\private\A89FAC37\res\rom\sos128_1.rom"
 "..\..\res\rom\dos513f.rom"	-"!:\private\A89FAC37\res\rom\dos513f.rom"
 "..\..\res\rom\service.rom"	-"!:\private\A89FAC37\res\rom\service.rom"
 "..\..\res\rom\sos48.rom"	-"!:\private\A89FAC37\res\rom\sos48.rom"

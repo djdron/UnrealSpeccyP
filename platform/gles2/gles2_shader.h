@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,9 +16,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef __GLES2_SHADER_H__
+#define __GLES2_SHADER_H__
+
 #ifdef USE_GLES2
 
+#ifndef _IOS
 #include <GLES2/gl2.h>
+#else//_IOS
+#include <OpenGLES/ES2/gl.h>
+#endif//_IOS
 
 namespace xPlatform
 {
@@ -30,3 +37,5 @@ GLuint CreateProgram(const char* vertex_shader_src, const char* fragment_shader_
 //namespace xPlatform
 
 #endif//USE_GLES2
+
+#endif//__GLES2_SHADER_H__

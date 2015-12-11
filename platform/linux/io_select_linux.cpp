@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef _LINUX
+#if defined(_POSIX)
 
 #include "../../std.h"
 #include "../../tools/io_select.h"
@@ -25,26 +25,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/errno.h>
 
 namespace xIo
 {
 
-class eFileSelectI
+class eFileSelectPosix : public eFileSelect
 {
 public:
-	eFileSelectI(const char* _path) : path(_path), dir_ent(NULL)
+	eFileSelectPosix(const char* _path) : path(_path), dir_ent(NULL)
 	{
 		dir = opendir(path);
 		if(dir)
 			Next();
 	}
-	~eFileSelectI() { closedir(dir); }
-	bool Valid() const { return dir && dir_ent; }
-	void Next() { dir_ent = readdir(dir); FillStat(); }
-	const char* Name() const { return dir_ent->d_name; }
-	bool IsDir() const { return S_ISDIR(dir_stat.st_mode); }
-	bool IsFile() const { return S_ISREG(dir_stat.st_mode); }
+	virtual ~eFileSelectPosix() { if(dir) closedir(dir); }
+	virtual bool Valid() const { return dir && dir_ent; }
+	virtual void Next() { dir_ent = readdir(dir); FillStat(); }
+	virtual const char* Name() const { return dir_ent->d_name; }
+	virtual bool IsDir() const { return S_ISDIR(dir_stat.st_mode); }
+	virtual bool IsFile() const { return S_ISREG(dir_stat.st_mode); }
 
+private:
 	void FillStat()
 	{
 		if(!Valid())
@@ -61,17 +63,21 @@ public:
 	struct stat dir_stat;
 };
 
-eFileSelect::eFileSelect(const char* path) { impl = new eFileSelectI(path); }
-eFileSelect::~eFileSelect() { delete impl; }
-bool eFileSelect::Valid() const { return impl->Valid(); }
-void eFileSelect::Next() { impl->Next(); }
-const char* eFileSelect::Name() const { return impl->Name(); }
-bool eFileSelect::IsDir() const { return impl->IsDir(); }
-bool eFileSelect::IsFile() const { return impl->IsFile(); }
+eFileSelect* FileSelect(const char* path) { return new eFileSelectPosix(path); }
 
 bool PathIsRoot(const char* path) {	return !strcmp(path, "/"); }
+
+bool MkDir(const char* path)
+{
+	if(mkdir(path, 0777) != 0)
+	{
+		if(errno != EEXIST)
+			return false;
+	}
+	return true;
+}
 
 }
 //namespace xIo
 
-#endif//_LINUX
+#endif//_POSIX

@@ -176,7 +176,6 @@ void eTape::StartTape()
 //-----------------------------------------------------------------------------
 void eTape::CloseTape()
 {
-	speccy->CPU()->HandlerStep(NULL);
 	if(tape_image)
 	{
 		free(tape_image);

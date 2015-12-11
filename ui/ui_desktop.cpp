@@ -41,6 +41,13 @@ void eDesktop::Update()
 //-----------------------------------------------------------------------------
 bool eDesktop::OnKey(char key, dword flags)
 {
+	switch(key)
+	{
+	case 'Q': key = 'u'; break;
+	case 'A': key = 'd'; break;
+	case 'O': key = 'l'; break;
+	case 'P': key = 'r'; break;
+	}
 	bool pressed = flags&xPlatform::KF_DOWN;
 	if((pressed && !(flags&(xPlatform::KF_ALT|xPlatform::KF_SHIFT)) && (key == autorepeat.key)) || (!pressed && (key != autorepeat.key)))
 		return false;

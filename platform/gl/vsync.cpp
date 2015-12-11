@@ -35,10 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <GL/glx.h>
 #endif//_LINUX
 
-#ifdef _WINDOWS
-#include <GL/wglext.h>
-#endif//_WINDOWS
-
 namespace xPlatform
 {
 
@@ -55,19 +51,14 @@ void VsyncGL(bool on)
 	}
 	if(si)
 		si(on);
-//	const char* exts = (const char*)glGetString(GL_EXTENSIONS);
-//	if(strstr(exts, "GLX_SGI_swap_control"))
-//	{
-//		glXSwapIntervalSGI(on);
-//	}
 #endif//GLX_SGI_swap_control
 }
 #endif//_LINUX
 
 #ifdef _WINDOWS
+typedef BOOL (WINAPI* PFNWGLSWAPINTERVALEXTPROC)(int interval);
 void VsyncGL(bool on)
 {
-#ifdef WGL_EXT_swap_control
 	static bool inited = false;
 	static PFNWGLSWAPINTERVALEXTPROC si = NULL;
 	if(!inited)
@@ -77,7 +68,6 @@ void VsyncGL(bool on)
 	}
 	if(si)
 		si(on);
-#endif//WGL_EXT_swap_control
 }
 #endif//_WINDOWS
 	

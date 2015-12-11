@@ -58,6 +58,47 @@ const char* ProfilePath(const char* _path)
 	strcat(buf, _path);
 	return buf;
 }
+bool MkDir(const char* path); // platform-specific
+//=============================================================================
+//	PathCreate
+//-----------------------------------------------------------------------------
+bool PathCreate(const char* path)
+{
+	char buf[MAX_PATH_LEN];
+	int p = 0;
+	int l = strlen(path);
+	for(int i = 0; i < l; ++i)
+	{
+		if(path[i] == '\\' || path[i] == '/')
+		{
+			strncpy(buf + p, path + p, i - p);
+			buf[i] = 0;
+			p = i;
+			if(i > 0 && !MkDir(buf))
+				return false;
+		}
+	}
+	return MkDir(path);
+}
+//=============================================================================
+//	GetPathParent
+//-----------------------------------------------------------------------------
+void GetPathParent(char* parent, const char* path)
+{
+	strcpy(parent, path);
+	int i = strlen(parent);
+	if(i > 0 && (parent[i - 1] == '\\' || parent[i - 1] == '/')) // if last char of the path is /
+		--i;
+	for(; --i >= 0;)
+	{
+		if(parent[i] == '\\' || parent[i] == '/')
+		{
+			parent[i] = 0;
+			return;
+		}
+	}
+	parent[0] = 0;
+}
 
 }
 //namespace xIo

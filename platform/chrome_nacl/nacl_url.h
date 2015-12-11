@@ -34,6 +34,7 @@ class eURLLoader
 public:
 	struct eCallback
 	{
+		virtual ~eCallback() {}
 		virtual void OnURLLoadOk(const std::string& url, const char* buffer, size_t size) = 0;
 		virtual void OnURLLoadFail(const std::string& url) = 0;
 	};

@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef _CHROME_NACL
 
+#include "ppapi/c/ppb_gamepad.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/module.h"
 #include "ppapi/cpp/var.h"
@@ -44,6 +45,9 @@ namespace xPlatform
 {
 
 void LoadResources(pp::Instance* i);
+void TranslateKey(int& key, dword& flags);
+void UpdateGamepads(const PP_GamepadsSampleData& pads, const PP_GamepadsSampleData& pads_prev);
+float OpZoom();
 
 class eUSPInstance : public pp::Instance, public pp::MouseLock, public eURLLoader::eCallback
 {
@@ -60,7 +64,6 @@ public:
 
 protected:
 	bool 	SpecialKeyDown(const pp::KeyboardInputEvent event);
-	void	TranslateKey(int& key, dword& flags);
 	void	Draw();
 
 	//callbacks
@@ -70,20 +73,40 @@ protected:
 protected:
 	eGLContext* gl_context;
 	eGLES2* gles2;
+	const PPB_Gamepad* gamepad;
+
 	pp::Size size;
 	eAudio audio;
 	pp::Fullscreen full_screen;
 	pp::CompletionCallbackFactory<eUSPInstance> callback;
 	bool inited;
 	bool mouse_locked;
+	struct eMouseDelta
+	{
+		eMouseDelta() : x(0.0f), y(0.0f) {}
+		eMouseDelta(const pp::Point& d, float sx, float sy)
+		{
+			x = sx*d.x();
+			y = sy*d.y();
+		}
+		eMouseDelta& operator+=(const eMouseDelta& d) { x += d.x; y += d.y; return *this; }
+		float x;
+		float y;
+	};
+	eMouseDelta mouse_delta;
+	PP_GamepadsSampleData gamepad_data_prev;
 };
 
 eUSPInstance::eUSPInstance(PP_Instance instance)
 	: pp::Instance(instance), pp::MouseLock(this)
-	, gl_context(NULL), gles2(NULL), size(0, 0)
+	, gl_context(NULL), gles2(NULL), gamepad(NULL), size(0, 0)
 	, full_screen(this), callback(this)
 	, inited(false), mouse_locked(false)
 {
+	pp::Module* module = pp::Module::Get();
+	if(module)
+		gamepad = static_cast<const PPB_Gamepad*>(module->GetBrowserInterface(PPB_GAMEPAD_INTERFACE));
+	memset(&gamepad_data_prev, 0, sizeof(gamepad_data_prev));
 }
 
 eUSPInstance::~eUSPInstance()
@@ -124,6 +147,8 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 		return;
 	static const string open("open:");
 	static const string joystick("joystick:");
+	static const string zoom("zoom:");
+	static const string filtering("filtering:");
 	if(m.length() > open.length() && m.substr(0, open.length()) == open)
 	{
 		string url = m.substr(open.length());
@@ -135,6 +160,20 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 		string joy = m.substr(joystick.length());
 		eOption<int>* op_joy = eOption<int>::Find("joystick");
 		SAFE_CALL(op_joy)->Value(joy.c_str());
+	}
+	else if(m.length() > zoom.length() && m.substr(0, zoom.length()) == zoom)
+	{
+		using namespace xOptions;
+		string z = m.substr(zoom.length());
+		eOption<int>* op_zoom = eOption<int>::Find("zoom");
+		SAFE_CALL(op_zoom)->Value(z.c_str());
+	}
+	else if(m.length() > filtering.length() && m.substr(0, filtering.length()) == filtering)
+	{
+		using namespace xOptions;
+		string f = m.substr(filtering.length());
+		eOption<bool>* op_filtering = eOption<bool>::Find("filtering");
+		SAFE_CALL(op_filtering)->Value(f.c_str());
 	}
 	else if(m == "reset")
 	{
@@ -156,6 +195,13 @@ void eUSPInstance::OnURLLoadFail(const std::string& url)
 void eUSPInstance::Update(int32_t result)
 {
 	pp::Module::Get()->core()->CallOnMainThread(17, callback.NewCallback(&eUSPInstance::Update));
+	if(gamepad)
+	{
+		PP_GamepadsSampleData gamepad_data;
+		gamepad->Sample(pp_instance(), &gamepad_data);
+		UpdateGamepads(gamepad_data, gamepad_data_prev);
+		gamepad_data_prev = gamepad_data;
+	}
 	Handler()->OnLoop();
 	audio.Update();
 	Draw();
@@ -192,115 +238,8 @@ void eUSPInstance::Draw()
 	if(!inited || !gl_context)
 		return;
 	gl_context->MakeCurrent(this);
-	gles2->Draw(size.width(), size.height());
+	gles2->Draw(ePoint(), ePoint(size.width(), size.height()));
 	gl_context->Flush();
-}
-
-void eUSPInstance::TranslateKey(int& key, dword& flags)
-{
-	enum
-	{
-		K_SHIFT = 16, K_CTRL = 17, K_ALT = 18,
-		K_TAB = 9, K_ENTER = 13, K_BACKSPACE = 8,
-		K_LEFT = 37, K_UP = 38, K_RIGHT = 39, K_DOWN = 40,
-		K_QUOTE = 222, K_APOSTROPHE = 192, K_BACKSLASH = 220,
-		K_DOT = 190, K_COMMA = 188, K_SEMICOLON = 186, K_SLASH = 191,
-		K_MINUS = 189, K_EQUAL = 187,
-	};
-	switch(key)
-	{
-	case K_SHIFT:		key = 'c';	break;
-	case K_ALT:			key = 's';	break;
-	case K_ENTER:		key = 'e';	break;
-	case K_TAB:
-		key = '\0';
-		flags |= KF_ALT;
-		flags |= KF_SHIFT;
-		break;
-	case K_BACKSPACE:
-		key = '0';
-		flags |= KF_SHIFT;
-		break;
-	case K_LEFT:		key = 'l';	break;
-	case K_RIGHT:		key = 'r';	break;
-	case K_UP:			key = 'u';	break;
-	case K_DOWN:		key = 'd';	break;
-	case K_CTRL:		key = 'f';	flags &= ~KF_CTRL; break;
-	case K_APOSTROPHE:	key = 'm';	break;
-	case K_BACKSLASH:	key = 'k';	break;
-	case K_QUOTE:
-		if(flags&KF_SHIFT)
-		{
-			key = 'P';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = '7';
-		flags |= KF_ALT;
-		break;
-	case K_COMMA:
-		if(flags&KF_SHIFT)
-		{
-			key = 'R';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'N';
-		flags |= KF_ALT;
-		break;
-	case K_DOT:
-		if(flags&KF_SHIFT)
-		{
-			key = 'T';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'M';
-		flags |= KF_ALT;
-		break;
-	case K_SEMICOLON:
-		if(flags&KF_SHIFT)
-		{
-			key = 'Z';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'O';
-		flags |= KF_ALT;
-		break;
-	case K_SLASH:
-		if(flags&KF_SHIFT)
-		{
-			key = 'C';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'V';
-		flags |= KF_ALT;
-		break;
-	case K_MINUS:
-		if(flags&KF_SHIFT)
-		{
-			key = '0';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'J';
-		flags |= KF_ALT;
-		break;
-	case K_EQUAL:
-		if(flags&KF_SHIFT)
-		{
-			key = 'K';
-			flags &= ~KF_SHIFT;
-		}
-		else
-			key = 'L';
-		flags |= KF_ALT;
-		break;
-	}
-	if(key > 255 || key < 32)
-		key = 0;
 }
 
 bool eUSPInstance::SpecialKeyDown(const pp::KeyboardInputEvent event)
@@ -314,14 +253,7 @@ bool eUSPInstance::SpecialKeyDown(const pp::KeyboardInputEvent event)
 	}
 	else if(key == 'F' && event.GetModifiers()&PP_INPUTEVENT_MODIFIER_CONTROLKEY)
 	{
-		if(!full_screen.IsFullscreen())
-		{
-			full_screen.SetFullscreen(true);
-			if(!mouse_locked)
-				LockMouse(callback.NewCallback(&eUSPInstance::DidLockMouse));
-		}
-		else
-			full_screen.SetFullscreen(false);
+		full_screen.SetFullscreen(!full_screen.IsFullscreen());
 		return true;
 	}
 	return false;
@@ -367,12 +299,29 @@ bool eUSPInstance::HandleInputEvent(const pp::InputEvent& ev)
 		if(mouse_locked)
 		{
 			pp::MouseInputEvent event(ev);
-			pp::Point delta = event.GetMovement();
-			Handler()->OnMouse(MA_MOVE, delta.x(), -delta.y());
+			float z = OpZoom();
+			float sx, sy;
+			GetScaleWithAspectRatio43(&sx, &sy, size.width(), size.height());
+			float scale_x = 320.0f/size.width()/sx/z;
+			float scale_y = 240.0f/size.height()/sy/z;
+			mouse_delta += eMouseDelta(event.GetMovement(), scale_x, scale_y);
+			int dx = mouse_delta.x;
+			int dy = mouse_delta.y;
+			if(dx || dy)
+			{
+				mouse_delta.x -= dx;
+				mouse_delta.y -= dy;
+				Handler()->OnMouse(MA_MOVE, dx, -dy);
+			}
 			return true;
 		}
 		break;
 	case PP_INPUTEVENT_TYPE_MOUSEDOWN:
+		if(!mouse_locked)
+		{
+			LockMouse(callback.NewCallback(&eUSPInstance::DidLockMouse));
+		}
+		//no break
 	case PP_INPUTEVENT_TYPE_MOUSEUP:
 		if(mouse_locked)
 		{

@@ -45,7 +45,6 @@ protected:
 protected:
 	char path[xIo::MAX_PATH_LEN];
 	eList* list;
-	bool folders[MAX_ITEMS];
 	const char* selected;
 };
 

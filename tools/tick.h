@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef	__TICK_H__
 #define	__TICK_H__
 
-#include "time.h"
+#include "time2.h" // "time.h" magically conflicted with system <time.h> ??? seems this is clang precompiled headers bug
 
 #pragma once
 

@@ -43,7 +43,7 @@ PBLIBS = -lSDL12 -lTouchControlOverlay -lxml2 -lpng -lbps
 
 
 # Final flag options ...
-CXXFLAGS = $(PBINC) $(PBFLAGS) -D_LINUX -Wall -c -fmessage-length=0
+CXXFLAGS = $(PBINC) $(PBFLAGS) -D_POSIX -Wall -c -fmessage-length=0
 CFLAGS = -O3 -Wall -c -fmessage-length=0
 LFLAGS = -s $(LDFLAGS) $(PBLIB_DIRS) $(PBLIBS)
 

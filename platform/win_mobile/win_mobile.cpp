@@ -255,7 +255,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				ofn.lpstrFile = file;
 				ofn.nMaxFile = 1024;
 				ofn.lpstrInitialDir = resource_path;
-				ofn.lpstrFilter = L"All supported formats\0*.sna;*.z80;*.rzx;*.tap;*.csw;*.tzx;*.trd;*.scl;*.fdi;*.zip\0\0";
+				ofn.lpstrFilter = L"All supported formats\0*.sna;*.z80;*.szx;*.rzx;*.tap;*.csw;*.tzx;*.trd;*.scl;*.fdi;*.zip\0\0";
 				ofn.Flags = OFN_PATHMUSTEXIST;
 				if(GetOpenFileName(&ofn))
 				{

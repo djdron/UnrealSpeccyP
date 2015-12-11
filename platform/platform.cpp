@@ -34,5 +34,17 @@ eHandler::~eHandler()
 }
 eHandler* Handler() { return handler; }
 
+void GetScaleWithAspectRatio43(float* sx, float* sy, int _w, int _h)
+{
+	*sx = 1.0f;
+	*sy = 1.0f;
+	float a = (float)_w/_h;
+	float a43 = 4.0f/3.0f;
+	if(a > a43)
+		*sx = a43/a;
+	else
+		*sy = a/a43;
+}
+
 }
 //namespace xPlatform

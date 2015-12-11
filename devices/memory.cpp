@@ -42,6 +42,7 @@ extern byte dos513f[];
 eMemory::eMemory() : memory(NULL)
 {
 	memory = new byte[SIZE];
+	memset(memory, 0, SIZE);
 }
 //=============================================================================
 //	eMemory::~eMemory

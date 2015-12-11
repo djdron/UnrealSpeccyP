@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include"
+				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;&quot;..\lib\wxWidgets-2.8.12\include\msvc&quot;;&quot;..\lib\wxWidgets-2.8.12\include&quot;;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml2;3rdparty\libpng"
 				PreprocessorDefinitions="_WINDOWS"
 				DebugInformationFormat="1"
 			/>
@@ -58,78 +58,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib"
+				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib Winmm.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_lib"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;&quot;..\lib\wxWidgets-2.8.12\lib\vc_lib&quot;"
 				GenerateDebugInformation="true"
-				SubSystem="2"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="3"
-				AdditionalIncludeDirectories="..\lib\oal\include;..\lib\glut\include;..\lib\wx\include;..\lib\gl\include"
-				PreprocessorDefinitions="_WINDOWS"
-				ExceptionHandling="1"
-				BufferSecurityCheck="false"
-				FloatingPointModel="2"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib"
-				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;..\lib\wx\lib\vc_lib"
 				SubSystem="2"
 			/>
 			<Tool
@@ -235,6 +167,74 @@
 				AdditionalFiles=""
 			/>
 			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="3"
+				AdditionalIncludeDirectories="..\lib\oal\include\al;..\lib\glut\include;&quot;..\lib\wxWidgets-2.8.12\include\msvc&quot;;&quot;..\lib\wxWidgets-2.8.12\include&quot;;..\lib\gl\include;3rdparty\zlib;3rdparty\minizip;3rdparty\tinyxml2;3rdparty\libpng"
+				PreprocessorDefinitions="_WINDOWS"
+				ExceptionHandling="1"
+				BufferSecurityCheck="false"
+				FloatingPointModel="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="openal32.lib opengl32.lib glu32.lib comctl32.lib Winmm.lib"
+				AdditionalLibraryDirectories="..\lib\oal\lib;..\lib\glut\lib;&quot;..\lib\wxWidgets-2.8.12\lib\vc_lib&quot;"
+				SubSystem="2"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 		<Configuration
@@ -562,6 +562,38 @@
 					RelativePath=".\platform\wxwidgets\main_wx.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_canvas.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_cmdline.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_cmdline.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_frame.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_joystick.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_joystick.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_keys.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\wxwidgets\wx_mouse.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="dingoo"
@@ -727,11 +759,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\platform\chrome_nacl\nacl_gamepad.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\platform\chrome_nacl\nacl_gl_context.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\platform\chrome_nacl\nacl_gl_context.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform\chrome_nacl\nacl_keys.cpp"
 					>
 				</File>
 				<File
@@ -871,6 +911,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\platform\sdl\sdl_joystick.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\platform\sdl\sdl_keys.cpp"
 					>
 				</File>
@@ -929,6 +973,10 @@
 			</File>
 			<File
 				RelativePath=".\snapshot\snapshot.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\snapshot\snapshot_szx.cpp"
 				>
 			</File>
 			<File
@@ -1047,198 +1095,6 @@
 				RelativePath=".\tools\type_registrator.h"
 				>
 			</File>
-			<Filter
-				Name="zlib"
-				>
-				<File
-					RelativePath=".\tools\zlib\adler32.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\crc32.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\crc32.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\crypt.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\deflate.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\deflate.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\infback.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\inffast.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\inffast.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\inffixed.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\inflate.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\inflate.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\inftrees.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\inftrees.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\ioapi.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\ioapi.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\trees.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\trees.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\uncompr.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\unzip.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\unzip.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\zconf.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\zlib.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\zutil.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\zlib\zutil.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="tinyxml"
-				>
-				<File
-					RelativePath=".\tools\tinyxml\tinystr.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\tinyxml\tinystr.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\tinyxml\tinyxml.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\tinyxml\tinyxml.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\tinyxml\tinyxmlerror.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\tinyxml\tinyxmlparser.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="libpng"
-				>
-				<File
-					RelativePath=".\tools\libpng\png.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\png.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngconf.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngerror.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngget.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngmem.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngpriv.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngset.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngtrans.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngusr.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngwio.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngwrite.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngwtran.c"
-					>
-				</File>
-				<File
-					RelativePath=".\tools\libpng\pngwutil.c"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="build"
@@ -1252,6 +1108,190 @@
 				</File>
 				<File
 					RelativePath=".\build\win\unreal_speccy_portable.rc"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="3rdparty"
+			>
+			<Filter
+				Name="libpng"
+				>
+				<File
+					RelativePath=".\3rdparty\libpng\png.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\png.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngconf.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngerror.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngget.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngmem.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngpriv.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngset.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngtrans.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngusr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngwio.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngwrite.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngwtran.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\libpng\pngwutil.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="zlib"
+				>
+				<File
+					RelativePath=".\3rdparty\zlib\adler32.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\crc32.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\crc32.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\deflate.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\deflate.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\infback.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\inffast.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\inffast.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\inffixed.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\inflate.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\inflate.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\inftrees.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\inftrees.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\trees.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\trees.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\uncompr.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\zconf.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\zlib.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\zutil.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\zlib\zutil.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="tinyxml2"
+				>
+				<File
+					RelativePath=".\3rdparty\tinyxml2\tinyxml2.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\tinyxml2\tinyxml2.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="minizip"
+				>
+				<File
+					RelativePath=".\3rdparty\minizip\crypt.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\minizip\ioapi.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\minizip\ioapi.h"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\minizip\unzip.c"
+					>
+				</File>
+				<File
+					RelativePath=".\3rdparty\minizip\unzip.h"
 					>
 				</File>
 			</Filter>

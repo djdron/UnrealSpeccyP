@@ -32,6 +32,7 @@ public:
 	}
 	static T* First() { return _First(); }
 	T* Next() { return next; }
+	const T* Next() const { return next; }
 protected:
 	static T*& _First() { static T* first = NULL; return first; }
 	T* next;

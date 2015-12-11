@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.AppFullScreen" parent="@android:style/Theme.DeviceDefault">
+		<item name="android:windowActionBar">true</item>
+        <item name="android:tabWidgetStyle">@android:style/Widget.TabWidget</item>
+    </style>
+</resources>

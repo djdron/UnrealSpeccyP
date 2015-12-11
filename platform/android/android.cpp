@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ void UpdateScreen(word* scr);
 void ProcessKey(char key, bool down, bool shift, bool alt);
 void InitSound();
 void DoneSound();
-int UpdateSound(byte* buf);
+int UpdateSound(byte* buf, bool skip_data);
 
 static struct eOptionZoom : public xOptions::eOptionInt
 {
@@ -76,17 +76,29 @@ static struct eOptionAVTimerSync : public xOptions::eOptionBool
 	virtual int Order() const { return 3; }
 } op_av_timer_sync;
 
+static struct eOptionSkipFrames : public xOptions::eOptionInt
+{
+	eOptionSkipFrames() { Set(0); }
+	virtual const char* Name() const { return "skip frames"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "none", "1", "2", "3", "4", "5", NULL };
+		return values;
+	}
+	virtual int Order() const { return 4; }
+} op_skip_frames;
+
 static struct eOptionUseSensor : public xOptions::eOptionBool
 {
 	virtual const char* Name() const { return "use sensor"; }
-	virtual int Order() const { return 4; }
+	virtual int Order() const { return 5; }
 } op_use_sensor;
 
 static struct eOptionUseKeyboard : public xOptions::eOptionBool
 {
 	eOptionUseKeyboard() { Set(true); }
 	virtual const char* Name() const { return "use keyboard"; }
-	virtual int Order() const { return 5; }
+	virtual int Order() const { return 6; }
 } op_use_keyboard;
 
 static void Init(const char* path)
@@ -185,11 +197,11 @@ void Java_app_usp_Emulator_DrawGL(JNIEnv* env, jobject obj, jint width, jint hei
 {
 	gles2->Draw(width, height);
 }
-jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer)
+jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer, jboolean skip_data)
 {
 	PROFILER_SECTION(u_aud);
 	byte* buf = (byte*)env->GetDirectBufferAddress(byte_buffer);
-	return xPlatform::UpdateSound(buf);
+	return xPlatform::UpdateSound(buf, skip_data);
 }
 
 void Java_app_usp_Emulator_OnKey(JNIEnv* env, jobject obj, jchar key, jboolean down, jboolean shift, jboolean alt)
@@ -203,6 +215,11 @@ void Java_app_usp_Emulator_OnTouch(JNIEnv* env, jobject obj, jboolean keyboard, 
 		xPlatform::OnTouchKey(x, y, down, pointer_id);
 	else
 		xPlatform::OnTouchJoy(x, y, down, pointer_id);
+}
+
+void Java_app_usp_Emulator_VideoPaused(JNIEnv* env, jobject obj, jboolean on)
+{
+	xPlatform::Handler()->VideoPaused(on);
 }
 
 jboolean Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
@@ -290,6 +307,46 @@ jboolean Java_app_usp_Emulator_FileTypeSupported(JNIEnv* env, jobject obj, jstri
 	bool r = xPlatform::Handler()->FileTypeSupported(name);
     env->ReleaseStringUTFChars(jname, name);
     return r;
+}
+
+jobject Java_app_usp_Emulator_ReplayProgress(JNIEnv* env, jobject obj)
+{
+	dword frame_current = 0, frames_total = 0, frames_cached = 0;
+	if(xPlatform::Handler()->GetReplayProgress(&frame_current, &frames_total, &frames_cached))
+	{
+		if(!frames_total)
+			return NULL;
+		jclass rpc = env->FindClass("app/usp/Emulator$ReplayProgress");
+		if(!rpc)
+			return NULL;
+		jfieldID fc = env->GetFieldID(rpc, "frame_current", "I");
+		if(!fc)
+			return NULL;
+		jfieldID ft = env->GetFieldID(rpc, "frames_total", "I");
+		if(!ft)
+			return NULL;
+		jfieldID fcc = env->GetFieldID(rpc, "frames_cached", "I");
+		if(!fcc)
+			return NULL;
+		jobject rpo = env->AllocObject(rpc);
+		if(!rpo)
+		    return NULL;
+		env->SetIntField(rpo, fc, frame_current);
+		env->SetIntField(rpo, ft, frames_total);
+		env->SetIntField(rpo, fcc, frames_cached);
+		return rpo;
+	}
+    return NULL;
+}
+
+jboolean Java_app_usp_Emulator_ReplayActive(JNIEnv* env, jobject obj)
+{
+	dword frame_current = 0, frames_total = 0, frames_cached = 0;
+	if(xPlatform::Handler()->GetReplayProgress(&frame_current, &frames_total, &frames_cached))
+	{
+		return frames_total > 0;
+	}
+	return false;
 }
 
 void Java_app_usp_Emulator_ProfilerBegin(JNIEnv* env, jobject obj, jint id)

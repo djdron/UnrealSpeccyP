@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __UI_H__
 
 #include "../std_types.h"
+#include "../tools/point.h"
 
 #pragma once
 
@@ -34,15 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xUi
 {
 
-struct ePoint
-{
-	ePoint() : x(0), y(0) {}
-	ePoint(int _x, int _y) : x(_x), y(_y) {}
-	ePoint& operator+=(const ePoint& p) { x += p.x; y += p.y; return self; }
-	ePoint operator+(const ePoint& p) { ePoint t = self; t += p; return t; }
-	int x, y;
-};
-
 struct eRect
 {
 	eRect() { left = top = right = bottom = 0; }
@@ -50,7 +42,7 @@ struct eRect
 	eRect(int _l, int _t, int _r, int _b) { left = _l; top = _t; right = _r; bottom = _b; }
 	int Width() const { return right - left; }
 	int Height() const { return bottom - top; }
-	eRect& Move(const ePoint& offs) { left += offs.x; right += offs.x; top += offs.y; bottom += offs.y; return self; }
+	eRect& Move(const ePoint& offs) { left += offs.x; right += offs.x; top += offs.y; bottom += offs.y; return *this; }
 	ePoint Beg() const { return ePoint(left, top); }
 	ePoint End() const { return ePoint(right, bottom); }
 	int left, top, right, bottom;
@@ -62,7 +54,7 @@ struct eRGBAColor
 {
 	eRGBAColor(dword c = 0) { rgba = c; }
 	eRGBAColor(byte _r, byte _g, byte _b, byte _a = 0xff) : r(_r), g(_g), b(_b), a(_a) {}
-	eRGBAColor& operator/=(byte v) { r /= v; g /= v; b /= v; return self; }
+	eRGBAColor& operator/=(byte v) { r /= v; g /= v; b /= v; return *this; }
 	union
 	{
 #ifdef USE_BIG_ENDIAN

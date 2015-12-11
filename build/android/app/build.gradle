@@ -1,0 +1,71 @@
+apply plugin: 'com.android.application'
+import org.apache.tools.ant.taskdefs.condition.Os
+
+String getNdkBuildScript() {
+    def ndkDir = project.plugins.findPlugin('com.android.application').sdkHandler.getNdkFolder()
+    if(ndkDir != null) {
+        def ndkBuild = ndkDir.toString() + '/ndk-build';
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            ndkBuild += ".cmd"
+        }
+//        println "NDK build script: " + ndkBuild
+        return ndkBuild
+    }
+    return null
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "app.usp"
+
+        minSdkVersion 9
+        targetSdkVersion 10
+
+//        minSdkVersion 19
+//        targetSdkVersion 19
+
+        ndk {
+            moduleName "usp"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    sourceSets.main {
+        jni.srcDirs = [] // don't use auto-generated makefile
+        jniLibs.srcDir 'src/main/libs'
+    }
+
+    task ndkBuild(type: Exec) {
+        def ndkBuild = getNdkBuildScript()
+        if(ndkBuild != null)
+        {
+            commandLine ndkBuild, '-C', file('src/main/jni').absolutePath
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
+
+    task ndkClean(type: Exec) {
+        def ndkBuild = getNdkBuildScript()
+        if(ndkBuild != null)
+        {
+            commandLine ndkBuild, 'clean', '-C', file('src/main/jni').absolutePath
+        }
+    }
+    clean.dependsOn 'ndkClean'
+}

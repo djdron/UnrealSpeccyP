@@ -124,6 +124,7 @@ eFdd::eFdd() : motor(0), cyl(0), side(0), ts_byte(0), write_protect(false), disk
 //-----------------------------------------------------------------------------
 bool eFdd::Open(const char* type, const void* data, size_t data_size)
 {
+	Motor(0);
 	if(!strcmp(type, "trd"))
 		return ReadTrd(data, data_size);
 	if(!strcmp(type, "scl"))
@@ -203,7 +204,7 @@ bool eFdd::WriteSector(int cyl, int side, int sec, const byte* data)
 		return false;
 	int len = s->Len();
 	memcpy(s->data, data, len);
-	SectorDataW(s, len, swap_byte_order(Crc(s->data - 1, len + 1)));
+	UpdateCRC(s);
 	return true;
 }
 //=============================================================================
@@ -293,7 +294,15 @@ void eFdd::CreateTrd()
 	s->data[0xe3] = 0x16;				// 80T,DS
 	SectorDataW(s, 0xe5, 2544);			// free sec
 	s->data[0xe7] = 0x10;				// trdos flag
-	WriteSector(0, 0, 9, s->data);		// update sector CRC
+	UpdateCRC(s);
+}
+//=============================================================================
+//	eFdd::UpdateCRC
+//-----------------------------------------------------------------------------
+void eFdd::UpdateCRC(eUdi::eTrack::eSector* s) const
+{
+	int len = s->Len();
+	SectorDataW(s, len, swap_byte_order(Crc(s->data - 1, len + 1)));
 }
 //=============================================================================
 //	eFdd::AddFile
@@ -312,13 +321,13 @@ bool eFdd::AddFile(const byte* hdr, const byte* data)
 		return false;
 	memcpy(dir->data + (pos & 0xff), hdr, 14);
 	SectorDataW(dir, (pos & 0xff) + 14, SectorDataW(s, 0xe1));
-	WriteSector(0, 0, 1 + pos / 0x100, dir->data);
+	UpdateCRC(dir);
 
 	pos = s->data[0xe1] + 16 * s->data[0xe2];
 	s->data[0xe1] = (pos + len) & 0x0f, s->data[0xe2] = (pos + len) >> 4;
 	s->data[0xe4]++;
 	SectorDataW(s, 0xe5, SectorDataW(s, 0xe5) - len);
-	WriteSector(0, 0, 9, s->data);
+	UpdateCRC(s);
 
 	// goto next track. s8 become invalid
 	for(int i = 0; i < len; ++i, ++pos)
@@ -351,7 +360,7 @@ bool eFdd::ReadScl(const void* data, size_t data_size)
 	{
 		eUdi::eTrack::eSector* s = GetSector(0, 0, 9);
 		SectorDataW(s, 0xe5, size);			// free sec
-		WriteSector(0, 0, 9, s->data);		// update sector CRC
+		UpdateCRC(s);
 	}
 	const byte* d = buf + 9 + 14 * buf[8];
 	for(int i = 0; i < buf[8]; ++i)

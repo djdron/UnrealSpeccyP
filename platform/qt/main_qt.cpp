@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_QT
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QFile>
 #ifdef Q_WS_S60
 #include <QSystemScreenSaver>
@@ -67,7 +67,6 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 	InitResources();
 	eWindow w;
-	a.installEventFilter(&w);
 #ifdef Q_WS_S60
 	QTM_USE_NAMESPACE
 	QSystemScreenSaver ss;

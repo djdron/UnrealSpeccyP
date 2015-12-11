@@ -133,13 +133,14 @@ void DoneVideo()
 	eglDestroySurface( display, surface );
 	eglDestroyContext( display, context );
 	eglTerminate( display );
+	bcm_host_deinit();
 }
 
 void UpdateScreen()
 {
 	{
 		PROFILER_SECTION(u_vid0);
-		gles2->Draw(screen_width, screen_height);
+		gles2->Draw(ePoint(), ePoint(screen_width, screen_height));
 	}
 	{
 		PROFILER_SECTION(u_vid1);

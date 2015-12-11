@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="opening">Открытие \"%s\"</string>
+    <string name="open_file">Открыть файл</string>
+    <string name="save_state">Сохранить состояние</string>
+    <string name="load_state">Загрузить состояние</string>
+    <string name="select_joystick">Джойстик</string>
+    <string name="joystick_kempston">Кемпстон</string>
+    <string name="joystick_cursor">Курсор</string>
+    <string name="joystick_sinclair2">Синклер 2</string>
+    <string name="use_sensor">Управление сенсором</string>
+    <string name="use_sensor_desc">С помощью датчика ориентации</string>
+    <string name="reset">Сброс</string>
+    <string name="quit">Выход</string>
+    <string name="preferences">Настройки</string>
+    <string name="pref_control">Управление</string>
+    <string name="pref_sound">Звук</string>
+    <string name="sound_chip">Звуковой чип</string>
+    <string name="sound_chip_stereo">Стерео</string>
+    <string name="sound_chip_stereo_mono">моно</string>
+    <string name="pref_peripherals">Периферия</string>
+
+    <string name="auto_play_image">Автозапуск программ</string>
+    <string name="auto_play_image_desc">После открытия файлов</string>
+    <string name="drive">Дисковод</string>
+    <string name="mode_48k">Режим 48K</string>
+    <string name="reset_to_service_rom">Сброс в сервисное ПЗУ</string>
+    <string name="service_rom_desc">MadRom v3.5 от AXLR</string>
+    <string name="file_selector">Выбор файла</string>
+    <string name="tape">Лента</string>
+    <string name="tape_na">Недоступна (откройте файл-образ)</string>
+    <string name="tape_started">Запущена (нажмите для остановки)</string>
+    <string name="tape_stopped">Остановлена (нажмите для запуска)</string>
+    <string name="tape_fast">Быстрая загрузка</string>
+    <string name="tape_fast_desc">Ускорять стандартные загрузчики</string>
+
+    <string name="pref_view">Вид</string>
+    <string name="zoom">Увеличение</string>
+    <string name="zoom_none">Нет</string>
+    <string name="zoom_fill">Заполнить экран</string>
+    <string name="zoom_small_border">Маленький бордюр</string>
+    <string name="zoom_no_border">Нет бордюра</string>
+    <string name="filtering">Сглаживание</string>
+    <string name="av_timer_sync">Синхронизация по таймеру</string>
+    <string name="av_timer_sync_desc">Более плавная эмуляция на некоторых устройствах</string>
+    <string name="skip_frames">Пропуск кадров</string>
+    <string name="skip_frames_none">Нет</string>
+
+    <string name="file_system">Файлы</string>
+
+    <string name="accessing_web">Обращение к интернету</string>
+    <string name="downloading_image">Загрузка образа&#8230;</string>
+    <string name="gathering_list">Создание списка&#8230;</string>
+    <string name="canceling">Отмена&#8230;</string>
+
+    <string name= "file_select_open_error">"Ошибка открытия : %s"</string>
+    <string name= "file_select_update_error">"Ошибка обновления : %s"</string>
+    <string name= "file_select_failed">не удалось</string>
+    <string name= "file_select_unable_connect1">не могу подключиться к серверу</string>
+    <string name= "file_select_unable_connect2">невозможно загрузить</string>
+    <string name= "file_select_invalid_info">неверная информация</string>
+    <string name= "file_select_not_available">файл недоступен</string>
+    <string name= "file_select_unsupported_format">неподдерживаемый формат</string>
+
+    <string name= "rzx_finished">RZX - воспроизведение завершено</string>
+    <string name= "rzx_sync_lost">RZX - потеря синхронизации</string>
+    <string name= "rzx_invalid">RZX - неправильные данные</string>
+    <string name= "rzx_unsupported">RZX - неподдерживаемый формат</string>
+</resources>

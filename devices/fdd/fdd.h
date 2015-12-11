@@ -30,14 +30,14 @@ class eUdi
 {
 public:
 	eUdi(int cyls, int sides);
-	~eUdi() { SAFE_DELETE(raw); }
+	~eUdi() { SAFE_DELETE_ARRAY(raw); }
 	int Cyls() const	{ return cyls; }
 	int Sides() const	{ return sides; }
 
 	enum { MAX_CYL = 86, MAX_SIDE = 2, MAX_SEC = 32 };
 	struct eTrack
 	{
-		eTrack() : data_len(0), data(NULL), id(NULL), sectors_amount(0) {}
+		eTrack() : data_len(6400), data(NULL), id(NULL), sectors_amount(0) {}
 		bool Marker(int pos) const;
 		void Write(int pos, byte v, bool marker = false);
 		void Update(); //on raw changed
@@ -110,6 +110,7 @@ protected:
 	bool ReadScl(const void* data, size_t data_size);
 	bool ReadTrd(const void* data, size_t data_size);
 	bool ReadFdi(const void* data, size_t data_size);
+	void UpdateCRC(eUdi::eTrack::eSector* s) const;
 
 protected:
 	qword	motor;	// 0 - not spinning, >0 - time when it'll stop

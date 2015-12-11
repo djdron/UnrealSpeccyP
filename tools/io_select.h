@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,21 +24,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xIo
 {
 
-struct eFileSelectI;
-
 class eFileSelect
 {
 public:
-	eFileSelect(const char* path);
-	~eFileSelect();
-	bool Valid() const;
-	void Next();
-	const char* Name() const;
-	bool IsFile() const;
-	bool IsDir() const;
-protected:
-	eFileSelectI* impl;
+	virtual ~eFileSelect() {}
+	virtual bool Valid() const = 0;
+	virtual void Next() = 0;
+	virtual const char* Name() const = 0;
+	virtual bool IsFile() const = 0;
+	virtual bool IsDir() const = 0;
 };
+
+eFileSelect* FileSelect(const char* path);
 
 bool PathIsRoot(const char* path);
 
