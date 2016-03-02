@@ -2,11 +2,13 @@ cmake_minimum_required (VERSION 2.6)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
-project (USP)
-
 option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" OFF)
 option(USE_SDL "SDL version" ON)
 option(USE_BENCHMARK "benchmark mode (console)" OFF)
+
+project (USP)
+
+set(PROJECT unreal_speccy_portable)
 
 #core
 file(GLOB SRCCXX_ROOT "../../*.cpp")
@@ -38,7 +40,9 @@ source_group("devices\\input" FILES ${SRCCXX_DEVICES_INPUT} ${SRCH_DEVICES_INPUT
 source_group("devices\\sound" FILES ${SRCCXX_DEVICES_SOUND} ${SRCH_DEVICES_SOUND})
 
 #3rdparty libs
+if(NOT APPLE_IOS)
 find_package(ZLIB)
+endif(NOT APPLE_IOS)
 if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIRS})
 	list(APPEND THIRDPARTY_LIBRARIES ${ZLIB_LIBRARIES})
@@ -52,7 +56,9 @@ else(ZLIB_FOUND)
 	include_directories("../../3rdparty/zlib")
 endif(ZLIB_FOUND)
 
+if(NOT APPLE_IOS)
 find_package(PNG)
+endif(NOT APPLE_IOS)
 if(PNG_FOUND)
 	include_directories(${PNG_INCLUDE_DIRS})
 	list(APPEND THIRDPARTY_LIBRARIES ${PNG_LIBRARIES})
@@ -86,6 +92,33 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM})
 list(APPEND SRCH ${SRCH_PLATFORM})
 source_group("platform" FILES ${SRCCXX_PLATFORM} ${SRCH_PLATFORM})
 
+if(USE_WX_WIDGETS OR APPLE_IOS)
+
+#Open AL
+find_package(OpenAL REQUIRED)
+include_directories("${OPENAL_INCLUDE_DIR}")
+file(GLOB SRCCXX_PLATFORM_OPENAL "../../platform/oal/*.cpp")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_OPENAL})
+source_group("platform\\oal" FILES ${SRCCXX_PLATFORM_OPENAL})
+
+endif(USE_WX_WIDGETS OR APPLE_IOS)
+
+if(USE_SDL OR APPLE_IOS)
+
+file(GLOB SRCCXX_UI "../../ui/*.cpp")
+file(GLOB SRCH_UI "../../ui/*.h")
+list(APPEND SRCCXX ${SRCCXX_UI})
+list(APPEND SRCH ${SRCH_UI})
+source_group("ui" FILES ${SRCCXX_UI} ${SRCH_UI})
+
+file(GLOB SRCCXX_PLATFORM_CUSTOM_UI "../../platform/custom_ui/*.cpp")
+file(GLOB SRCH_PLATFORM_CUSTOM_UI "../../platform/custom_ui/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_CUSTOM_UI})
+list(APPEND SRCH ${SRCH_PLATFORM_CUSTOM_UI})
+source_group("platform\\custom_ui" FILES ${SRCCXX_PLATFORM_CUSTOM_UI} ${SRCH_PLATFORM_CUSTOM_UI})
+
+endif(USE_SDL OR APPLE_IOS)
+
 if(MSVC)
 add_definitions("/wd4244 /wd4996 /wd4800")
 set(variables CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
@@ -114,7 +147,75 @@ add_definitions(-D_POSIX)
 endif(WIN32)
 endmacro()
 
-if(USE_WX_WIDGETS)
+if(APPLE_IOS)
+
+set(PROJECT UnrealSpeccyPortable)
+
+find_library(OPENGLES_FRAMEWORK OpenGLES)
+find_library(COREGRAPHICS_FRAMEWORK CoreGraphics)
+find_library(UIKIT_FRAMEWORK UIKit)
+find_library(GLKIT_FRAMEWORK GLKit)
+
+file(GLOB SRCCXX_PLATFORM_IOS "../../platform/ios/*.cpp")
+file(GLOB SRCMM_PLATFORM_IOS "../../platform/ios/*.mm")
+file(GLOB SRCH_PLATFORM_IOS "../../platform/ios/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_IOS})
+list(APPEND SRCMM ${SRCMM_PLATFORM_IOS})
+list(APPEND SRCH ${SRCH_PLATFORM_IOS})
+source_group("platform\\ios" FILES ${SRCCXX_PLATFORM_IOS} ${SRCMM_PLATFORM_IOS} ${SRCH_PLATFORM_IOS})
+
+file(GLOB SRCCXX_PLATFORM_GLES2 "../../platform/gles2/*.cpp")
+file(GLOB SRCH_PLATFORM_GLES2 "../../platform/gles2/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_GLES2})
+list(APPEND SRCH ${SRCH_PLATFORM_GLES2})
+source_group("platform\\gles2" FILES ${SRCCXX_PLATFORM_GLES2} ${SRCH_PLATFORM_GLES2})
+
+file(GLOB SRCCXX_PLATFORM_TOUCH_UI "../../platform/touch_ui/*.cpp")
+file(GLOB SRCH_PLATFORM_TOUCH_UI "../../platform/touch_ui/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_TOUCH_UI})
+list(APPEND SRCH ${SRCH_PLATFORM_TOUCH_UI})
+source_group("platform\\touch_ui" FILES ${SRCCXX_PLATFORM_TOUCH_UI} ${SRCH_PLATFORM_TOUCH_UI})
+
+add_definitions(-DUSE_PNG -DUSE_CONFIG -DUSE_ZIP -DUSE_OAL -D_IOS -DUSE_GLES2 -DUSE_GLES2_SPRITE -DUSE_GLES2_SIMPLE_SHADER -DUSE_TUI -DUSE_UI -DUI_REAL_ALPHA)
+
+add_platform_io_stuff()
+
+file(GLOB COPY_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../ios/Resources/*)
+source_group("Resources" FILES ${COPY_RESOURCES})
+
+file(GLOB COPY_IMAGES ${CMAKE_CURRENT_SOURCE_DIR}/../ios/Images/*)
+source_group("Images" FILES ${COPY_IMAGES})
+
+file(GLOB COPY_RES_ROM ${CMAKE_CURRENT_SOURCE_DIR}/../../res/rom/*)
+source_group("Resources\\rom" FILES ${COPY_RES_ROM})
+
+file(GLOB COPY_RES_FONT ${CMAKE_CURRENT_SOURCE_DIR}/../../res/font/*)
+source_group("Resources\\font" FILES ${COPY_RES_FONT})
+
+list(APPEND SRCRES ${COPY_RESOURCES} ${COPY_IMAGES} ${COPY_RES_ROM} ${COPY_RES_FONT})
+
+add_executable(${PROJECT} ${SRCCXX} ${SRCMM} ${SRCC} ${SRCH} ${SRCRES})
+target_link_libraries(${PROJECT} ${OPENAL_LIBRARY} ${OPENGLES_FRAMEWORK} ${COREGRAPHICS_FRAMEWORK} ${UIKIT_FRAMEWORK} ${GLKIT_FRAMEWORK})
+set_property(TARGET ${PROJECT} PROPERTY MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/../ios/UnrealSpeccyPortable-Info.plist")
+set_target_properties(${PROJECT} PROPERTIES XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "iPhone/iPad")
+
+foreach(_file ${COPY_RESOURCES})
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+endforeach(_file)
+
+foreach(_file ${COPY_IMAGES})
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+endforeach(_file)
+
+foreach(_file ${COPY_RES_ROM})
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "${PROJECT}.app/res/rom")
+endforeach(_file)
+
+foreach(_file ${COPY_RES_FONT})
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "${PROJECT}.app/res/font")
+endforeach(_file)
+
+elseif(USE_WX_WIDGETS)
 
 if(APPLE)
 add_definitions(-D_MAC)
@@ -137,13 +238,6 @@ SET(SRCRES "../win/unreal_speccy_portable.rc")
 source_group("platform\\win\\res" FILES ${SRCRES})
 ENDIF(WIN32)
 
-#Open AL
-find_package(OpenAL REQUIRED)
-include_directories("${OPENAL_INCLUDE_DIR}")
-file(GLOB SRCCXX_PLATFORM_OPENAL "../../platform/oal/*.cpp")
-list(APPEND SRCCXX ${SRCCXX_PLATFORM_OPENAL})
-source_group("platform\\oal" FILES ${SRCCXX_PLATFORM_OPENAL})
-
 #Open GL
 find_package(OpenGL REQUIRED)
 if(NOT WIN32)
@@ -153,10 +247,10 @@ file(GLOB SRCCXX_PLATFORM_OPENGL "../../platform/gl/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_OPENGL})
 source_group("platform\\gl" FILES ${SRCCXX_PLATFORM_OPENGL})
 
-add_executable(unreal_speccy_portable WIN32 ${SRCCXX} ${SRCC} ${SRCH} ${SRCRES})
-target_link_libraries(unreal_speccy_portable ${wxWidgets_LIBRARIES})
-target_link_libraries(unreal_speccy_portable ${OPENAL_LIBRARY})
-target_link_libraries(unreal_speccy_portable ${OPENGL_LIBRARIES})
+add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH} ${SRCRES})
+target_link_libraries(${PROJECT} ${wxWidgets_LIBRARIES})
+target_link_libraries(${PROJECT} ${OPENAL_LIBRARY})
+target_link_libraries(${PROJECT} ${OPENGL_LIBRARIES})
 
 elseif(USE_SDL)
 
@@ -168,26 +262,14 @@ add_definitions(-DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON -DUSE_CONFIG -DUS
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL})
 source_group("platform\\sdl" FILES ${SRCCXX_PLATFORM_SDL})
 
-file(GLOB SRCCXX_UI "../../ui/*.cpp")
-file(GLOB SRCH_UI "../../ui/*.h")
-list(APPEND SRCCXX ${SRCCXX_UI})
-list(APPEND SRCH ${SRCH_UI})
-source_group("ui" FILES ${SRCCXX_UI} ${SRCH_UI})
-
-file(GLOB SRCCXX_PLATFORM_CUSTOM_UI "../../platform/custom_ui/*.cpp")
-file(GLOB SRCH_PLATFORM_CUSTOM_UI "../../platform/custom_ui/*.h")
-list(APPEND SRCCXX ${SRCCXX_PLATFORM_CUSTOM_UI})
-list(APPEND SRCH ${SRCH_PLATFORM_CUSTOM_UI})
-source_group("platform\\custom_ui" FILES ${SRCCXX_PLATFORM_CUSTOM_UI} ${SRCH_PLATFORM_CUSTOM_UI})
-
 if(WIN32)
 add_definitions(-DSDL_DEFAULT_FOLDER="")
 endif(WIN32)
 
 add_platform_io_stuff()
 
-add_executable(unreal_speccy_portable WIN32 ${SRCCXX} ${SRCC} ${SRCH})
-target_link_libraries(unreal_speccy_portable ${SDL_LIBRARY})
+add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH})
+target_link_libraries(${PROJECT} ${SDL_LIBRARY})
 
 elseif(USE_BENCHMARK)
 
@@ -199,8 +281,8 @@ source_group("platform\\benchmark" FILES ${SRCCXX_PLATFORM_BENCHMARK})
 
 add_platform_io_stuff()
 
-add_executable(unreal_speccy_portable ${SRCCXX} ${SRCC} ${SRCH})
+add_executable(${PROJECT} ${SRCCXX} ${SRCC} ${SRCH})
 
-endif(USE_WX_WIDGETS)
+endif(APPLE_IOS)
 
-target_link_libraries(unreal_speccy_portable ${THIRDPARTY_LIBRARIES})
+target_link_libraries(${PROJECT} ${THIRDPARTY_LIBRARIES})
