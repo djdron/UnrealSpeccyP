@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace xIo
 {
-eFileSelect* FileSelectZIP(char* contain_path, char* contain_name);
+eFileSelect* FileSelectZIP(const char* contain_path, const char* contain_name);
 }
 //namespace xIo
 
