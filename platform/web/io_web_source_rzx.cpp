@@ -30,10 +30,10 @@ static class eWebSourceRZX : public eWebSource
 {
 public:
 	eWebSourceRZX() : eWebSource("rzx", "http://rzxarchive.co.uk") {}
-	virtual bool NeedCache(const std::string& path) const { return !RootPath(path); }
+	virtual bool NeedCache(const std::string& path) const { return !IsRootPath(path); }
 	virtual void GetItems(eWebSourceItems* items, const std::string& path) const
 	{
-		if(RootPath(path))
+		if(IsRootPath(path))
 		{
 			items->push_back(eWebSourceItem("0", true));
 			for(char i = 'a'; i <= 'z'; ++i)

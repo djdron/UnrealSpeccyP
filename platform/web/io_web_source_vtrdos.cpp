@@ -30,9 +30,10 @@ static class eWebSourceVTRDOS : public eWebSource
 {
 public:
 	eWebSourceVTRDOS() : eWebSource("vtrdos", "http://trd.speccy.cz") {}
+	virtual bool NeedCache(const std::string& path) const { return !IsRootPath(path); }
 	virtual void GetItems(eWebSourceItems* items, const std::string& path) const
 	{
-		if(RootPath(path))
+		if(IsRootPath(path))
 		{
 			items->push_back(eWebSourceItem("full_ver", true));
 			items->push_back(eWebSourceItem("demo_ver", true));

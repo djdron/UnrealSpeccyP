@@ -45,7 +45,7 @@ public:
 	const std::string& Root() const  { return root; }
 	const std::string& RootWEB() const  { return root_web; }
 
-	bool RootPath(const std::string& path) const { return path == Root() + "/"; }
+	bool IsRootPath(const std::string& path) const { return path == Root() + "/"; }
 
 	virtual void GetItems(eWebSourceItems* items, const std::string& path) const = 0;
 	virtual bool NeedCache(const std::string& path) const { return false; }
