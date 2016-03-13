@@ -81,7 +81,7 @@ void OnTouchJoy(float _x, float _y, bool down, int pointer_id)
 	{
 		for(int i = 0; i < KEY_COUNT; ++i)
 		{
-			if(key_state[i] == pid)
+			if(key_state[i] == pid && i != k)
 			{
 				key_state[i] = 0;
 				ProcessKey(key_map[i], flags);

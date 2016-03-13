@@ -39,7 +39,7 @@ class eMenu : public eDialog
 {
 	typedef eDialog eInherited;
 public:
-	eMenu() {}
+	virtual ~eMenu();
 	virtual void Init();
 protected:
 	void ChangeItem(byte id);

@@ -5,6 +5,7 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" OFF)
 option(USE_SDL "SDL version" ON)
 option(USE_BENCHMARK "benchmark mode (console)" OFF)
+option(USE_WEB "use web sources (SDL or iOS versions)" ON)
 
 project (USP)
 
@@ -40,6 +41,16 @@ source_group("devices\\input" FILES ${SRCCXX_DEVICES_INPUT} ${SRCH_DEVICES_INPUT
 source_group("devices\\sound" FILES ${SRCCXX_DEVICES_SOUND} ${SRCH_DEVICES_SOUND})
 
 #3rdparty libs
+
+if(NOT APPLE_IOS AND USE_SDL AND USE_WEB)
+find_package(CURL REQUIRED)
+if(CURL_FOUND)
+	include_directories(${CURL_INCLUDE_DIRS})
+	list(APPEND THIRDPARTY_LIBRARIES ${CURL_LIBRARIES})
+	add_definitions(-DUSE_CURL)
+endif(CURL_FOUND)
+endif()
+
 if(NOT APPLE_IOS)
 find_package(ZLIB)
 endif(NOT APPLE_IOS)
@@ -117,6 +128,14 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM_CUSTOM_UI})
 list(APPEND SRCH ${SRCH_PLATFORM_CUSTOM_UI})
 source_group("platform\\custom_ui" FILES ${SRCCXX_PLATFORM_CUSTOM_UI} ${SRCH_PLATFORM_CUSTOM_UI})
 
+if(USE_WEB)
+file(GLOB SRCCXX_PLATFORM_WEB "../../platform/web/*.cpp")
+file(GLOB SRCH_PLATFORM_WEB "../../platform/web/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_WEB})
+list(APPEND SRCH ${SRCH_PLATFORM_WEB})
+source_group("platform\\web" FILES ${SRCCXX_PLATFORM_WEB} ${SRCH_PLATFORM_WEB})
+endif(USE_WEB)
+
 endif(USE_SDL OR APPLE_IOS)
 
 if(MSVC)
@@ -176,7 +195,7 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM_TOUCH_UI})
 list(APPEND SRCH ${SRCH_PLATFORM_TOUCH_UI})
 source_group("platform\\touch_ui" FILES ${SRCCXX_PLATFORM_TOUCH_UI} ${SRCH_PLATFORM_TOUCH_UI})
 
-add_definitions(-DUSE_PNG -DUSE_CONFIG -DUSE_ZIP -DUSE_OAL -D_IOS -DUSE_GLES2 -DUSE_GLES2_SPRITE -DUSE_GLES2_SIMPLE_SHADER -DUSE_TUI -DUSE_UI -DUI_REAL_ALPHA)
+add_definitions(-DUSE_WEB -DUSE_PNG -DUSE_CONFIG -DUSE_ZIP -DUSE_OAL -D_IOS -DUSE_GLES2 -DUSE_GLES2_SPRITE -DUSE_GLES2_SIMPLE_SHADER -DUSE_TUI -DUSE_UI -DUI_REAL_ALPHA)
 
 add_platform_io_stuff()
 
@@ -260,6 +279,9 @@ find_package(SDL REQUIRED)
 include_directories("${SDL_INCLUDE_DIR}")
 file(GLOB SRCCXX_PLATFORM_SDL "../../platform/sdl/*.cpp")
 add_definitions(-DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON -DUSE_CONFIG -DUSE_ZIP)
+if(USE_WEB)
+add_definitions(-DUSE_WEB)
+endif(USE_WEB)
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL})
 source_group("platform\\sdl" FILES ${SRCCXX_PLATFORM_SDL})
 

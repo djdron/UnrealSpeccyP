@@ -48,6 +48,8 @@ public:
 	virtual void Update();
 	virtual bool OnKey(char key, dword flags);
 
+	void KillAutorepeat() { autorepeat.Set(0, 0); }
+
 protected:
 	struct eAutoRepeat
 	{

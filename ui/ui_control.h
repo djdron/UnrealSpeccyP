@@ -40,6 +40,7 @@ public:
 	byte Id() const { return id; }
 	void Id(byte v) { id = v; }
 	void Parent(eControl* c) { parent = c; }
+	eControl* Parent() const { return parent; }
 	void Focused(bool b) { focused = b; }
 	eRect& Bound() { return bound; }
 	eRect ScreenBound()
