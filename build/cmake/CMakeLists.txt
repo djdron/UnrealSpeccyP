@@ -134,6 +134,7 @@ file(GLOB SRCH_PLATFORM_WEB "../../platform/web/*.h")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_WEB})
 list(APPEND SRCH ${SRCH_PLATFORM_WEB})
 source_group("platform\\web" FILES ${SRCCXX_PLATFORM_WEB} ${SRCH_PLATFORM_WEB})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 endif(USE_WEB)
 
 endif(USE_SDL OR APPLE_IOS)
