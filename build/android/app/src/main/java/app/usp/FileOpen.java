@@ -67,11 +67,11 @@ public class FileOpen extends TabActivity
 								.setContent(intent);
 		tabHost.addTab(spec);
 
-		intent = new Intent().setClass(this, FileSelectorZXAAA.class);
-		spec = tabHost.newTabSpec("file_select_zxaaa")
-								.setIndicator(res.getString(R.string.zxaaa), res.getDrawable(R.drawable.icon_tab_zxaaa))
-								.setContent(intent);
-		tabHost.addTab(spec);
+//		intent = new Intent().setClass(this, FileSelectorZXAAA.class);
+//		spec = tabHost.newTabSpec("file_select_zxaaa")
+//								.setIndicator(res.getString(R.string.zxaaa), res.getDrawable(R.drawable.icon_tab_zxaaa))
+//								.setContent(intent);
+//		tabHost.addTab(spec);
 		
 	    tabHost.setCurrentTab(active_tab);
 	}
