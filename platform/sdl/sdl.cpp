@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SDL.h>
 #include "../../options_common.h"
 #include "../../tools/tick.h"
+#include "../io.h"
 
 namespace xPlatform
 {
@@ -45,9 +46,22 @@ static SDL_Joystick* joystick = NULL;
 static bool Init()
 {
 #ifndef SDL_DEFAULT_FOLDER
-#define SDL_DEFAULT_FOLDER "/"
-#endif//SDL_DEFAULT_FOLDER
+	char usp_folder[xIo::MAX_PATH_LEN];
+	const char* h = getenv("HOME");
+	if(h)
+	{
+		strcpy(usp_folder, h);
+		strcat(usp_folder, "/.usp/");
+		xIo::PathCreate(usp_folder);
+	}
+	else
+		strcpy(usp_folder, "/");
+	xIo::SetProfilePath(usp_folder);
+//	xIo::SetRootPath(usp_folder);
+	OpLastFile(usp_folder);
+#else//SDL_DEFAULT_FOLDER
 	OpLastFile(SDL_DEFAULT_FOLDER);
+#endif//SDL_DEFAULT_FOLDER
 	Handler()->OnInit();
 
 	Uint32 init_flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO;
