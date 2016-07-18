@@ -43,23 +43,53 @@ void ProcessJoy(SDL_Event& e);
 static SDL_Joystick* joystick = NULL;
 #endif//SDL_USE_JOYSTICK
 
-static bool Init()
-{
 #ifndef SDL_DEFAULT_FOLDER
-	char usp_folder[xIo::MAX_PATH_LEN];
+static const char* GetHomePath()
+{
+	static char home_path[xIo::MAX_PATH_LEN];
 	const char* h = getenv("HOME");
 	if(h)
 	{
-		strcpy(usp_folder, h);
-		strcat(usp_folder, "/.usp/");
-		xIo::PathCreate(usp_folder);
+		strcpy(home_path, h);
+		return home_path;
 	}
-	else
-		strcpy(usp_folder, "/");
-	xIo::SetProfilePath(usp_folder);
-//	xIo::SetRootPath(usp_folder);
-	OpLastFile(usp_folder);
+	const char* hd = getenv("HOMEDRIVE"), *hp = getenv("HOMEPATH");
+	if(hd && hp)
+	{
+		strcpy(home_path, hd);
+		strcat(home_path, hp);
+		return home_path;
+	}
+	return NULL;
+}
+
+static const char* USP_HomePath()
+{
+	static char usp_home_path[xIo::MAX_PATH_LEN];
+	const char* h = GetHomePath();
+	if(h)
+	{
+		strcpy(usp_home_path, h);
+		strcat(usp_home_path, "/.usp/");
+		return usp_home_path;
+	}
+	return NULL;
+}
+#endif//SDL_DEFAULT_FOLDER
+
+static bool Init()
+{
+#ifndef SDL_DEFAULT_FOLDER
+	const char* usp_home_path = USP_HomePath();
+	if(usp_home_path)
+	{
+		xIo::PathCreate(usp_home_path);
+		xIo::SetProfilePath(usp_home_path);
+//		xIo::SetRootPath(usp_home_path);
+		OpLastFile(usp_home_path);
+	}
 #else//SDL_DEFAULT_FOLDER
+	xIo::SetProfilePath(SDL_DEFAULT_FOLDER);
 	OpLastFile(SDL_DEFAULT_FOLDER);
 #endif//SDL_DEFAULT_FOLDER
 	Handler()->OnInit();

@@ -287,7 +287,7 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL})
 source_group("platform\\sdl" FILES ${SRCCXX_PLATFORM_SDL})
 
 if(WIN32)
-add_definitions(-DSDL_DEFAULT_FOLDER="")
+add_definitions(-DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOCOLOR)
 endif(WIN32)
 
 add_platform_io_stuff()

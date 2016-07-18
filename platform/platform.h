@@ -37,8 +37,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif//USE_SDL
 #endif//USE_BENCHMARK
 
+#undef USE_PNG
 #define USE_PNG
+#undef USE_CONFIG
 #define USE_CONFIG
+#undef USE_ZIP
 #define USE_ZIP
 
 #endif//_WINDOWS || _LINUX || _MAC
