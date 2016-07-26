@@ -109,7 +109,7 @@ public:
 			char l = toupper(url[0]);
 			url = RootWEB() + "/press.php?l=" + (l > 'N' ? "2" : "1");
 			string data = xPlatform::xWeb::GetURL(url.c_str());
-			regex expr("<td class=\"nowrap\"><b>(.+?)</b></td>\n<td>((.|\n)+?)\n</td>\n</tr>");
+			regex expr("<td class=\"nowrap\"><b>(.+?)</b></td>\n<td>([\\s\\S]+?)\n</td>\n</tr>");
 			regex expr2("<a class=\"rpad\" href=\"(.+?)\">(.+?)</a>");
 			string::const_iterator beg = data.begin(), end = data.end();
 			smatch m;
