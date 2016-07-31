@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_EMSCRIPTEN
 
+#include "../../tools/options.h"
 #include <emscripten.h>
 
 namespace xPlatform
@@ -27,6 +28,13 @@ void Loop1();
 
 void Loop()
 {
+	using namespace xOptions;
+	struct eOptionBX : public eOptionB
+	{
+		void Unuse() { customizable = false; storeable = false; }
+	};
+	eOptionBX* o = (eOptionBX*)eOptionB::Find("quit");
+	SAFE_CALL(o)->Unuse();
 	emscripten_set_main_loop(xPlatform::Loop1, 0, true);
 }
 
