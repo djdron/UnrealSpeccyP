@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -133,39 +133,48 @@ static void Done()
 	Handler()->OnDone();
 }
 
-static void Loop()
+static bool quit = false;
+
+void Loop1()
+{
+	SDL_Event e;
+	while(SDL_PollEvent(&e))
+	{
+		switch(e.type)
+		{
+		case SDL_QUIT:
+			quit = true;
+			break;
+		case SDL_KEYDOWN:
+		case SDL_KEYUP:
+			ProcessKey(e);
+			break;
+#ifdef SDL_USE_JOYSTICK
+		case SDL_JOYBUTTONDOWN:
+		case SDL_JOYBUTTONUP:
+		case SDL_JOYAXISMOTION:
+			ProcessJoy(e);
+			break;
+#endif//SDL_USE_JOYSTICK
+		default:
+			break;
+		}
+	}
+	Handler()->OnLoop();
+	UpdateScreen();
+	UpdateAudio();
+}
+
+void Loop();
+
+#ifndef SDL_NO_MAINLOOP
+void Loop()
 {
 	eTick last_tick;
 	last_tick.SetCurrent();
-	bool quit = false;
 	while(!quit)
 	{
-		SDL_Event e;
-		while(SDL_PollEvent(&e))
-		{
-			switch(e.type)
-			{
-			case SDL_QUIT:
-				quit = true;
-				break;
-			case SDL_KEYDOWN:
-			case SDL_KEYUP:
-				ProcessKey(e);
-				break;
-#ifdef SDL_USE_JOYSTICK
-			case SDL_JOYBUTTONDOWN:
-			case SDL_JOYBUTTONUP:
-			case SDL_JOYAXISMOTION:
-				ProcessJoy(e);
-				break;
-#endif//SDL_USE_JOYSTICK
-			default:
-				break;
-			}
-		}
-		Handler()->OnLoop();
-		UpdateScreen();
-		UpdateAudio();
+		Loop1();
 		while(last_tick.Passed().Ms() < 15)
 		{
 			SDL_Delay(3);
@@ -175,6 +184,7 @@ static void Loop()
 			quit = true;
 	}
 }
+#endif//SDL_NO_MAINLOOP
 
 }
 //namespace xPlatform
