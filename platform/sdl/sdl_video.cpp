@@ -85,11 +85,11 @@ void UpdateScreen()
 {
 #ifdef SDL_NO_OFFSCREEN
 	SDL_Surface* out = screen;
-	if(SDL_MUSTLOCK(out))
-		SDL_LockSurface(out);
 #else//SDL_NO_OFFSCREEN
 	SDL_Surface* out = offscreen;
 #endif//SDL_NO_OFFSCREEN
+	if(SDL_MUSTLOCK(out))
+		SDL_LockSurface(out);
 	byte* data = (byte*)Handler()->VideoData();
 	dword* scr = (dword*)out->pixels;
 #ifdef USE_UI
@@ -122,10 +122,9 @@ void UpdateScreen()
 			scr += out->pitch - 320*sizeof(*scr);
 		}
 	}
-#ifdef SDL_NO_OFFSCREEN
 	if(SDL_MUSTLOCK(out))
 		SDL_UnlockSurface(out);
-#else//SDL_NO_OFFSCREEN
+#ifndef SDL_NO_OFFSCREEN
 	SDL_BlitSurface(offscreen, NULL, screen, NULL);
 #endif//SDL_NO_OFFSCREEN
 	SDL_Flip(screen);
