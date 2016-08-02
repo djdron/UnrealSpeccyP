@@ -19,10 +19,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_EMSCRIPTEN
 
 #include "../../tools/options.h"
+#include "../platform.h"
+#include "../io.h"
 #include <emscripten.h>
+#include <string>
 
 namespace xPlatform
 {
+
+#ifdef USE_WEB
+namespace xWeb
+{
+
+std::string GetURL(const char* _url)
+{
+	using namespace std;
+	const char* file_name = xIo::ProfilePath("download.tmp");
+	emscripten_wget(_url, file_name);
+
+	string data;
+	FILE* f = fopen(file_name, "rb");
+	if(!f)
+		return string();
+	fseek(f, 0, SEEK_END);
+	size_t size = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	data.resize(size, 0);
+	size_t r = fread((void*)data.c_str(), 1, size, f);
+	fclose(f);
+	if(r != size)
+		return string();
+	return data;
+}
+
+}
+#endif//USE_WEB
+
 
 void Loop1();
 
@@ -40,5 +72,34 @@ void Loop()
 
 }
 //namespace xPlatform
+
+extern "C"
+{
+
+EMSCRIPTEN_KEEPALIVE
+void OpenFileData(const char* url, const char* data, int size)
+{
+	xPlatform::Handler()->OnOpenFile(url, data, size);
+}
+
+static void OnLoadOK(void* url, void* data, int size)
+{
+	xPlatform::Handler()->OnOpenFile((const char*)url, data, size);
+	free(url);
+}
+
+static void OnLoadFail(void* url)
+{
+	free(url);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void OpenFile(const char* url)
+{
+	emscripten_async_wget_data(url, strdup(url), OnLoadOK, OnLoadFail);
+}
+
+}
+//extern "C"
 
 #endif//USE_EMSCRIPTEN

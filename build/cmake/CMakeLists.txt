@@ -42,7 +42,7 @@ source_group("devices\\sound" FILES ${SRCCXX_DEVICES_SOUND} ${SRCH_DEVICES_SOUND
 
 #3rdparty libs
 
-if(NOT APPLE_IOS AND USE_SDL AND USE_WEB)
+if(NOT APPLE_IOS AND USE_SDL AND USE_WEB AND NOT EMSCRIPTEN)
 find_package(CURL REQUIRED)
 if(CURL_FOUND)
 	include_directories(${CURL_INCLUDE_DIRS})
@@ -303,7 +303,10 @@ file(GLOB SRCCXX_PLATFORM_EMSCRIPTEN "../../platform/emscripten/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_EMSCRIPTEN})
 source_group("platform\\emscripten" FILES ${SRCCXX_PLATFORM_EMSCRIPTEN})
 set(CMAKE_EXECUTABLE_SUFFIX ".html")
-set(EMSCRIPTEN_LINK_FLAGS "--preload-file ../../../res/ --preload-file ../data/ -s ALLOW_MEMORY_GROWTH=1")
+set(EMSCRIPTEN_LINK_FLAGS "--preload-file ../../../res/ -s ALLOW_MEMORY_GROWTH=1")
+if(USE_WEB)
+#set(EMSCRIPTEN_LINK_FLAGS ${EMSCRIPTEN_LINK_FLAGS} "-s ASYNCIFY=1")
+endif(USE_WEB)
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${EMSCRIPTEN_LINK_FLAGS})
 endif(EMSCRIPTEN)
 
