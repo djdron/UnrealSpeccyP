@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -42,11 +42,11 @@ public class FileSelectorBBB extends FileSelector
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		sources.add(new FSSZXAAA());
+		sources.add(new FSSBBB());
 	}
-	class FSSZXAAA extends FSSWeb
+	class FSSBBB extends FSSWeb
 	{
-		private final String ZXAAA_FS = StoragePath() + "bbb";
+		private final String BBB_FS = StoragePath() + "bbb";
 		private static final String GET_URL = "http://bbb.retroscene.org/";
 		public String JsonEncoding() { return "iso-8859-1"; }
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
@@ -56,7 +56,7 @@ public class FileSelectorBBB extends FileSelector
 				String p = item.url;
 				if(!p.startsWith(GET_URL))
 					return ApplyResult.FAIL;
-				File file = new File(ZXAAA_FS + "/" + p.substring(GET_URL.length())).getCanonicalFile();
+				File file = new File(BBB_FS + "/" + p.substring(GET_URL.length())).getCanonicalFile();
 				if(!LoadFile(p, file, progress))
 					return ApplyResult.UNABLE_CONNECT2;
 				if(progress.Canceled())
