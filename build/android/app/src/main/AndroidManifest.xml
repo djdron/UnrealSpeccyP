@@ -46,6 +46,6 @@
 		<activity android:name=".fs.FileSelectorVtrdos" android:label="@string/file_selector"></activity>
 		<activity android:name=".fs.FileSelectorWOS" android:label="@string/file_selector"></activity>
 		<activity android:name=".fs.FileSelectorRZX" android:label="@string/file_selector"></activity>
-		<activity android:name=".fs.FileSelectorZXAAA" android:label="@string/file_selector"></activity>
+		<activity android:name=".fs.FileSelectorBBB" android:label="@string/file_selector"></activity>
 	</application>
 </manifest>

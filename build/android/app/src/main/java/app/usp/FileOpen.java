@@ -28,7 +28,7 @@ import app.usp.fs.FileSelectorFS;
 import app.usp.fs.FileSelectorRZX;
 import app.usp.fs.FileSelectorVtrdos;
 import app.usp.fs.FileSelectorWOS;
-import app.usp.fs.FileSelectorZXAAA;
+import app.usp.fs.FileSelectorBBB;
 
 public class FileOpen extends TabActivity
 {
@@ -67,11 +67,11 @@ public class FileOpen extends TabActivity
 								.setContent(intent);
 		tabHost.addTab(spec);
 
-//		intent = new Intent().setClass(this, FileSelectorZXAAA.class);
-//		spec = tabHost.newTabSpec("file_select_zxaaa")
-//								.setIndicator(res.getString(R.string.zxaaa), res.getDrawable(R.drawable.icon_tab_zxaaa))
-//								.setContent(intent);
-//		tabHost.addTab(spec);
+		intent = new Intent().setClass(this, FileSelectorBBB.class);
+		spec = tabHost.newTabSpec("file_select_bbb")
+								.setIndicator(res.getString(R.string.bbb), res.getDrawable(R.drawable.icon_tab_bbb))
+								.setContent(intent);
+		tabHost.addTab(spec);
 		
 	    tabHost.setCurrentTab(active_tab);
 	}

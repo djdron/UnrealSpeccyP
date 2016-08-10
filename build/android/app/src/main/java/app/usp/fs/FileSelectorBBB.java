@@ -29,7 +29,7 @@ import android.os.Bundle;
 import app.usp.Emulator;
 import app.usp.R;
 
-public class FileSelectorZXAAA extends FileSelector
+public class FileSelectorBBB extends FileSelector
 {
 	private static State state = new State();
 	@Override
@@ -46,8 +46,8 @@ public class FileSelectorZXAAA extends FileSelector
 	}
 	class FSSZXAAA extends FSSWeb
 	{
-		private final String ZXAAA_FS = StoragePath() + "zxaaa";
-		private static final String GET_URL = "http://zxaaa.untergrund.net/get.php?f=";
+		private final String ZXAAA_FS = StoragePath() + "bbb";
+		private static final String GET_URL = "http://bbb.retroscene.org/";
 		public String JsonEncoding() { return "iso-8859-1"; }
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
@@ -94,7 +94,7 @@ public class FileSelectorZXAAA extends FileSelector
 		}
 		protected GetItemsResult ParseJSON(String _url, List<Item> items, final String _name, FileSelectorProgress progress)
 		{
-			String s0 = LoadText("http://zxaaa.untergrund.net/unreal_demos.php?l=" + _url, JsonEncoding(), progress);
+			String s0 = LoadText("http://bbb.retroscene.org/unreal_demos.php?l=" + _url, JsonEncoding(), progress);
 			if(s0 == null)
 				return GetItemsResult.UNABLE_CONNECT;
 			if(progress.Canceled())
