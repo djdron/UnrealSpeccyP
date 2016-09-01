@@ -96,6 +96,13 @@ list(APPEND SRCH ${SRCH_TINYXML2})
 source_group("3rdparty\\tinyxml2" FILES ${SRCCXX_TINYXML2} ${SRCH_TINYXML2})
 include_directories("../../3rdparty/tinyxml2")
 
+if(USE_WEB)
+file(GLOB SRCH_JSON "../../3rdparty/json/*.hpp")
+list(APPEND SRCH ${SRCH_JSON})
+source_group("3rdparty\\json" FILES ${SRCH_JSON})
+include_directories("../../3rdparty/json")
+endif()
+
 #platform
 file(GLOB SRCCXX_PLATFORM "../../platform/*.cpp")
 file(GLOB SRCH_PLATFORM "../../platform/*.h")
