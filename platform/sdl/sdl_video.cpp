@@ -59,7 +59,7 @@ bool InitVideo()
 	if(!screen)
 		return false;
 #else//SDL_NO_OFFSCREEN
-	screen = SDL_SetVideoMode(320, 240, 32, SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN);
+	screen = SDL_SetVideoMode(320, 240, 32, SDL_HWSURFACE|SDL_DOUBLEBUF);
 	if(!screen)
 		return false;
 	offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 32,
