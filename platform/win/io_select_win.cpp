@@ -93,6 +93,9 @@ bool PathIsRoot(const char* path) {	return path[0] == 0; }
 
 bool MkDir(const char* path)
 {
+	size_t len = strlen(path);
+	if(len == 2 && path[1] == ':') // drive letter with ":" at the end
+		return true;
 	BOOL rc = CreateDirectoryA(path, NULL);
 	if(!rc)
 	{
