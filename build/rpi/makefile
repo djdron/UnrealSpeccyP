@@ -16,7 +16,7 @@ C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
 BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
-CXXCFLAGS = -O3 -g0 -Wall -c -fmessage-length=0 -I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads -I$(SDKSTAGE)/opt/vc/include/interface/vmcs_host/linux -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml2
+CXXCFLAGS = -O3 -g0 -Wall -c -fmessage-length=0 -I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads -I$(SDKSTAGE)/opt/vc/include/interface/vmcs_host/linux -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml2 -I$(SRC_PATH)/3rdparty/json
 
 CXXFLAGS := $(CXXCFLAGS) -std=c++11 -D_POSIX -DUSE_GLES2 -DUSE_GLES2_SIMPLE_SHADER -D_RPI -DUI_REAL_ALPHA -DUSE_SDL -DSDL_UNUSE_VIDEO -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON -DUSE_CONFIG -DUSE_ZIP -DUSE_WEB -DUSE_CURL `sdl-config --cflags`
 CFLAGS := $(CXXCFLAGS)
