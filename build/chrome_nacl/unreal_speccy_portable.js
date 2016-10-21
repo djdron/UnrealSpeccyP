@@ -236,9 +236,8 @@ var browser_items =
 	{
 		root:		"/press",
 		items:		[ "/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L", "/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z" ],
-		urls:		[ "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an",
-					"/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz" ],
-		patterns:	[ "<td>&nbsp;&nbsp;<b>(.+)</b></td>([\\s\\S]+?)</td></tr>" ],
+		urls:		[ "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2" ],
+		patterns:	[ "<td class=\"nowrap\"><b>(.+?)</b></td>\n<td>([\\s\\S]+?)\n</td>\n</tr>" ],
 		parser:		function parser_press(path, elem)
 					{
 						var browser_name = browser_path.substring(getPath(browser_path).length);
@@ -251,7 +250,7 @@ var browser_items =
 						}
 						else if(browser_name[0] != name[0])
 							return "";
-						var re1 = new RegExp("<a href=\"(.+)\">(.+)</a>", "g");
+						var re1 = new RegExp("<a class=\"rpad\" href=\"(.+?)\">(.+?)</a>", "g");
 						var item_html = "";
 						while((res1 = re1.exec(elem[2])) != null)
 						{
@@ -261,7 +260,7 @@ var browser_items =
 						}
 						return item_html;
 					},
-		url:		url_std
+		url:		function(u) { return "http://trd.speccy.cz/press.php?l=" + u; }
 	},
 	{
 		root:		"/replays",
