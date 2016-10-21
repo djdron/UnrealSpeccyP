@@ -16,7 +16,8 @@
   },
   "permissions": [
 	"http://trd.speccy.cz/",
-	"http://rzxarchive.co.uk/"
+	"http://rzxarchive.co.uk/",
+	"http://bbb.retroscene.org/"
   ],
   "requirements": {
     "3D": {
