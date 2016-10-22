@@ -153,10 +153,8 @@ function updateBrowserItems(items, root)
 
 function parser_std(path, elem)
 {
-	var item_name = res[2];
+	var item_name = replace_in_str(res[2], "\\s+", " ");
 	var item_desc = "";
-	while((name1 = item_name.replace("\\s+", " ") != item_name))
-		item_name = name1;
 	if(res.length > 3)
 	{
 		item_desc = res[3];
@@ -190,6 +188,13 @@ function parse_patterns(item, path, html)
 	return items_html;
 }
 
+function replace_in_str(str, s1, s2)
+{
+	while((str1 = str.replace(s1, s2)) != str)
+		str = str1;
+	return str;
+}
+
 var browser_items =
 [
 	{
@@ -209,13 +214,32 @@ var browser_items =
 		parser:		parser_std,
 		parse_all:	function(item, path, json)
 					{
+						json = replace_in_str(json, "\\'", "'");
+						json = replace_in_str(json, "\t", " ");
+						if(json.length > 0 && json[json.length - 1] == ",")
+							json = json.slice(0, -1);
+						json = "[" + json + "]";
 						var items_html = "";
-						var items = JSON.parse("[" + json + "]");
-						for(var i = 0; i < items.length; i++)
+						try
 						{
-							var item = items[i];
-							items_html += "<li id=\"" + item.url + "\"><b>" + item.title + "</b><br /><sup>" + item.author + "</sup></li>";
+							var items = JSON.parse(json);
+							for(var i = 0; i < items.length; i++)
+							{
+								var item = items[i];
+								var author = item.author != "???" ? item.author : "";
+								var city = item.city != "???" ? item.city : "";
+								var year = item.year != "0000" ? item.year : "";
+								var desc = author;
+								if(desc.length > 0 && city.length > 0)
+									desc += " / ";
+								desc += city;
+								if(desc.length > 0 && year.length > 0)
+									desc += " ' ";
+								desc += year;
+								items_html += "<li id=\"" + item.url + "\"><b>" + item.title + "</b><br /><sup>" + desc + "</sup></li>";
+							}
 						}
+						catch(err) {}
 						return items_html;
 					},
 		url:		function(u) { return "http://bbb.retroscene.org/unreal_demos.php?l=" + u; }
