@@ -152,7 +152,7 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 
 	UpdateScreenTexture();
 	glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer);
 	float z = OpZoom();
 	sprite_screen->Draw(texture, pos, size, 1.0f, sx*z, sy*z, filtering);
@@ -165,7 +165,7 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 		GetScaleWithAspectRatio43(&sx_ui, &sy_ui, size.x, size.y);
 		UpdateUiTexture();
 		glActiveTexture(GL_TEXTURE0);
-	    glBindTexture(GL_TEXTURE_2D, texture_ui);
+		glBindTexture(GL_TEXTURE_2D, texture_ui);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, texture_buffer);
 		sprite_screen->Draw(texture_ui, pos, size, 0.99f, sx_ui, sy_ui); // force alpha blend
 	}
