@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #ifdef USE_GLES2
-#ifdef USE_GLES2_SPRITE
 
 #include "gles2_shader.h"
 #include "../../tools/point.h"
@@ -33,16 +32,14 @@ namespace xPlatform
 class eGLES2Sprite
 {
 public:
-	eGLES2Sprite(GLuint texture, const ePoint& size);
+	eGLES2Sprite(const ePoint& size);
 	virtual ~eGLES2Sprite();
-	virtual void Draw(const ePoint& pos, const ePoint& size, float alpha = 1.0f);
+	void Draw(GLuint texture, const ePoint& pos, const ePoint& size, float alpha = 1.0f, float scale_x = 1.0f, float scale_y = 1.0f, bool filtering = true);
 
 private:
-	GLuint	texture;
 	GLuint	buffer_vertices;
 	GLuint	buffer_uv;
 	GLuint	buffer_indices;
-	ePoint	size;
 
 	struct eShaderInfo
 	{
@@ -63,7 +60,6 @@ inline ePoint NextPot(const ePoint& v) { return ePoint(NextPot(v.x), NextPot(v.y
 }
 //namespace xPlatform
 
-#endif//USE_GLES2_SPRITE
 #endif//USE_GLES2
 
 #endif//__GLES2_SPRITE_H__

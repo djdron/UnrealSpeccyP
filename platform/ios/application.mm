@@ -93,10 +93,10 @@ using namespace xPlatform;
 	if(self)
 	{
 		keyboard_texture = [self LoadTexture:@"keyboard.png" :&_size];
-		keyboard_sprite = new eGLES2Sprite(keyboard_texture, _size);
+		keyboard_sprite = new eGLES2Sprite(_size);
 		ePoint joystick_size;
 		joystick_texture = [self LoadTexture:@"joystick.png" :&joystick_size];
-		joystick_sprite = new eGLES2Sprite(joystick_texture, joystick_size);
+		joystick_sprite = new eGLES2Sprite(joystick_size);
 	}
 	return self;
 }
@@ -128,9 +128,9 @@ using namespace xPlatform;
 	if(alpha > 0.0f)
 	{
 		if(op_use_keyboard)
-			keyboard_sprite->Draw(ePoint(0, 0), ePoint(size.x, _size.y), alpha);
+			keyboard_sprite->Draw(keyboard_texture, ePoint(0, 0), ePoint(size.x, _size.y), alpha);
 		else
-			joystick_sprite->Draw(ePoint(0, 0), ePoint(size.x, _size.y), alpha);
+			joystick_sprite->Draw(joystick_texture, ePoint(0, 0), ePoint(size.x, _size.y), alpha);
 	}
 }
 @end
