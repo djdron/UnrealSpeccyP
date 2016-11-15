@@ -2,7 +2,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-SRC_PATH = ../../../../../..
+SRC_PATH = ../../..
 SRCFOLDERS = . z80 tools 3rdparty/minizip 3rdparty/tinyxml2 snapshot platform platform/linux platform/android platform/touch_ui devices devices/fdd devices/input devices/sound
 ifdef _PROFILE
 SRCFOLDERS += ui platform/custom_ui
