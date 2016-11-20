@@ -45,7 +45,6 @@ byte spxtrm4f[2048];
 
 namespace xPlatform
 {
-void UpdateScreen(word* scr);
 void ProcessKey(char key, bool down, bool shift, bool alt);
 void InitSound();
 void DoneSound();
@@ -196,7 +195,7 @@ void Java_app_usp_Emulator_DoneGL(JNIEnv* env, jobject obj)
 }
 void Java_app_usp_Emulator_DrawGL(JNIEnv* env, jobject obj, jint width, jint height)
 {
-	gles2->Draw(width, height);
+	gles2->Draw(ZERO, ePoint(width, height));
 }
 jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer, jboolean skip_data)
 {
