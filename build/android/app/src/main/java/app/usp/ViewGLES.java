@@ -180,7 +180,7 @@ public class ViewGLES extends GLSurfaceView
 		}
 		private void ShowMessage(final int code)
 		{
-			if(code != 0)
+			if(code > 0)
 			{
 				Handler h = new Handler(context.getMainLooper());
 				h.post(new Runnable()

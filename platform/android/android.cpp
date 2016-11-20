@@ -126,7 +126,7 @@ template<class T> static int GetOption(const char* name)
 	xOptions::eOption<T>* o = xOptions::eOption<T>::Find(name);
 	return o ? *o : T(0);
 }
-template<class T> static int SetOption(const char* name, const T& value)
+template<class T> static void SetOption(const char* name, const T& value)
 {
 	xOptions::eOption<T>* o = xOptions::eOption<T>::Find(name);
 	if(o)
@@ -182,6 +182,7 @@ jint Java_app_usp_Emulator_Update(JNIEnv* env, jobject obj)
 		return 3;
 	else if(!strcmp(err, "rzx_unsupported"))
 		return 4;
+	return -1;
 }
 void Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
 {
@@ -287,6 +288,8 @@ jint Java_app_usp_Emulator_TapeState(JNIEnv* env, jobject obj)
 	case AR_TAPE_STOPPED:		return 1;
 	case AR_TAPE_STARTED:		return 2;
 	}
+	assert(0); // invalid tape query result
+	return 0;
 }
 void Java_app_usp_Emulator_TapeToggle(JNIEnv* env, jobject obj)
 {
