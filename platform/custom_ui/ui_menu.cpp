@@ -74,6 +74,21 @@ public:
 	eOptionB* option;
 };
 
+static int last_selected = 0;
+
+//=============================================================================
+//	eMenu::~eMenu
+//-----------------------------------------------------------------------------
+eMenu::~eMenu()
+{
+	if(focused)
+	{
+		eControl* const * c = Childs();
+		for(; *c && *c != focused; ++c) {}
+		last_selected = c - Childs();
+	}
+}
+
 //=============================================================================
 //	eMenu::Init
 //-----------------------------------------------------------------------------
@@ -101,6 +116,10 @@ void eMenu::Init()
 		++i;
 	}
 	Bound() = r_dlg;
+	if(focused)
+		focused->Focused(false);
+	focused = Childs()[last_selected];
+		focused->Focused(true);
 }
 //=============================================================================
 //	eMenu::OnNotify

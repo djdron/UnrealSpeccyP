@@ -1,7 +1,7 @@
 {
   "name": "Unreal Speccy Portable - ZX Spectrum emulator",
   "short_name": "USP",
-  "version": "0.0.67",
+  "version": "0.0.71",
   "manifest_version": 2,
   "description": "Portable ZX Spectrum emulator supports Z80 128K (Pentagon) AY/YM, Beeper, BetaDisk, Tape, Kempston Joystick, Snapshots, Replays.",
   "icons": {
@@ -16,7 +16,8 @@
   },
   "permissions": [
 	"http://trd.speccy.cz/",
-	"http://rzxarchive.co.uk/"
+	"http://rzxarchive.co.uk/",
+	"http://bbb.retroscene.org/"
   ],
   "requirements": {
     "3D": {

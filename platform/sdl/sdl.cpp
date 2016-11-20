@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SDL.h>
 #include "../../options_common.h"
 #include "../../tools/tick.h"
+#include "../io.h"
 
 namespace xPlatform
 {
@@ -42,12 +43,55 @@ void ProcessJoy(SDL_Event& e);
 static SDL_Joystick* joystick = NULL;
 #endif//SDL_USE_JOYSTICK
 
+#ifndef SDL_DEFAULT_FOLDER
+static const char* GetHomePath()
+{
+	static char home_path[xIo::MAX_PATH_LEN];
+	const char* h = getenv("HOME");
+	if(h)
+	{
+		strcpy(home_path, h);
+		return home_path;
+	}
+	const char* hd = getenv("HOMEDRIVE"), *hp = getenv("HOMEPATH");
+	if(hd && hp)
+	{
+		strcpy(home_path, hd);
+		strcat(home_path, hp);
+		return home_path;
+	}
+	return NULL;
+}
+
+static const char* USP_HomePath()
+{
+	static char usp_home_path[xIo::MAX_PATH_LEN];
+	const char* h = GetHomePath();
+	if(h)
+	{
+		strcpy(usp_home_path, h);
+		strcat(usp_home_path, "/.usp/");
+		return usp_home_path;
+	}
+	return NULL;
+}
+#endif//SDL_DEFAULT_FOLDER
+
 static bool Init()
 {
 #ifndef SDL_DEFAULT_FOLDER
-#define SDL_DEFAULT_FOLDER "/"
-#endif//SDL_DEFAULT_FOLDER
+	const char* usp_home_path = USP_HomePath();
+	if(usp_home_path)
+	{
+		xIo::PathCreate(usp_home_path);
+		xIo::SetProfilePath(usp_home_path);
+//		xIo::SetRootPath(usp_home_path);
+		OpLastFile(usp_home_path);
+	}
+#else//SDL_DEFAULT_FOLDER
+	xIo::SetProfilePath(SDL_DEFAULT_FOLDER);
 	OpLastFile(SDL_DEFAULT_FOLDER);
+#endif//SDL_DEFAULT_FOLDER
 	Handler()->OnInit();
 
 	Uint32 init_flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO;
@@ -89,39 +133,48 @@ static void Done()
 	Handler()->OnDone();
 }
 
-static void Loop()
+static bool quit = false;
+
+void Loop1()
+{
+	SDL_Event e;
+	while(SDL_PollEvent(&e))
+	{
+		switch(e.type)
+		{
+		case SDL_QUIT:
+			quit = true;
+			break;
+		case SDL_KEYDOWN:
+		case SDL_KEYUP:
+			ProcessKey(e);
+			break;
+#ifdef SDL_USE_JOYSTICK
+		case SDL_JOYBUTTONDOWN:
+		case SDL_JOYBUTTONUP:
+		case SDL_JOYAXISMOTION:
+			ProcessJoy(e);
+			break;
+#endif//SDL_USE_JOYSTICK
+		default:
+			break;
+		}
+	}
+	Handler()->OnLoop();
+	UpdateScreen();
+	UpdateAudio();
+}
+
+void Loop();
+
+#ifndef SDL_NO_MAINLOOP
+void Loop()
 {
 	eTick last_tick;
 	last_tick.SetCurrent();
-	bool quit = false;
 	while(!quit)
 	{
-		SDL_Event e;
-		while(SDL_PollEvent(&e))
-		{
-			switch(e.type)
-			{
-			case SDL_QUIT:
-				quit = true;
-				break;
-			case SDL_KEYDOWN:
-			case SDL_KEYUP:
-				ProcessKey(e);
-				break;
-#ifdef SDL_USE_JOYSTICK
-			case SDL_JOYBUTTONDOWN:
-			case SDL_JOYBUTTONUP:
-			case SDL_JOYAXISMOTION:
-				ProcessJoy(e);
-				break;
-#endif//SDL_USE_JOYSTICK
-			default:
-				break;
-			}
-		}
-		Handler()->OnLoop();
-		UpdateScreen();
-		UpdateAudio();
+		Loop1();
 		while(last_tick.Passed().Ms() < 15)
 		{
 			SDL_Delay(3);
@@ -131,6 +184,7 @@ static void Loop()
 			quit = true;
 	}
 }
+#endif//SDL_NO_MAINLOOP
 
 }
 //namespace xPlatform

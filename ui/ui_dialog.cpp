@@ -51,7 +51,8 @@ void eDialog::Update()
 	{
 		changed = false;
 		DrawRect(bound, background);
-		focused = *childs;
+		if(!focused)
+			focused = *childs;
 		SAFE_CALL(focused)->Focused(true);
 	}
 	for(int i = 0; childs[i]; ++i)
@@ -106,7 +107,7 @@ void eDialog::ChooseFocus(char key)
 bool eDialog::OnKey(char key, dword flags)
 {
 	if(focused && focused->OnKey(key, flags))
-			return true;
+		return true;
 	switch(key)
 	{
 	case 'l':

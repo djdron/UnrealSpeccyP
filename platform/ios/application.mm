@@ -1,3 +1,21 @@
+/*
+Portable ZX-Spectrum emulator.
+Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #import "application.h"
 #import "view.h"
 #import "../platform.h"
@@ -7,6 +25,12 @@
 #import "../../tools/options.h"
 #import "../io.h"
 #import <sys/stat.h>
+
+namespace xIo
+{
+void SetRootPath(const char* path);
+}
+//namespace xIo
 
 namespace xPlatform
 {
@@ -69,10 +93,10 @@ using namespace xPlatform;
 	if(self)
 	{
 		keyboard_texture = [self LoadTexture:@"keyboard.png" :&_size];
-		keyboard_sprite = new eGLES2Sprite(keyboard_texture, _size);
+		keyboard_sprite = new eGLES2Sprite(_size);
 		ePoint joystick_size;
 		joystick_texture = [self LoadTexture:@"joystick.png" :&joystick_size];
-		joystick_sprite = new eGLES2Sprite(joystick_texture, joystick_size);
+		joystick_sprite = new eGLES2Sprite(joystick_size);
 	}
 	return self;
 }
@@ -104,9 +128,9 @@ using namespace xPlatform;
 	if(alpha > 0.0f)
 	{
 		if(op_use_keyboard)
-			keyboard_sprite->Draw(ePoint(0, 0), ePoint(size.x, _size.y), alpha);
+			keyboard_sprite->Draw(keyboard_texture, ePoint(0, 0), ePoint(size.x, _size.y), alpha);
 		else
-			joystick_sprite->Draw(ePoint(0, 0), ePoint(size.x, _size.y), alpha);
+			joystick_sprite->Draw(joystick_texture, ePoint(0, 0), ePoint(size.x, _size.y), alpha);
 	}
 }
 @end
@@ -148,11 +172,10 @@ using namespace xPlatform;
 	NSString* bundle_res_path = [[[NSBundle mainBundle] resourcePath] stringByAppendingString:@"/"];
 	xIo::SetResourcePath([bundle_res_path UTF8String]);
 	
-//	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//	const char* path = paths.count ? [[paths objectAtIndex: 0] UTF8String] : NULL;
-	const char* path = "/User/Documents/";
+	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	const char* path = [[[paths objectAtIndex: 0] stringByAppendingString:@"/"] UTF8String];
 	xIo::SetProfilePath(path);
-	mkdir(path, 0755);
+	xIo::SetRootPath(path);
 	OpLastFile(path);
 
 	using namespace xOptions;

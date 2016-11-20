@@ -1,39 +1,18 @@
 SHELL := /bin/bash
 
-ifdef ARM
+PATH_BIN := $(PATH):$(NACL_PEPPER)/toolchain/win_pnacl/bin/
+CXX = pnacl-clang++
+C = pnacl-clang
+FINALIZE = pnacl-finalize
 
-PATH_BIN := $(PATH):$(NACL_PEPPER)/toolchain/mac_arm_newlib/bin/
-CXX = arm-nacl-g++
-C = arm-nacl-gcc
-PLATFORM = _arm
-
-else #ARM
-
-PATH_BIN := $(PATH):$(NACL_PEPPER)/toolchain/mac_x86_newlib/bin/
-CXX = i686-nacl-g++
-C = i686-nacl-gcc
-ifdef X86
-PLATFORM = _x86_32
-CXXFLAGS = -m32
-CFLAGS = -m32
-LFLAGS = -m32
-else #X86 
-PLATFORM = _x86_64
-CXXFLAGS = -m64
-CFLAGS = -m64
-LFLAGS = -m64
-endif #X86
-
-endif #ARM
-
-LIB_PATH = $(NACL_PEPPER)/lib/newlib$(PLATFORM)/Release
+LIB_PATH = $(NACL_PEPPER)/lib/pnacl/Release
 
 export PATH = $(PATH_BIN)
 
 SRC_PATH = ../..
-OBJ_BASE = Release$(PLATFORM)
+OBJ_BASE = Release
 
-PROJECT_NAME = unreal_speccy_portable$(PLATFORM)
+PROJECT_NAME = unreal_speccy_portable
 SRCFOLDERS = . z80 tools 3rdparty/zlib 3rdparty/minizip snapshot platform platform/chrome_nacl platform/gles2 devices devices/fdd devices/input devices/sound 
 CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
 CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
@@ -44,19 +23,28 @@ CXX_OBJS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$(CXXSRCS))
 CXX_DEPS = $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.d,$(CXXSRCS))
 C_OBJS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(CSRCS))
 C_DEPS = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.d,$(CSRCS))
-BIN_TARGET = $(PROJECT_NAME).nexe
+BIN_TARGET = $(PROJECT_NAME)_not_final.pexe
+BIN_TARGET_FINAL = $(PROJECT_NAME).pexe
 
 CXXCFLAGS = -O2 -Wall -c -fmessage-length=0 -I$(NACL_PEPPER)/include -I$(SRC_PATH)/3rdparty/zlib
 
-CXXFLAGS += $(CXXCFLAGS) -D_CHROME_NACL -DUSE_GLES2 -DUSE_GLES2_SIMPLE_SHADER -DUSE_ZIP -DUSE_EXTERN_RESOURCES -I$(SRC_PATH)/3rdparty/minizip
+CXXFLAGS += $(CXXCFLAGS) -D_CHROME_NACL -DUSE_GLES2 -DUSE_ZIP -DUSE_EXTERN_RESOURCES -I$(SRC_PATH)/3rdparty/minizip
 CFLAGS += $(CXXCFLAGS)
-LFLAGS += -s -L$(LIB_PATH) -lppapi -lppapi_cpp -lppapi_gles2
+LFLAGS += -O2 -L$(LIB_PATH) -lppapi -lppapi_cpp -lppapi_gles2
+
+OBJFOLDERS = $(addprefix $(OBJ_PATH)/,$(SRCFOLDERS))
+
+ifeq ($(shell echo "check_quotes"),"check_quotes")
+	mkdir = mkdir $(subst /,\,$(1))
+else
+	mkdir = mkdir -p $(1)
+endif
+
 
 all: build
 
-mkdirs:
-	mkdir -p $(DIST_PATH)
-	mkdir -p $(foreach dir, $(SRCFOLDERS), $(OBJ_PATH)/$(dir))
+$(OBJFOLDERS):
+	$(call mkdir,$@)
 	
 $(CXX_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
@@ -67,7 +55,10 @@ $(C_OBJS): $(OBJ_PATH)/%.o : $(SRC_PATH)/%.c
 $(BIN_TARGET): $(CXX_OBJS) $(C_OBJS)
 	$(CXX) $^ $(LFLAGS) -o$(BIN_TARGET)
 
-build: mkdirs $(BIN_TARGET)
+$(BIN_TARGET_FINAL): $(BIN_TARGET)
+	$(FINALIZE) $(BIN_TARGET) -o $(BIN_TARGET_FINAL) --compress
+
+build: $(OBJFOLDERS) $(BIN_TARGET_FINAL)
 
 clean:
 	rm -rf $(CXX_OBJS)

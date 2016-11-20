@@ -17,15 +17,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifdef USE_GLES2
-#ifdef USE_GLES2_SPRITE
 
 #include "gles2_sprite.h"
 #include "gles2_shader.h"
+#include "../../std.h"
 
 namespace xPlatform
 {
 
-void SetOrtho(float m[4][4], float left, float right, float bottom, float top, float near, float far, float scale_x, float scale_y);
+static void SetOrtho(float m[4][4], float left, float right, float bottom, float top, float near, float far, float scale_x, float scale_y)
+{
+	memset(m, 0, 4*4*sizeof(float));
+	m[0][0] = 2.0f/(right - left)*scale_x;
+	m[1][1] = 2.0f/(top - bottom)*scale_y;
+	m[2][2] = -2.0f/(far - near);
+	m[3][0] = -(right + left)/(right - left);
+	m[3][1] = -(top + bottom)/(top - bottom);
+	m[3][2] = -(far + near)/(far - near);
+	m[3][3] = 1;
+}
 
 static const char* vertex_shader =
 	"uniform mat4 u_vp_matrix;								\n"
@@ -45,7 +55,7 @@ static const char* fragment_shader =
 	"void main()											\n"
 	"{														\n"
 	"	gl_FragColor = texture2D(u_texture, v_texcoord);	\n"
-	"	gl_FragColor.a = u_alpha;							\n"
+	"	gl_FragColor.a *= u_alpha;							\n"
 	"}														\n";
 
 
@@ -62,7 +72,7 @@ eGLES2Sprite::eShaderInfo::eShaderInfo(const char* vs, const char* fs) : program
 	}
 }
 
-eGLES2Sprite::eGLES2Sprite(GLuint _texture, const ePoint& _size) : texture(_texture), size(_size), shader(vertex_shader, fragment_shader)
+eGLES2Sprite::eGLES2Sprite(const ePoint& _size) : shader(vertex_shader, fragment_shader)
 {
 	const GLfloat vertices[] =
 	{
@@ -71,8 +81,8 @@ eGLES2Sprite::eGLES2Sprite(GLuint _texture, const ePoint& _size) : texture(_text
 		+0.5f, +0.5f, 0.0f,
 		-0.5f, +0.5f, 0.0f,
 	};
-	ePoint size_pot = NextPot(size);
-	float max_u = float(size.x)/size_pot.x, max_v = float(size.y)/size_pot.y;
+	ePoint size_pot = NextPot(_size);
+	float max_u = float(_size.x)/size_pot.x, max_v = float(_size.y)/size_pot.y;
 	const GLfloat uvs[] =
 	{
 		0.0f, 0.0f,
@@ -110,7 +120,7 @@ eGLES2Sprite::~eGLES2Sprite()
 	glDeleteProgram(shader.program);
 }
 
-void eGLES2Sprite::Draw(const ePoint& pos, const ePoint& size, float alpha)
+void eGLES2Sprite::Draw(GLuint texture, const ePoint& pos, const ePoint& size, float alpha, float scale_x, float scale_y, bool filtering)
 {
 	glViewport(pos.x, pos.y, size.x, size.y);
 	glUseProgram(shader.program);
@@ -122,17 +132,17 @@ void eGLES2Sprite::Draw(const ePoint& pos, const ePoint& size, float alpha)
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glUniform1f(shader.u_alpha, alpha);
 	}
+	glUniform1f(shader.u_alpha, alpha);
 	float proj[4][4];
-	SetOrtho(proj, -0.5f, +0.5f, +0.5f, -0.5f, -1.0f, 1.0f, 1.0f, 1.0f);
+	SetOrtho(proj, -0.5f, +0.5f, +0.5f, -0.5f, -1.0f, 1.0f, scale_x, scale_y);
 	glUniformMatrix4fv(shader.u_vp_matrix, 1, GL_FALSE, &proj[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glUniform1i(shader.u_texture, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering ? GL_LINEAR : GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering ? GL_LINEAR : GL_NEAREST);
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffer_vertices);
 	glVertexAttribPointer(shader.a_position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
@@ -164,5 +174,4 @@ int NextPot(int v)
 }
 //namespace xPlatform
 
-#endif//USE_GLES2_SPRITE
 #endif//USE_GLES2

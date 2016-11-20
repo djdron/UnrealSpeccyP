@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -47,23 +47,29 @@ static struct eCachedColors
 			items_rgbx[c] = RGBX(r, g, b);
 		}
 	}
-	word items[16];
+	dword items[16];
 	dword items_rgbx[16];
 }
 color_cache;
 
 bool InitVideo()
 {
-    screen = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE);
-    if(!screen)
-        return false;
-	offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16,
-						screen->format->Rmask,
-						screen->format->Gmask,
-						screen->format->Bmask,
-						screen->format->Amask);
+#ifdef SDL_NO_OFFSCREEN
+	screen = SDL_SetVideoMode(320, 240, 32, SDL_SWSURFACE);
+	if(!screen)
+		return false;
+#else//SDL_NO_OFFSCREEN
+	screen = SDL_SetVideoMode(320, 240, 32, SDL_HWSURFACE|SDL_DOUBLEBUF);
+	if(!screen)
+		return false;
+	offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 32,
+		screen->format->Rmask,
+		screen->format->Gmask,
+		screen->format->Bmask,
+		screen->format->Amask);
 	if(!offscreen)
 		return false;
+#endif//SDL_NO_OFFSCREEN
 	color_cache.Init(screen->format);
 	return true;
 }
@@ -77,9 +83,15 @@ void DoneVideo()
 
 void UpdateScreen()
 {
-	SDL_LockSurface(offscreen);
+#ifdef SDL_NO_OFFSCREEN
+	SDL_Surface* out = screen;
+#else//SDL_NO_OFFSCREEN
+	SDL_Surface* out = offscreen;
+#endif//SDL_NO_OFFSCREEN
+	if(SDL_MUSTLOCK(out))
+		SDL_LockSurface(out);
 	byte* data = (byte*)Handler()->VideoData();
-	word* scr = (word*)offscreen->pixels;
+	dword* scr = (dword*)out->pixels;
 #ifdef USE_UI
 	byte* data_ui = (byte*)Handler()->VideoDataUI();
 	if(data_ui)
@@ -90,9 +102,9 @@ void UpdateScreen()
 			{
 				xUi::eRGBAColor c_ui = xUi::palette[*data_ui++];
 				xUi::eRGBAColor c = color_cache.items_rgbx[*data++];
-				*scr++ = SDL_MapRGB(screen->format, (c.r >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.b >> c_ui.a) + c_ui.b);
+				*scr++ = SDL_MapRGB(out->format, (c.r >> c_ui.a) + c_ui.r, (c.g >> c_ui.a) + c_ui.g, (c.b >> c_ui.a) + c_ui.b);
 			}
-			scr += offscreen->pitch - 320*2;
+			scr += out->pitch - 320*sizeof(*scr);
 		}
 	}
 	else
@@ -107,11 +119,14 @@ void UpdateScreen()
 				*scr++ = color_cache.items[*data++];
 				*scr++ = color_cache.items[*data++];
 			}
-			scr += offscreen->pitch - 320*2;
+			scr += out->pitch - 320*sizeof(*scr);
 		}
 	}
-	SDL_UnlockSurface(offscreen);
+	if(SDL_MUSTLOCK(out))
+		SDL_UnlockSurface(out);
+#ifndef SDL_NO_OFFSCREEN
 	SDL_BlitSurface(offscreen, NULL, screen, NULL);
+#endif//SDL_NO_OFFSCREEN
 	SDL_Flip(screen);
 }
 

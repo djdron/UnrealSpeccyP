@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_menu.h"
 #include "ui_keyboard.h"
 #include "ui_file_open.h"
+#include "ui_web_browse.h"
 #include "../../tools/options.h"
 #include "../../tools/profiler.h"
 #include "../../options_common.h"
@@ -43,6 +44,18 @@ static struct eOptionOpenFile : public xOptions::eOptionB
 	virtual void Change(bool next = true) { if(next) on = true; }
 	bool on;
 } op_open_file;
+
+#ifdef USE_WEB
+static struct eOptionBrowseWeb : public xOptions::eOptionB
+{
+	eOptionBrowseWeb() : on(false) { storeable = false; }
+	virtual const char* Name() const { return "browse web"; }
+	virtual const char*	Value() const { return ">"; }
+	virtual void Change(bool next = true) { if(next) on = true; }
+	virtual int Order() const { return 1; }
+	bool on;
+} op_browse_web;
+#endif//USE_WEB
 
 //=============================================================================
 //	eMainDialog::eMainDialog
@@ -69,6 +82,16 @@ void eMainDialog::Update()
 		d->Id(D_FILE_OPEN);
 		Insert(d);
 	}
+#ifdef USE_WEB
+	if(op_browse_web.on)
+	{
+		op_browse_web.on = false;
+		Clear();
+		eDialog* d = new eWebBrowseDialog;
+		d->Id(D_BROWSE_WEB);
+		Insert(d);
+	}
+#endif//USE_WEB
 }
 //=============================================================================
 //	eMainDialog::OnKey
@@ -127,6 +150,17 @@ void eMainDialog::OnNotify(byte n, byte from)
 			clear = true;
 		}
 		break;
+#ifdef USE_WEB
+	case D_BROWSE_WEB:
+		if(!clear)
+		{
+			eWebBrowseDialog* d = (eWebBrowseDialog*)*childs;
+			if(d->Selected())
+				Handler()->OnOpenFile(d->Selected());
+			clear = true;
+		}
+		break;
+#endif//USE_WEB
 	case D_KEYS:
 		{
 			eKeyboard* d = (eKeyboard*)*childs;

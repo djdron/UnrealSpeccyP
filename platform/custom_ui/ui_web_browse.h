@@ -16,28 +16,43 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __TOUCH_TRACKER_H__
-#define __TOUCH_TRACKER_H__
+#ifndef	__UI_WEB_BROWSE_H__
+#define	__UI_WEB_BROWSE_H__
+
+#include "../../ui/ui_dialog.h"
+#include "../io.h"
 
 #pragma once
 
-#include <vector>
+#ifdef USE_UI
+#ifdef USE_WEB
 
-#pragma once
-
-namespace xPlatform
+namespace xUi
 {
 
-class eTouchTracker
+class eList;
+
+class eWebBrowseDialog : public eDialog
 {
+	enum { MAX_ITEMS = 2000 };
+	typedef eDialog eInherited;
 public:
-	int Process(const void* touch, bool on);
-private:
-	typedef std::vector<const void*> eTouches;
-	eTouches touches;
+	eWebBrowseDialog();
+	virtual void Init();
+	const char* Selected() { return selected; }
+protected:
+	void OnNotify(byte n, byte from);
+	void OnChangePath();
+protected:
+	char path[xIo::MAX_PATH_LEN];
+	eList* list;
+	const char* selected;
 };
 
 }
-//namespace xPlatform
+//namespace xUi
 
-#endif//__TOUCH_TRACKER_H__
+#endif//USE_WEB
+#endif//USE_UI
+
+#endif//__UI_WEB_BROWSE_H__

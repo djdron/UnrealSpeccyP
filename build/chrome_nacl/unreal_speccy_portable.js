@@ -125,20 +125,13 @@ function isLetter(str)
 	return str.length === 1 && str.match(/[a-z]/i);
 }
 
-function updateBrowserAns(url, html, item)
+function updateBrowserAns(url, text, item)
 {
 	var path = getPath(url);
 	var browser = document.getElementById("browser");
 	var items_html = "<li id=\"..\"><b>..</b></li>";
 //	alert(html);
-	for(i = 0; i < item.patterns.length; ++i)
-	{
-		var re = new RegExp(item.patterns[i], "g");
-		while((res = re.exec(html)) != null)
-		{
-			items_html += item.parser(path, res);
-		}
-	}
+	items_html += item.parse_all(item, path, text);
 	browser.innerHTML = items_html;
 	installBrowserCallbacks();
 }
@@ -160,10 +153,8 @@ function updateBrowserItems(items, root)
 
 function parser_std(path, elem)
 {
-	var item_name = res[2];
+	var item_name = replace_in_str(res[2], "\\s+", " ");
 	var item_desc = "";
-	while((name1 = item_name.replace("\\s+", " ") != item_name))
-		item_name = name1;
 	if(res.length > 3)
 	{
 		item_desc = res[3];
@@ -183,6 +174,27 @@ function url_std(u)
 	return "http://trd.speccy.cz" + u + ".htm";
 }
 
+function parse_patterns(item, path, html)
+{
+	var items_html = "";
+	for(i = 0; i < item.patterns.length; ++i)
+	{
+		var re = new RegExp(item.patterns[i], "g");
+		while((res = re.exec(html)) != null)
+		{
+			items_html += item.parser(path, res);
+		}
+	}
+	return items_html;
+}
+
+function replace_in_str(str, s1, s2)
+{
+	while((str1 = str.replace(s1, s2)) != str)
+		str = str1;
+	return str;
+}
+
 var browser_items =
 [
 	{
@@ -191,54 +203,52 @@ var browser_items =
 		urls:		[ "full_ver", "demo_ver", "translat", "remix", "123", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ],
 		patterns:	[ "<a href=\"(.+)\">&nbsp;&nbsp;(.+)</a></td><td>(.+)</td><td>(.+)</td><td>(.+)</td>" ],
 		parser:		parser_std,
+		parse_all:	parse_patterns,
 		url:		function(u) { return "http://trd.speccy.cz/games.php?t=" + u; }
 	},
 	{
 		root:		"/demos",
-		items:		[ "/Russian", "/Other", "/Demobit'1995", "/Enlight'1996", "/Enlight'1997", "/Doxycon'1998", "/Funtop'1998",
-					"/Doxycon'1999", "/Chaos Constructions'1999", "/Paradox'1999", "/CAFe'1999", "/Di:Halt'1999", "/Phat9",
-					"/Forever 2e3", "/Millenium'1900", "/ZX-Party 2000", "/Paradox'2k", "/Chaos Constructions'2000", "/Phat0",
-					"/Forever 2e3SE", "/ASCii'2001", "/Millenium'1901", "/Paradox'2k+1", "/Chaos Constructions'2001", "/Phat1",
-					"/Forever 3", "/Millenium'1902", "/Twilight'2002", "/CAFe'2002", "/ASCii'2002", "/Paradox'2002", "/International Vodka Party'2002",
-					"/Forever 4", "/ASCii'2003", "/ParaDIGMus'2003", "/Syndeecate Apocalypse'2003", "/CAFe'2003", "/International Vodka Party'2003", "/Millenium'1903",
-					"/Forever 5", "/Chaos Constructions'2004", "/ASCii'2004", "/Kidsoft'2004",
-					"/Raww Orgy'2005", "/Forever 6", "/Assembly 2005", "/DiHalt'2005", "/Chaos Constructions'2005", "/ZX-Spectrum Party'2005",
-					"/Raww Orgy'2006", "/Forever 7", "/International Vodka Party'2006", "/DiHalt'2006", "/Chaos Constructions'2006", "/Sundown'2006", "/ArtFiled'2006",
-					"/Raww Orgy'2007", "/Forever 8", "/Di:Halt'2007", "/CCA'2007", "/Sundown'2007", "/ASCii'2007", "/ArtFiled'2007",
-					"/Raww Orgy'2008", "/Forever 9", "/Di:Halt'2008", "/International Vodka Party'2008", "/RetroEuskal'2008", "/Arok 10", "/Chaos Constructions'2008", "/ASCii'2008", "/ArtFiled'2008",
-					"/Raww Orgy'2009", "/Forever10", "/ArtField'2009", "/HT'2009 SE", "/DiHalt'2009", "/CC'2009", "/International Vodka Party'2009",
-					"/Raww Orgy'2010", "/FOReVER:2010", "/HT'2010 SE", "/ArtField'2010", "/DiHalt'2010", "/Chaos Constructions'2010", "/tUM'2010",
-					"/FOReVER C", "/ArtField'2011", "/DiHalt'2011", "/CC'2011", "/IVP'2011", "/JHcon'2011",
-					"/Forever XIII", "/DiHalt'2012", "/3BM Openair'2012", "/Chaos Constructions'2012", "/JHCon'2012", "/Next Castle'2012", "/New Year Gift'2013",
-					"/ZX-1 Bit 2013", "/Forever 14", "/ArtField'2013" ],
-		urls:		[ "/demos/russian", "/demos/other", "/demos/demob95", "/demos/enl96", "/demos/enl97", "/demos/doxy98", "/demos/ft98",
-					"/demos/doxy99", "/demos/cc999", "/demos/pdox99", "/demos/cafe99", "/demos/dihalt99", "/demos/phat9",
-					"/demos/forev2e3", "/demos/mln00", "/demos/zxp2000", "/demos/pdx00", "/demos/cc00", "/demos/phat0",
-					"/demos/for2e3se", "/demos/ascii01", "/demos/mln1901", "/demos/pdx01", "/demos/cc01", "/demos/phat1",
-					"/demos/forever3", "/demos/mln1902", "/demos/twilight", "/demos/cafe02", "/demos/ascii02", "/demos/pdx02", "/demos/ivp02",
-					"/demos/forever4", "/demos/ascii03", "/demos/paradig3", "/demos/synd03", "/demos/cafe03", "/demos/ivp03", "/demos/mln1903",
-					"/demos/forever5", "/demos/cc04", "/demos/ascii04", "/demos/kidsoft4",
-					"/demos/r_orgy05", "/demos/forever6", "/demos/asm2005", "/demos/dihalt05", "/demos/cc05", "/demos/kidsoft5",
-					"/demos/r_orgy06", "/demos/forever7", "/demos/ivp06", "/demos/dihalt06", "/demos/cc06", "/demos/sd2006", "/demos/kidsoft6",
-					"/demos/r_orgy07", "/demos/forever8", "/demos/dihalt07", "/demos/cca07", "/demos/sd2007", "/demos/ascii07", "/demos/kidsoft7",
-					"/demos/r_orgy08", "/demos/forever9", "/demos/dihalt08", "/demos/ivp08", "/demos/reuskal8", "/demos/arok10", "/demos/cc08", "/demos/ascii08", "/demos/kidsoft8",
-					"/demos/r_orgy09", "/demos/foreverx", "/demos/kidsoft9", "/demos/ht09se", "/demos/dihalt09", "/demos/cc09", "/demos/ivp09",
-					"/demos/r_orgy10", "/demos/foreve10", "/demos/ht10se", "/demos/kidsof10", "/demos/dihalt10", "/demos/cc10", "/demos/tum10",
-					"/demos/foreverc", "/demos/kidsof11", "/demos/dihalt11", "/demos/cc11", "/demos/ivp11", "/demos/jhcon11",
-					"/demos/forev13", "/demos/dihalt12", "/demos/3bm12", "/demos/cc12", "/demos/jhcon12", "/demos/ncp12", "/demos/newyear13",
-					"/demos/zx1bit13", "/demos/forev14", "/demos/kidsof13" ],
-		patterns:	[ "<div align=\"center\">.*(?:<b>)?<a href=\"(.+?)\">([\\s\\S]+?)(?:</a>)?(?:</b>)?</div>",
-					"<a href=\"(.+)\">&nbsp;&nbsp;(.+)</a></td>\\s+<td>(.+)</td>",
-					"<a href=\"(.+)\">(.+)</a></td>\\s+<td width=\"45%\">(.+)</td>" ],
+		items:		[ "/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L", "/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z" ],
+		urls:		[ "0", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ],
+		patterns:	[ "" ],
 		parser:		parser_std,
-		url:		url_std
+		parse_all:	function(item, path, json)
+					{
+						json = replace_in_str(json, "\\'", "'");
+						json = replace_in_str(json, "\t", " ");
+						if(json.length > 0 && json[json.length - 1] == ",")
+							json = json.slice(0, -1);
+						json = "[" + json + "]";
+						var items_html = "";
+						try
+						{
+							var items = JSON.parse(json);
+							for(var i = 0; i < items.length; i++)
+							{
+								var item = items[i];
+								var author = item.author != "???" ? item.author : "";
+								var city = item.city != "???" ? item.city : "";
+								var year = item.year != "0000" ? item.year : "";
+								var desc = author;
+								if(desc.length > 0 && city.length > 0)
+									desc += " / ";
+								desc += city;
+								if(desc.length > 0 && year.length > 0)
+									desc += " ' ";
+								desc += year;
+								items_html += "<li id=\"" + item.url + "\"><b>" + item.title + "</b><br /><sup>" + desc + "</sup></li>";
+							}
+						}
+						catch(err) {}
+						return items_html;
+					},
+		url:		function(u) { return "http://bbb.retroscene.org/unreal_demos.php?l=" + u; }
 	},
 	{
 		root:		"/press",
 		items:		[ "/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L", "/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z" ],
-		urls:		[ "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an", "/press/press_an",
-					"/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz", "/press/press_oz" ],
-		patterns:	[ "<td>&nbsp;&nbsp;<b>(.+)</b></td>([\\s\\S]+?)</td></tr>" ],
+		urls:		[ "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2" ],
+		patterns:	[ "<td class=\"nowrap\"><b>(.+?)</b></td>\n<td>([\\s\\S]+?)\n</td>\n</tr>" ],
 		parser:		function parser_press(path, elem)
 					{
 						var browser_name = browser_path.substring(getPath(browser_path).length);
@@ -251,7 +261,7 @@ var browser_items =
 						}
 						else if(browser_name[0] != name[0])
 							return "";
-						var re1 = new RegExp("<a href=\"(.+)\">(.+)</a>", "g");
+						var re1 = new RegExp("<a class=\"rpad\" href=\"(.+?)\">(.+?)</a>", "g");
 						var item_html = "";
 						while((res1 = re1.exec(elem[2])) != null)
 						{
@@ -261,7 +271,8 @@ var browser_items =
 						}
 						return item_html;
 					},
-		url:		url_std
+		parse_all:	parse_patterns,
+		url:		function(u) { return "http://trd.speccy.cz/press.php?l=" + u; }
 	},
 	{
 		root:		"/replays",
@@ -277,6 +288,7 @@ var browser_items =
 						var item_url = path + elem[3];
 						return "<li id=\"" + item_url + "\"><b>" + item_name + "</b><br /><sup>" + item_desc + "</sup></li>";
 					},
+		parse_all:	parse_patterns,
 		url:		function(u) { return "http://rzxarchive.co.uk/" + u + ".php"; }
 	},
 ];

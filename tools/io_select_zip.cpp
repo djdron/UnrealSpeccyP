@@ -30,7 +30,7 @@ namespace xIo
 class eFileSelectZIP : public eFileSelect
 {
 public:
-	eFileSelectZIP(char* _contain_path, char* _contain_name) : fi_current(NULL), trim_path_len(0), dir_current(false)
+	eFileSelectZIP(const char* _contain_path, const char* _contain_name) : fi_current(NULL), trim_path_len(0), dir_current(false)
 	{
 		strcpy(path, _contain_name);
 		int l = strlen(path);
@@ -98,7 +98,7 @@ private:
 	bool dir_current;
 };
 
-eFileSelect* FileSelectZIP(char* contain_path, char* contain_name) { return new eFileSelectZIP(contain_path, contain_name); }
+eFileSelect* FileSelectZIP(const char* contain_path, const char* contain_name) { return new eFileSelectZIP(contain_path, contain_name); }
 
 }
 //namespace xIo

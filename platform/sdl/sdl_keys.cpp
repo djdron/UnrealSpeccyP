@@ -160,7 +160,7 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	if(_key >= SDLK_0 && _key <= SDLK_9)
 		return _key;
 	if(_key >= SDLK_a && _key <= SDLK_z)
-		return toupper(_key);
+		return 'A' + _key - SDLK_a;
 	if(_key == SDLK_SPACE)
 		return _key;
 	return 0;

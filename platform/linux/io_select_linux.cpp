@@ -65,7 +65,11 @@ private:
 
 eFileSelect* FileSelect(const char* path) { return new eFileSelectPosix(path); }
 
-bool PathIsRoot(const char* path) {	return !strcmp(path, "/"); }
+static char root_path[MAX_PATH_LEN] = "/";
+
+void SetRootPath(const char* path) { strcpy(root_path, path); }
+
+bool PathIsRoot(const char* path) {	return !strcmp(path, root_path); }
 
 bool MkDir(const char* path)
 {
