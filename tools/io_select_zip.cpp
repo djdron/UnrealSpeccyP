@@ -76,7 +76,7 @@ public:
 				name_current[l - 1] = 0;
 			GetPathParent(path_parent, name_current);
 		}
-		while(unzStringFileNameCompare(path_parent, path, 0) != 0);
+		while(strcmp(path_parent, path) != 0);
 
 		if(trim_path_len)
 		{
