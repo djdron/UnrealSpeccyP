@@ -171,7 +171,7 @@ bool eFileTypeZIP::Contain(const char* name, char* contain_path, char* contain_n
 	char n[xIo::MAX_PATH_LEN];
 	strcpy(n, name);
 	int l = strlen(n);
-	for(int i = l; --i >= 0;)
+	for(int i = 0; i < l; ++i)
 	{
 		if(n[i] == '/' || n[i] == '\\')
 		{
