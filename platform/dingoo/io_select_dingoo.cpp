@@ -22,9 +22,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/io_select.h"
 #include "../io.h"
 #include <dingoo/fsys.h>
+#include <sys/stat.h>
 
 namespace xIo
 {
+
+static const char* FixSlashes(const char* _path)
+{
+	static char path[MAX_PATH_LEN];
+	strcpy(path, _path);
+	for(char* b = path; *b; ++b)
+	{
+		if(*b == '/')
+			*b = '\\';
+	}
+	return path;
+}
 
 class eDingooFileSelectI : public eFileSelect
 {
@@ -32,12 +45,7 @@ public:
 	eDingooFileSelectI(const char* _path)
 	{
 		char path[MAX_PATH_LEN];
-		strcpy(path, _path);
-		for(char* b = path; *b; ++b)
-		{
-			if(*b == '/')
-				*b = '\\';
-		}
+		strcpy(path, FixSlashes(_path));
 		strcat(path, "*");
 		h = fsys_findfirst(path, -1, &fd);
 	}
@@ -82,14 +90,15 @@ eFileSelect* FileSelect(const char* path)
 
 bool PathIsRoot(const char* path) {	return !strlen(path); }
 
-bool MkDir(const char* path)
+bool MkDir(const char* _path)
 {
-	fsys_file_info_t fd;
-	int h = fsys_findfirst(path, -1, &fd);
-	fsys_findclose(&fd);
-	if(h == 0)
-		return true; // exist
-	return fsys_mkdir(path) == 0;
+	struct stat st;
+	if(stat(_path, &st) == 0)
+	{
+		if(S_ISDIR(st.st_mode))
+			return true;
+	}
+	return fsys_mkdir(FixSlashes(_path)) == 0;
 }
 
 }
