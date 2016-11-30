@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ byte spxtrm4f[2048];
 
 namespace xPlatform
 {
-void UpdateScreen(word* scr);
+void UpdateScreen(dword* scr);
 void ProcessKey(char key, bool down, bool shift, bool alt);
 void InitSound();
 void DoneSound();
@@ -187,7 +187,7 @@ jint Java_app_usp_Emulator_Update(JNIEnv* env, jobject obj)
 void Java_app_usp_Emulator_UpdateVideo(JNIEnv* env, jobject obj, jobject byte_buffer)
 {
 	PROFILER_SECTION(u_vid);
-	uint16_t* buf = (uint16_t*)env->GetDirectBufferAddress(byte_buffer);
+	uint32_t* buf = (uint32_t*)env->GetDirectBufferAddress(byte_buffer);
 	xPlatform::UpdateScreen(buf);
 }
 jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer, jboolean skip_data)
