@@ -22,47 +22,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/io_select.h"
 #include "../io.h"
 #include <dingoo/fsys.h>
+#include <sys/stat.h>
 
 namespace xIo
 {
 
-class eFileSelectI
+static const char* FixSlashes(const char* _path)
 {
-public:
-	virtual ~eFileSelectI() {}
-	virtual bool Valid() const = 0;
-	virtual void Next() = 0;
-	virtual const char* Name() const = 0;
-	virtual bool IsDir() const = 0;
-	virtual bool IsFile() const = 0;
-};
+	static char path[MAX_PATH_LEN];
+	strcpy(path, _path);
+	for(char* b = path; *b; ++b)
+	{
+		if(*b == '/')
+			*b = '\\';
+	}
+	return path;
+}
 
-class eDingooFileSelectI : public eFileSelectI
+class eDingooFileSelectI : public eFileSelect
 {
 public:
 	eDingooFileSelectI(const char* _path)
 	{
 		char path[MAX_PATH_LEN];
-		strcpy(path, _path);
-		for(char* b = path; *b; ++b)
-		{
-			if(*b == '/')
-				*b = '\\';
-		}
+		strcpy(path, FixSlashes(_path));
 		strcat(path, "*");
 		h = fsys_findfirst(path, -1, &fd);
 	}
 	~eDingooFileSelectI() { fsys_findclose(&fd); }
-	bool Valid() const { return h == 0; }
-	void Next() { h = fsys_findnext(&fd); }
-	const char* Name() const { return fd.name; }
-	bool IsDir() const { return fd.attributes&0x10; }
-	bool IsFile() const { return !IsDir(); }
+	virtual bool Valid() const { return h == 0; }
+	virtual void Next() { h = fsys_findnext(&fd); }
+	virtual const char* Name() const { return fd.name; }
+	virtual bool IsDir() const { return FSYS_ISDIR(fd.attributes); }
+	virtual bool IsFile() const { return FSYS_ISFILE(fd.attributes); }
 	fsys_file_info_t fd;
 	int h;
 };
 
-class eDingooDriveSelectI : public eFileSelectI
+class eDingooDriveSelectI : public eFileSelect
 {
 public:
 	eDingooDriveSelectI() : drives(0)
@@ -82,23 +79,30 @@ public:
 	dword drives;
 };
 
-eFileSelect::eFileSelect(const char* path)
+eFileSelect* FileSelect(const char* path)
 {
 	if(PathIsRoot(path))
-		impl = new eDingooDriveSelectI;
+		return new eDingooDriveSelectI;
 	else
-		impl = new eDingooFileSelectI(path);
+		return new eDingooFileSelectI(path);
+
 }
-eFileSelect::~eFileSelect() { delete impl; }
-bool eFileSelect::Valid() const { return impl->Valid(); }
-void eFileSelect::Next() { impl->Next(); }
-const char* eFileSelect::Name() const { return impl->Name(); }
-bool eFileSelect::IsDir() const { return impl->IsDir(); }
-bool eFileSelect::IsFile() const { return impl->IsFile(); }
 
 bool PathIsRoot(const char* path) {	return !strlen(path); }
+
+bool MkDir(const char* _path)
+{
+	struct stat st;
+	if(stat(_path, &st) == 0)
+	{
+		if(S_ISDIR(st.st_mode))
+			return true;
+	}
+	return fsys_mkdir(FixSlashes(_path)) == 0;
+}
 
 }
 //namespace xIo
 
 #endif//_DINGOO
+

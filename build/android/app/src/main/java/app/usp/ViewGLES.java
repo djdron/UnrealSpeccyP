@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ public class ViewGLES extends GLSurfaceView
 		static final int TEX_WIDTH = 512;
 		static final int TEX_HEIGHT = 256;
 
-		private ByteBuffer buf_video = ByteBuffer.allocateDirect(WIDTH*HEIGHT*2);
+		private ByteBuffer buf_video = ByteBuffer.allocateDirect(WIDTH*HEIGHT*4);
 		private int[] textures = new int[1];
 		private Quad quad = new Quad();
 		private ControlController control_controller = null;
@@ -164,7 +164,7 @@ public class ViewGLES extends GLSurfaceView
 			GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 
 		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, ByteBuffer.allocate(TEX_WIDTH*TEX_HEIGHT*2));
+			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA, TEX_WIDTH, TEX_HEIGHT, 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, ByteBuffer.allocate(TEX_WIDTH*TEX_HEIGHT*4));
 
 			control_controller.Init(gl);
 			control_keyboard.Init(gl);
@@ -216,7 +216,7 @@ public class ViewGLES extends GLSurfaceView
 			// write video buffer data to texture
 			Emulator.the.ProfilerBegin(3);
 			gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-			gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5, buf_video);
+			gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, buf_video);
 			Emulator.the.ProfilerEnd(3);
 
 			Emulator.the.ProfilerBegin(1);

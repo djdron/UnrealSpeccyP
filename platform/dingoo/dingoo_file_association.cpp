@@ -28,7 +28,7 @@ extern "C"
 int GetFileType(char* pname)
 {
 	if(pname)
-		strcpy(pname, "TRD|SCL|SNA|Z80|TZX");
+		strcpy(pname, "TRD|SCL|RZX|Z80|TZX");
 	return 0;
 }
 

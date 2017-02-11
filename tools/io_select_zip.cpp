@@ -32,6 +32,7 @@ class eFileSelectZIP : public eFileSelect
 public:
 	eFileSelectZIP(const char* _contain_path, const char* _contain_name) : fi_current(NULL), trim_path_len(0), dir_current(false)
 	{
+		memset(folders, 0, sizeof(folders));
 		strcpy(path, _contain_name);
 		int l = strlen(path);
 		if(l > 0)
@@ -52,12 +53,17 @@ public:
 	{
 		if(zip)
 			unzClose(zip);
+		for(int i = 0; i < MAX_FOLDERS; ++i)
+		{
+			if(!folders[i])
+				break;
+			free(folders[i]);
+		}
 	}
 	virtual bool Valid() const { return zip && fi_current; }
 	virtual void Next()
 	{
-		char path_parent[xIo::MAX_PATH_LEN];
-		do
+		for(;;)
 		{
 			if((fi_current ? unzGoToNextFile(zip) : unzGoToFirstFile(zip)) != UNZ_OK)
 			{
@@ -70,14 +76,42 @@ public:
 				return;
 			}
 			fi_current = &fi;
-			int l = strlen(name_current);
-			dir_current = name_current[l - 1] == '/';
-			if(dir_current)
-				name_current[l - 1] = 0;
-			GetPathParent(path_parent, name_current);
-		}
-		while(unzStringFileNameCompare(path_parent, path, 0) != 0);
 
+			if(trim_path_len && strncmp(name_current, path, trim_path_len - 1) != 0)
+			{
+				Next();
+				return;
+			}
+			char* folder = strchr(name_current + trim_path_len, '/');
+			if(folder)
+			{
+				*folder = 0;
+				if(AddFolder(name_current + trim_path_len))
+				{
+					dir_current = true;
+					TrimName();
+					return;
+				}
+				else
+				{
+					Next();
+					return;
+				}
+			}
+			else
+			{
+				dir_current = false;
+				TrimName();
+				return;
+			}
+		}
+	}
+	virtual const char* Name() const { return name_current; }
+	virtual bool IsFile() const { return !dir_current; }
+	virtual bool IsDir() const { return dir_current; }
+private:
+	void TrimName()
+	{
 		if(trim_path_len)
 		{
 			char trim_name[xIo::MAX_PATH_LEN];
@@ -85,10 +119,24 @@ public:
 			strcpy(name_current, trim_name);
 		}
 	}
-	virtual const char* Name() const { return name_current; }
-	virtual bool IsFile() const { return !dir_current; }
-	virtual bool IsDir() const { return dir_current; }
-private:
+	enum { MAX_FOLDERS = 512 };
+	bool AddFolder(const char* name)
+	{
+		int i = 0;
+		for(; i < MAX_FOLDERS; ++i)
+		{
+			if(!folders[i])
+				break;
+			if(strcmp(folders[i], name) == 0)
+				return false;
+		}
+		if(i < MAX_FOLDERS)
+		{
+			folders[i] = strdup(name);
+			return true;
+		}
+		return false;
+	}
 	unzFile zip;
 	unz_file_info fi;
 	unz_file_info* fi_current;
@@ -96,6 +144,7 @@ private:
 	char name_current[xIo::MAX_PATH_LEN];
 	int trim_path_len;
 	bool dir_current;
+	char* folders[MAX_FOLDERS];
 };
 
 eFileSelect* FileSelectZIP(const char* contain_path, const char* contain_name) { return new eFileSelectZIP(contain_path, contain_name); }

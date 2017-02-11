@@ -47,6 +47,15 @@ const eFileType* eFileType::FindByName(const char* name)
 
 bool eFileType::Open(const char* name) const
 {
+	for(const eFileType* t = First(); t; t = t->Next())
+	{
+		char contain_path[xIo::MAX_PATH_LEN];
+		char contain_name[xIo::MAX_PATH_LEN];
+		if(t->Contain(name, contain_path, contain_name))
+		{
+			return t->Open(name);
+		}
+	}
 	FILE* f = fopen(name, "rb");
 	if(f)
 	{
@@ -64,15 +73,6 @@ bool eFileType::Open(const char* name) const
 		bool ok = Open(buf, size);
 		delete[] buf;
 		return ok;
-	}
-	for(const eFileType* t = First(); t; t = t->Next())
-	{
-		char contain_path[xIo::MAX_PATH_LEN];
-		char contain_name[xIo::MAX_PATH_LEN];
-		if(t->Contain(name, contain_path, contain_name))
-		{
-			return t->Open(name);
-		}
 	}
 	return false;
 }
