@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,13 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-
 import android.content.Context;
 import android.content.res.Configuration;
-//import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 
@@ -40,48 +35,6 @@ import app.usp.ctl.ControlTouch;
 
 public class ViewGLES extends GLSurfaceView
 {
-	public class Quad
-	{
-		Quad()
-		{
-			final float vertices[] =
-			{
-				-0.5f, -0.5f,
-				+0.5f, -0.5f,
-				+0.5f, +0.5f,
-				-0.5f, +0.5f
-			};
-			v = ByteBuffer.allocateDirect(vertices.length*4).
-					order(ByteOrder.nativeOrder()).asFloatBuffer();
-			v.put(vertices).rewind();
-			final float uv_coords[] =
-			{
-				0, 0,
-				1, 0,
-				1, 1,
-				0, 1
-			};
-			uv = ByteBuffer.allocateDirect(uv_coords.length*4).
-					order(ByteOrder.nativeOrder()).asFloatBuffer();
-			uv.put(uv_coords).rewind();
-			final byte triangles[] =
-			{
-				0, 1, 2,
-				0, 2, 3,
-			};
-			t = ByteBuffer.allocateDirect(triangles.length);
-			t.put(triangles).rewind();
-		}
-		public void Draw(GL10 gl)
-		{
-//			GLES20.glVertexPointer(2, GLES20.GL_FLOAT, 0, v);
-//			GLES20.glTexCoordPointer(2, GLES20.GL_FLOAT, 0, uv);
-//		    GLES20.glDrawElements(GLES20.GL_TRIANGLES, 2 * 3, GLES20.GL_UNSIGNED_BYTE, t);
-		}
-		FloatBuffer v = null;
-		FloatBuffer uv = null;
-		ByteBuffer t = null;
-	}
 	private class SyncTimer
 	{
 		private long time_emulated = 0;
@@ -121,9 +74,7 @@ public class ViewGLES extends GLSurfaceView
 		static final int TEX_WIDTH = 512;
 		static final int TEX_HEIGHT = 256;
 
-		private ByteBuffer buf_video = ByteBuffer.allocateDirect(WIDTH*HEIGHT*4);
 		private int[] textures = new int[1];
-		private Quad quad = new Quad();
 		private ControlController control_controller = null;
 		private ControlKeyboard control_keyboard = null;
 		private ControlReplay control_replay = null;
@@ -131,8 +82,6 @@ public class ViewGLES extends GLSurfaceView
 		private int width = 0;
 		private int height = 0;
 		boolean filtering = false;
-		private float scale_x = 1.0f;
-		private float scale_y = 1.0f;
 		private SyncTimer sync_timer = null;
 		private Context context;
 		Video(Context _context)
@@ -152,35 +101,16 @@ public class ViewGLES extends GLSurfaceView
 			control_keyboard.OnTouch(x, y, down, pid);
 		}
 		@Override
-		public void onSurfaceCreated(GL10 gl, EGLConfig config)
+		public void onSurfaceCreated(GL10 gl_unused, EGLConfig config)
 		{
+			Emulator.the.DoneGL();
 			Emulator.the.InitGL();
 			Emulator.the.ProfilerBegin(2);
-/*		    GLES20.glClearColor(0, 0, 0, 0);
-			GLES20.glEnableClientState(GLES20.GL_VERTEX_ARRAY);
-			GLES20.glEnableClientState(GLES20.GL_TEXTURE_COORD_ARRAY);
 
-			GLES20.glGenTextures(1, textures, 0);
-			GLES20.glEnable(GLES20.GL_TEXTURE_2D);
-
-		    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-			gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA, TEX_WIDTH, TEX_HEIGHT, 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, ByteBuffer.allocate(TEX_WIDTH*TEX_HEIGHT*4));
-
-			control_controller.Init(gl);
-			control_keyboard.Init(gl);
-			control_replay.Init(gl);
-			control_fast_forward.Init(gl);
-
-			GLES20.glMatrixMode(GLES20.GL_PROJECTION);
-			GLES20.glLoadIdentity();
-			GLES20.glOrthof(-0.5f, +0.5f, +0.5f, -0.5f, -1.0f, 1.0f);
-
-			GLES20.glShadeModel(GLES20.GL_FLAT);
-			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-			GLES20.glDisable(GLES20.GL_DITHER);
-			GLES20.glDisable(GLES20.GL_LIGHTING);
-			GLES20.glHint(GLES20.GL_PERSPECTIVE_CORRECTION_HINT, GLES20.GL_FASTEST);
-*/
+			control_controller.Init();
+			control_keyboard.Init();
+			control_replay.Init();
+			control_fast_forward.Init();
 		}
 		private void ShowMessage(final int code)
 		{
@@ -208,49 +138,28 @@ public class ViewGLES extends GLSurfaceView
 				});
 			}
 		}
-		private void Draw(GL10 _gl)
+		private void Draw()
 		{
-			Emulator.the.DrawGL(width, height);
-/*			Emulator.the.UpdateVideo(buf_video);
-
-			// write video buffer data to texture
 			Emulator.the.ProfilerBegin(3);
-			gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-			gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, buf_video);
+			Emulator.the.DrawGL(width, height);
 			Emulator.the.ProfilerEnd(3);
 
 			Emulator.the.ProfilerBegin(1);
-			// draw emulator screen
-			gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-			gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			gl.glViewport(0, 0, width, height);
-			gl.glMatrixMode(GL10.GL_MODELVIEW);
-			gl.glLoadIdentity();
-			gl.glScalef(scale_x, scale_y, 1.0f);
-			gl.glMatrixMode(GL10.GL_TEXTURE);
-			gl.glLoadIdentity();
-			gl.glScalef(((float)WIDTH)/TEX_WIDTH, ((float)HEIGHT)/TEX_HEIGHT, 1.0f);
-			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
-			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, filtering ? GL10.GL_LINEAR : GL10.GL_NEAREST);
-			gl.glDisable(GL10.GL_BLEND);
-			quad.Draw(gl);
-
-			control_controller.Draw(gl, quad, width);
-			control_keyboard.Draw(gl, quad, width, height);
-			control_replay.Draw(gl, quad, width, height);
-			control_fast_forward.Draw(gl, quad, width, height);
+			control_controller.Draw(width);
+			control_keyboard.Draw(width, height);
+			control_replay.Draw(width, height);
+			control_fast_forward.Draw(width, height);
 			Emulator.the.ProfilerEnd(1);
-*/
 		}
 		@Override
-		public void onDrawFrame(GL10 gl)
+		public void onDrawFrame(GL10 gl_unused)
 		{
 			Emulator.the.ProfilerEnd(2);
 			if(control_fast_forward.Pressed())
 			{
 				final long time_frame_end = System.nanoTime() + SyncTimer.TIME_FRAME*4/5;
 				ShowMessage(Emulator.the.Update());
-				Draw(gl);
+				Draw();
 				audio.Update(false);
 				for(int frames = 1; frames < 15; ++frames) // do not speedup faster than 15x
 				{
@@ -268,7 +177,7 @@ public class ViewGLES extends GLSurfaceView
 					ShowMessage(Emulator.the.Update());
 					if(f == skip_frames)
 					{
-						Draw(gl);
+						Draw();
 					}
 					audio.Update(false);
 					if(sync_timer != null)
@@ -278,46 +187,14 @@ public class ViewGLES extends GLSurfaceView
 			Emulator.the.ProfilerBegin(2);
 		}
 		@Override
-		public void onSurfaceChanged(GL10 gl, int w, int h)
+		public void onSurfaceChanged(GL10 gl_unused, int w, int h)
 		{
 			width = w;
 			height = h;
-			filtering = Emulator.the.GetOptionBool(Preferences.filtering_id);
 			if(Emulator.the.GetOptionBool(Preferences.av_timer_sync_id))
 				sync_timer = new SyncTimer();
 			else
 				sync_timer = null;
-		    final int zoom_mode = Emulator.the.GetOptionInt(Preferences.select_zoom_id);
-			switch(zoom_mode)
-			{
-			case 0: // 1:1 mode
-			    filtering = false;
-			    scale_x = ((float)WIDTH) / w;
-			    scale_y = ((float)HEIGHT) / h;
-				break;
-			default: // fill screen & others
-				final float a = ((float)w)/h;
-				final float a43 = ((float)4)/3;
-				if(a > a43)
-				{
-					scale_x = a43/a;
-					scale_y = 1.0f;
-				}
-				else
-				{
-					scale_x = 1.0f;
-					scale_y = a/a43;
-				}
-				break;
-			}
-			float z = 1.0f;
-			switch(zoom_mode)
-			{
-			case 2:	z = 300.0f/256.0f;	break; //small border
-			case 3:	z = 320.0f/256.0f;	break; //no border
-			}
-			scale_x *= z;
-			scale_y *= z;
 		}
 	}
 	private Audio audio = null;

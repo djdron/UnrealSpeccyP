@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,31 +18,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp.ctl;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.os.SystemClock;
 import app.usp.Emulator;
 import app.usp.R;
-import app.usp.ViewGLES;
 
 public class ControlKeyboard extends ControlOverlay
 {
 	private int width;
 	private int height;
-	private final float scale_x, scale_y;
 	private int pid_activator = -1;
-	static final int HIDE_TIME_MS = 4000; 
+	static final int HIDE_TIME_MS = 4000;
+	private int	sprite = -1;
+	private int sprite_width;
+	private int sprite_height;
 
 	private int[] textures = new int[1];
 	private Bitmap keyboard = null;
-	
+
 	public ControlKeyboard(Context context)
 	{
 		//@note : width & height may vary at runtime a little ;-) 
@@ -64,24 +64,24 @@ public class ControlKeyboard extends ControlOverlay
 		else
 			bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.keyboard, options);
 		bm.setDensity(Bitmap.DENSITY_NONE);
-		final int w = bm.getWidth();
-		final int h = bm.getHeight();
-		final int width_pot = NextPot(w);
-		final int height_pot = NextPot(h);
-		scale_x = ((float)w)/width_pot;
-		scale_y = ((float)h)/height_pot;
-		
+		sprite_width = bm.getWidth();
+		sprite_height = bm.getHeight();
+		final int width_pot = NextPot(sprite_width);
+		final int height_pot = NextPot(sprite_height);
+
         keyboard = Bitmap.createBitmap(width_pot, height_pot, Bitmap.Config.RGB_565);
 	    Paint paint = new Paint();
 	    paint.setAntiAlias(true);
 		Canvas canvas = new Canvas(keyboard);
 		canvas.drawBitmap(bm, 0.0f, 0.0f, paint);
 	}
-	public void Init(GL10 gl)
+	public void Init()
 	{
-		gl.glGenTextures(1, textures, 0);
-	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-	    GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, keyboard, 0);
+		GLES20.glGenTextures(1, textures, 0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
+	    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, keyboard, 0);
+
+		sprite = Emulator.the.CreateGLSprite(sprite_width, sprite_height);
 	}
 	public void OnTouch(float x, float y, boolean down, int pointer_id)
 	{
@@ -102,7 +102,7 @@ public class ControlKeyboard extends ControlOverlay
 		}
 		Emulator.the.OnTouch(true, x/width, y/height, down, pointer_id);
 	}
-	public void Draw(GL10 gl, ViewGLES.Quad quad, int _w, int _h)
+	public void Draw(int _w, int _h)
 	{
 		if(!active)
 			return;
@@ -117,20 +117,7 @@ public class ControlKeyboard extends ControlOverlay
 		}
 
 		final float alpha = passed_time > (HIDE_TIME_MS - 1000) ? (float)(HIDE_TIME_MS - passed_time)/1000.0f : 1.0f;
-
 		// draw keyboard
-		gl.glColor4f(1.0f, 1.0f, 1.0f, 0.5f*alpha);
-	    gl.glViewport(0, 0, width, height);
-		gl.glMatrixMode(GL10.GL_TEXTURE);
-	    gl.glLoadIdentity();
-	    gl.glScalef(scale_x, scale_y, 1.0f);
-	    gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
-	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-		gl.glEnable(GL10.GL_BLEND);
-		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		quad.Draw(gl);
+		Emulator.the.DrawGLSprite(sprite, textures[0], 0, 0, width, height, 0.5f*alpha, true);
 	}
 }

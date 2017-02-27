@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,26 +18,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp.ctl;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.os.SystemClock;
 import app.usp.Emulator;
-import app.usp.ViewGLES;
 
 public class ControlController extends ControlOverlay
 {
 	private final int size;
-	private final float scale_pot;
 	private long touch_joy_time = 0;
 	private float dir_x = 0.0f;
 	private float dir_y = 0.0f;
 	private int pid_joy = -1;
+	private int sprite = -1;
 
 	private int[] textures = new int[2];
 	private Bitmap joy_area = null;
@@ -48,7 +46,6 @@ public class ControlController extends ControlOverlay
 		size = (int)(context.getResources().getDisplayMetrics().density*150);
 		final int ptr_size = (int)(size*0.4f);
 		final int size_pot = NextPot(size);
-		scale_pot = ((float)size)/size_pot;
 
 	    Paint paint = new Paint();
 	    paint.setAntiAlias(true);
@@ -63,13 +60,15 @@ public class ControlController extends ControlOverlay
         paint.setColor(Color.GRAY);
 	    canvas.drawCircle(size*0.5f, size*0.5f, ptr_size*0.5f, paint);
 	}
-	public void Init(GL10 gl)
+	public void Init()
 	{
-		gl.glGenTextures(2, textures, 0);
-	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-	    GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, joy_area, 0);
-	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[1]);
-	    GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, joy_ptr, 0);
+		GLES20.glGenTextures(2, textures, 0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
+	    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, joy_area, 0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
+	    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, joy_ptr, 0);
+
+		sprite = Emulator.the.CreateGLSprite(size, size);
 	}
 	public void OnTouch(float x, float y, boolean down, int pointer_id)
 	{
@@ -105,7 +104,7 @@ public class ControlController extends ControlOverlay
 			Emulator.the.OnKey('f', down, false, false);
 		}
 	}
-	public void Draw(GL10 gl, ViewGLES.Quad quad, int width)
+	public void Draw(int width)
 	{
 		if(!active)
 			return;
@@ -126,33 +125,10 @@ public class ControlController extends ControlOverlay
 		}
 
 		final float alpha = passed_time > 1000 ? (float)(2000 - passed_time)/1000.0f : 1.0f;
+		Emulator.the.DrawGLSprite(sprite, textures[0], 0, 0, size, size, 0.3f*alpha, false);
+		Emulator.the.DrawGLSprite(sprite, textures[1], (int)(dir_x*0.25f), (int)(-dir_y*0.25f), size, size, 0.3f*alpha, false);
 
-		// draw controller
-		gl.glColor4f(1.0f, 1.0f, 1.0f, 0.3f*alpha);
-	    gl.glViewport(0, 0, size, size);
-		gl.glMatrixMode(GL10.GL_TEXTURE);
-	    gl.glLoadIdentity();
-	    gl.glScalef(scale_pot, scale_pot, 1.0f);
-	    gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
-	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
-		gl.glEnable(GL10.GL_BLEND);
-		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		quad.Draw(gl);
-
-		gl.glTranslatef(dir_x*0.25f, -dir_y*0.25f, 0.0f);
-	    gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[1]);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
-		quad.Draw(gl);
-		
-	    gl.glViewport(width - size, 0, size, size);
-	    gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		gl.glTranslatef(0.15f, 0.15f, 0.0f);
-		quad.Draw(gl);
+		Emulator.the.DrawGLSprite(sprite, textures[1], width - size, 0, size, size, 0.3f*alpha, false);
 	}
 	public void Active(boolean on)
 	{

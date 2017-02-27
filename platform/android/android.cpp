@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../touch_ui/tui_keyboard.h"
 #include "../touch_ui/tui_joystick.h"
 #include "../gles2/gles2.h"
+#include "../gles2/gles2_sprite.h"
 
 PROFILER_DECLARE(u_vid);
 PROFILER_DECLARE(u_aud);
@@ -184,7 +185,11 @@ jint Java_app_usp_Emulator_Update(JNIEnv* env, jobject obj)
 		return 4;
 	return -1;
 }
+
 static xPlatform::eGLES2* gles2 = NULL;
+static xPlatform::eGLES2Sprite* sprites[16];
+static int sprite_max = -1;
+
 void Java_app_usp_Emulator_InitGL(JNIEnv* env, jobject obj)
 {
 	gles2 = xPlatform::eGLES2::Create();
@@ -192,11 +197,33 @@ void Java_app_usp_Emulator_InitGL(JNIEnv* env, jobject obj)
 void Java_app_usp_Emulator_DoneGL(JNIEnv* env, jobject obj)
 {
 	SAFE_DELETE(gles2);
+	for(int s = 0; s <= sprite_max; ++s)
+	{
+		SAFE_DELETE(sprites[s]);
+	}
+	sprite_max = -1;
 }
 void Java_app_usp_Emulator_DrawGL(JNIEnv* env, jobject obj, jint width, jint height)
 {
 	gles2->Draw(ZERO, ePoint(width, height));
 }
+jint Java_app_usp_Emulator_CreateGLSprite(JNIEnv* env, jobject obj, jint width, jint height)
+{
+	if(++sprite_max >= 16)
+		return -1;
+	sprites[sprite_max] = new xPlatform::eGLES2Sprite(ePoint(width, height));
+	return sprite_max;
+}
+void Java_app_usp_Emulator_DrawGLSprite(JNIEnv* env, jobject obj, jint handle, jint texture, jint pos_x, jint pos_y, jint width, jint height, jfloat alpha, jboolean filtering)
+{
+	if(handle < 0)
+		return;
+	if(!sprites[handle])
+		return;
+	sprites[handle]->Draw(texture, ePoint(pos_x, pos_y), ePoint(width, height), alpha, 1.0f, 1.0f, filtering);
+}
+
+
 jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer, jboolean skip_data)
 {
 	PROFILER_SECTION(u_aud);

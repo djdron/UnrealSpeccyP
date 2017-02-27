@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,8 +35,10 @@ public class Emulator
 	synchronized native void	DoneGL();
 	synchronized native void	DrawGL(int width, int height);
 
+	public synchronized native int	CreateGLSprite(int width, int height);
+	public synchronized native void	DrawGLSprite(int handle, int texture, int pos_x, int pos_y, int width, int height, float alpha, boolean filtering);
+
 	synchronized native int		Update();
-	synchronized native void	UpdateVideo(ByteBuffer buf);
 	synchronized native int		UpdateAudio(ByteBuffer buf, boolean skip_data);
 	public synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 	public synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
