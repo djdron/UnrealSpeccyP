@@ -73,7 +73,7 @@ public class ControlFastForward extends ControlOverlay
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
 		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, arrows, 0);
 
-		sprite = Emulator.the.CreateGLSprite(size, size);
+		sprite = Emulator.the.GLSpriteCreate(size, size);
 	}
 	public boolean OnTouch(float x, float y, boolean down, int pointer_id)
 	{
@@ -105,7 +105,7 @@ public class ControlFastForward extends ControlOverlay
 			alpha = passed_time > (HIDE_TIME_MS - 1000) ? (float) (HIDE_TIME_MS - passed_time) / 1000.0f : 1.0f;
 		}
 		// draw arrows
-		Emulator.the.DrawGLSprite(sprite, textures[0], _w - size, _h - size, size, size, 0.3f*alpha, false);
+		Emulator.the.GLSpriteDraw(sprite, textures[0], _w - size, _h - size, size, size, 0.3f*alpha, false);
 	}
 	public boolean Pressed() { return active && pressed; }
 	public void Active(boolean on)

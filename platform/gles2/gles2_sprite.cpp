@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_GLES2
 
 #include "gles2_sprite.h"
-#include "gles2_shader.h"
 #include "../../std.h"
 
 namespace xPlatform
@@ -51,15 +50,15 @@ static const char* vertex_shader =
 static const char* fragment_shader =
 	"varying mediump vec2 v_texcoord;						\n"
 	"uniform sampler2D u_texture;							\n"
-	"uniform mediump float u_alpha;							\n"
+	"uniform mediump vec4 u_color;						    \n"
 	"void main()											\n"
 	"{														\n"
 	"	gl_FragColor = texture2D(u_texture, v_texcoord);	\n"
-	"	gl_FragColor.a *= u_alpha;							\n"
+	"	gl_FragColor *= u_color;						    \n"
 	"}														\n";
 
 
-eGLES2Sprite::eShaderInfo::eShaderInfo(const char* vs, const char* fs) : program(0), a_position(0), a_texcoord(0), u_vp_matrix(0), u_texture(0), u_alpha(0)
+eGLES2Sprite::eShaderInfo::eShaderInfo(const char* vs, const char* fs) : program(0), a_position(0), a_texcoord(0), u_vp_matrix(0), u_texture(0), u_color(0)
 {
 	program = CreateProgram(vs, fs);
 	if(program)
@@ -68,11 +67,12 @@ eGLES2Sprite::eShaderInfo::eShaderInfo(const char* vs, const char* fs) : program
 		a_texcoord	= glGetAttribLocation(program,	"a_texcoord");
 		u_vp_matrix	= glGetUniformLocation(program,	"u_vp_matrix");
 		u_texture	= glGetUniformLocation(program,	"u_texture");
-		u_alpha		= glGetUniformLocation(program,	"u_alpha");
+		u_color		= glGetUniformLocation(program,	"u_color");
 	}
 }
 
 eGLES2Sprite::eGLES2Sprite(const ePoint& _size) : shader(vertex_shader, fragment_shader)
+	, r(1.0f), g(1.0f), b(1.0f)
 {
 	const GLfloat vertices[] =
 	{
@@ -120,7 +120,7 @@ eGLES2Sprite::~eGLES2Sprite()
 	glDeleteProgram(shader.program);
 }
 
-void eGLES2Sprite::Draw(GLuint texture, const ePoint& pos, const ePoint& size, float alpha, float scale_x, float scale_y, bool filtering)
+void eGLES2Sprite::Draw(GLuint texture, const ePoint& pos, const ePoint& size, float alpha, float scale_x, float scale_y, bool filtering) const
 {
 	glViewport(pos.x, pos.y, size.x, size.y);
 	glUseProgram(shader.program);
@@ -133,7 +133,7 @@ void eGLES2Sprite::Draw(GLuint texture, const ePoint& pos, const ePoint& size, f
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
-	glUniform1f(shader.u_alpha, alpha);
+	glUniform4f(shader.u_color, r, g, b, alpha);
 	float proj[4][4];
 	SetOrtho(proj, -0.5f, +0.5f, +0.5f, -0.5f, -1.0f, 1.0f, scale_x, scale_y);
 	glUniformMatrix4fv(shader.u_vp_matrix, 1, GL_FALSE, &proj[0][0]);
@@ -158,6 +158,13 @@ void eGLES2Sprite::Draw(GLuint texture, const ePoint& pos, const ePoint& size, f
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void eGLES2Sprite::SetColor(float _r, float _g, float _b)
+{
+	r = _r;
+	g = _g;
+	b = _b;
 }
 
 int NextPot(int v)

@@ -103,8 +103,8 @@ public class ViewGLES extends GLSurfaceView
 		@Override
 		public void onSurfaceCreated(GL10 gl_unused, EGLConfig config)
 		{
-			Emulator.the.DoneGL();
-			Emulator.the.InitGL();
+			Emulator.the.GLDone();
+			Emulator.the.GLInit();
 			Emulator.the.ProfilerBegin(2);
 
 			control_controller.Init();
@@ -141,7 +141,7 @@ public class ViewGLES extends GLSurfaceView
 		private void Draw()
 		{
 			Emulator.the.ProfilerBegin(3);
-			Emulator.the.DrawGL(width, height);
+			Emulator.the.GLDraw(width, height);
 			Emulator.the.ProfilerEnd(3);
 
 			Emulator.the.ProfilerBegin(1);

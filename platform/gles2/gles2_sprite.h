@@ -34,7 +34,8 @@ class eGLES2Sprite
 public:
 	eGLES2Sprite(const ePoint& size);
 	virtual ~eGLES2Sprite();
-	void Draw(GLuint texture, const ePoint& pos, const ePoint& size, float alpha = 1.0f, float scale_x = 1.0f, float scale_y = 1.0f, bool filtering = true);
+	void    Draw(GLuint texture, const ePoint& pos, const ePoint& size, float alpha = 1.0f, float scale_x = 1.0f, float scale_y = 1.0f, bool filtering = true) const;
+	void    SetColor(float r, float g, float b);
 
 private:
 	GLuint	buffer_vertices;
@@ -49,9 +50,11 @@ private:
 		GLint a_texcoord;
 		GLint u_vp_matrix;
 		GLint u_texture;
-		GLint u_alpha;
+		GLint u_color;
 	};
 	eShaderInfo shader;
+
+	float r, g, b;
 };
 
 int NextPot(int v);

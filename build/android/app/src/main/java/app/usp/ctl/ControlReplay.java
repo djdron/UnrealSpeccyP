@@ -73,7 +73,7 @@ public class ControlReplay extends ControlOverlay
 			GLES20.glGenTextures(1, textures, 0);
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
 			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
-			sprite = Emulator.the.CreateGLSprite(width, height);
+			sprite = Emulator.the.GLSpriteCreate(width, height);
 		}
 		void Draw(String _text, int x, int y, float alpha)
 		{
@@ -93,7 +93,7 @@ public class ControlReplay extends ControlOverlay
 				GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
 				GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
 			}
-			Emulator.the.DrawGLSprite(sprite, textures[0], x, y, width, height, alpha*0.998f, false); // to get text always with alpha blend
+			Emulator.the.GLSpriteDraw(sprite, textures[0], x, y, width, height, alpha*0.998f, false); // to get text always with alpha blend
 		}
 	}
 
@@ -155,7 +155,7 @@ public class ControlReplay extends ControlOverlay
 		time_current.Init();
 		time_total.Init();
 
-		sprite = Emulator.the.CreateGLSprite(size, size);
+		sprite = Emulator.the.GLSpriteCreate(size, size);
 	}
 	public void OnTouch(float x, float y, boolean down, int pointer_id)
 	{
@@ -185,22 +185,23 @@ public class ControlReplay extends ControlOverlay
 		int psx = (int)(width*p);
 
 		// draw progress
-//		gl.glColor4f(0.5f, 0.0f, 0.0f, 0.8f * alpha);
-		Emulator.the.DrawGLSprite(sprite, textures[0], px, py, psx, size, 0.8f * alpha, false);
+		Emulator.the.GLSpriteSetColor(sprite, 0.5f, 0.0f, 0.0f);
+		Emulator.the.GLSpriteDraw(sprite, textures[0], px, py, psx, size, 0.8f * alpha, false);
 
 		int psxc = psx;
 		if(progress.frame_current + progress.frames_cached < progress.frames_total)
 		{
 			float pc = (float)(progress.frame_current + progress.frames_cached)/progress.frames_total;
 			psxc = (int)(width*pc);
-//			gl.glColor4f(0.4f, 0.4f, 0.4f, 0.8f*alpha);
-			Emulator.the.DrawGLSprite(sprite, textures[0], px + psx, py, psxc - psx, size, 0.8f * alpha, false);
+			Emulator.the.GLSpriteSetColor(sprite, 0.4f, 0.4f, 0.4f);
+			Emulator.the.GLSpriteDraw(sprite, textures[0], px + psx, py, psxc - psx, size, 0.8f * alpha, false);
 		}
 
-//		gl.glColor4f(0.2f, 0.2f, 0.2f, 0.8f*alpha);
-		Emulator.the.DrawGLSprite(sprite, textures[0], px + psxc, py, width - psxc, size, 0.8f * alpha, false);
+		Emulator.the.GLSpriteSetColor(sprite, 0.2f, 0.2f, 0.2f);
+		Emulator.the.GLSpriteDraw(sprite, textures[0], px + psxc, py, width - psxc, size, 0.8f * alpha, false);
 
-		Emulator.the.DrawGLSprite(sprite, textures[1], px + psx - size/2, py, size, size, 0.8f * alpha, false);
+		Emulator.the.GLSpriteSetColor(sprite, 1.0f, 1.0f, 1.0f);
+		Emulator.the.GLSpriteDraw(sprite, textures[1], px + psx - size/2, py, size, size, 0.8f * alpha, false);
 
 		time_current.Draw(progress.frame_current/50, (int)(time_current.width*0.05f), py + size/2 - time_current.height/2, 1.0f*alpha);
 		time_total.Draw(progress.frames_total/50, _w - (int)(time_current.width*1.05f), py + size/2 - time_current.height/2, 1.0f*alpha);

@@ -31,12 +31,13 @@ public class Emulator
 	synchronized native void	Init(final String path);
 	synchronized native void	Done();
 
-	synchronized native void	InitGL();
-	synchronized native void	DoneGL();
-	synchronized native void	DrawGL(int width, int height);
+	synchronized native void	GLInit();
+	synchronized native void	GLDone();
+	synchronized native void	GLDraw(int width, int height);
 
-	public synchronized native int	CreateGLSprite(int width, int height);
-	public synchronized native void	DrawGLSprite(int handle, int texture, int pos_x, int pos_y, int width, int height, float alpha, boolean filtering);
+	public synchronized native int	GLSpriteCreate(int width, int height);
+	public synchronized native void	GLSpriteDraw(int handle, int texture, int pos_x, int pos_y, int width, int height, float alpha, boolean filtering);
+	public synchronized native void	GLSpriteSetColor(int handle, float r, float g, float b);
 
 	synchronized native int		Update();
 	synchronized native int		UpdateAudio(ByteBuffer buf, boolean skip_data);

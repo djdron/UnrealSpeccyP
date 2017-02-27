@@ -81,7 +81,7 @@ public class ControlKeyboard extends ControlOverlay
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
 	    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, keyboard, 0);
 
-		sprite = Emulator.the.CreateGLSprite(sprite_width, sprite_height);
+		sprite = Emulator.the.GLSpriteCreate(sprite_width, sprite_height);
 	}
 	public void OnTouch(float x, float y, boolean down, int pointer_id)
 	{
@@ -118,6 +118,6 @@ public class ControlKeyboard extends ControlOverlay
 
 		final float alpha = passed_time > (HIDE_TIME_MS - 1000) ? (float)(HIDE_TIME_MS - passed_time)/1000.0f : 1.0f;
 		// draw keyboard
-		Emulator.the.DrawGLSprite(sprite, textures[0], 0, 0, width, height, 0.5f*alpha, true);
+		Emulator.the.GLSpriteDraw(sprite, textures[0], 0, 0, width, height, 0.5f*alpha, true);
 	}
 }

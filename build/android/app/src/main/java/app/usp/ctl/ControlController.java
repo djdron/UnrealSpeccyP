@@ -68,7 +68,7 @@ public class ControlController extends ControlOverlay
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
 	    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, joy_ptr, 0);
 
-		sprite = Emulator.the.CreateGLSprite(size, size);
+		sprite = Emulator.the.GLSpriteCreate(size, size);
 	}
 	public void OnTouch(float x, float y, boolean down, int pointer_id)
 	{
@@ -125,10 +125,9 @@ public class ControlController extends ControlOverlay
 		}
 
 		final float alpha = passed_time > 1000 ? (float)(2000 - passed_time)/1000.0f : 1.0f;
-		Emulator.the.DrawGLSprite(sprite, textures[0], 0, 0, size, size, 0.3f*alpha, false);
-		Emulator.the.DrawGLSprite(sprite, textures[1], (int)(dir_x*0.25f), (int)(-dir_y*0.25f), size, size, 0.3f*alpha, false);
-
-		Emulator.the.DrawGLSprite(sprite, textures[1], width - size, 0, size, size, 0.3f*alpha, false);
+		Emulator.the.GLSpriteDraw(sprite, textures[0], 0, 0, size, size, 0.3f*alpha, false);
+		Emulator.the.GLSpriteDraw(sprite, textures[1], (int)(dir_x*0.25f*size), (int)(dir_y*0.25f*size), size, size, 0.3f*alpha, false);
+		Emulator.the.GLSpriteDraw(sprite, textures[1], width - size, 0, size, size, 0.3f*alpha, false);
 	}
 	public void Active(boolean on)
 	{

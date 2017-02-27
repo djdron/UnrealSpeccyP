@@ -51,25 +51,6 @@ void InitSound();
 void DoneSound();
 int UpdateSound(byte* buf, bool skip_data);
 
-static struct eOptionZoom : public xOptions::eOptionInt
-{
-	eOptionZoom() { Set(2); }
-	virtual const char* Name() const { return "zoom"; }
-	virtual const char** Values() const
-	{
-		static const char* values[] = { "none", "fill", "small border", "no border", NULL };
-		return values;
-	}
-	virtual int Order() const { return 1; }
-} op_zoom;
-
-static struct eOptionFiltering : public xOptions::eOptionBool
-{
-	eOptionFiltering() { Set(true); }
-	virtual const char* Name() const { return "filtering"; }
-	virtual int Order() const { return 2; }
-} op_filtering;
-
 static struct eOptionAVTimerSync : public xOptions::eOptionBool
 {
 	virtual const char* Name() const { return "av timer sync"; }
@@ -190,11 +171,11 @@ static xPlatform::eGLES2* gles2 = NULL;
 static xPlatform::eGLES2Sprite* sprites[16];
 static int sprite_max = -1;
 
-void Java_app_usp_Emulator_InitGL(JNIEnv* env, jobject obj)
+void Java_app_usp_Emulator_GLInit(JNIEnv* env, jobject obj)
 {
 	gles2 = xPlatform::eGLES2::Create();
 }
-void Java_app_usp_Emulator_DoneGL(JNIEnv* env, jobject obj)
+void Java_app_usp_Emulator_GLDone(JNIEnv* env, jobject obj)
 {
 	SAFE_DELETE(gles2);
 	for(int s = 0; s <= sprite_max; ++s)
@@ -203,18 +184,18 @@ void Java_app_usp_Emulator_DoneGL(JNIEnv* env, jobject obj)
 	}
 	sprite_max = -1;
 }
-void Java_app_usp_Emulator_DrawGL(JNIEnv* env, jobject obj, jint width, jint height)
+void Java_app_usp_Emulator_GLDraw(JNIEnv* env, jobject obj, jint width, jint height)
 {
 	gles2->Draw(ZERO, ePoint(width, height));
 }
-jint Java_app_usp_Emulator_CreateGLSprite(JNIEnv* env, jobject obj, jint width, jint height)
+jint Java_app_usp_Emulator_GLSpriteCreate(JNIEnv* env, jobject obj, jint width, jint height)
 {
 	if(++sprite_max >= 16)
 		return -1;
 	sprites[sprite_max] = new xPlatform::eGLES2Sprite(ePoint(width, height));
 	return sprite_max;
 }
-void Java_app_usp_Emulator_DrawGLSprite(JNIEnv* env, jobject obj, jint handle, jint texture, jint pos_x, jint pos_y, jint width, jint height, jfloat alpha, jboolean filtering)
+void Java_app_usp_Emulator_GLSpriteDraw(JNIEnv* env, jobject obj, jint handle, jint texture, jint pos_x, jint pos_y, jint width, jint height, jfloat alpha, jboolean filtering)
 {
 	if(handle < 0)
 		return;
@@ -222,7 +203,14 @@ void Java_app_usp_Emulator_DrawGLSprite(JNIEnv* env, jobject obj, jint handle, j
 		return;
 	sprites[handle]->Draw(texture, ePoint(pos_x, pos_y), ePoint(width, height), alpha, 1.0f, 1.0f, filtering);
 }
-
+void Java_app_usp_Emulator_GLSpriteSetColor(JNIEnv* env, jobject obj, jint handle, jfloat r, jfloat g, jfloat b)
+{
+	if(handle < 0)
+		return;
+	if(!sprites[handle])
+		return;
+	sprites[handle]->SetColor(r, g, b);
+}
 
 jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer, jboolean skip_data)
 {
