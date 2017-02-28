@@ -74,11 +74,11 @@ static struct eCachedColors
 			byte b = c&1 ? i : 0;
 			byte r = c&2 ? i : 0;
 			byte g = c&4 ? i : 0;
-			items[0][c] = items[1][c] = BGR565(r, g, b);
+			items[c] = BGR565(r, g, b);
 		}
 	}
 	static inline word BGR565(byte r, byte g, byte b) { return ((r&~7) << 8)|((g&~3) << 3)|(b >> 3); }
-	word items[2][16];
+	word items[16];
 }
 color_cache;
 
@@ -92,7 +92,7 @@ public:
 protected:
 
 	enum { WIDTH = 320, HEIGHT = 240, TEX_WIDTH = 512, TEX_HEIGHT = 256 };
-	dword texture_buffer[WIDTH*HEIGHT*4];
+	dword texture_buffer[TEX_WIDTH*TEX_HEIGHT*4];
 
 	eGLES2Sprite* sprite_screen;
 	GLuint texture;
@@ -108,14 +108,16 @@ eGLES2Impl::eGLES2Impl()
 {
 	sprite_screen = new eGLES2Sprite(ePoint(WIDTH, HEIGHT));
 
+	memset(texture_buffer, 0, sizeof(texture_buffer));
+
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer);
 
 #ifdef USE_UI
 	glGenTextures(1, &texture_ui);
 	glBindTexture(GL_TEXTURE_2D, texture_ui);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_buffer);
 #endif//USE_UI
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -179,7 +181,7 @@ void eGLES2Impl::UpdateScreenTexture()
 	word* dst = (word*)texture_buffer;
 	for(int i = WIDTH*HEIGHT; --i >= 0;)
 	{
-		*dst++ = color_cache.items[0][*src++];
+		*dst++ = color_cache.items[*src++];
 	}
 }
 
