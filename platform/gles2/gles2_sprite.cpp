@@ -71,7 +71,8 @@ eGLES2Sprite::eShaderInfo::eShaderInfo(const char* vs, const char* fs) : program
 	}
 }
 
-eGLES2Sprite::eGLES2Sprite(const ePoint& _size) : shader(vertex_shader, fragment_shader)
+eGLES2Sprite::eGLES2Sprite(const ePoint& _size, const char* vshader, const char* fshader)
+	: shader(vshader ? vshader : vertex_shader, fshader ? fshader : fragment_shader)
 	, r(1.0f), g(1.0f), b(1.0f)
 {
 	const GLfloat vertices[] =

@@ -41,6 +41,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static private String reset_to_service_rom_id = "reset to service rom";
 	final static public String select_zoom_id = "zoom";
 	final static public String filtering_id = "filtering";
+	final static public String black_and_white_id = "black and white";
 	final static public String av_timer_sync_id = "av timer sync";
 	final static public String skip_frames_id = "skip frames";
 	final static public String use_sensor_id = "use sensor";
@@ -57,6 +58,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private CheckBoxPreference reset_to_service_rom;
 	private ListPreference select_zoom;
 	private CheckBoxPreference filtering;
+	private CheckBoxPreference black_and_white;
 	private CheckBoxPreference av_timer_sync;
 	private ListPreference skip_frames;
 	@Override
@@ -78,6 +80,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         reset_to_service_rom = (CheckBoxPreference)getPreferenceScreen().findPreference(reset_to_service_rom_id);
         select_zoom = (ListPreference)getPreferenceScreen().findPreference(select_zoom_id);
         filtering = (CheckBoxPreference)getPreferenceScreen().findPreference(filtering_id);
+		black_and_white = (CheckBoxPreference)getPreferenceScreen().findPreference(black_and_white_id);
         av_timer_sync = (CheckBoxPreference)getPreferenceScreen().findPreference(av_timer_sync_id);
         skip_frames = (ListPreference)getPreferenceScreen().findPreference(skip_frames_id);
 	}
@@ -111,6 +114,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		reset_to_service_rom.setChecked(Emulator.the.GetOptionBool(reset_to_service_rom_id));
 		select_zoom.setValueIndex(Emulator.the.GetOptionInt(select_zoom_id));
 		filtering.setChecked(Emulator.the.GetOptionBool(filtering_id));
+		black_and_white.setChecked(Emulator.the.GetOptionBool(black_and_white_id));
 		av_timer_sync.setChecked(Emulator.the.GetOptionBool(av_timer_sync_id));
 		skip_frames.setValueIndex(Emulator.the.GetOptionInt(skip_frames_id));
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
@@ -162,6 +166,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			Emulator.the.SetOptionBool(use_sensor_id, use_sensor.isChecked());
 		else if(key.equals(filtering_id))
 			Emulator.the.SetOptionBool(filtering_id, filtering.isChecked());
+		else if(key.equals(black_and_white_id))
+			Emulator.the.SetOptionBool(black_and_white_id, black_and_white.isChecked());
 		else if(key.equals(av_timer_sync_id))
 			Emulator.the.SetOptionBool(av_timer_sync_id, av_timer_sync.isChecked());
 		else if(key.equals(skip_frames_id))

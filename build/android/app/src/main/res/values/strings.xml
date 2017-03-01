@@ -55,6 +55,7 @@
     <string name="zoom_small_border">Small border</string>
     <string name="zoom_no_border">No border</string>
     <string name="filtering">Filtering</string>
+    <string name="black_and_white">Black-and-white</string>
     <string name="av_timer_sync">A/V sync by timer</string>
     <string name="av_timer_sync_desc">Smoother playback on some devices</string>
     <string name="skip_frames">Skip frames</string>

@@ -61,6 +61,12 @@ static struct eOptionFiltering : public xOptions::eOptionBool
 	virtual int Order() const { return 36; }
 } op_filtering;
 
+static struct eOptionBlackAndWhite : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "black and white"; }
+	virtual int Order() const { return 37; }
+} op_black_and_white;
+
 
 static struct eCachedColors
 {
@@ -82,6 +88,19 @@ static struct eCachedColors
 }
 color_cache;
 
+static const char* fragment_shader_bw =
+	"varying mediump vec2 v_texcoord;						\n"
+	"uniform sampler2D u_texture;							\n"
+	"uniform mediump vec4 u_color;						    \n"
+	"void main()											\n"
+	"{														\n"
+	"	gl_FragColor = texture2D(u_texture, v_texcoord);	\n"
+	"	gl_FragColor *= u_color;						    \n"
+	"   mediump float l = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114)); \n"
+	"	gl_FragColor.rgb = vec3(l, l, l);				    \n"
+	"}														\n";
+
+
 class eGLES2Impl : public eGLES2
 {
 public:
@@ -95,6 +114,7 @@ protected:
 	dword texture_buffer[TEX_WIDTH*TEX_HEIGHT*4];
 
 	eGLES2Sprite* sprite_screen;
+	eGLES2Sprite* sprite_screen_bw;
 	GLuint texture;
 	void UpdateScreenTexture();
 
@@ -107,6 +127,7 @@ protected:
 eGLES2Impl::eGLES2Impl()
 {
 	sprite_screen = new eGLES2Sprite(ePoint(WIDTH, HEIGHT));
+	sprite_screen_bw = new eGLES2Sprite(ePoint(WIDTH, HEIGHT), NULL, fragment_shader_bw);
 
 	memset(texture_buffer, 0, sizeof(texture_buffer));
 
@@ -128,6 +149,7 @@ eGLES2Impl::eGLES2Impl()
 eGLES2Impl::~eGLES2Impl()
 {
 	SAFE_DELETE(sprite_screen);
+	SAFE_DELETE(sprite_screen_bw);
 	glDeleteTextures(1, &texture);
 #ifdef USE_UI
 	glDeleteTextures(1, &texture_ui);
@@ -157,7 +179,7 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer);
 	float z = OpZoom();
-	sprite_screen->Draw(texture, pos, size, 1.0f, sx*z, sy*z, filtering);
+	(op_black_and_white ? sprite_screen_bw : sprite_screen)->Draw(texture, pos, size, 1.0f, sx*z, sy*z, filtering);
 
 #ifdef USE_UI
 	void* data_ui = Handler()->VideoDataUI();
