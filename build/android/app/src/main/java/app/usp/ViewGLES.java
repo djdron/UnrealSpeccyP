@@ -203,8 +203,8 @@ public class ViewGLES extends GLSurfaceView
 	public ViewGLES(Context context)
 	{
 		super(context);
-		setEGLConfigChooser(false);
 		setEGLContextClientVersion(2);
+		setEGLConfigChooser(false);
 		audio = new Audio();
 		video = new Video(context);
 		setRenderer(video);
