@@ -35,6 +35,7 @@ public:
 	eGLES2Sprite(const ePoint& size, const char* vshader = NULL, const char* fshader = NULL);
 	virtual ~eGLES2Sprite();
 	void    Draw(GLuint texture, const ePoint& pos, const ePoint& size, float alpha = 1.0f, float scale_x = 1.0f, float scale_y = 1.0f, bool filtering = true) const;
+	void    Draw2(GLuint texture, GLuint texture2, const ePoint& pos, const ePoint& size, float alpha = 1.0f, float scale_x = 1.0f, float scale_y = 1.0f, bool filtering = true) const;
 	void    SetColor(float r, float g, float b);
 
 private:
@@ -50,6 +51,7 @@ private:
 		GLint a_texcoord;
 		GLint u_vp_matrix;
 		GLint u_texture;
+		GLint u_texture2;
 		GLint u_color;
 	};
 	eShaderInfo shader;

@@ -58,7 +58,7 @@ static const char* fragment_shader =
 	"}														\n";
 
 
-eGLES2Sprite::eShaderInfo::eShaderInfo(const char* vs, const char* fs) : program(0), a_position(0), a_texcoord(0), u_vp_matrix(0), u_texture(0), u_color(0)
+eGLES2Sprite::eShaderInfo::eShaderInfo(const char* vs, const char* fs) : program(0), a_position(0), a_texcoord(0), u_vp_matrix(0), u_texture(0), u_texture2(0), u_color(0)
 {
 	program = CreateProgram(vs, fs);
 	if(program)
@@ -67,6 +67,7 @@ eGLES2Sprite::eShaderInfo::eShaderInfo(const char* vs, const char* fs) : program
 		a_texcoord	= glGetAttribLocation(program,	"a_texcoord");
 		u_vp_matrix	= glGetUniformLocation(program,	"u_vp_matrix");
 		u_texture	= glGetUniformLocation(program,	"u_texture");
+		u_texture2	= glGetUniformLocation(program,	"u_texture2");
 		u_color		= glGetUniformLocation(program,	"u_color");
 	}
 }
@@ -159,6 +160,16 @@ void eGLES2Sprite::Draw(GLuint texture, const ePoint& pos, const ePoint& size, f
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+void eGLES2Sprite::Draw2(GLuint texture, GLuint texture2, const ePoint& pos, const ePoint& size, float alpha, float scale_x, float scale_y, bool filtering) const
+{
+	glUseProgram(shader.program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	glUniform1i(shader.u_texture2, 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering ? GL_LINEAR : GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering ? GL_LINEAR : GL_NEAREST);
+	Draw(texture, pos, size, alpha, scale_x, scale_y, filtering);
 }
 
 void eGLES2Sprite::SetColor(float _r, float _g, float _b)

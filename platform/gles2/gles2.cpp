@@ -67,6 +67,12 @@ static struct eOptionBlackAndWhite : public xOptions::eOptionBool
 	virtual int Order() const { return 37; }
 } op_black_and_white;
 
+static struct eOptionGigaScreen : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "gigascreen"; }
+	virtual int Order() const { return 38; }
+} op_gigascreen;
+
 
 static struct eCachedColors
 {
@@ -100,6 +106,32 @@ static const char* fragment_shader_bw =
 	"	gl_FragColor.rgb = vec3(l, l, l);				    \n"
 	"}														\n";
 
+static const char* fragment_shader_giga =
+	"varying mediump vec2 v_texcoord;						\n"
+	"uniform sampler2D u_texture;							\n"
+	"uniform sampler2D u_texture2;							\n"
+	"uniform mediump vec4 u_color;						    \n"
+	"void main()											\n"
+	"{														\n"
+	"	gl_FragColor = texture2D(u_texture, v_texcoord);	\n"
+	"	gl_FragColor += texture2D(u_texture2, v_texcoord);	\n"
+	"	gl_FragColor *= u_color*0.5;					    \n"
+	"}														\n";
+
+static const char* fragment_shader_giga_bw =
+	"varying mediump vec2 v_texcoord;						\n"
+	"uniform sampler2D u_texture;							\n"
+	"uniform sampler2D u_texture2;							\n"
+	"uniform mediump vec4 u_color;						    \n"
+	"void main()											\n"
+	"{														\n"
+	"	gl_FragColor = texture2D(u_texture, v_texcoord);	\n"
+	"	gl_FragColor += texture2D(u_texture2, v_texcoord);	\n"
+	"	gl_FragColor *= u_color*0.5;					    \n"
+	"   mediump float l = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114)); \n"
+	"	gl_FragColor.rgb = vec3(l, l, l);				    \n"
+	"}														\n";
+
 
 class eGLES2Impl : public eGLES2
 {
@@ -111,34 +143,46 @@ public:
 protected:
 
 	enum { WIDTH = 320, HEIGHT = 240, TEX_WIDTH = 512, TEX_HEIGHT = 256 };
-	dword texture_buffer[TEX_WIDTH*TEX_HEIGHT*4];
+	byte texture_buffer[2][TEX_WIDTH*TEX_HEIGHT*2]; //2 buffers of R5G6B5
 
 	eGLES2Sprite* sprite_screen;
 	eGLES2Sprite* sprite_screen_bw;
-	GLuint texture;
+	eGLES2Sprite* sprite_gigascreen;
+	eGLES2Sprite* sprite_gigascreen_bw;
+	GLuint texture[2];
+	int	texture_current;
 	void UpdateScreenTexture();
+
+	int video_frame_last;
 
 #ifdef USE_UI
 	void UpdateUiTexture();
 	GLuint texture_ui;
+	byte texture_buffer_ui[TEX_WIDTH*TEX_HEIGHT*4]; //buffer of R8G8B8A8
 #endif//USE_UI
 };
 
-eGLES2Impl::eGLES2Impl()
+eGLES2Impl::eGLES2Impl() : texture_current(0), video_frame_last(-1)
 {
 	sprite_screen = new eGLES2Sprite(ePoint(WIDTH, HEIGHT));
 	sprite_screen_bw = new eGLES2Sprite(ePoint(WIDTH, HEIGHT), NULL, fragment_shader_bw);
+	sprite_gigascreen = new eGLES2Sprite(ePoint(WIDTH, HEIGHT), NULL, fragment_shader_giga);
+	sprite_gigascreen_bw = new eGLES2Sprite(ePoint(WIDTH, HEIGHT), NULL, fragment_shader_giga_bw);
 
 	memset(texture_buffer, 0, sizeof(texture_buffer));
 
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer);
+	glGenTextures(2, texture);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer[0]);
+
+	glBindTexture(GL_TEXTURE_2D, texture[1]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer[1]);
 
 #ifdef USE_UI
+	memset(texture_buffer_ui, 0, sizeof(texture_buffer_ui));
 	glGenTextures(1, &texture_ui);
 	glBindTexture(GL_TEXTURE_2D, texture_ui);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_buffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEX_WIDTH, TEX_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_buffer_ui);
 #endif//USE_UI
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -150,7 +194,9 @@ eGLES2Impl::~eGLES2Impl()
 {
 	SAFE_DELETE(sprite_screen);
 	SAFE_DELETE(sprite_screen_bw);
-	glDeleteTextures(1, &texture);
+	SAFE_DELETE(sprite_gigascreen);
+	SAFE_DELETE(sprite_gigascreen_bw);
+	glDeleteTextures(2, texture);
 #ifdef USE_UI
 	glDeleteTextures(1, &texture_ui);
 #endif//USE_UI
@@ -174,12 +220,19 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	UpdateScreenTexture();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer);
+	bool newFrame = video_frame_last != Handler()->VideoFrame();
+	if(newFrame)
+	{
+		UpdateScreenTexture();
+		glActiveTexture(GL_TEXTURE0 + texture_current);
+		glBindTexture(GL_TEXTURE_2D, texture[texture_current]);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer[texture_current]);
+	}
 	float z = OpZoom();
-	(op_black_and_white ? sprite_screen_bw : sprite_screen)->Draw(texture, pos, size, 1.0f, sx*z, sy*z, filtering);
+	if(op_gigascreen)
+		(op_black_and_white ? sprite_gigascreen_bw : sprite_gigascreen)->Draw2(texture[texture_current], texture[1 - texture_current], pos, size, 1.0f, sx*z, sy*z, filtering);
+	else
+		(op_black_and_white ? sprite_screen_bw : sprite_screen)->Draw(texture[texture_current], pos, size, 1.0f, sx*z, sy*z, filtering);
 
 #ifdef USE_UI
 	void* data_ui = Handler()->VideoDataUI();
@@ -190,17 +243,22 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 		UpdateUiTexture();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture_ui);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, texture_buffer);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, texture_buffer_ui);
 		sprite_screen->Draw(texture_ui, pos, size, 0.99f, sx_ui, sy_ui); // force alpha blend
 	}
 #endif//USE_UI
+	if(newFrame)
+	{
+		texture_current = 1 - texture_current;
+		video_frame_last = Handler()->VideoFrame();
+	}
 //	glFlush();
 }
 
 void eGLES2Impl::UpdateScreenTexture()
 {
 	byte* src = (byte*)Handler()->VideoData();
-	word* dst = (word*)texture_buffer;
+	word* dst = (word*)texture_buffer[texture_current];
 	for(int i = WIDTH*HEIGHT; --i >= 0;)
 	{
 		*dst++ = color_cache.items[*src++];
@@ -211,7 +269,7 @@ void eGLES2Impl::UpdateScreenTexture()
 void eGLES2Impl::UpdateUiTexture()
 {
 	byte* src = (byte*)Handler()->VideoDataUI();
-	dword* dst = (dword*)texture_buffer;
+	dword* dst = (dword*)texture_buffer_ui;
 	for(int i = WIDTH*HEIGHT; --i >= 0;)
 	{
 		*dst++ = xUi::palette[*src++].rgba;

@@ -82,26 +82,27 @@ struct eHandler
 	virtual void OnInit() = 0;
 	virtual void OnDone() = 0;
 	virtual const char* OnLoop() = 0; // error desc if not NULL
-	virtual const char* WindowCaption() = 0;
+	virtual const char* WindowCaption() const = 0;
 	virtual void OnKey(char key, dword flags) = 0;
 	virtual void OnMouse(eMouseAction action, byte a, byte b) = 0;
 
 	virtual bool OnOpenFile(const char* name, const void* data = NULL, size_t data_size = 0) = 0;
 	virtual bool OnSaveFile(const char* name) = 0;
-	virtual bool FileTypeSupported(const char* name) = 0;
+	virtual bool FileTypeSupported(const char* name) const = 0;
 	virtual eActionResult OnAction(eAction action) = 0;
 
 	virtual bool GetReplayProgress(dword* frame_current, dword* frames_total, dword* frames_cached) = 0;
 
 	// data to draw
-	virtual void* VideoData() = 0;
-	virtual void* VideoDataUI() = 0;
+	virtual void* VideoData() const = 0;
+	virtual void* VideoDataUI() const = 0;
 	// pause/resume function for sync video by audio
 	virtual void VideoPaused(bool paused) = 0;
+	virtual int VideoFrame() const = 0;
 	// audio
-	virtual int	AudioSources() = 0;
-	virtual void* AudioData(int source) = 0;
-	virtual dword AudioDataReady(int source) = 0;
+	virtual int	AudioSources() const = 0;
+	virtual void* AudioData(int source) const = 0;
+	virtual dword AudioDataReady(int source) const = 0;
 	virtual void AudioDataUse(int source, dword size) = 0;
 
 	virtual bool FullSpeed() const = 0;

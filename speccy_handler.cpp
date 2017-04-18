@@ -59,13 +59,13 @@ protected:
 
 static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ80::eZ80::eHandlerIo
 {
-	eSpeccyHandler() : speccy(NULL), macro(NULL), replay(NULL), video_paused(0), inside_replay_update(false) {}
+	eSpeccyHandler() : speccy(NULL), macro(NULL), replay(NULL), video_paused(0), video_frame(-1), inside_replay_update(false) {}
 	virtual ~eSpeccyHandler() { assert(!speccy); }
 	virtual void OnInit();
 	virtual void OnDone();
 	virtual const char* OnLoop();
-	virtual void* VideoData() { return speccy->Device<eUla>()->Screen(); }
-	virtual void* VideoDataUI()
+	virtual void* VideoData() const { return speccy->Device<eUla>()->Screen(); }
+	virtual void* VideoDataUI() const
 	{
 #ifdef USE_UI
 		return ui_desktop->VideoData();
@@ -73,10 +73,10 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 		return NULL;
 #endif//USE_UI
 	}
-	virtual const char* WindowCaption() { return "Unreal Speccy Portable"; }
+	virtual const char* WindowCaption() const { return "Unreal Speccy Portable"; }
 	virtual void OnKey(char key, dword flags);
 	virtual void OnMouse(eMouseAction action, byte a, byte b);
-	virtual bool FileTypeSupported(const char* name)
+	virtual bool FileTypeSupported(const char* name) const
 	{
 		const eFileType* t = eFileType::FindByName(name);
 		return t && t->AbleOpen();
@@ -86,11 +86,12 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 	virtual bool OnSaveFile(const char* name);
 	virtual eActionResult OnAction(eAction action);
 
-	virtual int	AudioSources() { return FullSpeed() ? 0 : SOUND_DEV_COUNT; }
-	virtual void* AudioData(int source) { return sound_dev[source]->AudioData(); }
-	virtual dword AudioDataReady(int source) { return sound_dev[source]->AudioDataReady(); }
+	virtual int	AudioSources() const { return FullSpeed() ? 0 : SOUND_DEV_COUNT; }
+	virtual void* AudioData(int source) const { return sound_dev[source]->AudioData(); }
+	virtual dword AudioDataReady(int source) const { return sound_dev[source]->AudioDataReady(); }
 	virtual void AudioDataUse(int source, dword size) { sound_dev[source]->AudioDataUse(size); }
 	virtual void VideoPaused(bool paused) {	paused ? ++video_paused : --video_paused; }
+	virtual int VideoFrame() const { return video_frame; }
 
 	virtual bool FullSpeed() const { return speccy->CPU()->HandlerStep() != NULL; }
 
@@ -127,6 +128,7 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 	eMacro* macro;
 	eRZX* replay;
 	int video_paused;
+	int video_frame;
 	bool inside_replay_update;
 
 	enum { SOUND_DEV_COUNT = 3 };
@@ -187,6 +189,7 @@ const char* eSpeccyHandler::OnLoop()
 		}
 		else
 			speccy->Update(NULL);
+		++video_frame;
 	}
 #ifdef USE_UI
 	ui_desktop->Update();
