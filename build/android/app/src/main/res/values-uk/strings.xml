@@ -41,6 +41,7 @@
     <string name="zoom_small_border">Маленький бордюр</string>
     <string name="zoom_no_border">Немає бордюру</string>
     <string name="filtering">Фільтрація</string>
+    <string name="gigascreen_desc">Більше кольорів, менше блимає</string>
     <string name="black_and_white">Чорно-білий режим</string>
     <string name="av_timer_sync">Синхронізація за таймером</string>
     <string name="av_timer_sync_desc">Більш плавна емуляція на деяких пристроях</string>

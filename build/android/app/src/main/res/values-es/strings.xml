@@ -36,6 +36,7 @@
     <string name="zoom_small_border">Borde pequeño</string>
     <string name="zoom_no_border">Sin borde</string>
     <string name="filtering">Filtrado</string>
+    <string name="gigascreen_desc">Más colores menos parpadeos</string>
     <string name="black_and_white">El modo de blanco y negro</string>
     <string name="av_timer_sync">Sincronismo A/V por temporizador</string>
     <string name="av_timer_sync_desc">Visualización más fluida en algunos dispositivos</string>
