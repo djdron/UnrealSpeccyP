@@ -220,9 +220,10 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	bool newFrame = video_frame_last != Handler()->VideoFrame();
-	if(newFrame)
+	if(video_frame_last != Handler()->VideoFrame())
 	{
+		video_frame_last = Handler()->VideoFrame();
+		texture_current = 1 - texture_current;
 		UpdateScreenTexture();
 		glActiveTexture(GL_TEXTURE0 + texture_current);
 		glBindTexture(GL_TEXTURE_2D, texture[texture_current]);
@@ -247,11 +248,6 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 		sprite_screen->Draw(texture_ui, pos, size, 0.99f, sx_ui, sy_ui); // force alpha blend
 	}
 #endif//USE_UI
-	if(newFrame)
-	{
-		texture_current = 1 - texture_current;
-		video_frame_last = Handler()->VideoFrame();
-	}
 //	glFlush();
 }
 
