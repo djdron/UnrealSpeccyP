@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('joystick').addEventListener('change', onJoystick, true);
 	document.getElementById('zoom').addEventListener('change', onZoom, true);
 	document.getElementById('filtering').addEventListener('click', onFiltering, true);
+	document.getElementById('black and white').addEventListener('click', onBlackAndWhite, true);
+	document.getElementById('gigascreen').addEventListener('click', onGigaScreen, true);
 	pageDidLoad();
 });
 
@@ -36,6 +38,12 @@ function handleMessage(m)
 		var f = localStorage["filtering"];
 		if(f)
 			module.postMessage('filtering:' + f);
+		var bw = localStorage["black and white"];
+		if(bw)
+			module.postMessage('black and white:' + bw);
+		var giga = localStorage["gigascreen"];
+		if(giga)
+			module.postMessage('gigascreen:' + giga);
 	}
 }
 
@@ -68,8 +76,20 @@ function pageDidLoad()
 	var f = localStorage["filtering"];
 	if(f)
 	{
-		var filtering = document.getElementById("filtering");
-		filtering.checked = (f == "on");
+		var e = document.getElementById("filtering");
+		e.checked = (f == "on");
+	}
+	var bw = localStorage["black and white"];
+	if(bw)
+	{
+		var e = document.getElementById("black and white");
+		e.checked = (bw == "on");
+	}
+	var giga = localStorage["gigascreen"];
+	if(giga)
+	{
+		var e = document.getElementById("gigascreen");
+		e.checked = (giga == "on");
 	}
 	var bp = localStorage["browser_path"];
 	if(bp)
@@ -368,9 +388,25 @@ function onZoom()
 function onFiltering()
 {
 	var filtering = document.getElementById("filtering");
-	var f = filtering.checked ? "on" : "off";
-	module.postMessage('filtering:' + f);
-	localStorage["filtering"] = f;
+	var v = filtering.checked ? "on" : "off";
+	module.postMessage('filtering:' + v);
+	localStorage["filtering"] = v;
+}
+
+function onBlackAndWhite()
+{
+	var bw = document.getElementById("black and white");
+	var v = bw.checked ? "on" : "off";
+	module.postMessage('black and white:' + v);
+	localStorage["black and white"] = v;
+}
+
+function onGigaScreen()
+{
+	var giga = document.getElementById("gigascreen");
+	var v = giga.checked ? "on" : "off";
+	module.postMessage('gigascreen:' + v);
+	localStorage["gigascreen"] = v;
 }
 
 function updateStatus(opt_message)

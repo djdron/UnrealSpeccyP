@@ -149,6 +149,8 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 	static const string joystick("joystick:");
 	static const string zoom("zoom:");
 	static const string filtering("filtering:");
+	static const string black_and_white("black and white:");
+	static const string gigascreen("gigascreen:");
 	if(m.length() > open.length() && m.substr(0, open.length()) == open)
 	{
 		string url = m.substr(open.length());
@@ -171,9 +173,23 @@ void eUSPInstance::HandleMessage(const pp::Var& _m)
 	else if(m.length() > filtering.length() && m.substr(0, filtering.length()) == filtering)
 	{
 		using namespace xOptions;
-		string f = m.substr(filtering.length());
+		string v = m.substr(filtering.length());
 		eOption<bool>* op_filtering = eOption<bool>::Find("filtering");
-		SAFE_CALL(op_filtering)->Value(f.c_str());
+		SAFE_CALL(op_filtering)->Value(v.c_str());
+	}
+	else if(m.length() > black_and_white.length() && m.substr(0, black_and_white.length()) == black_and_white)
+	{
+		using namespace xOptions;
+		string v = m.substr(black_and_white.length());
+		eOption<bool>* op_black_and_white = eOption<bool>::Find("black and white");
+		SAFE_CALL(op_black_and_white)->Value(v.c_str());
+	}
+	else if(m.length() > gigascreen.length() && m.substr(0, gigascreen.length()) == gigascreen)
+	{
+		using namespace xOptions;
+		string v = m.substr(gigascreen.length());
+		eOption<bool>* op_gigascreen = eOption<bool>::Find("gigascreen");
+		SAFE_CALL(op_gigascreen)->Value(v.c_str());
 	}
 	else if(m == "reset")
 	{
