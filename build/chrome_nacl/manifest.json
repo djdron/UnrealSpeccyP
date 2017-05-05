@@ -1,7 +1,7 @@
 {
   "name": "Unreal Speccy Portable - ZX Spectrum emulator",
   "short_name": "USP",
-  "version": "0.0.71",
+  "version": "0.0.76",
   "manifest_version": 2,
   "description": "Portable ZX Spectrum emulator supports Z80 128K (Pentagon) AY/YM, Beeper, BetaDisk, Tape, Kempston Joystick, Snapshots, Replays.",
   "icons": {
@@ -24,6 +24,6 @@
     	"features": ["webgl"]
   	}
   },
-  "minimum_chrome_version": "41",
+  "minimum_chrome_version": "49",
   "homepage_url": "https://bitbucket.org/djdron/unrealspeccyp"
 }
