@@ -4,6 +4,7 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
 option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" OFF)
 option(USE_SDL "SDL version" ON)
+option(USE_SDL2 "SDL2 version" OFF)
 option(USE_BENCHMARK "benchmark mode (console)" OFF)
 option(USE_WEB "use web sources (SDL or iOS versions)" ON)
 
@@ -121,7 +122,7 @@ source_group("platform\\oal" FILES ${SRCCXX_PLATFORM_OPENAL})
 
 endif(USE_WX_WIDGETS OR APPLE_IOS)
 
-if(USE_SDL OR APPLE_IOS)
+if(USE_SDL OR USE_SDL2 OR APPLE_IOS)
 
 file(GLOB SRCCXX_UI "../../ui/*.cpp")
 file(GLOB SRCH_UI "../../ui/*.h")
@@ -144,7 +145,17 @@ source_group("platform\\web" FILES ${SRCCXX_PLATFORM_WEB} ${SRCH_PLATFORM_WEB})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 endif(USE_WEB)
 
-endif(USE_SDL OR APPLE_IOS)
+endif(USE_SDL OR USE_SDL2 OR APPLE_IOS)
+
+if(USE_SDL2 OR APPLE_IOS)
+
+file(GLOB SRCCXX_PLATFORM_GLES2 "../../platform/gles2/*.cpp")
+file(GLOB SRCH_PLATFORM_GLES2 "../../platform/gles2/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_GLES2})
+list(APPEND SRCH ${SRCH_PLATFORM_GLES2})
+source_group("platform\\gles2" FILES ${SRCCXX_PLATFORM_GLES2} ${SRCH_PLATFORM_GLES2})
+
+endif(USE_SDL2 OR APPLE_IOS)
 
 if(MSVC)
 add_definitions("/wd4244 /wd4996 /wd4800")
@@ -190,12 +201,6 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM_IOS})
 list(APPEND SRCMM ${SRCMM_PLATFORM_IOS})
 list(APPEND SRCH ${SRCH_PLATFORM_IOS})
 source_group("platform\\ios" FILES ${SRCCXX_PLATFORM_IOS} ${SRCMM_PLATFORM_IOS} ${SRCH_PLATFORM_IOS})
-
-file(GLOB SRCCXX_PLATFORM_GLES2 "../../platform/gles2/*.cpp")
-file(GLOB SRCH_PLATFORM_GLES2 "../../platform/gles2/*.h")
-list(APPEND SRCCXX ${SRCCXX_PLATFORM_GLES2})
-list(APPEND SRCH ${SRCH_PLATFORM_GLES2})
-source_group("platform\\gles2" FILES ${SRCCXX_PLATFORM_GLES2} ${SRCH_PLATFORM_GLES2})
 
 file(GLOB SRCCXX_PLATFORM_TOUCH_UI "../../platform/touch_ui/*.cpp")
 file(GLOB SRCH_PLATFORM_TOUCH_UI "../../platform/touch_ui/*.h")
@@ -283,12 +288,6 @@ target_link_libraries(${PROJECT} ${OPENGL_LIBRARIES})
 elseif(USE_SDL)
 
 #SDL
-if(EMSCRIPTEN)
-#SDL is built-in (headers are exists, but library not)
-find_package(SDL)
-else(EMSCRIPTEN)
-find_package(SDL REQUIRED)
-endif(EMSCRIPTEN)
 include_directories("${SDL_INCLUDE_DIR}")
 file(GLOB SRCCXX_PLATFORM_SDL "../../platform/sdl/*.cpp")
 add_definitions(-DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON -DUSE_CONFIG -DUSE_ZIP)
@@ -304,18 +303,31 @@ endif(WIN32)
 
 add_platform_io_stuff()
 
+add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH})
+target_link_libraries(${PROJECT} ${SDL_LIBRARY})
+
+elseif(USE_SDL2)
+
+#SDL2
+#include_directories("${SDL2_INCLUDE_DIR}")
+file(GLOB SRCCXX_PLATFORM_SDL2 "../../platform/sdl2/*.cpp")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL2})
+source_group("platform\\sdl2" FILES ${SRCCXX_PLATFORM_SDL2})
+
+add_definitions(-DUSE_SDL2 -DUSE_CONFIG -DUSE_ZIP -DUSE_GLES2 -DUSE_UI -DUI_REAL_ALPHA)
+
 if(EMSCRIPTEN)
-add_definitions(-DSDL_NO_MAINLOOP -DUSE_EMSCRIPTEN -DSDL_NO_OFFSCREEN)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2")
+add_definitions(-DSDL_NO_MAINLOOP -DUSE_EMSCRIPTEN)
 file(GLOB SRCCXX_PLATFORM_EMSCRIPTEN "../../platform/emscripten/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_EMSCRIPTEN})
 source_group("platform\\emscripten" FILES ${SRCCXX_PLATFORM_EMSCRIPTEN})
 set(CMAKE_EXECUTABLE_SUFFIX ".html")
-set(EMSCRIPTEN_LINK_FLAGS "--preload-file ../../../res/ -s ALLOW_MEMORY_GROWTH=1")
-if(USE_WEB)
-#set(EMSCRIPTEN_LINK_FLAGS ${EMSCRIPTEN_LINK_FLAGS} "-s ASYNCIFY=1")
-endif(USE_WEB)
+set(EMSCRIPTEN_LINK_FLAGS "--preload-file ../../../res/ -s USE_SDL=2")
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${EMSCRIPTEN_LINK_FLAGS})
 endif(EMSCRIPTEN)
+
+add_platform_io_stuff()
 
 add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH})
 target_link_libraries(${PROJECT} ${SDL_LIBRARY})
