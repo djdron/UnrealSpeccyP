@@ -69,13 +69,13 @@ static byte TranslateKey(SDL_Keycode _key, dword& _flags)
 {
 	switch(_key)
 	{
+	case SDLK_BACKQUOTE:
 	case SDLK_ESCAPE:	return 'm';
 	case SDLK_LSHIFT:	return 'c';
 	case SDLK_RSHIFT:	return 'c';
 	case SDLK_LALT:		return 's';
 	case SDLK_RALT:		return 's';
 	case SDLK_RETURN:	return 'e';
-	case SDLK_BACKQUOTE: return 'p';
 	case SDLK_BACKSPACE:
 		_flags |= KF_SHIFT;
 		return '0';
