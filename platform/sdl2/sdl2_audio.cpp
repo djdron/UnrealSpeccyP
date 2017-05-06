@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
+static SDL_AudioDeviceID device = 0;
+
 static eSoundMixer sound_mixer;
 
 static void AudioCallback(void* userdata, Uint8* stream, int len)
@@ -59,27 +61,36 @@ bool InitAudio()
 
 	SDL_AudioSpec audio;
 	memset(&audio, 0, sizeof(audio));
-	audio.freq = 44100;
+	audio.freq = 48000;
 	audio.channels = 2;
-	audio.format = AUDIO_S16SYS;
+	audio.format = AUDIO_S16;
 #ifndef SDL_AUDIO_SAMPLES
-#define SDL_AUDIO_SAMPLES 8192
+#define SDL_AUDIO_SAMPLES 512
 #endif//SDL_AUDIO_SAMPLES
 	audio.samples = SDL_AUDIO_SAMPLES;
 	audio.callback = AudioCallback;
-	if(SDL_OpenAudio(&audio, NULL) < 0)
+	device = SDL_OpenAudioDevice(NULL, 0, &audio, NULL, 0);
+	if(!device)
 		return false;
-	SDL_PauseAudio(0);
+	SDL_PauseAudioDevice(device, 0);
 	return true;
 }
 void DoneAudio()
 {
-	SDL_PauseAudio(1);
+	if(device)
+	{
+		SDL_PauseAudioDevice(device, 1);
+		SDL_CloseAudioDevice(device);
+		device = 0;
+	}
 }
 
 void UpdateAudio()
 {
-	SDL_LockAudio();
+	if(!device)
+		return;
+
+	SDL_LockAudioDevice(device);
 	sound_mixer.Update();
 	static bool audio_filled = false;
 	bool audio_filled_new = sound_mixer.Ready() > 44100*2*2/50*7; // 7-frame data
@@ -88,7 +99,7 @@ void UpdateAudio()
 		audio_filled = audio_filled_new;
 		Handler()->VideoPaused(audio_filled);
 	}
-	SDL_UnlockAudio();
+	SDL_UnlockAudioDevice(device);
 }
 
 }
