@@ -90,6 +90,7 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 	virtual void* AudioData(int source) const { return sound_dev[source]->AudioData(); }
 	virtual dword AudioDataReady(int source) const { return sound_dev[source]->AudioDataReady(); }
 	virtual void AudioDataUse(int source, dword size) { sound_dev[source]->AudioDataUse(size); }
+	virtual void AudioSetSampleRate(dword sample_rate);
 	virtual void VideoPaused(bool paused) {	paused ? ++video_paused : --video_paused; }
 	virtual int VideoFrame() const { return video_frame; }
 
@@ -382,6 +383,14 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 	}
 	return AR_ERROR;
 }
+
+void eSpeccyHandler::AudioSetSampleRate(dword sample_rate)
+{
+	speccy->Device<eAY>()->SetTimings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, sample_rate);
+	speccy->Device<eBeeper>()->SetTimings(SNDR_DEFAULT_SYSTICK_RATE, sample_rate);
+	speccy->Device<eTape>()->SetTimings(SNDR_DEFAULT_SYSTICK_RATE, sample_rate);
+}
+
 
 static void SetupSoundChip();
 static struct eOptionSoundChip : public xOptions::eOptionInt

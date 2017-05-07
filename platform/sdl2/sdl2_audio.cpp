@@ -61,7 +61,7 @@ bool InitAudio()
 
 	SDL_AudioSpec audio;
 	memset(&audio, 0, sizeof(audio));
-	audio.freq = 48000;
+	audio.freq = 44100;
 	audio.channels = 2;
 	audio.format = AUDIO_S16;
 #ifndef SDL_AUDIO_SAMPLES
@@ -69,9 +69,11 @@ bool InitAudio()
 #endif//SDL_AUDIO_SAMPLES
 	audio.samples = SDL_AUDIO_SAMPLES;
 	audio.callback = AudioCallback;
-	device = SDL_OpenAudioDevice(NULL, 0, &audio, NULL, 0);
+	SDL_AudioSpec obtained;
+	device = SDL_OpenAudioDevice(NULL, 0, &audio, &obtained, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
 	if(!device)
 		return false;
+	Handler()->AudioSetSampleRate(obtained.freq);
 	SDL_PauseAudioDevice(device, 0);
 	return true;
 }

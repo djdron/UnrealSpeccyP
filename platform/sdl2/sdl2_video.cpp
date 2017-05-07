@@ -37,7 +37,7 @@ bool InitVideo()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0); 
 
 	window = SDL_CreateWindow(Handler()->WindowCaption(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-				800, 600, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+				1280, 720, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
 	if(!window)
 		return false;
 	context = SDL_GL_CreateContext(window);
