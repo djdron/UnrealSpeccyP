@@ -116,7 +116,7 @@ static bool Init()
 	return true;
 }
 
-static void Done()
+void Done()
 {
 #ifdef SDL_USE_JOYSTICK
 	if(joystick)

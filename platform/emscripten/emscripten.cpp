@@ -67,8 +67,14 @@ void Loop()
 	};
 	eOptionBX* o = (eOptionBX*)eOptionB::Find("quit");
 	SAFE_CALL(o)->Unuse();
+	EM_ASM
+	(
+		Module.onReady();
+	);
 	emscripten_set_main_loop(xPlatform::Loop1, 0, true);
 }
+
+void Done();
 
 }
 //namespace xPlatform
@@ -97,6 +103,14 @@ EMSCRIPTEN_KEEPALIVE
 void OpenFile(const char* url)
 {
 	emscripten_async_wget_data(url, strdup(url), OnLoadOK, OnLoadFail);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void ExitLoop()
+{
+	emscripten_cancel_main_loop();
+	xPlatform::Done();
+	emscripten_force_exit(0);
 }
 
 }

@@ -65,7 +65,7 @@ bool InitAudio()
 	audio.channels = 2;
 	audio.format = AUDIO_S16;
 #ifndef SDL_AUDIO_SAMPLES
-#define SDL_AUDIO_SAMPLES 512
+#define SDL_AUDIO_SAMPLES 1024
 #endif//SDL_AUDIO_SAMPLES
 	audio.samples = SDL_AUDIO_SAMPLES;
 	audio.callback = AudioCallback;
