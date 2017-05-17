@@ -67,6 +67,10 @@ void Loop()
 	};
 	eOptionBX* o = (eOptionBX*)eOptionB::Find("quit");
 	SAFE_CALL(o)->Unuse();
+
+	eOptionInt* zoom = (eOptionInt*)eOptionB::Find("zoom");
+	SAFE_CALL(zoom)->Set(1); // fill screen
+
 	EM_ASM
 	(
 		Module.onReady();
