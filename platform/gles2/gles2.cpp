@@ -33,12 +33,12 @@ static struct eOptionZoom : public xOptions::eOptionInt
 	virtual const char* Name() const { return "zoom"; }
 	virtual const char** Values() const
 	{
-		static const char* values[] = { "none", "fill screen", "small border", "no border", NULL };
+		static const char* values[] = { "none", "fill screen", "small border", "no border", "2x", "3x", "4x", "5x", "6x", NULL };
 		return values;
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(0, 4, next);
+		eOptionInt::Change(0, 9, next);
 	}
 	virtual int Order() const { return 35; }
 	float Zoom() const
@@ -47,6 +47,11 @@ static struct eOptionZoom : public xOptions::eOptionInt
 		{
 		case 2: return 300.0f/256.0f;
 		case 3: return 320.0f/256.0f;
+		case 4: return 2.0f;
+		case 5: return 3.0f;
+		case 6: return 4.0f;
+		case 7: return 5.0f;
+		case 8: return 6.0f;
 		default: return 1.0f;
 		}
 	}
@@ -208,13 +213,16 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 	float sx, sy;
 	switch(op_zoom)
 	{
+	case 1:
+	case 2:
+	case 3:
+		GetScaleWithAspectRatio43(&sx, &sy, size.x, size.y);
+		break;
 	case 0:
 	    filtering = false;
+	default:
 	    sx = ((float)WIDTH) / size.x;
 	    sy = ((float)HEIGHT) / size.y;
-		break;
-	default:
-		GetScaleWithAspectRatio43(&sx, &sy, size.x, size.y);
 		break;
 	}
 
