@@ -29,35 +29,55 @@ namespace xPlatform
 
 static struct eOptionZoom : public xOptions::eOptionInt
 {
-	eOptionZoom() { Set(2); }
+	enum { Z_NONE, Z_FILL_SCREEN, Z_SMALL_BORDER, Z_NO_BORDER, Z_STRETCH, Z_2X, Z_3X, Z_4X, Z_5X, Z_6X, Z_LAST };
+	eOptionZoom() { Set(Z_SMALL_BORDER); }
 	virtual const char* Name() const { return "zoom"; }
 	virtual const char** Values() const
 	{
-		static const char* values[] = { "none", "fill screen", "small border", "no border", "2x", "3x", "4x", "5x", "6x", NULL };
+		static const char* values[] = { "none", "fill screen", "small border", "no border", "stretch", "2x", "3x", "4x", "5x", "6x", NULL };
 		return values;
 	}
 	virtual void Change(bool next = true)
 	{
-		eOptionInt::Change(0, 9, next);
+		eOptionInt::Change(Z_NONE, Z_LAST, next);
 	}
 	virtual int Order() const { return 35; }
-	float Zoom() const
+	float Scale() const
 	{
 		switch(*this)
 		{
-		case 2: return 300.0f/256.0f;
-		case 3: return 320.0f/256.0f;
-		case 4: return 2.0f;
-		case 5: return 3.0f;
-		case 6: return 4.0f;
-		case 7: return 5.0f;
-		case 8: return 6.0f;
-		default: return 1.0f;
+		case Z_SMALL_BORDER:	return 300.0f/256.0f;
+		case Z_NO_BORDER:		return 320.0f/256.0f;
+		case Z_2X:	return 2.0f;
+		case Z_3X:	return 3.0f;
+		case Z_4X:	return 4.0f;
+		case Z_5X:	return 5.0f;
+		case Z_6X:	return 6.0f;
+		default:	return 1.0f;
 		}
 	}
+	void Get(float* sx, float* sy, const ePoint& org_size, const ePoint& size) const
+	{
+		switch(*this)
+		{
+		case Z_FILL_SCREEN:
+		case Z_SMALL_BORDER:
+		case Z_NO_BORDER:
+			GetScaleWithAspectRatio43(sx, sy, size.x, size.y);
+			break;
+		case Z_STRETCH:
+			*sx = *sy = 1.0f;
+			break;
+		default:
+			*sx = ((float)org_size.x) / size.x;
+			*sy = ((float)org_size.y) / size.y;
+			break;
+		}
+		float s = Scale();
+		*sx *= s;
+		*sy *= s;
+	}
 } op_zoom;
-
-float OpZoom() { return op_zoom.Zoom(); }
 
 static struct eOptionFiltering : public xOptions::eOptionBool
 {
@@ -209,25 +229,7 @@ eGLES2Impl::~eGLES2Impl()
 
 void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 {
-	bool filtering = op_filtering;
-	float sx, sy;
-	switch(op_zoom)
-	{
-	case 1:
-	case 2:
-	case 3:
-		GetScaleWithAspectRatio43(&sx, &sy, size.x, size.y);
-		break;
-	case 0:
-	    filtering = false;
-	default:
-	    sx = ((float)WIDTH) / size.x;
-	    sy = ((float)HEIGHT) / size.y;
-		break;
-	}
-
 	glClear(GL_COLOR_BUFFER_BIT);
-
 	if(video_frame_last != Handler()->VideoFrame())
 	{
 		video_frame_last = Handler()->VideoFrame();
@@ -237,11 +239,13 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 		glBindTexture(GL_TEXTURE_2D, texture[texture_current]);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer[texture_current]);
 	}
-	float z = OpZoom();
+	float sx, sy;
+	op_zoom.Get(&sx, &sy, ePoint(WIDTH, HEIGHT), size);
+	bool filtering = op_filtering && op_zoom != eOptionZoom::Z_NONE;
 	if(op_gigascreen)
-		(op_black_and_white ? sprite_gigascreen_bw : sprite_gigascreen)->Draw2(texture[texture_current], texture[1 - texture_current], pos, size, 1.0f, sx*z, sy*z, filtering);
+		(op_black_and_white ? sprite_gigascreen_bw : sprite_gigascreen)->Draw2(texture[texture_current], texture[1 - texture_current], pos, size, 1.0f, sx, sy, filtering);
 	else
-		(op_black_and_white ? sprite_screen_bw : sprite_screen)->Draw(texture[texture_current], pos, size, 1.0f, sx*z, sy*z, filtering);
+		(op_black_and_white ? sprite_screen_bw : sprite_screen)->Draw(texture[texture_current], pos, size, 1.0f, sx, sy, filtering);
 
 #ifdef USE_UI
 	void* data_ui = Handler()->VideoDataUI();
