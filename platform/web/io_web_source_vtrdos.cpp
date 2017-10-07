@@ -106,18 +106,20 @@ public:
 			string url(path);
 			url.erase(0, Root().length() + 1);
 			url.erase(url.length() - 1, 1); // remove last /
-			char l = toupper(url[0]);
-			url = RootWEB() + "/press.php?l=" + (l > 'N' ? "2" : "1");
+			char l = tolower(url[0]);
+			url = RootWEB() + "/press.php?l=" + (l > 'n' ? "2" : "1");
 			string data = xPlatform::xWeb::GetURL(url.c_str());
-			regex expr("<td class=\"nowrap\"><b>(.+?)</b></td>\n<td>([\\s\\S]+?)\n</td>\n</tr>");
-			regex expr2("<a class=\"rpad\" href=\"(.+?)\">(.+?)</a>");
+			regex expr("<a class=\"rpad\" href=\"(.+?)\">.+?</a>");
 			string::const_iterator beg = data.begin(), end = data.end();
 			smatch m;
-			while(std::regex_search(beg, end, m, expr))
+			while(regex_search(beg, end, m, expr))
 			{
 				beg = m[0].second;
-				string name = m[1].str();
-				char ch0 = name[0];
+				string file_name = m[1].str();
+				string::size_type p = file_name.find("/press/");
+				if(p != 0 || file_name.size() < 8)
+					continue;
+				char ch0 = file_name[7];
 				char ch1 = l;
 				if(isdigit(ch1))
 				{
@@ -126,18 +128,10 @@ public:
 				}
 				else if(ch0 != ch1)
 					continue;
-				string data2 = m[2].str();
-				string::const_iterator beg2 = data2.begin(), end2 = data2.end();
-				smatch m2;
-				while(std::regex_search(beg2, end2, m2, expr2))
-				{
-					string file_name = m2[1].str();
-					string::size_type x = file_name.find_last_of('/');
-					if(x != string::npos)
-						file_name.erase(0, x + 1);
-					items->push_back(eWebSourceItem(file_name, false, m2[1].str()));
-					beg2 = m2[0].second;
-				}
+				string::size_type x = file_name.rfind('/');
+				if(x != string::npos)
+					file_name.erase(0, x + 1);
+				items->push_back(eWebSourceItem(file_name, false, m[1].str()));
 			}
 		}
 	}
