@@ -313,7 +313,7 @@ include_directories("${ANGLE_INCLUDE_DIR}")
 add_definitions(-DGL_GLEXT_PROTOTYPES)
 set(WIN_SDL2_LIBS "${ANGLE_LIBRARY}")
 if(MINGW)
-set(WIN_SDL2_LINK_FLAGS "-s -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread")
+set(WIN_SDL2_LINK_FLAGS "-static-libgcc -Wl,-Bstatic -lstdc++ -lpthread")
 endif(MINGW)
 endif(WIN32)
 
