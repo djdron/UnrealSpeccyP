@@ -43,7 +43,7 @@ source_group("devices\\sound" FILES ${SRCCXX_DEVICES_SOUND} ${SRCH_DEVICES_SOUND
 
 #3rdparty libs
 
-if(NOT APPLE_IOS AND USE_SDL AND USE_WEB AND NOT EMSCRIPTEN)
+if(NOT APPLE_IOS AND (USE_SDL OR USE_SDL2) AND USE_WEB AND NOT EMSCRIPTEN)
 find_package(CURL REQUIRED)
 if(CURL_FOUND)
 	include_directories(${CURL_INCLUDE_DIRS})
@@ -308,13 +308,27 @@ target_link_libraries(${PROJECT} ${SDL_LIBRARY})
 
 elseif(USE_SDL2)
 
+if(WIN32)
+include_directories("${ANGLE_INCLUDE_DIR}")
+add_definitions(-DGL_GLEXT_PROTOTYPES)
+set(WIN_SDL2_LIBS "${ANGLE_LIBRARY}")
+if(MINGW)
+set(WIN_SDL2_LINK_FLAGS "-s -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread")
+endif(MINGW)
+endif(WIN32)
+
 #SDL2
-#include_directories("${SDL2_INCLUDE_DIR}")
+if(NOT EMSCRIPTEN)
+include_directories("${SDL2_INCLUDE_DIR}")
+endif(NOT EMSCRIPTEN)
 file(GLOB SRCCXX_PLATFORM_SDL2 "../../platform/sdl2/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL2})
 source_group("platform\\sdl2" FILES ${SRCCXX_PLATFORM_SDL2})
 
 add_definitions(-DUSE_SDL2 -DUSE_CONFIG -DUSE_ZIP -DUSE_GLES2 -DUSE_UI -DUI_REAL_ALPHA)
+if(USE_WEB AND NOT EMSCRIPTEN)
+add_definitions(-DUSE_WEB)
+endif(USE_WEB AND NOT EMSCRIPTEN)
 
 if(EMSCRIPTEN)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2")
@@ -330,7 +344,7 @@ endif(EMSCRIPTEN)
 add_platform_io_stuff()
 
 add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH})
-target_link_libraries(${PROJECT} ${SDL_LIBRARY})
+target_link_libraries(${PROJECT} ${SDL2_LIBRARY} ${WIN_SDL2_LIBS} ${WIN_SDL2_LINK_FLAGS})
 
 elseif(USE_BENCHMARK)
 
