@@ -158,6 +158,7 @@ source_group("platform\\gles2" FILES ${SRCCXX_PLATFORM_GLES2} ${SRCH_PLATFORM_GL
 endif(USE_SDL2 OR APPLE_IOS)
 
 if(MSVC)
+add_definitions(-DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOCOLOR)
 add_definitions("/wd4244 /wd4996 /wd4800")
 set(variables CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
 foreach(variable ${variables})
@@ -297,16 +298,14 @@ endif(USE_WEB)
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL})
 source_group("platform\\sdl" FILES ${SRCCXX_PLATFORM_SDL})
 
-if(WIN32)
-add_definitions(-DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOCOLOR)
-endif(WIN32)
-
 add_platform_io_stuff()
 
 add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH})
 target_link_libraries(${PROJECT} ${SDL_LIBRARY})
 
 elseif(USE_SDL2)
+
+#SDL2
 
 if(WIN32)
 include_directories("${ANGLE_INCLUDE_DIR}")
@@ -315,9 +314,10 @@ set(WIN_SDL2_LIBS "${ANGLE_LIBRARY}")
 if(MINGW)
 set(WIN_SDL2_LINK_FLAGS "-s -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread")
 endif(MINGW)
+SET(SRCRES "../win/unreal_speccy_portable.rc")
+source_group("platform\\win\\res" FILES ${SRCRES})
 endif(WIN32)
 
-#SDL2
 if(NOT EMSCRIPTEN)
 include_directories("${SDL2_INCLUDE_DIR}")
 endif(NOT EMSCRIPTEN)
@@ -343,7 +343,7 @@ endif(EMSCRIPTEN)
 
 add_platform_io_stuff()
 
-add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH})
+add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH} ${SRCRES})
 target_link_libraries(${PROJECT} ${SDL2_LIBRARY} ${WIN_SDL2_LIBS} ${WIN_SDL2_LINK_FLAGS})
 
 elseif(USE_BENCHMARK)
