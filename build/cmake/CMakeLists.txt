@@ -242,11 +242,11 @@ set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resourc
 endforeach(_file)
 
 foreach(_file ${COPY_RES_ROM})
-set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "${PROJECT}.app/res/rom")
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "res/rom")
 endforeach(_file)
 
 foreach(_file ${COPY_RES_FONT})
-set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "${PROJECT}.app/res/font")
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "res/font")
 endforeach(_file)
 
 elseif(USE_WX_WIDGETS)
