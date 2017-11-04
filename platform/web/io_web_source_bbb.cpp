@@ -70,7 +70,7 @@ public:
 			{
 				j = json::parse(data);
 			}
-			catch(const invalid_argument& a)
+			catch(const invalid_argument&)
 			{
 			}
 			for(auto e : j)

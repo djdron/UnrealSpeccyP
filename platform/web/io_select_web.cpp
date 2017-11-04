@@ -70,7 +70,7 @@ public:
 	virtual bool Valid() const { return current >= 0; }
 	virtual void Next()
 	{
-		if(++current >= items.size())
+		if(++current >= (int)items.size())
 			current = -1;
 	}
 	virtual const char* Name() const { return items[current].name.c_str(); }
