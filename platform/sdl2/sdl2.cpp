@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,6 +37,10 @@ void DoneAudio();
 void UpdateAudio();
 void UpdateScreen();
 void ProcessKey(SDL_Event& e);
+
+#ifdef SDL_USE_MOUSE
+void ProcessMouse(SDL_Event& e);
+#endif//SDL_USE_MOUSE
 
 #ifdef SDL_USE_JOYSTICK
 void ProcessJoy(SDL_Event& e);
@@ -107,7 +111,6 @@ static bool Init()
 #endif//SDL_USE_JOYSTICK
 
     sdl_inited = true;
-	SDL_ShowCursor(SDL_DISABLE);
 
 	if(!InitVideo())
 		return false;
@@ -148,6 +151,13 @@ void Loop1()
 		case SDL_KEYUP:
 			ProcessKey(e);
 			break;
+#ifdef SDL_USE_MOUSE
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+		case SDL_MOUSEMOTION:
+			ProcessMouse(e);
+			break;
+#endif//SDL_USE_MOUSE
 #ifdef SDL_USE_JOYSTICK
 		case SDL_JOYBUTTONDOWN:
 		case SDL_JOYBUTTONUP:

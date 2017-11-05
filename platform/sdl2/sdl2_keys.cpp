@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,9 +27,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-static bool ProcessFuncKey(SDL_Event& e)
+#ifdef SDL_USE_MOUSE
+bool ProcessMouseGrab(SDL_Event& e);
+#endif//SDL_USE_MOUSE
+
+static bool PreProcessKey(SDL_Event& e)
 {
 	if(e.key.keysym.mod)
+		return false;
+#ifdef SDL_USE_MOUSE
+	if(ProcessMouseGrab(e))
+		return true;
+#endif//SDL_USE_MOUSE
+	if(e.type != SDL_KEYUP)
 		return false;
 	switch(e.key.keysym.sym)
 	{
@@ -170,6 +180,7 @@ void ProcessKey(SDL_Event& e)
 	switch(e.type)
 	{
 	case SDL_KEYDOWN:
+		if(!PreProcessKey(e))
 		{
 			dword flags = KF_DOWN|OpJoyKeyFlags();
 			if(e.key.keysym.mod&KMOD_ALT)
@@ -181,7 +192,7 @@ void ProcessKey(SDL_Event& e)
 		}
 		break;
 	case SDL_KEYUP:
-		if(!ProcessFuncKey(e))
+		if(!PreProcessKey(e))
 		{
 			dword flags = 0;
 			if(e.key.keysym.mod&KMOD_ALT)

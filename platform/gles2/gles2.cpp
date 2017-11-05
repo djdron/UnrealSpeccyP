@@ -79,6 +79,11 @@ static struct eOptionZoom : public xOptions::eOptionInt
 	}
 } op_zoom;
 
+void OpZoomGet(float* sx, float* sy, const ePoint& org_size, const ePoint& size)
+{
+	return op_zoom.Get(sx, sy, org_size, size);
+}
+
 static struct eOptionFiltering : public xOptions::eOptionBool
 {
 	eOptionFiltering() { Set(true); }
@@ -240,7 +245,7 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, texture_buffer[texture_current]);
 	}
 	float sx, sy;
-	op_zoom.Get(&sx, &sy, ePoint(WIDTH, HEIGHT), size);
+	OpZoomGet(&sx, &sy, ePoint(WIDTH, HEIGHT), size);
 	bool filtering = op_filtering && op_zoom != eOptionZoom::Z_NONE;
 	if(op_gigascreen)
 		(op_black_and_white ? sprite_gigascreen_bw : sprite_gigascreen)->Draw2(texture[texture_current], texture[1 - texture_current], pos, size, 1.0f, sx, sy, filtering);
