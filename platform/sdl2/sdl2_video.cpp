@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SDL2/SDL.h>
 #include "../gles2/gles2.h"
+#include "../../tools/options.h"
 
 namespace xPlatform
 {
@@ -30,14 +31,102 @@ static SDL_Window* window = NULL;
 static SDL_GLContext context = NULL;
 static eGLES2* gles2 = NULL;
 
+class eOptionWindowState : public xOptions::eOptionString
+{
+public:
+	eOptionWindowState() { customizable = false; }
+	virtual const char* Name() const { return "window state"; }
+
+	bool Get(ePoint* position, ePoint* size, bool* maximized) const
+	{
+		ePoint p(SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED);
+		ePoint s(960, 720);
+		int m = 0;
+		bool ok = sscanf(Value(), FormatStr(), &p.x, &p.y, &s.x, &s.y, &m) == 5;
+		if(position)
+			*position = p;
+		if(size)
+			*size = s;
+		if(maximized)
+			*maximized = m != 0;
+		return ok;
+	}
+	void Set(const ePoint* position, const ePoint* size, const bool* maximized)
+	{
+		ePoint p, s;
+		bool m;
+		Get(&p, &s, &m);
+		if(position)
+			p = *position;
+		if(size)
+			s = *size;
+		if(maximized)
+			m = *maximized;
+		char buf[512];
+		sprintf(buf, FormatStr(), p.x, p.y, s.x, s.y, m ? 1 : 0);
+		Value(buf);
+	}
+	void Update()
+	{
+		Uint32 flags = SDL_GetWindowFlags(window);
+		if((flags&SDL_WINDOW_FULLSCREEN))
+			return;
+		if(!(flags&SDL_WINDOW_MAXIMIZED) && !(flags&SDL_WINDOW_MINIMIZED))
+		{
+			ePoint p;
+			SDL_GetWindowPosition(window, &p.x, &p.y);
+			ePoint s;
+			SDL_GetWindowSize(window, &s.x, &s.y);
+			bool m = false;
+			Set(&p, &s, &m);
+		}
+		else
+		{
+			bool m = (flags&SDL_WINDOW_MAXIMIZED) != 0;
+			Set(NULL, NULL, &m);
+		}
+	}
+
+private:
+	const char* FormatStr() const { return "position(%d, %d); size(%d, %d); maximized(%d)"; }
+} op_window_state;
+
+static struct eOptionFullScreen : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "full screen"; }
+	virtual int Order() const { return 32; }
+	virtual void Set(const bool& v)
+	{
+		eOptionBool::Set(v);
+		Apply();
+	}
+	virtual void Apply()
+	{
+		SDL_SetWindowFullscreen(window, (*this) ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	}
+	void Update()
+	{
+		bool fs = (SDL_GetWindowFlags(window)&SDL_WINDOW_FULLSCREEN) != 0;
+		if(*this != fs)
+			Set(fs);
+	}
+} op_full_screen;
+
 bool InitVideo()
 {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2); 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0); 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-	window = SDL_CreateWindow(Handler()->WindowCaption(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-				852, 480, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+	ePoint pos, size;
+	bool maximized;
+	op_window_state.Get(&pos, &size, &maximized);
+	Uint32 flags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE;
+	if(maximized)
+		flags |= SDL_WINDOW_MAXIMIZED;
+	if(op_full_screen)
+		flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+	window = SDL_CreateWindow(Handler()->WindowCaption(), pos.x, pos.y, size.x, size.y, flags);
 	if(!window)
 		return false;
 	context = SDL_GL_CreateContext(window);
@@ -64,6 +153,9 @@ void DoneVideo()
 
 void UpdateScreen()
 {
+	op_window_state.Update();
+	op_full_screen.Update();
+
 	ePoint s;
 	SDL_GetWindowSize(window, &s.x, &s.y);
 	gles2->Draw(ZERO, s);
