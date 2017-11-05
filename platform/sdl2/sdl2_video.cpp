@@ -121,7 +121,7 @@ bool InitVideo()
 	ePoint pos, size;
 	bool maximized;
 	op_window_state.Get(&pos, &size, &maximized);
-	Uint32 flags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE;
+	Uint32 flags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE|SDL_WINDOW_ALLOW_HIGHDPI;
 	if(maximized)
 		flags |= SDL_WINDOW_MAXIMIZED;
 	if(op_full_screen)
