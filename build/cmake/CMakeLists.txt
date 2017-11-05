@@ -1,5 +1,9 @@
 cmake_minimum_required (VERSION 2.6)
 
+if(POLICY CMP0054)
+cmake_policy(SET CMP0054 OLD)
+endif()
+
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
 option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" OFF)
@@ -361,3 +365,7 @@ add_executable(${PROJECT} ${SRCCXX} ${SRCC} ${SRCH})
 endif(APPLE_IOS)
 
 target_link_libraries(${PROJECT} ${THIRDPARTY_LIBRARIES})
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+set_target_properties(${PROJECT} PROPERTIES LINK_FLAGS "/MANIFEST:NO /LARGEADDRESSAWARE")
+endif()
