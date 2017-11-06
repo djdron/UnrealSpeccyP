@@ -51,7 +51,7 @@ public:
 			url += ".php";
 			string data = xPlatform::xWeb::GetURL(url.c_str());
 			smatch m;
-			regex expr("<tr><td><font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"(.+?)\"|<font size=2 color=red>).+?");
+			regex expr("<font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"(.+?)\"|<font size=2 color=red>).+?");
 			string::const_iterator beg = data.begin(), end = data.end();
 			while(std::regex_search(beg, end, m, expr))
 			{
