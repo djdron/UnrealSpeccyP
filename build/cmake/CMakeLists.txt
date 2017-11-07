@@ -310,20 +310,28 @@ target_link_libraries(${PROJECT} ${SDL_LIBRARY})
 elseif(USE_SDL2)
 
 #SDL2
+find_package(SDL2 REQUIRED)
 
 if(WIN32)
-include_directories("${ANGLE_INCLUDE_DIR}")
+set(OPENGLES2_INCLUDE_DIR "${ANGLE_INCLUDE_DIR}")
 add_definitions(-DGL_GLEXT_PROTOTYPES)
-set(WIN_SDL2_LIBS "${ANGLE_LIBRARY}")
+set(OPENGLES2_LIBRARIES "${ANGLE_LIBRARY}")
 if(MINGW)
-set(WIN_SDL2_LINK_FLAGS "-s -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread")
+set(SDL2_LINK_FLAGS "-s -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread")
 endif(MINGW)
 SET(SRCRES "../win/unreal_speccy_portable.rc")
 source_group("platform\\win\\res" FILES ${SRCRES})
 endif(WIN32)
 
+if(UNIX AND NOT APPLE)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
+find_package(OpenGLES2 REQUIRED)
+endif(UNIX AND NOT APPLE)
+
+include_directories("${OPENGLES2_INCLUDE_DIR}")
+
 if(NOT EMSCRIPTEN)
-include_directories("${SDL2_INCLUDE_DIR}")
+include_directories("${SDL2_INCLUDE_DIRS}")
 endif(NOT EMSCRIPTEN)
 file(GLOB SRCCXX_PLATFORM_SDL2 "../../platform/sdl2/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL2})
@@ -348,7 +356,7 @@ endif(EMSCRIPTEN)
 add_platform_io_stuff()
 
 add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH} ${SRCRES})
-target_link_libraries(${PROJECT} ${SDL2_LIBRARY} ${WIN_SDL2_LIBS} ${WIN_SDL2_LINK_FLAGS})
+target_link_libraries(${PROJECT} ${SDL2_LIBRARIES} ${OPENGLES2_LIBRARIES} ${SDL2_LINK_FLAGS})
 
 elseif(USE_BENCHMARK)
 
