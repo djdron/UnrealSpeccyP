@@ -309,6 +309,9 @@ jint Java_app_usp_Emulator_TapeState(JNIEnv* env, jobject obj)
 	case AR_TAPE_NOT_INSERTED:	return 0;
 	case AR_TAPE_STOPPED:		return 1;
 	case AR_TAPE_STARTED:		return 2;
+	case AR_ERROR:
+	case AR_OK:
+		break;
 	}
 	assert(0); // invalid tape query result
 	return 0;
