@@ -293,6 +293,7 @@ target_link_libraries(${PROJECT} ${OPENGL_LIBRARIES})
 elseif(USE_SDL)
 
 #SDL
+find_package(SDL REQUIRED)
 include_directories("${SDL_INCLUDE_DIR}")
 file(GLOB SRCCXX_PLATFORM_SDL "../../platform/sdl/*.cpp")
 add_definitions(-DUSE_SDL -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON -DUSE_CONFIG -DUSE_ZIP)
@@ -311,7 +312,6 @@ elseif(USE_SDL2)
 
 #SDL2
 find_package(SDL2 REQUIRED)
-
 if(WIN32)
 set(OPENGLES2_INCLUDE_DIR "${ANGLE_INCLUDE_DIR}")
 add_definitions(-DGL_GLEXT_PROTOTYPES)
@@ -323,10 +323,10 @@ SET(SRCRES "../win/unreal_speccy_portable.rc")
 source_group("platform\\win\\res" FILES ${SRCRES})
 endif(WIN32)
 
-if(UNIX AND NOT APPLE)
+if(UNIX)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 find_package(OpenGLES2 REQUIRED)
-endif(UNIX AND NOT APPLE)
+endif(UNIX)
 
 include_directories("${OPENGLES2_INCLUDE_DIR}")
 
