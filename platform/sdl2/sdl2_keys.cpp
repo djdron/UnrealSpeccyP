@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_SDL2
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "../../tools/options.h"
 #include "../../options_common.h"
 

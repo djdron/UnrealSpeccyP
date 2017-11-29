@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_SDL2
 #ifdef SDL_USE_MOUSE
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "../../tools/point.h"
 
 namespace xPlatform
