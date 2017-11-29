@@ -72,6 +72,7 @@ else(ZLIB_FOUND)
 	include_directories("../../3rdparty/zlib")
 endif(ZLIB_FOUND)
 
+if(USE_WX_WIDGETS)
 if(NOT APPLE_IOS)
 find_package(PNG)
 endif(NOT APPLE_IOS)
@@ -86,7 +87,8 @@ else(PNG_FOUND)
 	source_group("3rdparty\\libpng" FILES ${SRCC_LIBPNG} ${SRCH_LIBPNG})
 	include_directories("../../3rdparty/libpng")
 endif(PNG_FOUND)
-	
+endif(USE_WX_WIDGETS)
+
 file(GLOB SRCC_MINIZIP "../../3rdparty/minizip/*.c")
 file(GLOB SRCH_MINIZIP "../../3rdparty/minizip/*.h")
 list(APPEND SRCC ${SRCC_MINIZIP})
@@ -213,7 +215,7 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM_TOUCH_UI})
 list(APPEND SRCH ${SRCH_PLATFORM_TOUCH_UI})
 source_group("platform\\touch_ui" FILES ${SRCCXX_PLATFORM_TOUCH_UI} ${SRCH_PLATFORM_TOUCH_UI})
 
-add_definitions(-DUSE_WEB -DUSE_PNG -DUSE_CONFIG -DUSE_ZIP -DUSE_OAL -D_IOS -DUSE_GLES2 -DUSE_TUI -DUSE_UI -DUI_REAL_ALPHA)
+add_definitions(-DUSE_WEB -DUSE_CONFIG -DUSE_ZIP -DUSE_OAL -D_IOS -DUSE_GLES2 -DUSE_TUI -DUSE_UI -DUI_REAL_ALPHA)
 
 add_platform_io_stuff()
 
