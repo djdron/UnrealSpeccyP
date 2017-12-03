@@ -357,8 +357,42 @@ endif(EMSCRIPTEN)
 
 add_platform_io_stuff()
 
-add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH} ${SRCRES})
+if(APPLE)
+set(PROJECT UnrealSpeccyPortable)
+
+file(GLOB COPY_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../mac/*.icns)
+source_group("Resources" FILES ${COPY_RESOURCES})
+
+file(GLOB COPY_RES_ROM ${CMAKE_CURRENT_SOURCE_DIR}/../../res/rom/*)
+source_group("Resources\\rom" FILES ${COPY_RES_ROM})
+
+file(GLOB COPY_RES_FONT ${CMAKE_CURRENT_SOURCE_DIR}/../../res/font/*)
+source_group("Resources\\font" FILES ${COPY_RES_FONT})
+
+list(APPEND SRCRES ${COPY_RESOURCES} ${COPY_RES_ROM} ${COPY_RES_FONT})
+
+endif(APPLE)
+
+add_executable(${PROJECT} WIN32 MACOSX_BUNDLE ${SRCCXX} ${SRCC} ${SRCH} ${SRCRES})
 target_link_libraries(${PROJECT} ${SDL2_LIBRARIES} ${OPENGLES2_LIBRARIES} ${SDL2_LINK_FLAGS})
+
+if(APPLE)
+
+set_property(TARGET ${PROJECT} PROPERTY MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/../mac/UnrealSpeccyPortable-Info.plist")
+
+foreach(_file ${COPY_RESOURCES})
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+endforeach(_file)
+
+foreach(_file ${COPY_RES_ROM})
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "res/rom")
+endforeach(_file)
+
+foreach(_file ${COPY_RES_FONT})
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "res/font")
+endforeach(_file)
+
+endif(APPLE)
 
 elseif(USE_BENCHMARK)
 
