@@ -358,7 +358,13 @@ endif(EMSCRIPTEN)
 add_platform_io_stuff()
 
 if(APPLE)
+
 set(PROJECT UnrealSpeccyPortable)
+add_definitions(-D_MAC)
+
+file(GLOB SRCCXX_PLATFORM_MAC "../../platform/mac/*.cpp")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_MAC})
+source_group("platform\\mac" FILES ${SRCCXX_PLATFORM_MAC})
 
 file(GLOB COPY_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../mac/*.icns)
 source_group("Resources" FILES ${COPY_RESOURCES})
@@ -385,11 +391,11 @@ set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resourc
 endforeach(_file)
 
 foreach(_file ${COPY_RES_ROM})
-set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "res/rom")
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/res/rom")
 endforeach(_file)
 
 foreach(_file ${COPY_RES_FONT})
-set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "res/font")
+set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/res/font")
 endforeach(_file)
 
 endif(APPLE)

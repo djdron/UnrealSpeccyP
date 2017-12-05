@@ -28,17 +28,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef USE_BENCHMARK
 #ifndef USE_SDL
+#ifndef USE_SDL2
 
 #define USE_OAL
 #define USE_GL
 //#define USE_GLUT
 #define USE_WXWIDGETS
 
+#undef USE_PNG
+#define USE_PNG
+
+#endif//USE_SDL2
 #endif//USE_SDL
 #endif//USE_BENCHMARK
 
-#undef USE_PNG
-#define USE_PNG
 #undef USE_CONFIG
 #define USE_CONFIG
 #undef USE_ZIP

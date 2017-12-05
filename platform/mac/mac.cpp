@@ -20,14 +20,22 @@
 
 #ifdef _MAC
 
+#ifdef USE_SDL2
+#include <SDL.h>
+#else//USE_SDL2
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
+#endif//USE_SDL2
+
 #include "../io.h"
 
 static struct eBundleInit
 {
 	eBundleInit()
 	{
+#ifdef USE_SDL2
+		xIo::SetResourcePath(SDL_GetBasePath());
+#else//USE_SDL2
 		CFBundleRef bundle = CFBundleGetMainBundle();
 		if(!bundle)
 			return;
@@ -44,6 +52,7 @@ static struct eBundleInit
 			return;
 		strcat(res_path, "/Contents/Resources/");
 		xIo::SetResourcePath(res_path);
+#endif//USE_SDL2
 	}
 } bi;
 
