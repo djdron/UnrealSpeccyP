@@ -44,7 +44,7 @@ public:
 class eWebSourceVTRDOS_Games : public eWebSourceVTRDOS
 {
 public:
-	eWebSourceVTRDOS_Games() : eWebSourceVTRDOS("vtrdos", "http://vtrd.in") {}
+	eWebSourceVTRDOS_Games() : eWebSourceVTRDOS("vtrdos", "http://trd.speccy.cz") {}
 	virtual void GetItems(eWebSourceItems* items, const std::string& path) const
 	{
 		if(IsRootPath(path))
@@ -89,7 +89,7 @@ public:
 class eWebSourceVTRDOS_Press : public eWebSourceVTRDOS
 {
 public:
-	eWebSourceVTRDOS_Press() : eWebSourceVTRDOS("press", "http://vtrd.in") {}
+	eWebSourceVTRDOS_Press() : eWebSourceVTRDOS("press", "http://trd.speccy.cz") {}
 	virtual void GetItems(eWebSourceItems* items, const std::string& path) const
 	{
 		if(IsRootPath(path))
