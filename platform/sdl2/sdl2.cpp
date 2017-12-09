@@ -165,6 +165,9 @@ void Loop1()
 			ProcessJoy(e);
 			break;
 #endif//SDL_USE_JOYSTICK
+		case SDL_DROPFILE:
+			Handler()->OnOpenFile(e.drop.file);
+			break;
 		default:
 			break;
 		}
