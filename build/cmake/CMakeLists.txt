@@ -10,6 +10,7 @@ option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" OFF)
 option(USE_SDL "SDL version" ON)
 option(USE_SDL2 "SDL2 version" OFF)
 option(USE_BENCHMARK "benchmark mode (console)" OFF)
+option(USE_LIBRARY "library mode" OFF)
 option(USE_WEB "use web sources (SDL or iOS versions)" ON)
 
 project (USP)
@@ -411,6 +412,18 @@ source_group("platform\\benchmark" FILES ${SRCCXX_PLATFORM_BENCHMARK})
 add_platform_io_stuff()
 
 add_executable(${PROJECT} ${SRCCXX} ${SRCC} ${SRCH})
+
+elseif(USE_LIBRARY)
+
+#library mode
+file(GLOB SRCCXX_PLATFORM_LIBRARY "../../platform/library/*.cpp")
+add_definitions(-DUSE_LIBRARY)
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_LIBRARY})
+source_group("platform\\library" FILES ${SRCCXX_PLATFORM_LIBRARY})
+
+add_platform_io_stuff()
+
+add_library(${PROJECT} SHARED ${SRCCXX} ${SRCC} ${SRCH})
 
 endif(APPLE_IOS)
 
