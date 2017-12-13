@@ -96,6 +96,8 @@ static struct eSpeccyHandler : public eHandler, public eRZX::eHandler, public xZ
 
 	virtual bool FullSpeed() const { return speccy->CPU()->HandlerStep() != NULL; }
 
+	virtual eSpeccy* Speccy() const { return speccy; }
+
 	void PlayMacro(eMacro* m) { SAFE_DELETE(macro); macro = m; }
 	virtual bool RZX_OnOpenSnapshot(const char* name, const void* data, size_t data_size) { return OpenFile(name, data, data_size); }
 	virtual byte Z80_IoRead(word port, int tact)

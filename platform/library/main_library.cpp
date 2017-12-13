@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../platform.h"
 #include "../../tools/tick.h"
+#include "../../speccy.h"
+#include "../../devices/memory.h"
 
 #ifdef USE_LIBRARY
 
@@ -54,6 +56,20 @@ USP_API void Open(const char* name)
 USP_API void OnKey(char key, dword flags)
 {
 	Handler()->OnKey(key, flags);
+}
+
+USP_API void MemoryRead(byte* buf, dword addr, dword size)
+{
+	eSpeccy* s = Handler()->Speccy();
+	byte* src = s->Memory()->Get(0) + addr;
+	memcpy(buf, src, size);
+}
+
+USP_API void MemoryWrite(const byte* buf, dword addr, dword size)
+{
+	eSpeccy* s = Handler()->Speccy();
+	byte* dst = s->Memory()->Get(0) + addr;
+	memcpy(dst, buf, size);
 }
 
 }
