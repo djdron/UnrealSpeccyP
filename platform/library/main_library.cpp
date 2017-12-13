@@ -33,39 +33,44 @@ extern "C"
 {
 
 using namespace xPlatform;
-USP_API void Init()
+USP_API void USP_Init()
 {
 	Handler()->OnInit();
 }
 
-USP_API void Loop()
+USP_API void USP_Loop()
 {
 	Handler()->OnLoop();
 }
 
-USP_API void Done()
+USP_API void USP_Done()
 {
 	Handler()->OnDone();
 }
 
-USP_API void Open(const char* name)
+USP_API void USP_OpenFile(const char* name)
 {
 	Handler()->OnOpenFile(name);
 }
 
-USP_API void OnKey(char key, dword flags)
+USP_API void USP_OnKey(char key, dword flags)
 {
 	Handler()->OnKey(key, flags);
 }
 
-USP_API void MemoryRead(byte* buf, dword addr, dword size)
+USP_API void USP_GetVideoData(byte buf[320*240])
+{
+	memcpy(buf, Handler()->VideoData(), 320*240);
+}
+
+USP_API void USP_MemoryRead(byte* buf, dword addr, dword size)
 {
 	eSpeccy* s = Handler()->Speccy();
 	byte* src = s->Memory()->Get(0) + addr;
 	memcpy(buf, src, size);
 }
 
-USP_API void MemoryWrite(const byte* buf, dword addr, dword size)
+USP_API void USP_MemoryWrite(const byte* buf, dword addr, dword size)
 {
 	eSpeccy* s = Handler()->Speccy();
 	byte* dst = s->Memory()->Get(0) + addr;
