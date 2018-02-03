@@ -47,7 +47,7 @@ public class FileSelectorVtrdos extends FileSelector
 	abstract class FSSVtrdos extends FSSHtml
 	{
 		protected final String VTRDOS_FS = StoragePath() + "vtrdos";
-		public String BaseURL() { return "http://trd.speccy.cz"; }
+		public String BaseURL() { return "https://vtrd.in"; }
 		public String FullURL(final String _url) { return BaseURL() + _url + ".htm"; }
         public String HtmlEncoding() { return "utf-8"; }
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress) { return ApplyResult.TRY_OTHER_SOURCE; }
