@@ -29,7 +29,7 @@ namespace xIo
 class eWebSourceVTRDOS : public eWebSource
 {
 public:
-	eWebSourceVTRDOS(const char* _root, const char* _root_web) : eWebSource(_root, _root_web) {}
+	eWebSourceVTRDOS(const char* _root) : eWebSource(_root, "https://vtrd.in") {}
 	virtual bool NeedCache(const std::string& path) const { return !IsRootPath(path); }
 	virtual const char* Open(const std::string& _name, const std::string& _url) const
 	{
@@ -44,7 +44,7 @@ public:
 class eWebSourceVTRDOS_Games : public eWebSourceVTRDOS
 {
 public:
-	eWebSourceVTRDOS_Games() : eWebSourceVTRDOS("vtrdos", "http://trd.speccy.cz") {}
+	eWebSourceVTRDOS_Games() : eWebSourceVTRDOS("vtrdos") {}
 	virtual void GetItems(eWebSourceItems* items, const std::string& path) const
 	{
 		if(IsRootPath(path))
@@ -89,7 +89,7 @@ public:
 class eWebSourceVTRDOS_Press : public eWebSourceVTRDOS
 {
 public:
-	eWebSourceVTRDOS_Press() : eWebSourceVTRDOS("press", "http://trd.speccy.cz") {}
+	eWebSourceVTRDOS_Press() : eWebSourceVTRDOS("press") {}
 	virtual void GetItems(eWebSourceItems* items, const std::string& path) const
 	{
 		if(IsRootPath(path))

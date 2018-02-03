@@ -49,7 +49,6 @@ std::string GetURL(const char* path)
 	curl_easy_setopt(curl, CURLOPT_URL, path);
 	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
-	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	std::string file_data;
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file_data);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _write_callback);
