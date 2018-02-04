@@ -43,7 +43,7 @@ union\
 		byte high;\
 		byte low;\
 	};\
-	dword reg;\
+	int reg;\
 };
 #else//USE_BIG_ENDIAN
 #define DECLARE_REG16(reg, low, high)\
@@ -56,7 +56,7 @@ union\
 		byte reg##x;\
 		byte reg##xx;\
 	};\
-	dword reg;\
+	int reg;\
 };
 #endif//USE_BIG_ENDIAN
 
