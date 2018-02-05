@@ -47,7 +47,7 @@ namespace xPlatform
 void LoadResources(pp::Instance* i);
 void TranslateKey(int& key, dword& flags);
 void UpdateGamepads(const PP_GamepadsSampleData& pads, const PP_GamepadsSampleData& pads_prev);
-float OpZoom();
+void OpZoomGet(float* sx, float* sy, const ePoint& org_size, const ePoint& size);
 
 class eUSPInstance : public pp::Instance, public pp::MouseLock, public eURLLoader::eCallback
 {
@@ -315,11 +315,10 @@ bool eUSPInstance::HandleInputEvent(const pp::InputEvent& ev)
 		if(mouse_locked)
 		{
 			pp::MouseInputEvent event(ev);
-			float z = OpZoom();
 			float sx, sy;
-			GetScaleWithAspectRatio43(&sx, &sy, size.width(), size.height());
-			float scale_x = 320.0f/size.width()/sx/z;
-			float scale_y = 240.0f/size.height()/sy/z;
+			OpZoomGet(&sx, &sy, ePoint(320, 240), ePoint(size.width(), size.height()));
+			float scale_x = 320.0f/size.width()/sx;
+			float scale_y = 240.0f/size.height()/sy;
 			mouse_delta += eMouseDelta(event.GetMovement(), scale_x, scale_y);
 			int dx = mouse_delta.x;
 			int dy = mouse_delta.y;

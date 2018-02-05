@@ -191,7 +191,7 @@ function parser_std(path, elem)
 
 function url_std(u)
 {
-	return "http://trd.speccy.cz" + u + ".htm";
+	return "https://vtrd.in" + u + ".htm";
 }
 
 function parse_patterns(item, path, html)
@@ -224,7 +224,7 @@ var browser_items =
 		patterns:	[ "<a href=\"(.+)\">&nbsp;&nbsp;(.+)</a></td><td>(.+)</td><td>(.+)</td><td>(.+)</td>" ],
 		parser:		parser_std,
 		parse_all:	parse_patterns,
-		url:		function(u) { return "http://trd.speccy.cz/games.php?t=" + u; }
+		url:		function(u) { return "https://vtrd.in/games.php?t=" + u; }
 	},
 	{
 		root:		"/demos",
@@ -292,13 +292,13 @@ var browser_items =
 						return item_html;
 					},
 		parse_all:	parse_patterns,
-		url:		function(u) { return "http://trd.speccy.cz/press.php?l=" + u; }
+		url:		function(u) { return "https://vtrd.in/press.php?l=" + u; }
 	},
 	{
 		root:		"/replays",
 		items:		[ "/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L", "/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z" ],
 		urls:		[ "0", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ],
-		patterns:	[ "<tr><td><font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"(.+?)\"|<font size=2 color=red>).+?" ],
+		patterns:	[ "<font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"(.+?)\"|<font size=2 color=red>).+?" ],
 		parser:		function parser_press(path, elem)
 					{
 						if(elem[3] == null)
