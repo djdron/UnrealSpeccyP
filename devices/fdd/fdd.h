@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2018 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -56,6 +56,15 @@ public:
 			int Len() const		{ return 128 << (id[ID_LEN] & 3); }
 			word IdCrc() const	{ return WordBE(id + ID_CRC); }
 			word DataCrc() const{ return WordBE(data + Len()); }
+			word DataW(size_t offset) const
+			{
+				return Word(data + offset);
+			}
+			void DataW(size_t offset, word d)
+			{
+				data[offset] = d & 0xff;
+				data[offset + 1] = d >> 8;
+			}
 			byte*	id;
 			byte*	data;
 		};
