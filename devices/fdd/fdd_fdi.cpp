@@ -75,7 +75,7 @@ bool eFdd::ReadFdi(const void* _data, size_t data_size)
 				{
 					const byte* data = t0 + Word(trk+5);
 					if(data + 128 > buf + data_size)
-					return false;
+						return false;
 					WriteBlock(pos, 0x4e, 22);		//gap2
 					WriteBlock(pos, 0, 12);			//sync
 					WriteBlock(pos, 0xa1, 3, true);	//data am
@@ -85,7 +85,7 @@ bool eFdd::ReadFdi(const void* _data, size_t data_size)
 					memcpy(sec.data, data, len);
 					crc = Crc(Track().data + pos - 1, len + 1);
 					if(!(trk[4] & (1<<(trk[3] & 3))))
-					crc ^= 0xffff;
+						crc ^= 0xffff;
 					pos += len;
 					Write(pos++, crc >> 8);
 					Write(pos++, (byte)crc);

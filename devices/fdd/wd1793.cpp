@@ -65,6 +65,14 @@ bool eWD1793::Open(const char* type, int drive, const void* data, size_t data_si
 	return fdds[drive].Open(type, data, data_size);
 }
 //=============================================================================
+//	eWD1793::Store
+//-----------------------------------------------------------------------------
+bool eWD1793::Store(const char* type, int drive, FILE* file) const
+{
+	assert(drive >= 0 && drive < FDD_COUNT);
+	return fdds[drive].Store(type, file);
+}
+//=============================================================================
 //	eWD1793::BootExist
 //-----------------------------------------------------------------------------
 bool eWD1793::BootExist(int drive)

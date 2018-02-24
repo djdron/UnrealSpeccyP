@@ -101,6 +101,7 @@ public:
 	bool DiskPresent() const	{ return disk != NULL; }
 	bool WriteProtect() const	{ return write_protect; }
 	bool Open(const char* type, const void* data, size_t data_size);
+	bool Store(const char* type, FILE* file) const;
 	bool BootExist();
 
 protected:
@@ -119,6 +120,15 @@ protected:
 	bool ReadScl(const void* data, size_t data_size);
 	bool ReadTrd(const void* data, size_t data_size);
 	bool ReadFdi(const void* data, size_t data_size);
+	bool ReadUdi(const void* data, size_t data_size);
+	bool ReadTd0(const void* data, size_t data_size);
+
+	bool WriteScl(FILE* file) const { return false; }
+	bool WriteTrd(FILE* file) const { return false; }
+	bool WriteFdi(FILE* file) const { return false; }
+	bool WriteUdi(FILE* file) const;
+	bool WriteTd0(FILE* file) const { return false; }
+
 	void UpdateCRC(eUdi::eTrack::eSector* s) const;
 
 protected:
