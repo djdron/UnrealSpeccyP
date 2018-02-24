@@ -48,7 +48,7 @@ void eList::Clear()
 	changed = true;
 	for(int i = 0; i < size; ++i)
 	{
-		delete[] items[i];
+		SAFE_DELETE_ARRAY(items[i]);
 	}
 	items[0] = NULL;
 	size = page_begin = page_size = 0;

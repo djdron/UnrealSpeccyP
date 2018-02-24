@@ -161,7 +161,7 @@ bool eFileTypeZIP::OpenCurrent(unzFile h) const
 	{
 		ok = t->Open(buf, fi.uncompressed_size);
 	}
-	delete[] buf;
+	SAFE_DELETE_ARRAY(buf);
 	unzCloseCurrentFile(h);
 	return ok;
 }

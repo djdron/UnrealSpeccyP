@@ -51,7 +51,7 @@ bool eFdd::ReadUdi(const void* data, size_t data_size)
 //=============================================================================
 //	udi_buggy_crc
 //-----------------------------------------------------------------------------
-static int udi_buggy_crc(int crc, byte* buf, size_t len)
+static int udi_buggy_crc(int crc, const byte* buf, size_t len)
 {
 	while(len--)
 	{
@@ -106,6 +106,6 @@ bool eFdd::WriteUdi(FILE* file) const
 
 	size_t full_len = dst - buf;
 	bool ok = fwrite(buf, 1, full_len, file) == full_len;
-	delete[] buf;
+	SAFE_DELETE_ARRAY(buf);
 	return ok;
 }

@@ -256,7 +256,7 @@ bool eZ80Accessor::SetState(const eSnapshot_Z80* s, size_t buf_size)
 		memcpy(memory->Get(eMemory::P_RAM2), mem48 + eMemory::PAGE_SIZE, eMemory::PAGE_SIZE);
 		memcpy(memory->Get(eMemory::P_RAM0), mem48 + 2*eMemory::PAGE_SIZE, eMemory::PAGE_SIZE);
 		if(flags&0x20)
-			delete[] mem48;
+			SAFE_DELETE_ARRAY(mem48);
 	}
 	a = s->a, f = s->f;
 	bc = SwapWord(s->bc), de = SwapWord(s->de), hl = SwapWord(s->hl);
