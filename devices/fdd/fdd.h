@@ -127,7 +127,7 @@ protected:
 	bool WriteTrd(FILE* file) const { return false; }
 	bool WriteFdi(FILE* file) const { return false; }
 	bool WriteUdi(FILE* file) const;
-	bool WriteTd0(FILE* file) const { return false; }
+	bool WriteTd0(FILE* file) const;
 
 	void UpdateCRC(eUdi::eTrack::eSector* s) const;
 

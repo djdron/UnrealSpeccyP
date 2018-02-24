@@ -20,54 +20,6 @@
 
 #include "fdd.h"
 
-#if 0
-int FDD::write_td0(FILE *ff)
-{
-   unsigned char zerosec[256] = { 0 };
-   unsigned char td0hdr[12] = { 0 };
-
-   *(unsigned short*)td0hdr = WORD2('T','D');
-   td0hdr[4] = 21; td0hdr[6] = 2; td0hdr[9] = (unsigned char)sides;
-   if (*dsc) td0hdr[7] = 0x80;
-   *(unsigned short*)(td0hdr + 10) = crc16(td0hdr, 10);
-   fwrite(td0hdr, 1, 12, ff);
-   if (*dsc) {
-      unsigned char inf[0x200] = { 0 };
-      strcpy((char*)inf+10, dsc);
-      unsigned len = strlen(dsc)+1;
-      *(unsigned*)(inf+2) = len;
-      *(unsigned short*)inf = crc16(inf+2, len+8);
-      fwrite(inf, 1, len+10, ff);
-   }
-
-   unsigned c; //Alone Coder 0.36.7
-   for (/*unsigned*/ c = 0; c < cyls; c++)
-      for (unsigned s = 0; s < sides; s++) {
-         t.seek(this,c,s,LOAD_SECTORS);
-         unsigned char bf[16];
-         *bf = t.s;
-         bf[1] = c, bf[2] = s;
-         bf[3] = (unsigned char)crc16(bf, 3);
-         fwrite(bf, 1, 4, ff);
-         for (unsigned sec = 0; sec < t.s; sec++) {
-            if (!t.hdr[sec].data) { t.hdr[sec].data = zerosec, t.hdr[sec].datlen = 256, t.hdr[sec].l = 1; }
-            *(unsigned*)bf = *(unsigned*)&t.hdr[sec];
-            bf[4] = 0; // flags
-            bf[5] = (unsigned char)crc16(t.hdr[sec].data, t.hdr[sec].datlen);
-            *(unsigned short*)(bf+6) = t.hdr[sec].datlen + 1;
-            bf[8] = 0; // compression type = none
-            fwrite(bf, 1, 9, ff);
-            if (fwrite(t.hdr[sec].data, 1, t.hdr[sec].datlen, ff) != t.hdr[sec].datlen) return 0;
-         }
-      }
-   c = WORD4(0xFF,0,0,0);
-   if (fwrite(&c, 1, 4, ff) != 4) return 0;
-   return 1;
-}
-
-#endif//0
-
-
 // No ID address field was present for this sector,
 // but there is a data field. The sector information in
 // the header represents fabricated information.
@@ -94,6 +46,9 @@ struct TTd0Sec
 
 unsigned int unpack_lzh(const unsigned char* in, size_t size, unsigned char* out);
 
+//=============================================================================
+//	eFdd::ReadTd0
+//-----------------------------------------------------------------------------
 bool eFdd::ReadTd0(const void* _data, size_t data_size)
 {
 	const byte* buf = (const byte*)_data;
@@ -109,7 +64,7 @@ bool eFdd::ReadTd0(const void* _data, size_t data_size)
 		unpacked_data[0] = 'T';
 		unpacked_data[1] = 'D';
 		bool ok = ReadTd0(unpacked_data, unpacked_size);
-		delete[] unpacked_data;
+		SAFE_DELETE_ARRAY(unpacked_data);
 		return ok;
 	}
 
@@ -119,27 +74,27 @@ bool eFdd::ReadTd0(const void* _data, size_t data_size)
 		start += 10;
 		start += Word(buf + 14);
 	}
-	const byte* td0_src = start;
+	const byte* src = start;
 	
 	byte sides = (buf[9] == 1 ? 1 : 2);
 	byte cyls = 0;
 	
 	for(;;)
 	{
-		int ns = td0_src[0];
+		int ns = src[0];
 		if(ns == 0xFF)
 			break;
-		byte cyl = td0_src[1];
+		byte cyl = src[1];
 		if(cyl >= cyls)
 			cyls = cyl + 1; // PhysTrack
-		td0_src += 4; // sizeof(track_rec)
+		src += 4; // sizeof(track_rec)
 		for(; ns; --ns)
 		{
-			td0_src += sizeof(TTd0Sec); // sizeof(sec_rec)
-			assert(td0_src <= buf + data_size);
-			if(td0_src > buf + data_size)
+			src += sizeof(TTd0Sec); // sizeof(sec_rec)
+			assert(src <= buf + data_size);
+			if(src > buf + data_size)
 				return false;
-			td0_src += Word(td0_src) + 2; // data_len
+			src += Word(src) + 2; // data_len
 		}
 	}
 	if(cyls > eUdi::MAX_CYL)
@@ -148,11 +103,11 @@ bool eFdd::ReadTd0(const void* _data, size_t data_size)
 	SAFE_DELETE(disk);
 	disk = new eUdi(cyls, sides);
 	
-	td0_src = start;
+	src = start;
 	for(;;)
 	{
-		const byte* trkh = td0_src;
-		td0_src += 4; // sizeof(track_rec)
+		const byte* trkh = src;
+		src += 4; // sizeof(track_rec)
 		
 		if(trkh[0] == 0xFF)
 			break;
@@ -172,14 +127,14 @@ bool eFdd::ReadTd0(const void* _data, size_t data_size)
 
 		for(int s = 0; s < ns; ++s)
 		{
-			TTd0Sec* SecHdr = (TTd0Sec*)td0_src;
-			td0_src += sizeof(TTd0Sec); // sizeof(sec_rec)
+			TTd0Sec* SecHdr = (TTd0Sec*)src;
+			src += sizeof(TTd0Sec); // sizeof(sec_rec)
 			byte flags = SecHdr->flags;
 			if(flags & (TD0_SEC_NO_ID | TD0_SEC_NO_DATA | TD0_SEC_NO_DATA2)) // skip sectors with no data & sectors without headers
 			{
-				size_t src_size = Word(td0_src);
-				td0_src += 2; // data_len
-				td0_src += src_size;
+				size_t src_size = Word(src);
+				src += 2; // data_len
+				src += src_size;
 				continue;
 			}
 			WriteBlock(pos, 0x4e, 40);		//gap1 50 fixme: recalculate gap1 only for non standard formats
@@ -204,52 +159,52 @@ bool eFdd::ReadTd0(const void* _data, size_t data_size)
 			sec.data = Track().data + pos;
 			byte* dst = sec.data;
 
-			word src_size = Word(td0_src);
-			td0_src += 2; // data_len
-			const byte* end_packed_data = td0_src + src_size;
-			switch(*td0_src++) // Method
+			word src_size = Word(src);
+			src += 2; // data_len
+			const byte* end_packed_data = src + src_size;
+			switch(*src++) // Method
 			{
 			case 0:  // raw sector
-				memcpy(dst, td0_src, src_size - 1);
+				memcpy(dst, src, src_size - 1);
 				break;
 			case 1:  // repeated 2-byte pattern
 				{
-					word n = Word(td0_src);
-					td0_src += 2;
+					word n = Word(src);
+					src += 2;
 					for(word i = 0; i < n; ++i)
 					{
-						*dst++ = td0_src[0];
-						*dst++ = td0_src[1];
+						*dst++ = src[0];
+						*dst++ = src[1];
 					}
 				}
 				break;
 			case 2: // RLE block
 				do
 				{
-					switch(*td0_src++)
+					switch(*src++)
 					{
 					case 0: // Zero count means a literal data block
-						for(byte s = *td0_src++; s; --s)
-							*dst++ = *td0_src++;
+						for(byte s = *src++; s; --s)
+							*dst++ = *src++;
 						break;
 					case 1:    // repeated fragment
-						for(byte s = *td0_src++; s; --s)
+						for(byte s = *src++; s; --s)
 						{
-							*dst++ = td0_src[0];
-							*dst++ = td0_src[1];
+							*dst++ = src[0];
+							*dst++ = src[1];
 						}
-						td0_src += 2;
+						src += 2;
 						break;
 					default:
-						td0_src = end_packed_data;
+						src = end_packed_data;
 						break;
 					}
-				} while(td0_src < end_packed_data);
+				} while(src < end_packed_data);
 				break;
 			default: // error!
 				return false;
 			}
-			td0_src = end_packed_data;
+			src = end_packed_data;
 			int len = sec.Len();
 			crc = Crc(Track().data + pos - 1, len + 1);
 			pos += len;
@@ -258,5 +213,111 @@ bool eFdd::ReadTd0(const void* _data, size_t data_size)
 		}
 		WriteBlock(pos, 0x4e, Track().data_len - pos - 1); //gap3
 	}
+	return true;
+}
+
+static const word crcTab[256] =
+{
+	0x0000, 0x97A0, 0xB9E1, 0x2E41, 0xE563, 0x72C3, 0x5C82, 0xCB22,
+	0xCAC7, 0x5D67, 0x7326, 0xE486, 0x2FA4, 0xB804, 0x9645, 0x01E5,
+	0x032F, 0x948F, 0xBACE, 0x2D6E, 0xE64C, 0x71EC, 0x5FAD, 0xC80D,
+	0xC9E8, 0x5E48, 0x7009, 0xE7A9, 0x2C8B, 0xBB2B, 0x956A, 0x02CA,
+	0x065E, 0x91FE, 0xBFBF, 0x281F, 0xE33D, 0x749D, 0x5ADC, 0xCD7C,
+	0xCC99, 0x5B39, 0x7578, 0xE2D8, 0x29FA, 0xBE5A, 0x901B, 0x07BB,
+	0x0571, 0x92D1, 0xBC90, 0x2B30, 0xE012, 0x77B2, 0x59F3, 0xCE53,
+	0xCFB6, 0x5816, 0x7657, 0xE1F7, 0x2AD5, 0xBD75, 0x9334, 0x0494,
+	0x0CBC, 0x9B1C, 0xB55D, 0x22FD, 0xE9DF, 0x7E7F, 0x503E, 0xC79E,
+	0xC67B, 0x51DB, 0x7F9A, 0xE83A, 0x2318, 0xB4B8, 0x9AF9, 0x0D59,
+	0x0F93, 0x9833, 0xB672, 0x21D2, 0xEAF0, 0x7D50, 0x5311, 0xC4B1,
+	0xC554, 0x52F4, 0x7CB5, 0xEB15, 0x2037, 0xB797, 0x99D6, 0x0E76,
+	0x0AE2, 0x9D42, 0xB303, 0x24A3, 0xEF81, 0x7821, 0x5660, 0xC1C0,
+	0xC025, 0x5785, 0x79C4, 0xEE64, 0x2546, 0xB2E6, 0x9CA7, 0x0B07,
+	0x09CD, 0x9E6D, 0xB02C, 0x278C, 0xECAE, 0x7B0E, 0x554F, 0xC2EF,
+	0xC30A, 0x54AA, 0x7AEB, 0xED4B, 0x2669, 0xB1C9, 0x9F88, 0x0828,
+	0x8FD8, 0x1878, 0x3639, 0xA199, 0x6ABB, 0xFD1B, 0xD35A, 0x44FA,
+	0x451F, 0xD2BF, 0xFCFE, 0x6B5E, 0xA07C, 0x37DC, 0x199D, 0x8E3D,
+	0x8CF7, 0x1B57, 0x3516, 0xA2B6, 0x6994, 0xFE34, 0xD075, 0x47D5,
+	0x4630, 0xD190, 0xFFD1, 0x6871, 0xA353, 0x34F3, 0x1AB2, 0x8D12,
+	0x8986, 0x1E26, 0x3067, 0xA7C7, 0x6CE5, 0xFB45, 0xD504, 0x42A4,
+	0x4341, 0xD4E1, 0xFAA0, 0x6D00, 0xA622, 0x3182, 0x1FC3, 0x8863,
+	0x8AA9, 0x1D09, 0x3348, 0xA4E8, 0x6FCA, 0xF86A, 0xD62B, 0x418B,
+	0x406E, 0xD7CE, 0xF98F, 0x6E2F, 0xA50D, 0x32AD, 0x1CEC, 0x8B4C,
+	0x8364, 0x14C4, 0x3A85, 0xAD25, 0x6607, 0xF1A7, 0xDFE6, 0x4846,
+	0x49A3, 0xDE03, 0xF042, 0x67E2, 0xACC0, 0x3B60, 0x1521, 0x8281,
+	0x804B, 0x17EB, 0x39AA, 0xAE0A, 0x6528, 0xF288, 0xDCC9, 0x4B69,
+	0x4A8C, 0xDD2C, 0xF36D, 0x64CD, 0xAFEF, 0x384F, 0x160E, 0x81AE,
+	0x853A, 0x129A, 0x3CDB, 0xAB7B, 0x6059, 0xF7F9, 0xD9B8, 0x4E18,
+	0x4FFD, 0xD85D, 0xF61C, 0x61BC, 0xAA9E, 0x3D3E, 0x137F, 0x84DF,
+	0x8615, 0x11B5, 0x3FF4, 0xA854, 0x6376, 0xF4D6, 0xDA97, 0x4D37,
+	0x4CD2, 0xDB72, 0xF533, 0x6293, 0xA9B1, 0x3E11, 0x1050, 0x87F0
+};
+
+static word crc16(const byte* buf, size_t size)
+{
+	word crc = 0;
+	while(size--)
+		crc = (crc >> 8) ^ crcTab[(crc & 0xff) ^ *buf++];
+	return crc;
+}
+
+//=============================================================================
+//	eFdd::WriteTd0
+//-----------------------------------------------------------------------------
+bool eFdd::WriteTd0(FILE* file) const
+{
+	byte hdr[12];
+	memset(hdr, 0, 12);
+	hdr[0] = 'T';
+	hdr[1] = 'D';
+	hdr[4] = 21;
+	hdr[6] = 2;
+	hdr[9] = disk->Sides();
+	word crc = crc16(hdr, 10);
+	hdr[10] = crc >> 8;
+	hdr[11] = (byte)crc;
+	if(fwrite(hdr, 1, 12, file) != 12)
+		return false;
+
+	byte zero_sec[256];
+	memset(zero_sec, 0, 256);
+
+	for(int i = 0; i < disk->Cyls(); ++i)
+	{
+		for(int j = 0; j < disk->Sides(); ++j)
+		{
+			const eUdi::eTrack& t = disk->Track(i, j);
+			byte buf[16];
+			buf[0] = t.sectors_amount;
+			buf[1] = i;
+			buf[2] = j;
+			buf[3] = crc16(buf, 3) >> 8;
+			if(fwrite(buf, 1, 4, file) != 4)
+				return false;
+			for(int sec = 0; sec < t.sectors_amount; ++sec)
+			{
+				const eUdi::eTrack::eSector& s = t.sectors[sec];
+				assert(s.id);
+				buf[0] = s.Cyl();
+				buf[1] = s.Side();
+				buf[2] = s.Sec();
+				buf[3] = s.data ? s.id[eUdi::eTrack::eSector::ID_LEN] : 1;
+				const byte* sec_data = s.data ? s.data : zero_sec;
+				int sec_data_len = s.data ? s.Len() : 256;
+				buf[4] = 0; // flags
+				buf[5] = crc16(sec_data, sec_data_len) >> 8;
+				word len = sec_data_len + 1;
+				buf[6] = (byte)len;
+				buf[7] = len >> 8;
+				buf[8] = 0; // compression type = none
+				if(fwrite(buf, 1, 9, file) != 9)
+					return false;
+				if(fwrite(sec_data, 1, sec_data_len, file) != sec_data_len)
+					return false;
+			}
+		}
+	}
+	byte end[4] = { 0xff, 0x00, 0x00, 0x00 };
+	if(fwrite(end, 1, 4, file) != 4)
+		return false;
 	return true;
 }
