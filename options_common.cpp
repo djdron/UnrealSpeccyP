@@ -38,7 +38,7 @@ static struct eOptionStoreSlot : public xOptions::eOptionInt
 	{
 		eOptionInt::Change(0, 10, next);
 	}
-	virtual int Order() const { return 3; }
+	virtual int Order() const { return 7; }
 } op_store_slot;
 
 struct eOptionStore : public xOptions::eOptionBool
@@ -111,7 +111,7 @@ static struct eOptionSaveFile : public eOptionStore
 		else
 			Set(false);
 	}
-	virtual int Order() const { return 4; }
+	virtual int Order() const { return 8; }
 } op_save_file;
 
 static struct eOptionSaveState : public eOptionStore
