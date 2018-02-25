@@ -34,7 +34,8 @@ bool eFdd::ReadUdi(const void* data, size_t data_size)
 	{
 		for(int j = 0; j < disk->Sides(); ++j)
 		{
-			eUdi::eTrack& t = disk->Track(i, j);
+			Seek(i, j);
+			eUdi::eTrack& t = Track();
 			byte* dst = t.data;
 			word data_len = Word(ptr + 1);
 			t.data_len = data_len;
