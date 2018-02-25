@@ -92,11 +92,100 @@ bool eFdd::ReadFdi(const void* _data, size_t data_size)
 				}
 				trk += 7;
 			}
-			if(pos > Track().data_len)
-			{
-				assert(0); //track too long
-			}
+			assert(pos <= Track().data_len);
 			WriteBlock(pos, 0x4e, Track().data_len - pos - 1); //gap3
+		}
+	}
+	return true;
+}
+//=============================================================================
+//	eFdd::WriteFdi
+//-----------------------------------------------------------------------------
+bool eFdd::WriteFdi(FILE* file) const
+{
+	int total_sectors = 0;
+	for(int i = 0; i < disk->Cyls(); ++i)
+	{
+		for(int j = 0; j < disk->Sides(); ++j)
+		{
+			total_sectors += disk->Track(i, j).sectors_amount;
+		}
+	}
+
+	size_t desc_offset = 14 + (total_sectors + disk->Cyls() * disk->Sides()) * 7;
+	size_t data_offset = desc_offset + 1;
+	byte hdr[14] =
+	{
+		'F', 'D', 'I',
+		0,
+		(byte)disk->Cyls(), 0,
+		(byte)disk->Sides(), 0,
+		(byte)desc_offset, byte(desc_offset >> 8),
+		(byte)data_offset, byte(data_offset >> 8),
+		0, 0,
+	};
+	if(fwrite(hdr, 1, 14, file) != 14)
+		return false;
+
+	size_t trkoffs = 0;
+	for(int i = 0; i < disk->Cyls(); ++i)
+	{
+		for(int j = 0; j < disk->Sides(); ++j)
+		{
+			const eUdi::eTrack& t = disk->Track(i, j);
+			byte track_hdr[7] =
+			{
+				byte((trkoffs >> 0) & 0xff),
+				byte((trkoffs >> 8) & 0xff),
+				byte((trkoffs >> 16)& 0xff),
+				byte((trkoffs >> 24)& 0xff),
+				0, 0,
+				(byte)t.sectors_amount
+			};
+			if(fwrite(track_hdr, 1, 7, file) != 7)
+				return false;
+			size_t secoffs = 0;
+			for(int se = 0; se < t.sectors_amount; ++se)
+			{
+				const eUdi::eTrack::eSector& s = t.sectors[se];
+				assert(s.id);
+				byte sec_hdr[7] =
+				{
+					(byte)s.Cyl(),
+					(byte)s.Side(),
+					(byte)s.Sec(),
+					(byte)s.id[eUdi::eTrack::eSector::ID_LEN],
+					byte(s.data ? (s.data[-1] == 0xf8 ? 0x80 : (1 << (s.id[eUdi::eTrack::eSector::ID_LEN] & 3))) : 0x40),
+					byte((secoffs >> 0) & 0xff),
+					byte((secoffs >> 8) & 0xff)
+				};
+				if(fwrite(sec_hdr, 1, 7, file) != 7)
+					return false;
+				if(s.data)
+					secoffs += s.Len();
+			}
+			trkoffs += secoffs;
+		}
+	}
+
+	byte desc_eol = 0;
+	if(fwrite(&desc_eol, 1, 1, file) != 1)
+		return false;
+
+	for(int i = 0; i < disk->Cyls(); ++i)
+	{
+		for(int j = 0; j < disk->Sides(); ++j)
+		{
+			const eUdi::eTrack& t = disk->Track(i, j);
+			for(int se = 0; se < t.sectors_amount; ++se)
+			{
+				const eUdi::eTrack::eSector& s = t.sectors[se];
+				if(s.data)
+				{
+					if(fwrite(s.data, 1, s.Len(), file) != s.Len())
+						return false;
+				}
+			}
 		}
 	}
 	return true;

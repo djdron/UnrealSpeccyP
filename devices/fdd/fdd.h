@@ -125,7 +125,7 @@ protected:
 
 	bool WriteScl(FILE* file) const { return false; }
 	bool WriteTrd(FILE* file) const { return false; }
-	bool WriteFdi(FILE* file) const { return false; }
+	bool WriteFdi(FILE* file) const;
 	bool WriteUdi(FILE* file) const;
 	bool WriteTd0(FILE* file) const;
 
