@@ -23,10 +23,10 @@
 //=============================================================================
 //	eFdd::CreateTrd
 //-----------------------------------------------------------------------------
-void eFdd::CreateTrd()
+void eFdd::CreateTrd(int max_cyl)
 {
 	SAFE_DELETE(disk);
-	disk = new eUdi(eUdi::MAX_CYL, eUdi::MAX_SIDE);
+	disk = new eUdi(max_cyl, eUdi::MAX_SIDE);
 	for(int i = 0; i < disk->Cyls(); ++i)
 	{
 		for(int j = 0; j < disk->Sides(); ++j)
@@ -78,10 +78,7 @@ void eFdd::CreateTrd()
 				Write(pos++, crc >> 8);
 				Write(pos++, (byte)crc);
 			}
-			if(pos > Track().data_len)
-			{
-				assert(0); //track too long
-			}
+			assert(pos <= Track().data_len);
 			WriteBlock(pos, 0x4e, Track().data_len - pos - 1); //gap3
 		}
 	}
@@ -140,7 +137,7 @@ bool eFdd::ReadScl(const void* data, size_t data_size)
 	if(memcmp(data, "SINCLAIR", 8) || int(data_size) < 9 + (0x100 + 14)*buf[8])
 		return false;
 	
-	CreateTrd();
+	CreateTrd(eUdi::MAX_CYL);
 	int size = 0;
 	for(int i = 0; i < buf[8]; ++i)
 	{
@@ -166,13 +163,44 @@ bool eFdd::ReadScl(const void* data, size_t data_size)
 //-----------------------------------------------------------------------------
 bool eFdd::ReadTrd(const void* data, size_t data_size)
 {
-	CreateTrd();
-	enum { TRD_SIZE = 655360 };
-	if(data_size > TRD_SIZE)
-	data_size = TRD_SIZE;
+	int max_cyl = data_size / (256 * 16 * 2);
+	if(max_cyl > eUdi::MAX_CYL)
+		max_cyl = eUdi::MAX_CYL;
+	CreateTrd(max_cyl);
 	for(size_t i = 0; i < data_size; i += 0x100)
 	{
 		WriteSector(i >> 13, (i >> 12) & 1, ((i >> 8) & 0x0f) + 1, (const byte*)data + i);
+	}
+	return true;
+}
+//=============================================================================
+//	eFdd::WriteTrd
+//-----------------------------------------------------------------------------
+bool eFdd::WriteTrd(FILE* file) const
+{
+	byte zerosec[256];
+	memset(zerosec, 0, 256);
+	for(int i = 0; i < disk->Cyls(); ++i)
+	{
+		for(int j = 0; j < disk->Sides(); ++j)
+		{
+			const eUdi::eTrack& t = disk->Track(i, j);
+			for(int se = 0; se < 16; ++se)
+			{
+				const byte* data = zerosec;
+				for(int k = 0; k < 16; ++k)
+				{
+					const eUdi::eTrack::eSector& s = t.sectors[k];
+					if(s.id && (s.Sec() == se + 1) && s.Len() == 256)
+					{
+						data = s.data;
+						break;
+					}
+				}
+				if(fwrite(data, 1, 256, file) != 256)
+					return false;
+			}
+		}
 	}
 	return true;
 }

@@ -115,7 +115,7 @@ protected:
 			Track().Write(pos++, v, marker);
 		}
 	}
-	void CreateTrd();
+	void CreateTrd(int max_cyl);
 	bool AddFile(const byte* hdr, const byte* data);
 	bool ReadScl(const void* data, size_t data_size);
 	bool ReadTrd(const void* data, size_t data_size);
@@ -124,7 +124,7 @@ protected:
 	bool ReadTd0(const void* data, size_t data_size);
 
 	bool WriteScl(FILE* file) const { return false; }
-	bool WriteTrd(FILE* file) const { return false; }
+	bool WriteTrd(FILE* file) const;
 	bool WriteFdi(FILE* file) const;
 	bool WriteUdi(FILE* file) const;
 	bool WriteTd0(FILE* file) const;
