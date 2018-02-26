@@ -142,7 +142,7 @@ bool eFdd::ReadTd0(const void* _data, size_t data_size)
 			WriteBlock(pos, 0xa1, 3, true);	//id am
 			Write(pos++, 0xfe);
 
-			eUdi::eTrack::eSector& sec = Sector(s);
+			eUdi::eTrack::eSector& sec = Track().sectors[s];
 			sec.id = Track().data + pos;
 			Write(pos++, SecHdr->c);
 			Write(pos++, SecHdr->h);

@@ -565,12 +565,12 @@ void eWD1793::FindMarker()
 		wait = -1;
 		for(int i = 0; i < fdd->Track().sectors_amount; ++i)
 		{
-			dword pos = fdd->Sector(i).id - fdd->Track().data;
+			dword pos = fdd->Track().sectors[i].id - fdd->Track().data;
 			dword dist = (pos > idx) ? pos - idx : fdd->Track().data_len + pos - idx;
 			if(dist < wait)
 			{
 				wait = dist;
-				found_sec = &fdd->Sector(i);
+				found_sec = &fdd->Track().sectors[i];
 			}
 		}
 		wait = found_sec ? wait * fdd->TSByte() : 10 * Z80FQ/FDD_RPS;

@@ -59,6 +59,7 @@ void eUdi::eTrack::Update()
 	{
 		if(src[i] == 0xa1 && src[i+1] == 0xfe && Marker(i)) //find index data marker
 		{
+			assert(sectors_amount < MAX_SEC);
 			sectors[sectors_amount].id = src + i + 2;
 			sectors[sectors_amount].data = NULL;
 			i += 8;
@@ -73,12 +74,45 @@ void eUdi::eTrack::Update()
 					break;
 				}
 			}
-			if(sectors_amount++ >= MAX_SEC)
-			{
-				assert(0); //too many sectors
-			}
+			++sectors_amount;
 		}
 	}
+}
+//=============================================================================
+//	eUdi::eTrack::GetSector
+//-----------------------------------------------------------------------------
+eUdi::eTrack::eSector* eUdi::eTrack::GetSector(int sec)
+{
+	for(int i = 0; i < sectors_amount; ++i)
+	{
+		eUdi::eTrack::eSector& s = sectors[i];
+		if(s.id && s.Sec() == sec && s.Len() == 256)
+		{
+			return &s;
+		}
+	}
+	return NULL;
+}
+//=============================================================================
+//	eUdi::eTrack::WriteSector
+//-----------------------------------------------------------------------------
+bool eUdi::eTrack::WriteSector(int sec, const byte* data)
+{
+	eUdi::eTrack::eSector* s = GetSector(sec);
+	if(!s || !s->data)
+		return false;
+	int len = s->Len();
+	memcpy(s->data, data, len);
+	s->UpdateCRC();
+	return true;
+}
+//=============================================================================
+//	eUdi::eTrack::eSector::UpdateCRC
+//-----------------------------------------------------------------------------
+void eUdi::eTrack::eSector::UpdateCRC()
+{
+	int len = Len();
+	DataW(len, swap_byte_order(eFdd::Crc(data - 1, len + 1)));
 }
 
 //=============================================================================
@@ -150,12 +184,12 @@ bool eFdd::Store(const char* type, FILE* file) const
 //	eFdd::BootExist
 //-----------------------------------------------------------------------------
 static const char* boot_sign = "boot    B";
-bool eFdd::BootExist()
+bool eFdd::BootExist() const
 {
 	for(int i = 0; i < 9; ++i)
 	{
-		const eUdi::eTrack::eSector* s = GetSector(0, 0, i);
-		if(!s)
+		const eUdi::eTrack::eSector* s = disk->Track(0, 0).GetSector(i);
+		if(!s || !s->data)
 			continue;
 		const byte* ptr = s->data;
 		const char* b = boot_sign;
@@ -181,7 +215,7 @@ void eFdd::Seek(int _cyl, int _side)
 //=============================================================================
 //	eFdd::Crc
 //-----------------------------------------------------------------------------
-word eFdd::Crc(byte* src, int size) const
+word eFdd::Crc(byte* src, int size)
 {
 	dword crc = 0xcdb4;
 	while(size--)
@@ -196,41 +230,4 @@ word eFdd::Crc(byte* src, int size) const
 		}
 	}
 	return crc;
-}
-//=============================================================================
-//	eFdd::WriteSector
-//-----------------------------------------------------------------------------
-bool eFdd::WriteSector(int cyl, int side, int sec, const byte* data)
-{
-	eUdi::eTrack::eSector* s = GetSector(cyl, side, sec);
-	if(!s || !s->data)
-		return false;
-	int len = s->Len();
-	memcpy(s->data, data, len);
-	UpdateCRC(s);
-	return true;
-}
-//=============================================================================
-//	eFdd::GetSector
-//-----------------------------------------------------------------------------
-eUdi::eTrack::eSector* eFdd::GetSector(int cyl, int side, int sec)
-{
-	Seek(cyl, side);
-	for(int i = 0; i < Track().sectors_amount; ++i)
-	{
-		eUdi::eTrack::eSector& s = Sector(i);
-		if(s.id && s.Sec() == sec && s.Len() == 256)
-		{
-			return &s;
-		}
-	}
-	return NULL;
-}
-//=============================================================================
-//	eFdd::UpdateCRC
-//-----------------------------------------------------------------------------
-void eFdd::UpdateCRC(eUdi::eTrack::eSector* s) const
-{
-	int len = s->Len();
-	s->DataW(len, swap_byte_order(Crc(s->data - 1, len + 1)));
 }

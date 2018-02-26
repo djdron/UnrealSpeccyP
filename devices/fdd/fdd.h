@@ -65,9 +65,13 @@ public:
 				data[offset] = d & 0xff;
 				data[offset + 1] = d >> 8;
 			}
+			void UpdateCRC();
+			
 			byte*	id;
 			byte*	data;
 		};
+		eSector* GetSector(int sec); // get logical sector by id[ID_SEC]
+		bool	WriteSector(int sec, const byte* data); // write to logical sector
 		eSector	sectors[MAX_SEC];
 		int		sectors_amount;
 	};
@@ -95,19 +99,17 @@ public:
 	int Cyl() const { return cyl; }
 	void Cyl(int v) { cyl = v; }
 	eUdi::eTrack& Track() { return disk->Track(cyl, side); }
-	eUdi::eTrack::eSector& Sector(int sec) { return Track().sectors[sec]; }
 	void Write(int pos, byte v, bool marker = false) { Track().Write(pos, v, marker); }
 
 	bool DiskPresent() const	{ return disk != NULL; }
 	bool WriteProtect() const	{ return write_protect; }
 	bool Open(const char* type, const void* data, size_t data_size);
 	bool Store(const char* type, FILE* file) const;
-	bool BootExist();
+	bool BootExist() const;
 
+	static word Crc(byte* src, int size);
+	
 protected:
-	word Crc(byte* src, int size) const;
-	eUdi::eTrack::eSector* GetSector(int cyl, int side, int sec);
-	bool WriteSector(int cyl, int side, int sec, const byte* data);
 	void WriteBlock(int& pos, byte v, int amount, bool marker = false)
 	{
 		for(int i = 0; i < amount; ++i)
@@ -128,8 +130,6 @@ protected:
 	bool WriteFdi(FILE* file) const;
 	bool WriteUdi(FILE* file) const;
 	bool WriteTd0(FILE* file) const;
-
-	void UpdateCRC(eUdi::eTrack::eSector* s) const;
 
 protected:
 	qword	motor;	// 0 - not spinning, >0 - time when it'll stop

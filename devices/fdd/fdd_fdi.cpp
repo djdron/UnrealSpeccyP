@@ -57,7 +57,7 @@ bool eFdd::ReadFdi(const void* _data, size_t data_size)
 				WriteBlock(pos, 0, 12);			//sync
 				WriteBlock(pos, 0xa1, 3, true);	//id am
 				Write(pos++, 0xfe);
-				eUdi::eTrack::eSector& sec = Sector(i);
+				eUdi::eTrack::eSector& sec = Track().sectors[i];
 				sec.id = Track().data + pos;
 				Write(pos++, trk[0]);
 				Write(pos++, trk[1]);
