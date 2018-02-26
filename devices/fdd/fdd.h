@@ -125,7 +125,7 @@ protected:
 	bool ReadUdi(const void* data, size_t data_size);
 	bool ReadTd0(const void* data, size_t data_size);
 
-	bool WriteScl(FILE* file) const { return false; }
+	bool WriteScl(FILE* file) const;
 	bool WriteTrd(FILE* file) const;
 	bool WriteFdi(FILE* file) const;
 	bool WriteUdi(FILE* file) const;
