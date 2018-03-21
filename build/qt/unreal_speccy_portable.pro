@@ -1,3 +1,5 @@
+CONFIG += warn_off
+
 !symbian {
 	QT += opengl
 }
@@ -42,6 +44,8 @@ SOURCES += ../../speccy.cpp \
 	../../platform/io.cpp \
 	../../devices/fdd/wd1793.cpp \
 	../../devices/fdd/fdd.cpp \
+	../../devices/fdd/fdd_fdi.cpp \
+	../../devices/fdd/fdd_trd.cpp \
 	../../devices/input/tape.cpp \
 	../../devices/input/keyboard.cpp \
 	../../devices/input/kempston_mouse.cpp \
@@ -92,7 +96,6 @@ HEADERS  += \
 	../../3rdparty/zlib/inffast.h \
 	../../3rdparty/zlib/deflate.h \
 	../../3rdparty/zlib/crc32.h \
-	../../3rdparty/minizip/crypt.h \
 	../../3rdparty/minizip/ioapi.h \
 	../../3rdparty/minizip/unzip.h \
 	../../snapshot/snapshot.h \
@@ -114,7 +117,7 @@ HEADERS  += \
 	../../devices/ula.h \
 	../../devices/memory.h \
 	../../devices/device.h \
-	../../tools/time.h \
+	../../tools/time2.h \
 	../../tools/tick_clock.h \
 	../../tools/tick.h \
 	../../tools/profiler.h \
@@ -132,9 +135,6 @@ HEADERS  += \
 RESOURCES += unreal_speccy_portable.qrc
 
 FORMS    +=
-
-QMAKE_CXXFLAGS_WARN_ON  = -Wall
-QMAKE_CFLAGS_WARN_ON    = -Wall
 
 DEFINES += USE_QT USE_CONFIG USE_ZIP USE_EXTERN_RESOURCES USE_TUI
 
