@@ -57,7 +57,7 @@ bool eFdd::ReadFdi(const void* _data, size_t data_size)
 				WriteBlock(pos, 0, 12);			//sync
 				WriteBlock(pos, 0xa1, 3, true);	//id am
 				Write(pos++, 0xfe);
-				eUdi::eTrack::eSector& sec = Sector(i);
+				eUdi::eTrack::eSector& sec = Track().sectors[i];
 				sec.id = Track().data + pos;
 				Write(pos++, trk[0]);
 				Write(pos++, trk[1]);
@@ -75,7 +75,7 @@ bool eFdd::ReadFdi(const void* _data, size_t data_size)
 				{
 					const byte* data = t0 + Word(trk+5);
 					if(data + 128 > buf + data_size)
-					return false;
+						return false;
 					WriteBlock(pos, 0x4e, 22);		//gap2
 					WriteBlock(pos, 0, 12);			//sync
 					WriteBlock(pos, 0xa1, 3, true);	//data am
@@ -85,18 +85,107 @@ bool eFdd::ReadFdi(const void* _data, size_t data_size)
 					memcpy(sec.data, data, len);
 					crc = Crc(Track().data + pos - 1, len + 1);
 					if(!(trk[4] & (1<<(trk[3] & 3))))
-					crc ^= 0xffff;
+						crc ^= 0xffff;
 					pos += len;
 					Write(pos++, crc >> 8);
 					Write(pos++, (byte)crc);
 				}
 				trk += 7;
 			}
-			if(pos > Track().data_len)
-			{
-				assert(0); //track too long
-			}
+			assert(pos <= Track().data_len);
 			WriteBlock(pos, 0x4e, Track().data_len - pos - 1); //gap3
+		}
+	}
+	return true;
+}
+//=============================================================================
+//	eFdd::WriteFdi
+//-----------------------------------------------------------------------------
+bool eFdd::WriteFdi(FILE* file) const
+{
+	int total_sectors = 0;
+	for(int i = 0; i < disk->Cyls(); ++i)
+	{
+		for(int j = 0; j < disk->Sides(); ++j)
+		{
+			total_sectors += disk->Track(i, j).sectors_amount;
+		}
+	}
+
+	size_t desc_offset = 14 + (total_sectors + disk->Cyls() * disk->Sides()) * 7;
+	size_t data_offset = desc_offset + 1;
+	byte hdr[14] =
+	{
+		'F', 'D', 'I',
+		0,
+		(byte)disk->Cyls(), 0,
+		(byte)disk->Sides(), 0,
+		(byte)desc_offset, byte(desc_offset >> 8),
+		(byte)data_offset, byte(data_offset >> 8),
+		0, 0,
+	};
+	if(fwrite(hdr, 1, 14, file) != 14)
+		return false;
+
+	size_t trkoffs = 0;
+	for(int i = 0; i < disk->Cyls(); ++i)
+	{
+		for(int j = 0; j < disk->Sides(); ++j)
+		{
+			const eUdi::eTrack& t = disk->Track(i, j);
+			byte track_hdr[7] =
+			{
+				byte((trkoffs >> 0) & 0xff),
+				byte((trkoffs >> 8) & 0xff),
+				byte((trkoffs >> 16)& 0xff),
+				byte((trkoffs >> 24)& 0xff),
+				0, 0,
+				(byte)t.sectors_amount
+			};
+			if(fwrite(track_hdr, 1, 7, file) != 7)
+				return false;
+			size_t secoffs = 0;
+			for(int se = 0; se < t.sectors_amount; ++se)
+			{
+				const eUdi::eTrack::eSector& s = t.sectors[se];
+				assert(s.id);
+				byte sec_hdr[7] =
+				{
+					(byte)s.Cyl(),
+					(byte)s.Side(),
+					(byte)s.Sec(),
+					(byte)s.id[eUdi::eTrack::eSector::ID_LEN],
+					byte(s.data ? (s.data[-1] == 0xf8 ? 0x80 : (1 << (s.id[eUdi::eTrack::eSector::ID_LEN] & 3))) : 0x40),
+					byte((secoffs >> 0) & 0xff),
+					byte((secoffs >> 8) & 0xff)
+				};
+				if(fwrite(sec_hdr, 1, 7, file) != 7)
+					return false;
+				if(s.data)
+					secoffs += s.Len();
+			}
+			trkoffs += secoffs;
+		}
+	}
+
+	byte desc_eol = 0;
+	if(fwrite(&desc_eol, 1, 1, file) != 1)
+		return false;
+
+	for(int i = 0; i < disk->Cyls(); ++i)
+	{
+		for(int j = 0; j < disk->Sides(); ++j)
+		{
+			const eUdi::eTrack& t = disk->Track(i, j);
+			for(int se = 0; se < t.sectors_amount; ++se)
+			{
+				const eUdi::eTrack::eSector& s = t.sectors[se];
+				if(s.data)
+				{
+					if(fwrite(s.data, 1, s.Len(), file) != s.Len())
+						return false;
+				}
+			}
 		}
 	}
 	return true;

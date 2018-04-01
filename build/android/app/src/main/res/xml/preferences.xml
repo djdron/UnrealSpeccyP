@@ -10,6 +10,8 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_peripherals">
         <CheckBoxPreference android:title="@string/auto_play_image" android:summary="@string/auto_play_image_desc" android:key="auto play image"></CheckBoxPreference>
+        <ListPreference android:title="@string/save_slot" android:key="save slot" android:entryValues="@array/slot_values" android:entries="@array/slot_names"></ListPreference>
+        <Preference android:title="@string/save_file" android:summary="@string/save_file_desc" android:key="save file"></Preference>
         <ListPreference android:title="@string/drive" android:key="drive" android:entryValues="@array/drive_values" android:entries="@array/drive_names"></ListPreference>
         <Preference android:title="@string/tape" android:key="tape"></Preference>
         <CheckBoxPreference android:title="@string/tape_fast" android:summary="@string/tape_fast_desc" android:key="fast tape"></CheckBoxPreference>

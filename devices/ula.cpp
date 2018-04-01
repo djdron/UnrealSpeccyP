@@ -38,7 +38,7 @@ eUla::eUla(eMemory* m) : memory(m), border_color(0), first_screen(true), base(NU
 //-----------------------------------------------------------------------------
 eUla::~eUla()
 {
-	delete[] screen;
+	SAFE_DELETE_ARRAY(screen);
 }
 //=============================================================================
 //	eUla::Init

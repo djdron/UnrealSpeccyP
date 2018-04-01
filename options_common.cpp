@@ -26,17 +26,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-struct eOptionState : public xOptions::eOptionBool
+static struct eOptionStoreSlot : public xOptions::eOptionInt
 {
-	eOptionState() { storeable = false; }
-	virtual const char*	Value() const { return NULL; }
-	const char* SnapshotName() const
+	virtual const char* Name() const { return "save slot"; }
+	virtual const char** Values() const
 	{
-		static char name[xIo::MAX_PATH_LEN];
+		static const char* values[] = { "", "1", "2", "3", "4", "5", "6", "7", "8", "9", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		eOptionInt::Change(0, 10, next);
+	}
+	virtual int Order() const { return 7; }
+} op_save_slot;
+
+struct eOptionSave : public xOptions::eOptionBool
+{
+	eOptionSave() { storeable = false; }
+	virtual const char*	Value() const { return NULL; }
+	bool PrepareName()
+	{
 		strcpy(name, OpLastFile());
+		ext[0] = '\0';
 		int l = strlen(name);
 		if(!l || name[l - 1] == '/' || name[l - 1] == '\\')
-			return NULL;
+			return false;
 		for(const eFileType* t = eFileType::First(); t; t = t->Next())
 		{
 			char contain_path[xIo::MAX_PATH_LEN];
@@ -53,14 +68,53 @@ struct eOptionState : public xOptions::eOptionBool
 		while(e > name && *e != '.' && *e != '\\' && *e != '/')
 			--e;
 		if(*e != '.')
-			return NULL;
+			return false;
+		strcpy(ext, e);
 		*e = '\0';
+		while(e > name && *e != '@' && *e != '\\' && *e != '/')
+			--e;
+		if(*e == '@')
+			*e = '\0';
+		if(op_save_slot)
+		{
+			strcat(name, "@");
+			strcat(name, op_save_slot.Value());
+		}
+		return true;
+	}
+	const char* FileName()
+	{
+		if(!PrepareName())
+			return NULL;
+		strcat(name, ext);
+		return name;
+	}
+	const char* SnapshotName()
+	{
+		if(!PrepareName())
+			return NULL;
 		strcat(name, ".sna");
 		return name;
 	}
+	char name[xIo::MAX_PATH_LEN];
+	char ext[xIo::MAX_PATH_LEN];
 };
 
-static struct eOptionSaveState : public eOptionState
+static struct eOptionSaveFile : public eOptionSave
+{
+	virtual const char* Name() const { return "save file"; }
+	virtual void Change(bool next = true)
+	{
+		const char* name = FileName();
+		if(name)
+			Set(Handler()->OnSaveFile(name));
+		else
+			Set(false);
+	}
+	virtual int Order() const { return 8; }
+} op_save_file;
+
+static struct eOptionSaveState : public eOptionSave
 {
 	virtual const char* Name() const { return "save state"; }
 	virtual void Change(bool next = true)
@@ -71,10 +125,10 @@ static struct eOptionSaveState : public eOptionState
 		else
 			Set(false);
 	}
-	virtual int Order() const { return 1; }
+	virtual int Order() const { return 5; }
 } op_save_state;
 
-static struct eOptionLoadState : public eOptionState
+static struct eOptionLoadState : public eOptionSave
 {
 	virtual const char* Name() const { return "load state"; }
 	virtual void Change(bool next = true)
@@ -85,7 +139,7 @@ static struct eOptionLoadState : public eOptionState
 		else
 			Set(false);
 	}
-	virtual int Order() const { return 2; }
+	virtual int Order() const { return 6; }
 } op_load_state;
 
 static struct eOptionTape : public xOptions::eOptionInt

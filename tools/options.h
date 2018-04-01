@@ -66,30 +66,31 @@ class eOptionInt : public eOption<int>
 {
 public:
 	eOptionInt() { Set(0); }
-protected:
-	void Change(int f, int l, bool next = true);
 	virtual const char*	Value() const;
 	virtual void Value(const char* v);
+protected:
+	void Change(int f, int l, bool next = true);
 };
 
 class eOptionBool : public eOption<bool>
 {
 public:
 	eOptionBool() { Set(false); }
-	virtual void Change(bool next = true) { Set(!value); }
-protected:
 	virtual const char*	Value() const;
 	virtual void Value(const char* v);
 	virtual const char** Values() const;
+	virtual void Change(bool next = true) { Set(!value); }
 };
 
-struct eOptionString : public eOption<const char*>
+class eOptionString : public eOption<const char*>
 {
+public:
 	eOptionString() : alloc_size(32) { value = new char[alloc_size]; Value(""); }
 	virtual ~eOptionString() { SAFE_DELETE_ARRAY(value); }
 	virtual const char*	Value() const { return value; }
 	virtual void Value(const char* v);
 	virtual void Set(const char*& v) { Value(v); }
+private:
 	int alloc_size;
 };
 

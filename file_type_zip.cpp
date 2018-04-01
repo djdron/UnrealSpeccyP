@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <unzip.h>
 #include "platform/io.h"
+#include "options_common.h"
 #include "tools/stream_memory.h"
 #include "file_type.h"
 
@@ -49,9 +50,8 @@ static struct eFileTypeZIP : public eFileType
 		return NULL;
 	}
 private:
-	bool Open(unzFile h) const;
-	bool Open(unzFile h, const char* contain_name) const;
-	bool OpenCurrent(unzFile h) const;
+	bool Open(unzFile h, char* name = NULL) const;
+	bool OpenCurrent(unzFile h, char* name = NULL) const;
 } ft_zip;
 
 static voidpf ZOpen(voidpf opaque, const void* filename, int mode)
@@ -106,7 +106,17 @@ bool eFileTypeZIP::Open(const char* name) const
 		unzClose(h);
 		return ok;
 	}
-	return Open(unzOpen64(name));
+	char opened_name[xIo::MAX_PATH_LEN];
+	bool ok = Open(unzOpen64(name), opened_name);
+	if(ok)
+	{
+		char full_name[xIo::MAX_PATH_LEN];
+		strcpy(full_name, name);
+		strcat(full_name, "/");
+		strcat(full_name, opened_name);
+		OpLastFile(full_name);
+	}
+	return ok;
 }
 
 bool eFileTypeZIP::Open(const void* data, size_t data_size) const
@@ -121,7 +131,7 @@ bool eFileTypeZIP::Open(const void* data, size_t data_size) const
 	return Open(unzOpen2_64(&mf, &zfuncs));
 }
 
-bool eFileTypeZIP::Open(unzFile h) const
+bool eFileTypeZIP::Open(unzFile h, char* name) const
 {
 	if(!h)
 		return false;
@@ -130,7 +140,7 @@ bool eFileTypeZIP::Open(unzFile h) const
 	{
 		for(;;)
 		{
-			if(OpenCurrent(h))
+			if(OpenCurrent(h, name))
 			{
 				ok = true;
 				break;
@@ -143,7 +153,7 @@ bool eFileTypeZIP::Open(unzFile h) const
 	return ok;
 }
 
-bool eFileTypeZIP::OpenCurrent(unzFile h) const
+bool eFileTypeZIP::OpenCurrent(unzFile h, char* name) const
 {
 	unz_file_info fi;
 	char n[xIo::MAX_PATH_LEN];
@@ -160,8 +170,10 @@ bool eFileTypeZIP::OpenCurrent(unzFile h) const
 	if(unzReadCurrentFile(h, buf, fi.uncompressed_size) == int(fi.uncompressed_size))
 	{
 		ok = t->Open(buf, fi.uncompressed_size);
+		if(ok && name)
+			strcpy(name, n);
 	}
-	delete[] buf;
+	SAFE_DELETE_ARRAY(buf);
 	unzCloseCurrentFile(h);
 	return ok;
 }

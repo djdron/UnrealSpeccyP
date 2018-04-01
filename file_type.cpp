@@ -67,11 +67,11 @@ bool eFileType::Open(const char* name) const
 		fclose(f);
 		if(r != size)
 		{
-			delete[] buf;
+			SAFE_DELETE_ARRAY(buf);
 			return false;
 		}
 		bool ok = Open(buf, size);
-		delete[] buf;
+		SAFE_DELETE_ARRAY(buf);
 		return ok;
 	}
 	return false;

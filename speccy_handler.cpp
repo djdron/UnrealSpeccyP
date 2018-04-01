@@ -544,6 +544,16 @@ static struct eFileTypeTRD : public eFileType
 		}
 		return ok;
 	}
+	virtual bool Store(const char* name) const
+	{
+		FILE* file = fopen(name, "wb");
+		if(!file)
+			return false;
+		eWD1793* wd = sh.speccy->Device<eWD1793>();
+		bool ok = wd->Store(Type(), OpDrive(), file);
+		fclose(file);
+		return ok;
+	}
 	virtual const char* Type() const { return "trd"; }
 } ft_trd;
 static struct eFileTypeSCL : public eFileTypeTRD
@@ -554,6 +564,14 @@ static struct eFileTypeFDI : public eFileTypeTRD
 {
 	virtual const char* Type() const { return "fdi"; }
 } ft_fdi;
+static struct eFileTypeUDI : public eFileTypeTRD
+{
+	virtual const char* Type() const { return "udi"; }
+} ft_udi;
+static struct eFileTypeTD0 : public eFileTypeTRD
+{
+	virtual const char* Type() const { return "td0"; }
+} ft_td0;
 
 class eMacroTapeLoad : public eMacro
 {

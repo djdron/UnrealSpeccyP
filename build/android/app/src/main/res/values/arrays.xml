@@ -39,6 +39,30 @@
             <item>5</item>
             <item>6</item>
         </string-array>
+        <string-array name="slot_names">
+            <item>@string/save_slot_empty</item>
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
+            <item>4</item>
+            <item>5</item>
+            <item>6</item>
+            <item>7</item>
+            <item>8</item>
+            <item>9</item>
+        </string-array>
+        <string-array name="slot_values">
+            <item>0</item>
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
+            <item>4</item>
+            <item>5</item>
+            <item>6</item>
+            <item>7</item>
+            <item>8</item>
+            <item>9</item>
+        </string-array>
         <string-array name="drive_names">
             <item>@string/drive_a</item>
             <item>@string/drive_b</item>
@@ -52,10 +76,16 @@
             <item>3</item>
         </string-array>
         <string-array name="zoom_names">
-            <item>@string/zoom_none</item><item>@string/zoom_fill</item><item>@string/zoom_small_border</item><item>@string/zoom_no_border</item>
+            <item>@string/zoom_none</item>
+            <item>@string/zoom_fill</item>
+            <item>@string/zoom_small_border</item>
+            <item>@string/zoom_no_border</item>
         </string-array>
         <string-array name="zoom_values">
-            <item>0</item><item>1</item><item>2</item><item>3</item>
+            <item>0</item>
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
         </string-array>
         <string-array name="skip_frames_names">
             <item>@string/skip_frames_none</item>

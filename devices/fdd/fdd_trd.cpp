@@ -23,10 +23,10 @@
 //=============================================================================
 //	eFdd::CreateTrd
 //-----------------------------------------------------------------------------
-void eFdd::CreateTrd()
+void eFdd::CreateTrd(int max_cyl)
 {
 	SAFE_DELETE(disk);
-	disk = new eUdi(eUdi::MAX_CYL, eUdi::MAX_SIDE);
+	disk = new eUdi(max_cyl, eUdi::MAX_SIDE);
 	for(int i = 0; i < disk->Cyls(); ++i)
 	{
 		for(int j = 0; j < disk->Sides(); ++j)
@@ -56,7 +56,7 @@ void eFdd::CreateTrd()
 				WriteBlock(pos, 0, 12);			//sync
 				WriteBlock(pos, 0xa1, 3, true);	//id am
 				Write(pos++, 0xfe);
-				eUdi::eTrack::eSector& sec = Sector(i);
+				eUdi::eTrack::eSector& sec = Track().sectors[i];
 				sec.id = Track().data + pos;
 				Write(pos++, cyl);
 				Write(pos++, side);
@@ -78,101 +78,66 @@ void eFdd::CreateTrd()
 				Write(pos++, crc >> 8);
 				Write(pos++, (byte)crc);
 			}
-			if(pos > Track().data_len)
-			{
-				assert(0); //track too long
-			}
+			assert(pos <= Track().data_len);
 			WriteBlock(pos, 0x4e, Track().data_len - pos - 1); //gap3
 		}
 	}
-	eUdi::eTrack::eSector* s = GetSector(0, 0, 9);
+	Seek(0, 0);
+	eUdi::eTrack::eSector* s = Track().GetSector(9);
 	if(!s)
 		return;
 	s->data[0xe2] = 1;					// first free track
 	s->data[0xe3] = 0x16;				// 80T,DS
 	s->DataW(0xe5, 2544);				// free sec
 	s->data[0xe7] = 0x10;				// trdos flag
-	UpdateCRC(s);
-}
-//=============================================================================
-//	eFdd::AddFile
-//-----------------------------------------------------------------------------
-bool eFdd::AddFile(const byte* hdr, const byte* data)
-{
-	eUdi::eTrack::eSector* s = GetSector(0, 0, 9);
-	if(!s)
-		return false;
-	int len = hdr[13];
-	int pos = s->data[0xe4] * 0x10;
-	eUdi::eTrack::eSector* dir = GetSector(0, 0, 1 + pos / 0x100);
-	if(!dir)
-		return false;
-	if(s->DataW(0xe5) < len) //disk full
-		return false;
-	memcpy(dir->data + (pos & 0xff), hdr, 14);
-	dir->DataW((pos & 0xff) + 14, s->DataW(0xe1));
-	UpdateCRC(dir);
-	
-	pos = s->data[0xe1] + 16 * s->data[0xe2];
-	s->data[0xe1] = (pos + len) & 0x0f, s->data[0xe2] = (pos + len) >> 4;
-	s->data[0xe4]++;
-	s->DataW(0xe5, s->DataW(0xe5) - len);
-	UpdateCRC(s);
-	
-	// goto next track. s8 become invalid
-	for(int i = 0; i < len; ++i, ++pos)
-	{
-		int cyl = pos / 32;
-		int side = (pos / 16) & 1;
-		if(!WriteSector(cyl, side, (pos & 0x0f) + 1, data + i * 0x100))
-			return false;
-	}
-	return true;
-}
-//=============================================================================
-//	eFdd::ReadScl
-//-----------------------------------------------------------------------------
-bool eFdd::ReadScl(const void* data, size_t data_size)
-{
-	if(data_size < 9)
-		return false;
-	const byte* buf = (const byte*)data;
-	if(memcmp(data, "SINCLAIR", 8) || int(data_size) < 9 + (0x100 + 14)*buf[8])
-		return false;
-	
-	CreateTrd();
-	int size = 0;
-	for(int i = 0; i < buf[8]; ++i)
-	{
-		size += buf[9 + 14 * i + 13];
-	}
-	if(size > 2544)
-	{
-		eUdi::eTrack::eSector* s = GetSector(0, 0, 9);
-		s->DataW(0xe5, size);			// free sec
-		UpdateCRC(s);
-	}
-	const byte* d = buf + 9 + 14 * buf[8];
-	for(int i = 0; i < buf[8]; ++i)
-	{
-		if(!AddFile(buf + 9 + 14*i, d))
-			return false;
-		d += buf[9 + 14*i + 13]*0x100;
-	}
-	return true;
+	s->UpdateCRC();
 }
 //=============================================================================
 //	eFdd::ReadTrd
 //-----------------------------------------------------------------------------
 bool eFdd::ReadTrd(const void* data, size_t data_size)
 {
-	CreateTrd();
-	enum { TRD_SIZE = 655360 };
-	if(data_size > TRD_SIZE)
-	data_size = TRD_SIZE;
+	int max_cyl = data_size / (256 * 16 * 2);
+	if(max_cyl > eUdi::MAX_CYL)
+		max_cyl = eUdi::MAX_CYL;
+	CreateTrd(max_cyl);
 	for(size_t i = 0; i < data_size; i += 0x100)
 	{
-		WriteSector(i >> 13, (i >> 12) & 1, ((i >> 8) & 0x0f) + 1, (const byte*)data + i);
+		int cyl = i >> 13;
+		int side = (i >> 12) & 1;
+		Seek(cyl, side);
+		Track().WriteSector(((i >> 8) & 0x0f) + 1, (const byte*)data + i);
+	}
+	return true;
+}
+//=============================================================================
+//	eFdd::WriteTrd
+//-----------------------------------------------------------------------------
+bool eFdd::WriteTrd(FILE* file) const
+{
+	byte zerosec[256];
+	memset(zerosec, 0, 256);
+	for(int i = 0; i < disk->Cyls(); ++i)
+	{
+		for(int j = 0; j < disk->Sides(); ++j)
+		{
+			const eUdi::eTrack& t = disk->Track(i, j);
+			for(int se = 0; se < 16; ++se)
+			{
+				const byte* data = zerosec;
+				for(int k = 0; k < 16; ++k)
+				{
+					const eUdi::eTrack::eSector& s = t.sectors[k];
+					if(s.id && (s.Sec() == se + 1) && s.Len() == 256)
+					{
+						data = s.data;
+						break;
+					}
+				}
+				if(fwrite(data, 1, 256, file) != 256)
+					return false;
+			}
+		}
 	}
 	return true;
 }

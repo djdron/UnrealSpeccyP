@@ -65,6 +65,14 @@ bool eWD1793::Open(const char* type, int drive, const void* data, size_t data_si
 	return fdds[drive].Open(type, data, data_size);
 }
 //=============================================================================
+//	eWD1793::Store
+//-----------------------------------------------------------------------------
+bool eWD1793::Store(const char* type, int drive, FILE* file) const
+{
+	assert(drive >= 0 && drive < FDD_COUNT);
+	return fdds[drive].Store(type, file);
+}
+//=============================================================================
 //	eWD1793::BootExist
 //-----------------------------------------------------------------------------
 bool eWD1793::BootExist(int drive)
@@ -557,12 +565,12 @@ void eWD1793::FindMarker()
 		wait = -1;
 		for(int i = 0; i < fdd->Track().sectors_amount; ++i)
 		{
-			dword pos = fdd->Sector(i).id - fdd->Track().data;
+			dword pos = fdd->Track().sectors[i].id - fdd->Track().data;
 			dword dist = (pos > idx) ? pos - idx : fdd->Track().data_len + pos - idx;
 			if(dist < wait)
 			{
 				wait = dist;
-				found_sec = &fdd->Sector(i);
+				found_sec = &fdd->Track().sectors[i];
 			}
 		}
 		wait = found_sec ? wait * fdd->TSByte() : 10 * Z80FQ/FDD_RPS;
