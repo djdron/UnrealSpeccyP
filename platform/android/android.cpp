@@ -262,7 +262,12 @@ void Java_app_usp_Emulator_SaveState(JNIEnv* env, jobject obj)
 	eOptionB* o = eOptionB::Find("save state");
 	SAFE_CALL(o)->Change();
 }
-
+void Java_app_usp_Emulator_SaveFile(JNIEnv* env, jobject obj)
+{
+	using namespace xOptions;
+	eOptionB* o = eOptionB::Find("save file");
+	SAFE_CALL(o)->Change();
+}
 void Java_app_usp_Emulator_StoreOptions(JNIEnv* env, jobject obj)
 {
 	xOptions::Store();

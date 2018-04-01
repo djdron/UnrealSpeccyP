@@ -5,6 +5,10 @@
     <string name="open_file">Open file</string>
     <string name="save_state">Save state</string>
     <string name="load_state">Load state</string>
+    <string name="save_slot">Save slot</string>
+    <string name="save_slot_empty">empty</string>
+    <string name="save_file">Save file</string>
+    <string name="save_file_desc">Save changed disk image file</string>
     <string name="select_joystick">Joystick</string>
     <string name="joystick_kempston">Kempston</string>
     <string name="joystick_cursor">Cursor</string>

@@ -28,7 +28,7 @@ namespace xPlatform
 
 static struct eOptionStoreSlot : public xOptions::eOptionInt
 {
-	virtual const char* Name() const { return "store slot"; }
+	virtual const char* Name() const { return "save slot"; }
 	virtual const char** Values() const
 	{
 		static const char* values[] = { "", "1", "2", "3", "4", "5", "6", "7", "8", "9", NULL };
@@ -39,11 +39,11 @@ static struct eOptionStoreSlot : public xOptions::eOptionInt
 		eOptionInt::Change(0, 10, next);
 	}
 	virtual int Order() const { return 7; }
-} op_store_slot;
+} op_save_slot;
 
-struct eOptionStore : public xOptions::eOptionBool
+struct eOptionSave : public xOptions::eOptionBool
 {
-	eOptionStore() { storeable = false; }
+	eOptionSave() { storeable = false; }
 	virtual const char*	Value() const { return NULL; }
 	bool PrepareName()
 	{
@@ -75,10 +75,10 @@ struct eOptionStore : public xOptions::eOptionBool
 			--e;
 		if(*e == '@')
 			*e = '\0';
-		if(op_store_slot)
+		if(op_save_slot)
 		{
 			strcat(name, "@");
-			strcat(name, op_store_slot.Value());
+			strcat(name, op_save_slot.Value());
 		}
 		return true;
 	}
@@ -100,7 +100,7 @@ struct eOptionStore : public xOptions::eOptionBool
 	char ext[xIo::MAX_PATH_LEN];
 };
 
-static struct eOptionSaveFile : public eOptionStore
+static struct eOptionSaveFile : public eOptionSave
 {
 	virtual const char* Name() const { return "save file"; }
 	virtual void Change(bool next = true)
@@ -114,7 +114,7 @@ static struct eOptionSaveFile : public eOptionStore
 	virtual int Order() const { return 8; }
 } op_save_file;
 
-static struct eOptionSaveState : public eOptionStore
+static struct eOptionSaveState : public eOptionSave
 {
 	virtual const char* Name() const { return "save state"; }
 	virtual void Change(bool next = true)
@@ -128,7 +128,7 @@ static struct eOptionSaveState : public eOptionStore
 	virtual int Order() const { return 5; }
 } op_save_state;
 
-static struct eOptionLoadState : public eOptionStore
+static struct eOptionLoadState : public eOptionSave
 {
 	virtual const char* Name() const { return "load state"; }
 	virtual void Change(bool next = true)

@@ -34,6 +34,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	final static private String sound_chip_id = "sound chip";
 	final static private String sound_chip_stereo_id = "ay stereo";
 	final static private String auto_play_image_id = "auto play image";
+	final static private String save_slot_id = "save slot";
+	final static private String save_file_id = "save file";
 	final static private String select_drive_id = "drive";
 	final static private String tape_id = "tape";
 	final static private String tape_fast_id = "fast tape";
@@ -51,6 +53,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private CheckBoxPreference use_sensor;
 	private ListPreference sound_chip;
 	private ListPreference sound_chip_stereo;
+	private ListPreference save_slot;
+	private Preference save_file;
 	private ListPreference select_drive;
 	private Preference tape;
 	private CheckBoxPreference auto_play_image;
@@ -75,6 +79,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         sound_chip = (ListPreference)getPreferenceScreen().findPreference(sound_chip_id);
         sound_chip_stereo = (ListPreference)getPreferenceScreen().findPreference(sound_chip_stereo_id);
         auto_play_image = (CheckBoxPreference)getPreferenceScreen().findPreference(auto_play_image_id);
+		save_slot = (ListPreference)getPreferenceScreen().findPreference(save_slot_id);
+		save_file = (Preference)getPreferenceScreen().findPreference(save_file_id);
         select_drive = (ListPreference)getPreferenceScreen().findPreference(select_drive_id);
         tape = (Preference)getPreferenceScreen().findPreference(tape_id);
         tape_fast = (CheckBoxPreference)getPreferenceScreen().findPreference(tape_fast_id);
@@ -92,6 +98,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		select_joystick.setSummary(select_joystick.getEntry());
 		sound_chip.setSummary(sound_chip.getEntry());
 		sound_chip_stereo.setSummary(sound_chip_stereo.getEntry());
+		save_slot.setSummary(save_slot.getEntry());
 		select_drive.setSummary(select_drive.getEntry());
 		switch(Emulator.the.TapeState())
 		{
@@ -111,6 +118,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		sound_chip.setValueIndex(Emulator.the.GetOptionInt(sound_chip_id));
 		sound_chip_stereo.setValueIndex(Emulator.the.GetOptionInt(sound_chip_stereo_id));
 		auto_play_image.setChecked(Emulator.the.GetOptionBool(auto_play_image_id));
+		save_slot.setValueIndex(Emulator.the.GetOptionInt(save_slot_id));
 		select_drive.setValueIndex(Emulator.the.GetOptionInt(select_drive_id));
 		tape_fast.setChecked(Emulator.the.GetOptionBool(tape_fast_id));
 		mode_48k.setChecked(Emulator.the.GetOptionBool(mode_48k_id));
@@ -150,6 +158,11 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		}
 		else if(key.equals(auto_play_image_id))
 			Emulator.the.SetOptionBool(auto_play_image_id, auto_play_image.isChecked());
+		else if(key.equals(save_slot_id))
+		{
+			Emulator.the.SetOptionInt(save_slot_id, Integer.parseInt(save_slot.getValue()));
+			UpdateDescs();
+		}
 		else if(key.equals(select_drive_id))
 		{
 			Emulator.the.SetOptionInt(select_drive_id, Integer.parseInt(select_drive.getValue()));
@@ -189,6 +202,10 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		{
 			Emulator.the.TapeToggle();
 			UpdateDescs();
+		}
+		else if(preference.getKey().equals(save_file_id))
+		{
+			Emulator.the.SaveFile();
 		}
 		return super.onPreferenceTreeClick(preferenceScreen, preference);
 	}

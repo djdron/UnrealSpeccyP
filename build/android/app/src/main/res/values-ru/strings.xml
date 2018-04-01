@@ -69,4 +69,8 @@
     <string name= "rzx_sync_lost">RZX - потеря синхронизации</string>
     <string name= "rzx_invalid">RZX - неправильные данные</string>
     <string name= "rzx_unsupported">RZX - неподдерживаемый формат</string>
+    <string name="save_slot">Слот сохранения</string>
+    <string name="save_slot_empty">нет</string>
+    <string name="save_file">Сохранить файл</string>
+    <string name="save_file_desc">Сохранение измененного образа диска</string>
 </resources>

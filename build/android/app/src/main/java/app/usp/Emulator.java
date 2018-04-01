@@ -49,6 +49,7 @@ public class Emulator
 	public synchronized native String	GetLastFile();
 	synchronized native void	LoadState();
 	synchronized native void	SaveState();
+	synchronized native void	SaveFile();
 	synchronized native void	Reset();
 	public synchronized native boolean	FileTypeSupported(final String name);
 
