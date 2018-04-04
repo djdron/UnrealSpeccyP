@@ -314,9 +314,7 @@ jint Java_app_usp_Emulator_TapeState(JNIEnv* env, jobject obj)
 	case AR_TAPE_NOT_INSERTED:	return 0;
 	case AR_TAPE_STOPPED:		return 1;
 	case AR_TAPE_STARTED:		return 2;
-	case AR_ERROR:
-	case AR_OK:
-		break;
+	default:					break;
 	}
 	assert(0); // invalid tape query result
 	return 0;
@@ -324,6 +322,19 @@ jint Java_app_usp_Emulator_TapeState(JNIEnv* env, jobject obj)
 void Java_app_usp_Emulator_TapeToggle(JNIEnv* env, jobject obj)
 {
 	xPlatform::Handler()->OnAction(xPlatform::A_TAPE_TOGGLE);
+}
+
+jboolean Java_app_usp_Emulator_DiskChanged(JNIEnv* env, jobject obj)
+{
+	using namespace xPlatform;
+	switch(Handler()->OnAction(A_DISK_QUERY))
+	{
+		case AR_DISK_NOT_CHANGED:	return false;
+		case AR_DISK_CHANGED:		return true;
+		default:					break;
+	}
+	assert(0); // invalid disk query result
+	return false;
 }
 
 jboolean Java_app_usp_Emulator_FileTypeSupported(JNIEnv* env, jobject obj, jstring jname)

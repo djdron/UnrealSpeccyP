@@ -118,7 +118,7 @@ void eUdi::eTrack::eSector::UpdateCRC()
 //=============================================================================
 //	eUdi::eUdi
 //-----------------------------------------------------------------------------
-eUdi::eUdi(int _cyls, int _sides) : raw(NULL)
+eUdi::eUdi(int _cyls, int _sides) : raw(NULL), changed(false)
 {
 	cyls = _cyls; sides = _sides;
 	const int max_track_len = 6400;
@@ -151,34 +151,41 @@ eFdd::eFdd() : motor(0), cyl(0), side(0), ts_byte(0), write_protect(false), disk
 bool eFdd::Open(const char* type, const void* data, size_t data_size)
 {
 	Motor(0);
+	bool ok = false;
 	if(!strcmp(type, "trd"))
-		return ReadTrd(data, data_size);
-	if(!strcmp(type, "scl"))
-		return ReadScl(data, data_size);
-	if(!strcmp(type, "fdi"))
-		return ReadFdi(data, data_size);
-	if(!strcmp(type, "udi"))
-		return ReadUdi(data, data_size);
-	if(!strcmp(type, "td0"))
-		return ReadTd0(data, data_size);
-	return false;
+		ok = ReadTrd(data, data_size);
+	else if(!strcmp(type, "scl"))
+		ok = ReadScl(data, data_size);
+	else if(!strcmp(type, "fdi"))
+		ok = ReadFdi(data, data_size);
+	else if(!strcmp(type, "udi"))
+		ok = ReadUdi(data, data_size);
+	else if(!strcmp(type, "td0"))
+		ok = ReadTd0(data, data_size);
+	SAFE_CALL(disk)->Changed(false);
+	return ok;
 }
 //=============================================================================
 //	eFdd::Store
 //-----------------------------------------------------------------------------
 bool eFdd::Store(const char* type, FILE* file) const
 {
+	if(!DiskPresent())
+		return false;
+	bool ok = false;
 	if(!strcmp(type, "trd"))
-		return WriteTrd(file);
-	if(!strcmp(type, "scl"))
-		return WriteScl(file);
-	if(!strcmp(type, "fdi"))
-		return WriteFdi(file);
-	if(!strcmp(type, "udi"))
-		return WriteUdi(file);
-	if(!strcmp(type, "td0"))
-		return WriteTd0(file);
-	return false;
+		ok = WriteTrd(file);
+	else if(!strcmp(type, "scl"))
+		ok = WriteScl(file);
+	else if(!strcmp(type, "fdi"))
+		ok = WriteFdi(file);
+	else if(!strcmp(type, "udi"))
+		ok = WriteUdi(file);
+	else if(!strcmp(type, "td0"))
+		ok = WriteTd0(file);
+	if(ok)
+		disk->Changed(false);
+	return ok;
 }
 //=============================================================================
 //	eFdd::BootExist
@@ -200,6 +207,13 @@ bool eFdd::BootExist() const
 		}
 	}
 	return false;
+}
+//=============================================================================
+//	eFdd::DiskChanged
+//-----------------------------------------------------------------------------
+bool eFdd::DiskChanged() const
+{
+	return disk && disk->Changed();
 }
 //=============================================================================
 //	eFdd::Seek

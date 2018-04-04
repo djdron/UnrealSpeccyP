@@ -382,6 +382,11 @@ eActionResult eSpeccyHandler::OnAction(eAction action)
 				return AR_TAPE_NOT_INSERTED;
 			return tape->Started() ? AR_TAPE_STARTED : AR_TAPE_STOPPED;
 		}
+	case A_DISK_QUERY:
+		{
+			eWD1793* wd1793 = speccy->Device<eWD1793>();
+			return wd1793->DiskChanged(OpDrive()) ? AR_DISK_CHANGED : AR_DISK_NOT_CHANGED;
+		}
 	}
 	return AR_ERROR;
 }

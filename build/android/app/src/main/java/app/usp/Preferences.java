@@ -106,6 +106,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		case 1:	tape.setSummary(R.string.tape_stopped);	tape.setEnabled(true);	break;
 		case 2:	tape.setSummary(R.string.tape_started);	tape.setEnabled(true);	break;
 		}
+		save_file.setEnabled(Emulator.the.DiskChanged());
 		select_zoom.setSummary(select_zoom.getEntry());
 		skip_frames.setSummary(skip_frames.getEntry());
 	}
@@ -206,6 +207,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		else if(preference.getKey().equals(save_file_id))
 		{
 			Emulator.the.SaveFile();
+			UpdateDescs();
 		}
 		return super.onPreferenceTreeClick(preferenceScreen, preference);
 	}

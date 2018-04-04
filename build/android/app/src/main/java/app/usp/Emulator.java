@@ -70,6 +70,7 @@ public class Emulator
 
 	synchronized native int		TapeState();
 	synchronized native void	TapeToggle();
+	synchronized native boolean	DiskChanged();
 
 	synchronized native void	ProfilerBegin(int id);
 	synchronized native void	ProfilerEnd(int id);

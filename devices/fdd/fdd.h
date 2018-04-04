@@ -33,6 +33,8 @@ public:
 	~eUdi() { SAFE_DELETE_ARRAY(raw); }
 	int Cyls() const	{ return cyls; }
 	int Sides() const	{ return sides; }
+	bool Changed() const { return changed; }
+	void Changed(bool c) { changed = c; }
 
 	enum { MAX_CYL = 86, MAX_SIDE = 2, MAX_SEC = 32 };
 	struct eTrack
@@ -82,6 +84,7 @@ protected:
 	int		sides;
 	eTrack	tracks[MAX_CYL][MAX_SIDE];
 	byte*	raw;
+	bool	changed;
 };
 
 //*****************************************************************************
@@ -99,13 +102,14 @@ public:
 	int Cyl() const { return cyl; }
 	void Cyl(int v) { cyl = v; }
 	eUdi::eTrack& Track() { return disk->Track(cyl, side); }
-	void Write(int pos, byte v, bool marker = false) { Track().Write(pos, v, marker); }
+	void Write(int pos, byte v, bool marker = false) { Track().Write(pos, v, marker); disk->Changed(true); }
 
 	bool DiskPresent() const	{ return disk != NULL; }
 	bool WriteProtect() const	{ return write_protect; }
 	bool Open(const char* type, const void* data, size_t data_size);
 	bool Store(const char* type, FILE* file) const;
 	bool BootExist() const;
+	bool DiskChanged() const;
 
 	static word Crc(byte* src, int size);
 	
