@@ -73,17 +73,17 @@ bool eWD1793::Store(const char* type, int drive, FILE* file) const
 	return fdds[drive].Store(type, file);
 }
 //=============================================================================
-//	eWD1793::BootExist
+//	eWD1793::Bootable
 //-----------------------------------------------------------------------------
-bool eWD1793::BootExist(int drive)
+bool eWD1793::Bootable(int drive) const
 {
 	assert(drive >= 0 && drive < FDD_COUNT);
-	return fdds[drive].BootExist();
+	return fdds[drive].Bootable();
 }
 //=============================================================================
 //	eWD1793::DiskChanged
 //-----------------------------------------------------------------------------
-bool eWD1793::DiskChanged(int drive)
+bool eWD1793::DiskChanged(int drive) const
 {
 	assert(drive >= 0 && drive < FDD_COUNT);
 	return fdds[drive].DiskChanged();

@@ -188,21 +188,19 @@ bool eFdd::Store(const char* type, FILE* file) const
 	return ok;
 }
 //=============================================================================
-//	eFdd::BootExist
+//	eFdd::Bootable
 //-----------------------------------------------------------------------------
 static const char* boot_sign = "boot    B";
-bool eFdd::BootExist() const
+bool eFdd::Bootable() const
 {
-	for(int i = 0; i < 9; ++i)
+	for(int i = 1; i < 9; ++i)
 	{
 		const eUdi::eTrack::eSector* s = disk->Track(0, 0).GetSector(i);
 		if(!s || !s->data)
-			continue;
-		const byte* ptr = s->data;
-		const char* b = boot_sign;
-		for(; (ptr = (const byte*)memchr(ptr, *b, s->Len() - (ptr - s->data))) != NULL; ++b)
+			return true; // unknown format may be bootable
+		for(const byte* ptr = s->data; ptr < s->data + 256; ptr += 16)
 		{
-			if(!*b)
+			if(memcmp(ptr, boot_sign, 9) == 0)
 				return true;
 		}
 	}

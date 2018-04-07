@@ -108,7 +108,7 @@ public:
 	bool WriteProtect() const	{ return write_protect; }
 	bool Open(const char* type, const void* data, size_t data_size);
 	bool Store(const char* type, FILE* file) const;
-	bool BootExist() const;
+	bool Bootable() const;
 	bool DiskChanged() const;
 
 	static word Crc(byte* src, int size);

@@ -507,23 +507,36 @@ static struct eFileTypeSNA : public eFileTypeZ80
 	virtual const char* Type() const { return "sna"; }
 } ft_sna;
 
-class eMacroDiskRun : public eMacro
+class eMacroDiskRunBootable : public eMacro
 {
 	virtual bool Do()
 	{
 		switch(frame)
 		{
-		case 100:
-			sh.OnKey('e', KF_DOWN|KF_UI_SENDER);
-			break;
-		case 102:
-			sh.OnKey('e', KF_UI_SENDER);
-			break;
-		case 200:
-			sh.OnKey('e', KF_DOWN|KF_UI_SENDER);
-			break;
-		case 202:
-			sh.OnKey('e', KF_UI_SENDER);
+		case 70:	sh.OnKey('7', KF_DOWN|KF_SHIFT|KF_UI_SENDER);	break;
+		case 72:	sh.OnKey('7', KF_UI_SENDER);					break;
+		case 100:	sh.OnKey('e', KF_DOWN|KF_UI_SENDER);			break;
+		case 102:	sh.OnKey('e', KF_UI_SENDER);					break;
+		case 140:	sh.OnKey('R', KF_DOWN|KF_UI_SENDER);			break;
+		case 142:	sh.OnKey('R', KF_UI_SENDER);					break;
+		case 160:	sh.OnKey('e', KF_DOWN|KF_UI_SENDER);			break;
+		case 162:	sh.OnKey('e', KF_UI_SENDER);
+			return false;
+		}
+		return true;
+	}
+};
+
+class eMacroDiskRunWithMaxPetrov : public eMacro
+{
+	virtual bool Do()
+	{
+		switch(frame)
+		{
+		case 100:	sh.OnKey('e', KF_DOWN|KF_UI_SENDER);			break;
+		case 102:	sh.OnKey('e', KF_UI_SENDER);					break;
+		case 200:	sh.OnKey('e', KF_DOWN|KF_UI_SENDER);			break;
+		case 202:	sh.OnKey('e', KF_UI_SENDER);
 			return false;
 		}
 		return true;
@@ -539,12 +552,22 @@ static struct eFileTypeTRD : public eFileType
 		if(ok && op_auto_play_image)
 		{
 			sh.OnAction(A_RESET);
-			if(wd->BootExist(OpDrive()))
-				sh.speccy->Device<eRom>()->SelectPage(eRom::ROM_DOS);
-			else if(!sh.speccy->Mode48k())
+			if(sh.speccy->Mode48k())
 			{
-				sh.speccy->Device<eRom>()->SelectPage(eRom::ROM_SYS);
-				sh.PlayMacro(new eMacroDiskRun);
+				sh.speccy->Device<eRom>()->SelectPage(eRom::ROM_DOS);
+			}
+			else
+			{
+				if(wd->Bootable(OpDrive()))
+				{
+					sh.speccy->Device<eRom>()->SelectPage(eRom::ROM_128_1);
+					sh.PlayMacro(new eMacroDiskRunBootable);
+				}
+				else
+				{
+					sh.speccy->Device<eRom>()->SelectPage(eRom::ROM_SYS);
+					sh.PlayMacro(new eMacroDiskRunWithMaxPetrov);
+				}
 			}
 		}
 		return ok;
