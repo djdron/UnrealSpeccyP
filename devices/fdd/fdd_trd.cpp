@@ -100,7 +100,12 @@ bool eFdd::ReadTrd(const void* data, size_t data_size)
 	int max_cyl = data_size / (256 * 16 * 2);
 	if(max_cyl > eUdi::MAX_CYL)
 		max_cyl = eUdi::MAX_CYL;
+	if(max_cyl < 80)
+		max_cyl = 80;
 	CreateTrd(max_cyl);
+	size_t max_data_size = max_cyl*256*16*2;
+	if(data_size > max_data_size)
+		data_size = max_data_size;
 	for(size_t i = 0; i < data_size; i += 0x100)
 	{
 		int cyl = i >> 13;
