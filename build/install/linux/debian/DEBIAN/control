@@ -1,10 +1,10 @@
 Package: unreal-speccy-portable
-Version: 0.0.16
+Version: 0.0.83
 Section: games
 Priority: optional
 Architecture: amd64
-Depends: libopenal1, libwxgtk2.8-0 (>= 2.8.7)
-Installed-Size: 2048
+Depends: libsdl2-2.0-0, libcurl3, libgles2-mesa
+Installed-Size: 1024
 Maintainer: Andrey Dj <djdron@gmail.com>
 Homepage: https://bitbucket.org/djdron/unrealspeccyp
-Description: portable ZX-Spectrum emulator based on UnrealSpeccy 0.37.3 by SMT
+Description: Portable ZX Spectrum emulator based on UnrealSpeccy 0.37.3 by SMT

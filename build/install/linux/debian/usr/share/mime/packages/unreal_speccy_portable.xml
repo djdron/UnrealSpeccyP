@@ -11,6 +11,8 @@
     <glob pattern="*.trd"/>
     <glob pattern="*.scl"/>
     <glob pattern="*.fdi"/>
+    <glob pattern="*.td0"/>
+    <glob pattern="*.udi"/>
   </mime-type>
   <mime-type type="application/usp-zx-replay">
     <comment>ZX-Spectrum replay file</comment>
