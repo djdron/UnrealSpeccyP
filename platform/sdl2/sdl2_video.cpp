@@ -132,6 +132,15 @@ bool InitVideo()
 	context = SDL_GL_CreateContext(window);
 	if(!context)
 		return false;
+
+#ifdef _LINUX
+	#include "../../build/linux/icon.c"
+	SDL_Surface* icon_sufrace = SDL_CreateRGBSurfaceFrom((void*)icon.pixel_data, icon.width, icon.height,
+		icon.bytes_per_pixel * 8, icon.bytes_per_pixel*icon.width, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+	SDL_SetWindowIcon(window, icon_sufrace);
+	SDL_FreeSurface(icon_sufrace);
+#endif//_LINUX
+
 	gles2 = eGLES2::Create();
 	return true;
 }
