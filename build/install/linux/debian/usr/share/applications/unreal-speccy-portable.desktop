@@ -10,5 +10,5 @@ X-MultipleArgs=false
 Type=Application
 Categories=Application;Game;
 StartupNotify=true
-MimeType=application/usp-zx-snapshot;application/usp-zx-disk;application/usp-zx-tape;
+MimeType=application/usp-zx-snapshot;application/usp-zx-disk;application/usp-zx-replay;application/usp-zx-tape;
 GenericName[en_GR]=
