@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2013 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2018 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,6 +40,11 @@ enum ePadButton
 	PB_SYSTEM, PB_COUNT
 };
 enum { AXES_COUNT = 8 };
+enum eHatButton
+{
+	HAT_UP, HAT_DOWN, HAT_LEFT, HAT_RIGHT,
+	HAT_COUNT
+};
 
 struct ePadState
 {
@@ -47,22 +52,19 @@ struct ePadState
 	{
 		memset(axes, 0, sizeof(axes));
 		memset(buttons, 0, sizeof(buttons));
+		memset(hat, 0, sizeof(hat));
 	}
 	float axes[AXES_COUNT];
 	bool buttons[PB_COUNT];
+	bool hat[HAT_COUNT];
 };
-
-static bool ButtonState(dword button, const ePadState& pad)
-{
-	return pad.buttons[button];
-}
 
 static bool ButtonPressed(dword button, const ePadState& pad, const ePadState& pad_prev)
 {
-	return !ButtonState(button, pad_prev) && ButtonState(button, pad);
+	return !pad_prev.buttons[button] && pad.buttons[button];
 }
 
-static void ProcessButton(bool state, bool state_prev, byte key)
+static void ProcessKey(bool state, bool state_prev, byte key)
 {
 	if(state == state_prev) // state not changed
 		return;
@@ -74,17 +76,22 @@ static void ProcessButton(bool state, bool state_prev, byte key)
 
 static void ProcessButton(dword button, const ePadState& pad, const ePadState& pad_prev, byte key)
 {
-	ProcessButton(ButtonState(button, pad), ButtonState(button, pad_prev), key);
+	ProcessKey(pad.buttons[button], pad_prev.buttons[button], key);
+}
+
+static void ProcessHat(dword button, const ePadState& pad, const ePadState& pad_prev, byte key)
+{
+	ProcessKey(pad.hat[button], pad_prev.hat[button], key);
 }
 
 static void ProcessAxis(dword axis, const ePadState& pad, const ePadState& pad_prev, byte key1, byte key2)
 {
 	bool b0 = pad_prev.axes[axis] > 0.5f;
 	bool b1 = pad.axes[axis] > 0.5f;
-	ProcessButton(b1, b0, key1);
+	ProcessKey(b1, b0, key1);
 	b0 = pad_prev.axes[axis] < -0.5f;
 	b1 = pad.axes[axis] < -0.5f;
-	ProcessButton(b1, b0, key2);
+	ProcessKey(b1, b0, key2);
 }
 
 void ProcessJoy(SDL_Event& e)
@@ -93,22 +100,22 @@ void ProcessJoy(SDL_Event& e)
 	switch(e.type)
 	{
 	case SDL_JOYBUTTONDOWN:
-		{
-			if(e.jbutton.button < PB_COUNT)
-				pad.buttons[e.jbutton.button] = true;
-		}
+		if(e.jbutton.button < PB_COUNT)
+			pad.buttons[e.jbutton.button] = true;
 		break;
 	case SDL_JOYBUTTONUP:
-		{
-			if(e.jbutton.button < PB_COUNT)
-				pad.buttons[e.jbutton.button] = false;
-		}
+		if(e.jbutton.button < PB_COUNT)
+			pad.buttons[e.jbutton.button] = false;
 		break;
 	case SDL_JOYAXISMOTION:
-		{
-			if(e.jaxis.axis < AXES_COUNT)
-				pad.axes[e.jaxis.axis] = float(e.jaxis.value)/32768;
-		}
+		if(e.jaxis.axis < AXES_COUNT)
+			pad.axes[e.jaxis.axis] = float(e.jaxis.value)/32768;
+		break;
+	case SDL_JOYHATMOTION:
+		pad.hat[HAT_UP] = (e.jhat.value & SDL_HAT_UP) != 0;
+		pad.hat[HAT_DOWN] = (e.jhat.value & SDL_HAT_DOWN) != 0;
+		pad.hat[HAT_LEFT] = (e.jhat.value & SDL_HAT_LEFT) != 0;
+		pad.hat[HAT_RIGHT] = (e.jhat.value & SDL_HAT_RIGHT) != 0;
 		break;
 	default:
 		break;
@@ -131,6 +138,11 @@ void ProcessJoy(SDL_Event& e)
 	ProcessAxis(6, pad, pad_prev, 'r', 'l');
 	ProcessAxis(7, pad, pad_prev, 'd', 'u');
 
+	ProcessHat(HAT_UP, pad, pad_prev, 'u');
+	ProcessHat(HAT_DOWN, pad, pad_prev, 'd');
+	ProcessHat(HAT_LEFT, pad, pad_prev, 'l');
+	ProcessHat(HAT_RIGHT, pad, pad_prev, 'r');
+
 	if(ButtonPressed(PB_LSHIFT, pad, pad_prev) || ButtonPressed(PB_LTRIGGER, pad, pad_prev))
 		Handler()->OnAction(A_RESET);
 	if(ButtonPressed(PB_RSHIFT, pad, pad_prev) || ButtonPressed(PB_RTRIGGER, pad, pad_prev))
@@ -139,7 +151,7 @@ void ProcessJoy(SDL_Event& e)
 		eOptionB* o = eOptionB::Find("pause");
 		SAFE_CALL(o)->Change();
 	}
-	if(ButtonState(PB_SELECT, pad) && ButtonState(PB_START, pad))
+	if(pad.buttons[PB_SELECT] && pad.buttons[PB_START])
 		OpQuit(true);
 	pad_prev = pad;
 }
