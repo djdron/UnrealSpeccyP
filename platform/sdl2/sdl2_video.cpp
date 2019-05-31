@@ -166,7 +166,7 @@ void UpdateScreen()
 	op_full_screen.Update();
 
 	ePoint s;
-	SDL_GetWindowSize(window, &s.x, &s.y);
+	SDL_GL_GetDrawableSize(window, &s.x, &s.y);
 	gles2->Draw(ZERO, s);
 	SDL_GL_SwapWindow(window);
 }
