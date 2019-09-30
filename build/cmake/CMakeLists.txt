@@ -21,6 +21,10 @@ project (USP)
 
 set(PROJECT unreal_speccy_portable)
 
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS")
+set(APPLE_IOS 1)
+endif()
+
 #core
 file(GLOB SRCCXX_ROOT "../../*.cpp")
 file(GLOB SRCH_ROOT "../../*.h")
