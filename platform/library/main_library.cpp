@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/tick.h"
 #include "../../speccy.h"
 #include "../../devices/memory.h"
+#include "../../devices/ula.h"
 
 #ifdef USE_LIBRARY
 
@@ -75,6 +76,11 @@ USP_API void USP_MemoryWrite(const byte* buf, dword addr, dword size)
 	eSpeccy* s = Handler()->Speccy();
 	byte* dst = s->Memory()->Get(0) + addr;
 	memcpy(dst, buf, size);
+}
+
+USP_API bool USP_FirstScreenIsActive()
+{
+	return Handler()->Speccy()->Devices().Get<eUla>()->FirstScreen();
 }
 
 }
