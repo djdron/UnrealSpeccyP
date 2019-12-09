@@ -16,6 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef USE_ZIP
+#include <zlib.h>
+#endif//USE_ZIP
+
 #include "../platform/platform.h"
 
 #include "../z80/z80.h"
@@ -27,10 +31,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../tools/stream_memory.h"
 
 #include "snapshot.h"
-
-#ifdef USE_ZIP
-#include <zlib.h>
-#endif//USE_ZIP
 
 namespace xSnapshot
 {
