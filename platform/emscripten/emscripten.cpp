@@ -117,6 +117,58 @@ void ExitLoop()
 	emscripten_force_exit(0);
 }
 
+EMSCRIPTEN_KEEPALIVE
+void OnCommand(const char* cmd)
+{
+	using namespace std;
+	string m(cmd);
+	static const string joystick("joystick:");
+	static const string zoom("zoom:");
+	static const string filtering("filtering:");
+	static const string black_and_white("black and white:");
+	static const string gigascreen("gigascreen:");
+	if(m.length() > joystick.length() && m.substr(0, joystick.length()) == joystick)
+	{
+		using namespace xOptions;
+		string joy = m.substr(joystick.length());
+		eOption<int>* op_joy = eOption<int>::Find("joystick");
+		SAFE_CALL(op_joy)->Value(joy.c_str());
+	}
+	else if(m.length() > zoom.length() && m.substr(0, zoom.length()) == zoom)
+	{
+		using namespace xOptions;
+		string z = m.substr(zoom.length());
+		eOption<int>* op_zoom = eOption<int>::Find("zoom");
+		SAFE_CALL(op_zoom)->Value(z.c_str());
+	}
+	else if(m.length() > filtering.length() && m.substr(0, filtering.length()) == filtering)
+	{
+		using namespace xOptions;
+		string v = m.substr(filtering.length());
+		eOption<bool>* op_filtering = eOption<bool>::Find("filtering");
+		SAFE_CALL(op_filtering)->Value(v.c_str());
+	}
+	else if(m.length() > black_and_white.length() && m.substr(0, black_and_white.length()) == black_and_white)
+	{
+		using namespace xOptions;
+		string v = m.substr(black_and_white.length());
+		eOption<bool>* op_black_and_white = eOption<bool>::Find("black and white");
+		SAFE_CALL(op_black_and_white)->Value(v.c_str());
+	}
+	else if(m.length() > gigascreen.length() && m.substr(0, gigascreen.length()) == gigascreen)
+	{
+		using namespace xOptions;
+		string v = m.substr(gigascreen.length());
+		eOption<bool>* op_gigascreen = eOption<bool>::Find("gigascreen");
+		SAFE_CALL(op_gigascreen)->Value(v.c_str());
+	}
+	else if(m == "reset")
+	{
+		using namespace xPlatform;
+		Handler()->OnAction(A_RESET);
+	}
+}
+
 }
 //extern "C"
 
