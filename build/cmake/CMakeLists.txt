@@ -367,7 +367,7 @@ file(GLOB SRCCXX_PLATFORM_EMSCRIPTEN "../../platform/emscripten/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_EMSCRIPTEN})
 source_group("platform\\emscripten" FILES ${SRCCXX_PLATFORM_EMSCRIPTEN})
 set(CMAKE_EXECUTABLE_SUFFIX ".html")
-set(EMSCRIPTEN_LINK_FLAGS "--preload-file ../../../res/ -s USE_SDL=2 -s USE_ZLIB=1")
+set(EMSCRIPTEN_LINK_FLAGS "--preload-file ../../../res/ -s USE_SDL=2 -s USE_ZLIB=1 -s \"EXPORTED_FUNCTIONS=['_main', '_OpenFileData', '_OpenFile', '_ExitLoop', '_OnCommand']\" -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\"")
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${EMSCRIPTEN_LINK_FLAGS})
 endif(EMSCRIPTEN)
 
