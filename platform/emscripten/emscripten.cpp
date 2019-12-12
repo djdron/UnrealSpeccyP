@@ -135,7 +135,11 @@ void OnCommand(const char* _cmd)
 	string option = cmd.substr(0, pos);
 	string value = cmd.substr(pos + 1);
 	auto* opt = xOptions::eOptionB::Find(option.c_str());
-	SAFE_CALL(opt)->Value(value.c_str());
+	if(opt)
+	{
+		opt->Value(value.c_str());
+		opt->Apply();
+	}
 }
 
 }
