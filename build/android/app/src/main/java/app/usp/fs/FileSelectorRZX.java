@@ -45,7 +45,7 @@ public class FileSelectorRZX extends FileSelector
 	class FSSRZX extends FSSHtml
 	{
 		private final String RZX_FS = StoragePath() + "rzx";
-		public String BaseURL() { return "http://www.rzxarchive.co.uk"; }
+		public String BaseURL() { return "https://www.rzxarchive.co.uk"; }
 		public String FullURL(final String _url) { return BaseURL() + _url + ".php"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)

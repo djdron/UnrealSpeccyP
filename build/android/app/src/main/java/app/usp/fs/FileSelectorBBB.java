@@ -47,16 +47,16 @@ public class FileSelectorBBB extends FileSelector
 	class FSSBBB extends FSSWeb
 	{
 		private final String BBB_FS = StoragePath() + "bbb";
-		private static final String GET_URL = "http://bbb.retroscene.org/";
+		public String BaseURL() { return "https://bbb.retroscene.org"; }
 		public String JsonEncoding() { return "iso-8859-1"; }
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
 			try
 			{
 				String p = item.url;
-				if(!p.startsWith(GET_URL))
+				if(!p.startsWith(BaseURL()))
 					return ApplyResult.FAIL;
-				File file = new File(BBB_FS + "/" + p.substring(GET_URL.length())).getCanonicalFile();
+				File file = new File(BBB_FS + p.substring(BaseURL().length())).getCanonicalFile();
 				if(!LoadFile(p, file, progress))
 					return ApplyResult.UNABLE_CONNECT2;
 				if(progress.Canceled())
@@ -94,7 +94,7 @@ public class FileSelectorBBB extends FileSelector
 		}
 		protected GetItemsResult ParseJSON(String _url, List<Item> items, final String _name, FileSelectorProgress progress)
 		{
-			String s0 = LoadText("http://bbb.retroscene.org/unreal_demos.php?l=" + _url, JsonEncoding(), progress);
+			String s0 = LoadText(BaseURL() + "/unreal_demos.php?l=" + _url, JsonEncoding(), progress);
 			if(s0 == null)
 				return GetItemsResult.UNABLE_CONNECT;
 			if(progress.Canceled())

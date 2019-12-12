@@ -49,7 +49,7 @@ public class FileSelectorWOS extends FileSelector
 	abstract class FSSWOS extends FSSHtml
 	{
 		private final String WOS_FS = StoragePath() + "wos";
-		public String BaseURL() { return "http://www.worldofspectrum.org"; }
+		public String BaseURL() { return "https://www.worldofspectrum.org"; }
 		public String FullURL(final String _url) { return BaseURL() + _url + ".html"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }
 		private final String[] ITEMS2 = new String[]
@@ -70,10 +70,10 @@ public class FileSelectorWOS extends FileSelector
 		}
 		@Override
 		public final String[] Items2() { return ITEMS2; }
-		final static String HTTP_URL = "http://www.worldofspectrum.org/pub/sinclair";
+		final String HTTP_URL = BaseURL() + "/pub/sinclair";
 		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
 		{
-			String s = LoadText("http://www.worldofspectrum.org/infoseekid.cgi?id=" + item.url, HtmlEncoding(), progress);
+			String s = LoadText(BaseURL() + "/infoseekid.cgi?id=" + item.url, HtmlEncoding(), progress);
 			if(s == null)
 				return ApplyResult.UNABLE_CONNECT1;
 			if(progress.Canceled())
