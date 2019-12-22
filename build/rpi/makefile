@@ -18,9 +18,9 @@ BIN_TARGET = $(DIST_PATH)/$(PROJECT_NAME)
 
 CXXCFLAGS = -O3 -g0 -Wall -c -fmessage-length=0 -I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads -I$(SDKSTAGE)/opt/vc/include/interface/vmcs_host/linux -I$(SRC_PATH)/3rdparty/minizip -I$(SRC_PATH)/3rdparty/tinyxml2 -I$(SRC_PATH)/3rdparty/json
 
-CXXFLAGS := $(CXXCFLAGS) -std=c++11 -D_POSIX -DUSE_GLES2 -D_RPI -DUI_REAL_ALPHA -DUSE_SDL -DSDL_UNUSE_VIDEO -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON -DUSE_CONFIG -DUSE_ZIP -DUSE_WEB -DUSE_CURL `sdl-config --cflags`
+CXXFLAGS := $(CXXCFLAGS) -std=c++11 -D_POSIX -DUSE_GLES2 -D_RPI -DUI_REAL_ALPHA -DUSE_SDL -DSDL_UNUSE_VIDEO -DSDL_USE_JOYSTICK -DSDL_KEYS_COMMON -DUSE_CONFIG -DUSE_ZIP -DUSE_WEB -DUSE_CURL -DUSE_ATM -DUSE_CMOS `sdl-config --cflags`
 CFLAGS := $(CXXCFLAGS)
-LFLAGS = -s -L$(SDKSTAGE)/opt/vc/lib -lGLESv2 -lEGL `sdl-config --libs` -lz -lbcm_host -lcurl
+LFLAGS = -s -L$(SDKSTAGE)/opt/vc/lib -lbrcmGLESv2 -lbrcmEGL `sdl-config --libs` -lz -lbcm_host -lcurl
 
 all: build
 
