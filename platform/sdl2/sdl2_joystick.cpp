@@ -124,8 +124,8 @@ void ProcessJoy(SDL_Event& e)
 	ProcessButton(PB_LEFT, pad, pad_prev, 'l');
 	ProcessButton(PB_RIGHT, pad, pad_prev, 'r');
 	ProcessButton(PB_A, pad, pad_prev, 'f');
-	ProcessButton(PB_B, pad, pad_prev, 'e');
-	ProcessButton(PB_X, pad, pad_prev, '1');
+	ProcessButton(PB_B, pad, pad_prev, 'u');
+	ProcessButton(PB_X, pad, pad_prev, 'e');
 	ProcessButton(PB_Y, pad, pad_prev, ' ');
 	ProcessButton(PB_SELECT, pad, pad_prev, 'm');
 	ProcessButton(PB_START, pad, pad_prev, 'k');
