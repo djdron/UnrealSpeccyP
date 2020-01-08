@@ -84,7 +84,7 @@ public class FileSelectorVtrdos extends FileSelector
 				"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
 				"n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
 		    };
-		private final String[] PATTERNS = new String[] { "<a href=\"(.+)\">&nbsp;&nbsp;(.+)</a></td><td>(.+)</td><td>(.+)</td><td>(.+)</td>" };
+		private final String[] PATTERNS = new String[] { "<a href=\"(.+)\">&nbsp;&nbsp;(.+)</a></td><td>(.+)</td><td>(.+)</td><td>(.+)</td><td>.+</a></td>" };
 		@Override
 		public final String Root() { return "/games"; }
 		@Override
@@ -115,12 +115,12 @@ public class FileSelectorVtrdos extends FileSelector
 		private final String[] ITEMS2 = new String[]
 			{	"/Russian", "/Other", "/1995", "/1996", "/1997", "/1998", "/1999", "/2000", "/2001",
 				"/2002", "/2003", "/2004", "/2005", "/2006", "/2007", "/2008", "/2009", "/2010",
-				"/2011", "/2012", "/2013", "/2014", "/2015"
+				"/2011", "/2012", "/2013", "/2014", "/2015", "/2016", "/2017", "/2018", "/2019"
 			};
 		private final String[] ITEMS2URLS = new String[]
 			{	"/russian", "/other", "1995", "1996", "1997", "1998", "1999", "2000", "2001",
 				"2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010",
-				"2011", "2012", "2013", "2014", "2015"
+				"2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"
 			};
 		private final String[] PATTERNS = new String[]
 			{   "<a href=\"(.+?)\" target=\"demozdown\">(.+?)</a>",

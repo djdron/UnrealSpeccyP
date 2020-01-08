@@ -27,6 +27,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
 import android.os.Bundle;
+import android.os.Environment;
 
 import app.usp.Emulator;
 
@@ -61,13 +62,14 @@ public class FileSelectorFS extends FileSelector
 		}
 		if(reset_path)
 		{
-			State().current_path = new File("/");
+			State().current_path = new File(fssfs.ROOT_PATH);
 			State().last_name = "";
 		}
 		super.onResume();
 	}
 	class FSSFS extends FileSelectorSource
 	{
+		final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath();
 		static final String ZIP_EXT = "zip";
 		private boolean IsZipName(final String name)
 		{
@@ -88,7 +90,7 @@ public class FileSelectorFS extends FileSelector
 		}
 		public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress)
 		{
-			if(path.getParent() != null)
+			if(path.toString().compareTo(ROOT_PATH) != 0 && path.getParent() != null)
 			{
 				items.add(new Item("/.."));
 			}
