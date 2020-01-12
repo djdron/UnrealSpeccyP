@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import java.util.List;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -39,6 +38,12 @@ import app.usp.R;
 
 public abstract class FileSelector extends ListActivity
 {
+	interface Progress
+	{
+		void OnProgress(Integer current, Integer max);
+		boolean Canceled();
+	}
+
 	public static class State
 	{
 		File current_path = new File("/");
@@ -80,12 +85,12 @@ public abstract class FileSelector extends ListActivity
 		}
 		else
 		{
-			new UpdateAsync(this, State().current_path, State().last_name, LongUpdateTitle()).execute();
+			new UpdateAsync(State().current_path, State().last_name, LongUpdateTitle()).execute();
 		}
 	}
 	private void SetItems()
 	{
-		setListAdapter(new MyListAdapter(this, new ArrayList<FileSelectorSource.Item>(Items())));
+		setListAdapter(new MyListAdapter(new ArrayList<FileSelectorSource.Item>(Items())));
 	}
 	private void SelectItem(final String name)
 	{
@@ -117,28 +122,27 @@ public abstract class FileSelector extends ListActivity
 			File parent = State().current_path.getParentFile();
 			if(parent != null)
 			{
-				new UpdateAsync(this, parent, "/" + State().current_path.getName(), LongUpdateTitle()).execute();
+				new UpdateAsync(parent, "/" + State().current_path.getName(), LongUpdateTitle()).execute();
 			}
 		}
 		else
 		{
 			if(f.startsWith("/"))
 			{
-				new UpdateAsync(this, new File(State().current_path.getPath() + f), "", LongUpdateTitle()).execute();
+				new UpdateAsync(new File(State().current_path.getPath() + f), "", LongUpdateTitle()).execute();
 			}
 			else
 			{
 				State().last_name = f;
-				new ApplyAsync(this, Items().get(position)).execute();
+				new ApplyAsync(Items().get(position)).execute();
 			}
 		}
 	}
 	
-	static abstract class FSSProgressDialog implements FileSelectorProgress, DialogInterface.OnCancelListener
+	abstract class FSSProgressDialog implements Progress, DialogInterface.OnCancelListener
 	{
-		FSSProgressDialog(Context _owner, final int _res_title, final int _res_message)
+		FSSProgressDialog(final int _res_title, final int _res_message)
 		{
-			owner = _owner;
 			res_title = _res_title;
 			res_message = _res_message;
 		}
@@ -180,9 +184,9 @@ public abstract class FileSelector extends ListActivity
 		}
 		private ProgressDialog CreateProgress()
 		{
-			ProgressDialog pd = new ProgressDialog(owner);
-			pd.setTitle(owner.getString(res_title));
-			pd.setMessage(owner.getString(res_message));
+			ProgressDialog pd = new ProgressDialog(FileSelector.this);
+			pd.setTitle(getString(res_title));
+			pd.setMessage(getString(res_message));
 			pd.setOnCancelListener(this);
 			pd.setCancelable(true);
 			pd.setCanceledOnTouchOutside(false);
@@ -195,13 +199,12 @@ public abstract class FileSelector extends ListActivity
 		{
 			canceled = true;
 			pd.dismiss();
-			pd = new ProgressDialog(owner);
-			pd.setTitle(owner.getString(res_title));
-			pd.setMessage(owner.getString(R.string.canceling));
+			pd = new ProgressDialog(FileSelector.this);
+			pd.setTitle(getString(res_title));
+			pd.setMessage(getString(R.string.canceling));
 			pd.setCancelable(false);
 			pd.show();
 		}
-		private Context owner;
 		private final int res_title;
 		private final int res_message;
 		private ProgressDialog pd = null;
@@ -212,14 +215,12 @@ public abstract class FileSelector extends ListActivity
 
 	private class ApplyAsync extends AsyncTask<Void, Integer, FileSelectorSource.ApplyResult>
 	{
-		private FileSelector owner;
 		FileSelectorSource.Item item;
 		private FSSProgressDialog progress;
-		ApplyAsync(FileSelector _owner, FileSelectorSource.Item _item)
+		ApplyAsync(FileSelectorSource.Item _item)
 		{
-			owner = _owner;
 			item = _item;
-			progress = new FSSProgressDialog(owner, R.string.accessing_web, R.string.downloading_image)
+			progress = new FSSProgressDialog(R.string.accessing_web, R.string.downloading_image)
 			{
 				@Override
 				public void OnProgress(Integer current, Integer max) { publishProgress(current, max); }
@@ -235,14 +236,7 @@ public abstract class FileSelector extends ListActivity
 		@Override
 		protected FileSelectorSource.ApplyResult doInBackground(Void... args)
 		{
-			for(FileSelectorSource s : sources)
-			{
-				FileSelectorSource.ApplyResult r = s.ApplyItem(item, progress);
-				if(r == FileSelectorSource.ApplyResult.TRY_OTHER_SOURCE)
-					continue;
-				return r;
-			}
-			return FileSelectorSource.ApplyResult.FAIL;
+			return item.source.ApplyItem(item, progress);
 		}
 		@Override
 		protected void onProgressUpdate(Integer... values)
@@ -276,17 +270,15 @@ public abstract class FileSelector extends ListActivity
 
 	private class UpdateAsync extends AsyncTask<Void, Integer, FileSelectorSource.GetItemsResult>
 	{
-		private FileSelector owner;
 		private final File path;
 		private String select_after_update;
 		private FSSProgressDialog progress;
 		private List<FileSelectorSource.Item> items = new ArrayList<FileSelectorSource.Item>();
-		UpdateAsync(FileSelector _owner, final File _path, final String _select_after_update, final int _res_title)
+		UpdateAsync(final File _path, final String _select_after_update, final int _res_title)
 		{
-			owner = _owner;
 			path = _path;
 			select_after_update = _select_after_update;
-			progress = new FSSProgressDialog(owner, _res_title, R.string.gathering_list)
+			progress = new FSSProgressDialog(_res_title, R.string.gathering_list)
 			{
 				@Override
 				public void OnProgress(Integer current, Integer max) { publishProgress(current, max); }
@@ -344,18 +336,16 @@ public abstract class FileSelector extends ListActivity
 		}
 	}
 	
-	private static class MyListAdapter extends BaseAdapter
+	private class MyListAdapter extends BaseAdapter
 	{
 		private List<FileSelectorSource.Item> items;
-		private Context context;
 		private LayoutInflater inf;
 		private int dp_5, dp_10;
-		MyListAdapter(Context _context, List<FileSelectorSource.Item> _items)
+		MyListAdapter(List<FileSelectorSource.Item> _items)
 		{
-			this.context = _context;
 			items = _items;
-			inf = LayoutInflater.from(context);
-			final float scale = context.getResources().getDisplayMetrics().density;
+			inf = LayoutInflater.from(getBaseContext());
+			final float scale = getResources().getDisplayMetrics().density;
 			dp_5 = (int) (5 * scale + 0.5f);
 			dp_10 = (int) (10 * scale + 0.5f);
 		}

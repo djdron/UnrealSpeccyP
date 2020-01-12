@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -44,29 +44,20 @@ public class FileSelectorVtrdos extends FileSelector
 		sources.add(new ParserDemos());
 		sources.add(new ParserPress());
 	}
-	abstract class FSSVtrdos extends FSSHtml
+	abstract class FSSVtrdos extends FileSelectorSourceHTML
 	{
-		protected final String VTRDOS_FS = StoragePath() + "vtrdos";
+		protected final String VTRDOS_FS = getApplicationContext().getCacheDir().toString() + "/vtrdos";
+		@Override
 		public String BaseURL() { return "https://vtrd.in"; }
+		@Override
 		public String FullURL(final String _url) { return BaseURL() + _url + ".htm"; }
+		@Override
         public String HtmlEncoding() { return "utf-8"; }
-		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress) { return ApplyResult.TRY_OTHER_SOURCE; }
-		public ApplyResult ApplyItemBase(Item item, FileSelectorProgress progress)
+        @Override
+		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
-			try
-			{
-				String p = item.url;
-				File file = new File(VTRDOS_FS + p).getCanonicalFile();
-				if(!LoadFile(BaseURL() + p, file, progress))
-					return ApplyResult.UNABLE_CONNECT2;
-				if(progress.Canceled())
-					return ApplyResult.CANCELED;
-				return Emulator.the.Open(file.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
-			}
-			catch(Exception e)
-			{
-			}
-			return ApplyResult.FAIL;
+			File file = new File(VTRDOS_FS + item.url);
+			return OpenFile(BaseURL() + item.url, file, progress);
 		}
 	}
 	class ParserGames extends FSSVtrdos
@@ -92,8 +83,7 @@ public class FileSelectorVtrdos extends FileSelector
 		@Override
 		public void Get(List<Item> items, Matcher m, final String url, final String _name)
 		{
-			Item item = new Item();
-			item.name = m.group(2);
+			Item item = new Item(this, m.group(2));
 			item.desc = m.group(3) + " / " + m.group(4) + " [" + m.group(5) + "]";
 			item.url = m.group(1);
 			items.add(item);
@@ -133,8 +123,7 @@ public class FileSelectorVtrdos extends FileSelector
 		@Override
 		public void Get(List<Item> items, Matcher m, final String url, final String _name)
 		{
-			Item item = new Item();
-			item.name = m.group(2);
+			Item item = new Item(this, m.group(2));
 			item.url = "/" + m.group(1);
 			if(m.groupCount() > 2)
 			{
@@ -148,11 +137,11 @@ public class FileSelectorVtrdos extends FileSelector
 		public final String[] Items2URLs() { return ITEMS2URLS; }
 		final String DEMO_SIGN = "demo.php?party=";
 		@Override
-		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
+		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
 			int idx = item.url.indexOf(DEMO_SIGN);
 			if(idx < 0)
-				return ApplyItemBase(item, progress);
+				return super.ApplyItem(item, progress);
 			try
 			{
 				String s = LoadText(BaseURL() + "/" + DEMO_SIGN + item.url.substring(idx + DEMO_SIGN.length()), HtmlEncoding(), progress);
@@ -165,13 +154,12 @@ public class FileSelectorVtrdos extends FileSelector
 				Matcher m = pt.matcher(s);
 				if(m.find())
 				{
-					Item item2 = new Item();
-					item2.name = m.group(2);
+					Item item2 = new Item(this, m.group(2));
 					if(m.group(1).startsWith("../"))
 						item2.url = "/" + m.group(1).substring(3);
 					else
 						item2.url = "/" + m.group(1);
-					return ApplyItemBase(item2, progress);
+					return super.ApplyItem(item2, progress);
 				}
 			}
 			catch(Exception e)
@@ -216,8 +204,7 @@ public class FileSelectorVtrdos extends FileSelector
 			Matcher m2 = pt.matcher(m.group(2));
 			while(m2.find())
 			{
-				Item item = new Item();
-				item.name = name + " - " + m2.group(2);
+				Item item = new Item(this, name + " - " + m2.group(2));
 				item.url = "/" + m2.group(1);
 				items.add(item);
 			}

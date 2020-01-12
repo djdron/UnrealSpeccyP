@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -44,44 +44,33 @@ public class FileSelectorBBB extends FileSelector
 		super.onCreate(savedInstanceState);
 		sources.add(new FSSBBB());
 	}
-	class FSSBBB extends FSSWeb
+	class FSSBBB extends FileSelectorSourceWEB
 	{
-		private final String BBB_FS = StoragePath() + "bbb";
+		private final String BBB_FS = getApplicationContext().getCacheDir().toString() + "/bbb";
 		public String BaseURL() { return "https://bbb.retroscene.org"; }
 		public String JsonEncoding() { return "iso-8859-1"; }
-		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
+		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
-			try
-			{
-				String p = item.url;
-				if(!p.startsWith(BaseURL()))
-					return ApplyResult.FAIL;
-				File file = new File(BBB_FS + p.substring(BaseURL().length())).getCanonicalFile();
-				if(!LoadFile(p, file, progress))
-					return ApplyResult.UNABLE_CONNECT2;
-				if(progress.Canceled())
-					return ApplyResult.CANCELED;
-				return Emulator.the.Open(file.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
-			}
-			catch(Exception e)
-			{
-			}
-			return ApplyResult.FAIL;
+			String p = item.url;
+			if(!p.startsWith(BaseURL()))
+				return ApplyResult.FAIL;
+			File file = new File(BBB_FS + p.substring(BaseURL().length()));
+			return OpenFile(p, file, progress);
 		}
-		public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress)
+		public GetItemsResult GetItems(final File path, List<Item> items, FileSelector.Progress progress)
 		{
 			File path_up = path.getParentFile();
 			if(path_up == null)
 			{
 				for(String i : ITEMS2)
 				{
-					items.add(new Item(i));
+					items.add(new Item(this, i));
 				}
 				return GetItemsResult.OK;
 			}
-			items.add(new Item("/.."));
+			items.add(new Item(this, "/.."));
 			int idx = 0;
-			String n = "/" + path.getName().toString();
+			String n = "/" + path.getName();
 			for(String i : ITEMS2)
 			{
 				if(i.equals(n))
@@ -92,7 +81,7 @@ public class FileSelectorBBB extends FileSelector
 			}
 			return GetItemsResult.FAIL;
 		}
-		protected GetItemsResult ParseJSON(String _url, List<Item> items, final String _name, FileSelectorProgress progress)
+		protected GetItemsResult ParseJSON(String _url, List<Item> items, final String _name, FileSelector.Progress progress)
 		{
 			String s0 = LoadText(BaseURL() + "/unreal_demos.php?l=" + _url, JsonEncoding(), progress);
 			if(s0 == null)
@@ -126,8 +115,7 @@ public class FileSelectorBBB extends FileSelector
 					String a = ji.getString("author");
 					String y = ji.getString("year");
 					String c = ji.getString("city");
-					Item item = new Item();
-					item.name = t;
+					Item item = new Item(this, t);
 					item.desc = "";
 					if(a != null && a.length() > 0)
 						item.desc += a;

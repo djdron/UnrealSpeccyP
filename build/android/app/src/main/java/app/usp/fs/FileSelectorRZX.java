@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2012 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -42,43 +42,31 @@ public class FileSelectorRZX extends FileSelector
 		super.onCreate(savedInstanceState);
 		sources.add(new FSSRZX());
 	}
-	class FSSRZX extends FSSHtml
+	class FSSRZX extends FileSelectorSourceHTML
 	{
-		private final String RZX_FS = StoragePath() + "rzx";
+		private final String RZX_FS = getApplicationContext().getCacheDir().toString() + "/rzx";
 		public String BaseURL() { return "https://www.rzxarchive.co.uk"; }
 		public String FullURL(final String _url) { return BaseURL() + _url + ".php"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }
-		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
+		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
-			try
-			{
-				String p = item.url;
-				File file = new File(RZX_FS + p).getCanonicalFile();
-				if(!LoadFile(BaseURL() + p, file, progress))
-					return ApplyResult.UNABLE_CONNECT2;
-				if(progress.Canceled())
-					return ApplyResult.CANCELED;
-				return Emulator.the.Open(file.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
-			}
-			catch(Exception e)
-			{
-			}
-			return ApplyResult.FAIL;
+			File file = new File(RZX_FS + item.url);
+			return OpenFile(BaseURL() + item.url, file, progress);
 		}
-		public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress)
+		public GetItemsResult GetItems(final File path, List<Item> items, FileSelector.Progress progress)
 		{
 			File path_up = path.getParentFile();
 			if(path_up == null)
 			{
 				for(String i : Items2())
 				{
-					items.add(new Item(i));
+					items.add(new Item(this, i));
 				}
 				return GetItemsResult.OK;
 			}
-			items.add(new Item("/.."));
+			items.add(new Item(this, "/.."));
 			int idx = 0;
-			String n = "/" + path.getName().toString();
+			String n = "/" + path.getName();
 			for(String i : Items2())
 			{
 				if(i.equals(n))
@@ -126,8 +114,7 @@ public class FileSelectorRZX extends FileSelector
 		{
 			if(m.group(3) != null)
 			{
-				Item item = new Item();
-				item.name = UnescapeHTML(m.group(1));
+				Item item = new Item(this, UnescapeHTML(m.group(1)));
 				item.desc = UnescapeHTML(m.group(2));
 				item.url = m.group(3);
 				items.add(item);

@@ -54,7 +54,7 @@ public class Main extends Activity
 		Emulator.the.InitRom(3, BinRes(R.raw.service));
 		Emulator.the.InitRom(4, BinRes(R.raw.dos513f));
 		Emulator.the.InitFont(BinRes(R.raw.spxtrm4f));
-		Emulator.the.Init(getFilesDir().getAbsolutePath());
+		Emulator.the.Init(getFilesDir().toString());
 		Context c = getApplicationContext();
 		view = new ViewGLES(c);
 		view.setId(1);

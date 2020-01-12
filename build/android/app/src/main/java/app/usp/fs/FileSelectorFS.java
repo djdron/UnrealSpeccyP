@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,42 +34,63 @@ import app.usp.Emulator;
 public class FileSelectorFS extends FileSelector
 {
 	private static State state = new State();
-	private FSSFS fssfs = new FSSFS();
 	@Override
 	State State() { return state; }
 	@Override
-	boolean LongUpdate(final File path) { return false; } //fssfs.ZipPath(path) != null;
+	boolean LongUpdate(final File path) { return false; }
 	@Override
-	int LongUpdateTitle() { return 0; } //R.string.reading_archive; }
+	int LongUpdateTitle() { return 0; }
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
 		super.onCreate(savedInstanceState);
-		sources.add(fssfs);
+		sources.add(new FileSelectorSourceFS_Cache());
+		sources.add(new FileSelectorSourceFS_ExternalStorage());
     }
 	@Override
 	protected void onResume()
 	{
 		Items().clear(); // always update list because of changed files on other tabs
-		File last_file = new File(Emulator.the.GetLastFile());
-		State().last_name = last_file.getName();
-		State().current_path = last_file.getParentFile();
-		boolean reset_path = State().current_path == null;
-		if(!reset_path)
+		String last_file = Emulator.the.GetLastFile();
+		FileSelectorSourceFS fss = null;
+		for(FileSelectorSource s : sources)
 		{
-			File zip_path = fssfs.ZipPath(State().current_path);
-			reset_path = (zip_path == null && !State().current_path.exists());
+			FileSelectorSourceFS fs = (FileSelectorSourceFS)s;
+			String r = fs.RootPath().getPath();
+			if(last_file.startsWith(r))
+			{
+				File last_file2 = new File(last_file);
+				if(last_file2.exists())
+				{
+					fss = fs;
+					break;
+				}
+				File zip_path = fs.ZipPath(last_file2.getParentFile());
+				if(zip_path != null)
+				{
+					fss = fs;
+					break;
+				}
+			}
 		}
-		if(reset_path)
+		if(fss != null)
 		{
-			State().current_path = new File(fssfs.ROOT_PATH);
+			String r = fss.RootPath().getPath();
+			File last_file_local = new File(fss.Root() + "/" + last_file.substring(r.length()));
+			State().last_name = last_file_local.getName();
+			State().current_path = last_file_local.getParentFile();
+		}
+		else
+		{
+			State().current_path = new File("/");
 			State().last_name = "";
 		}
 		super.onResume();
 	}
-	class FSSFS extends FileSelectorSource
+	abstract class FileSelectorSourceFS extends FileSelectorSource
 	{
-		final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath();
+		abstract public String Root();
+		abstract public File RootPath();
 		static final String ZIP_EXT = "zip";
 		private boolean IsZipName(final String name)
 		{
@@ -77,8 +98,8 @@ public class FileSelectorFS extends FileSelector
 		}
 		public final File ZipPath(final File path)
 		{
-			File zip_path = new File(path.getPath());
-			for(;zip_path != null;)
+			File zip_path = path;
+			while(zip_path != null)
 			{
 				if(zip_path.canRead() && !zip_path.isDirectory() && IsZipName(zip_path.toString()))
 				{
@@ -88,12 +109,22 @@ public class FileSelectorFS extends FileSelector
 			}
 			return zip_path;
 		}
-		public GetItemsResult GetItems(final File path, List<Item> items, FileSelectorProgress progress)
+		@Override
+		public GetItemsResult GetItems(final File _path, List<Item> items, FileSelector.Progress progress)
 		{
-			if(path.toString().compareTo(ROOT_PATH) != 0 && path.getParent() != null)
+			File path_up = _path.getParentFile();
+			if(path_up == null)
 			{
-				items.add(new Item("/.."));
+				items.add(new Item(this, Root()));  // add roots for sources
+				return GetItemsResult.OK;
 			}
+			String p = _path.getPath();
+			if(!p.startsWith(Root())) // not our source
+				return GetItemsResult.OK;
+			items.add(new Item(this, "/.."));
+
+			File path = new File(RootPath().getPath() + "/" + p.substring(Root().length()));
+
 			//try open ZIP
 			File zip_path = ZipPath(path);
 			if(zip_path != null)
@@ -106,19 +137,15 @@ public class FileSelectorFS extends FileSelector
 					{
 						ZipEntry ze = e.nextElement();
 
-//					ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip_path)));
-//					ZipEntry ze;
-//					while((ze = zis.getNextEntry()) != null)
-//					{
 						File zef = new File(zip_path.getPath() + "/" + ze.getName());
 						File zef_ok = zef.getParentFile();
-						if(zef_ok.compareTo(path) == 0)
+						if(zef_ok.equals(path))
 						{
 							File zname = new File(ze.getName());
 							if(ze.isDirectory())
-								items.add(new Item("/" + zname.getName()));
+								items.add(new Item(this, "/" + zname.getName()));
 							else if(Emulator.the.FileTypeSupported(zname.getName()))
-								items.add(new Item(zname.getName()));
+								items.add(new Item(this, zname.getName()));
 						}
 						if(progress.Canceled())
 							return GetItemsResult.CANCELED;
@@ -135,9 +162,9 @@ public class FileSelectorFS extends FileSelector
 				{
 					String name = f.getName();
 					if(f.isDirectory() || IsZipName(name))
-						items.add(new Item("/" + name));
+						items.add(new Item(this, "/" + name));
 					else if(Emulator.the.FileTypeSupported(name))
-						items.add(new Item(name));
+						items.add(new Item(this, name));
 				}
 			}
 			class CmpNames implements Comparator<Item>
@@ -161,10 +188,27 @@ public class FileSelectorFS extends FileSelector
 			Collections.sort(items, new CmpNames());
 			return GetItemsResult.OK;
 		}
-		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
+		@Override
+		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
 			File f = new File(State().current_path.getPath() + "/" + item.name);
-			return Emulator.the.Open(f.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
+			File n = new File(RootPath().getPath() + "/" + f.getPath().substring(Root().length()));
+			return Emulator.the.Open(n.toString()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
 		}
+	}
+
+	class FileSelectorSourceFS_Cache extends FileSelectorSourceFS
+	{
+		@Override
+		public File RootPath() { return getCacheDir(); }
+		@Override
+		public String Root() { return "/cache"; }
+	}
+	class FileSelectorSourceFS_ExternalStorage extends FileSelectorSourceFS
+	{
+		@Override
+		public File RootPath() { return Environment.getExternalStorageDirectory(); }
+		@Override
+		public String Root() { return "/sdcard"; }
 	}
 }

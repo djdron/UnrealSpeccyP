@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -46,9 +46,9 @@ public class FileSelectorWOS extends FileSelector
 		sources.add(new ParserAdventures());
 		sources.add(new ParserUtilities());
 	}
-	abstract class FSSWOS extends FSSHtml
+	abstract class FSSWOS extends FileSelectorSourceHTML
 	{
-		private final String WOS_FS = StoragePath() + "wos";
+		private final String WOS_FS = getApplicationContext().getCacheDir().toString() + "/wos";
 		public String BaseURL() { return "https://www.worldofspectrum.org"; }
 		public String FullURL(final String _url) { return BaseURL() + _url + ".html"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }
@@ -62,8 +62,7 @@ public class FileSelectorWOS extends FileSelector
 		@Override
 		public void Get(List<Item> items, Matcher m, final String url, final String _name)
 		{
-			Item item = new Item();
-			item.name = m.group(2);
+			Item item = new Item(this, m.group(2));
 			item.desc = m.group(4) + " " + m.group(3);
 			item.url = m.group(1);
 			items.add(item);
@@ -71,7 +70,7 @@ public class FileSelectorWOS extends FileSelector
 		@Override
 		public final String[] Items2() { return ITEMS2; }
 		final String HTTP_URL = BaseURL() + "/pub/sinclair";
-		public ApplyResult ApplyItem(Item item, FileSelectorProgress progress)
+		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
 			String s = LoadText(BaseURL() + "/infoseekid.cgi?id=" + item.url, HtmlEncoding(), progress);
 			if(s == null)
@@ -90,17 +89,9 @@ public class FileSelectorWOS extends FileSelector
 				return ApplyResult.NOT_AVAILABLE;
 			if(!url.startsWith(HTTP_URL))
 				return ApplyResult.FAIL;
-			try
-			{
-				String p = url.substring(HTTP_URL.length());
-				File f = new File(WOS_FS + p).getCanonicalFile();
-				if(!LoadFile(url, f, progress))
-					return ApplyResult.UNABLE_CONNECT2;
-				if(progress.Canceled())
-					return ApplyResult.CANCELED;
-				return Emulator.the.Open(f.getAbsolutePath()) ? ApplyResult.OK : ApplyResult.UNSUPPORTED_FORMAT;
-			}
-			catch(IOException e) { return ApplyResult.FAIL; }
+			String p = url.substring(HTTP_URL.length());
+			File f = new File(WOS_FS + p);
+			return OpenFile(url, f, progress);
 		}
 	}
 	class ParserGames extends FSSWOS
