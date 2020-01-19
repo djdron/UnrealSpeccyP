@@ -71,8 +71,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		if(Main.AbleActionBar())
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		addPreferencesFromResource(R.xml.preferences);
         select_joystick = (ListPreference)getPreferenceScreen().findPreference(select_joystick_id);
         use_sensor = (CheckBoxPreference)getPreferenceScreen().findPreference(use_sensor_id);
@@ -214,12 +213,9 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		if(Main.AbleActionBar())
+		switch(item.getItemId())
 		{
-			switch(item.getItemId())
-			{
-			case android.R.id.home:	onBackPressed(); break;
-			}
+		case android.R.id.home:	onBackPressed(); break;
 		}
 		return super.onOptionsItemSelected(item);
 	}

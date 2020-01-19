@@ -37,39 +37,38 @@ public class FileOpen extends TabActivity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		if(Main.AbleActionBar())
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.file_open);
 
 		Resources res = getResources();
 		TabHost tabHost = getTabHost();
 		Intent intent = new Intent().setClass(this, FileSelectorFS.class);
 		TabHost.TabSpec spec = tabHost.newTabSpec("file_select_fs")
-								.setIndicator(res.getString(R.string.file_system), res.getDrawable(R.drawable.icon_tab_file))
+								.setIndicator(res.getString(R.string.file_system))
 								.setContent(intent);
 		tabHost.addTab(spec);
 
 		intent = new Intent().setClass(this, FileSelectorVtrdos.class);
 		spec = tabHost.newTabSpec("file_select_vtrdos")
-								.setIndicator(res.getString(R.string.vtrdos), res.getDrawable(R.drawable.icon_tab_vtrdos))
+								.setIndicator(res.getString(R.string.vtrdos))
 								.setContent(intent);
 		tabHost.addTab(spec);
 
 		intent = new Intent().setClass(this, FileSelectorWOS.class);
 		spec = tabHost.newTabSpec("file_select_wos")
-								.setIndicator(res.getString(R.string.wos), res.getDrawable(R.drawable.icon_tab_wos))
+								.setIndicator(res.getString(R.string.wos))
 								.setContent(intent);
 		tabHost.addTab(spec);
 
 		intent = new Intent().setClass(this, FileSelectorRZX.class);
 		spec = tabHost.newTabSpec("file_select_rzx")
-								.setIndicator(res.getString(R.string.rzx), res.getDrawable(R.drawable.icon_tab_rzx))
+								.setIndicator(res.getString(R.string.rzx))
 								.setContent(intent);
 		tabHost.addTab(spec);
 
 		intent = new Intent().setClass(this, FileSelectorBBB.class);
 		spec = tabHost.newTabSpec("file_select_bbb")
-								.setIndicator(res.getString(R.string.bbb), res.getDrawable(R.drawable.icon_tab_bbb))
+								.setIndicator(res.getString(R.string.bbb))
 								.setContent(intent);
 		tabHost.addTab(spec);
 		
@@ -84,12 +83,9 @@ public class FileOpen extends TabActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		if(Main.AbleActionBar())
+		switch(item.getItemId())
 		{
-			switch(item.getItemId())
-			{
-			case android.R.id.home:	onBackPressed(); break;
-			}
+		case android.R.id.home:	onBackPressed(); break;
 		}
 		return super.onOptionsItemSelected(item);
 	}

@@ -71,22 +71,19 @@ public class Main extends Activity
 		layout.addView(control, p2);
 		setContentView(layout);
 
-		if(AbleImmersiveMode())
-		{
-			getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(
-				new View.OnSystemUiVisibilityChangeListener()
+		getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(
+			new View.OnSystemUiVisibilityChangeListener()
+			{
+				@Override
+				public void onSystemUiVisibilityChange(int visibility)
 				{
-					@Override
-					public void onSystemUiVisibilityChange(int visibility)
+					if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
 					{
-						if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
-						{
-							RunHideCallback();
-						}
+						RunHideCallback();
 					}
 				}
-			);
-		}
+			}
+		);
 
 		control.requestFocus();
 		view.setKeepScreenOn(true);
@@ -97,14 +94,6 @@ public class Main extends Activity
 			Emulator.the.Open(file);
 		}
     }
-	static boolean AbleImmersiveMode()
-	{
-		return android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT;
-	}
-	static boolean AbleActionBar()
-	{
-		return android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT;
-	}
 	private void RunHideCallback()
 	{
 		CancelHideCallback();
@@ -130,8 +119,6 @@ public class Main extends Activity
 	{
 		CancelHideCallback();
 		EndPause();
-		if(!AbleImmersiveMode())
-			return;
 		getWindow().getDecorView().setSystemUiVisibility(
 				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
