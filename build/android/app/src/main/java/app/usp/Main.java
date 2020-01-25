@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ package app.usp;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 
 import android.net.Uri;
@@ -56,10 +55,10 @@ public class Main extends Activity
 		Emulator.the.InitFont(BinRes(R.raw.spxtrm4f));
 		Emulator.the.Init(getFilesDir().toString());
 		Context c = getApplicationContext();
-		view = new ViewGLES(c);
-		view.setId(1);
-		control = new Control(c, view);
-		control.setId(2);
+		control = new Control(c);
+		control.setId(1);
+		view = new ViewGLES(c, control);
+		view.setId(2);
 		RelativeLayout layout = new RelativeLayout(c);
 		RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 		RelativeLayout.LayoutParams p2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -85,7 +84,7 @@ public class Main extends Activity
 			}
 		);
 
-		control.requestFocus();
+		view.requestFocus();
 		view.setKeepScreenOn(true);
 		String file = Uri.parse(getIntent().toUri(0)).getPath();
 		if(file.length() != 0)
@@ -146,16 +145,14 @@ public class Main extends Activity
 	protected void onResume()
 	{
 		super.onResume();
-		view.OnResume();
-		control.OnResume();
+		view.OnActivityResume();
 		EndPause();
 	}
     @Override
 	protected void onPause()
 	{
 		Emulator.the.StoreOptions();
-		view.OnPause();
-		control.OnPause();
+		view.OnActivityPause();
 		super.onPause();
 	}
 

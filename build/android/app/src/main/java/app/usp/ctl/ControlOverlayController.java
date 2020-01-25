@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import android.opengl.GLUtils;
 import android.os.SystemClock;
 import app.usp.Emulator;
 
-public class ControlController extends ControlOverlay
+public class ControlOverlayController extends ControlOverlay
 {
 	private final int size;
 	private long touch_joy_time = 0;
@@ -41,7 +41,7 @@ public class ControlController extends ControlOverlay
 	private Bitmap joy_area = null;
 	private Bitmap joy_ptr = null;
 	
-	public ControlController(Context context)
+	public ControlOverlayController(Context context)
 	{
 		size = (int)(context.getResources().getDisplayMetrics().density*150);
 		final int ptr_size = (int)(size*0.4f);

@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import android.os.SystemClock;
 import app.usp.Emulator;
 import app.usp.R;
 
-public class ControlKeyboard extends ControlOverlay
+public class ControlOverlayKeyboard extends ControlOverlay
 {
 	private int width;
 	private int height;
@@ -43,7 +43,7 @@ public class ControlKeyboard extends ControlOverlay
 	private int[] textures = new int[1];
 	private Bitmap keyboard = null;
 
-	public ControlKeyboard(Context context)
+	public ControlOverlayKeyboard(Context context)
 	{
 		//@note : width & height may vary at runtime a little ;-) 
 		if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)

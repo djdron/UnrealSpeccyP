@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,12 +26,17 @@ import android.os.Handler;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.view.KeyEvent;
 import android.widget.Toast;
-import app.usp.ctl.ControlController;
-import app.usp.ctl.ControlFastForward;
-import app.usp.ctl.ControlKeyboard;
-import app.usp.ctl.ControlReplay;
+
+import app.usp.ctl.ControlKeys;
+import app.usp.ctl.ControlOverlayController;
+import app.usp.ctl.ControlOverlayFastForward;
+import app.usp.ctl.ControlOverlayKeyboard;
+import app.usp.ctl.ControlOverlayReplay;
+import app.usp.ctl.ControlSensor;
 import app.usp.ctl.ControlTouch;
+import app.usp.ctl.Control;
 
 public class ViewGLES extends GLSurfaceView
 {
@@ -75,22 +80,22 @@ public class ViewGLES extends GLSurfaceView
 		static final int TEX_HEIGHT = 256;
 
 		private int[] textures = new int[1];
-		private ControlController control_controller = null;
-		private ControlKeyboard control_keyboard = null;
-		private ControlReplay control_replay = null;
-		private ControlFastForward control_fast_forward = null;
+		private ControlOverlayController control_controller;
+		private ControlOverlayKeyboard control_keyboard;
+		private ControlOverlayReplay control_replay;
+		private ControlOverlayFastForward control_fast_forward;
+
 		private int width = 0;
 		private int height = 0;
-		boolean filtering = false;
 		private SyncTimer sync_timer = null;
 		private Context context;
 		Video(Context _context)
 		{
 			context = _context;
-			control_controller = new ControlController(context);
-			control_keyboard = new ControlKeyboard(context);
-			control_replay = new ControlReplay(context);
-			control_fast_forward = new ControlFastForward(context);
+			control_controller = new ControlOverlayController(context);
+			control_keyboard = new ControlOverlayKeyboard(context);
+			control_replay = new ControlOverlayReplay(context);
+			control_fast_forward = new ControlOverlayFastForward(context);
 		}
 		public void OnTouch(float x, float y, boolean down, int pid)
 		{
@@ -197,29 +202,50 @@ public class ViewGLES extends GLSurfaceView
 				sync_timer = null;
 		}
 	}
-	private Audio audio = null;
-	private Video video = null;
+	private Audio audio;
+	private Video video;
+	private Control control;
+	private ControlSensor sensor;
 
-	public ViewGLES(Context context)
+	public ViewGLES(Context context, Control _control)
 	{
 		super(context);
 		setEGLContextClientVersion(2);
 		setEGLConfigChooser(false);
+		control = _control;
 		audio = new Audio();
 		video = new Video(context);
+		sensor = new ControlSensor(context);
+		setFocusable(true);
+		setFocusableInTouchMode(true);
+		setOnKeyListener(new ControlKeys());
 		setRenderer(video);
 		setOnTouchListener(video);
 	}
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event)
+	{
+		if(keyCode == KeyEvent.KEYCODE_BACK)
+		{
+			if(!event.isLongPress())
+			{
+				control.OnToggle();
+				UpdateControls();
+				return true;
+			}
+		}
+		return super.onKeyUp(keyCode, event);
+	}
+	@Override
 	protected void onMeasure(int w, int h)
 	{
 		super.onMeasure(w, h);
-		setFocusableInTouchMode(InLandscapeMode());
-		OnControlsToggle();
+		UpdateControls();
 	}
-	protected boolean InLandscapeMode() { return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE; }
-	public void OnResume()	{ onResume(); }
-	public void OnPause()	{ onPause(); }
-	public void OnControlsToggle()
+	private boolean InLandscapeMode() { return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE; }
+	public void OnActivityResume()	{ onResume();	sensor.Install(); }
+	public void OnActivityPause()	{ onPause();	sensor.Uninstall(); }
+	private void UpdateControls()
 	{
 		final boolean a = InLandscapeMode();
 		final boolean k = Emulator.the.GetOptionBool(Preferences.use_keyboard_id);
