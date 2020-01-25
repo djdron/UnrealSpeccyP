@@ -43,7 +43,7 @@
     <string name="drive_d">D</string>
     <string name="mode_48k">Mode 48K</string>
     <string name="reset_to_service_rom">Reset to service ROM</string>
-    <string name="service_rom_desc">MadRom v3.5 by AXLR</string>
+    <string name="service_rom_desc">Mr Gluk Reset Service</string>
     <string name="file_selector">Select file</string>
     <string name="tape">Tape</string>
     <string name="tape_na">Not available (open tape file first)</string>

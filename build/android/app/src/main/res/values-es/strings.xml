@@ -20,7 +20,6 @@
     <string name="drive">Unidad de discos Beta</string>
     <string name="mode_48k">Modo 48K</string>
     <string name="reset_to_service_rom">Reiniciar a ROM de servicio</string>
-    <string name="service_rom_desc">MadRom v3.5 por AXLR</string>
     <string name="file_selector">Seleccionar archivo</string>
     <string name="tape">Cinta</string>
     <string name="tape_na">No disponible (abrir cinta previamente)</string>

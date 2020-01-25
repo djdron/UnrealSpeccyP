@@ -25,7 +25,6 @@
     <string name="drive">Дисковод</string>
     <string name="mode_48k">Режим 48K</string>
     <string name="reset_to_service_rom">Скидання у сервісне ПЗП</string>
-    <string name="service_rom_desc">MadRom v3.5 від AXLR</string>
     <string name="file_selector">Выбір файлу</string>
     <string name="tape">Стрічка</string>
     <string name="tape_na">Недоступна (відкрийте файл-образ)</string>
