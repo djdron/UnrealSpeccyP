@@ -46,6 +46,7 @@ public class FileSelectorFS extends FileSelector
 		super.onCreate(savedInstanceState);
 		sources.add(new FileSelectorSourceFS_Cache());
 		sources.add(new FileSelectorSourceFS_ExternalStorage());
+		sources.add(new FileSelectorSourceFS_ExternalStorageAll());
     }
 	@Override
 	protected void onResume()
@@ -210,5 +211,12 @@ public class FileSelectorFS extends FileSelector
 		public File RootPath() { return Environment.getExternalStorageDirectory(); }
 		@Override
 		public String Root() { return "/sdcard"; }
+	}
+	class FileSelectorSourceFS_ExternalStorageAll extends FileSelectorSourceFS
+	{
+		@Override
+		public File RootPath() { return new File("/storage"); }
+		@Override
+		public String Root() { return "/storage"; }
 	}
 }
