@@ -206,16 +206,18 @@ public class ViewGLES extends GLSurfaceView
 	private Video video;
 	private Control control;
 	private ControlSensor sensor;
+	private Main main_activity;
 
-	public ViewGLES(Context context, Control _control)
+	public ViewGLES(Main _main_activity, Control _control)
 	{
-		super(context);
+		super(_main_activity);
 		setEGLContextClientVersion(2);
 		setEGLConfigChooser(false);
 		control = _control;
+		main_activity = _main_activity;
 		audio = new Audio();
-		video = new Video(context);
-		sensor = new ControlSensor(context);
+		video = new Video(main_activity);
+		sensor = new ControlSensor(main_activity);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		setOnKeyListener(new ControlKeys());
@@ -225,14 +227,19 @@ public class ViewGLES extends GLSurfaceView
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event)
 	{
-		if(keyCode == KeyEvent.KEYCODE_BACK)
+		switch(keyCode)
 		{
+		case KeyEvent.KEYCODE_BACK:
 			if(!event.isLongPress())
 			{
 				control.OnToggle();
 				UpdateControls();
 				return true;
 			}
+			break;
+		case KeyEvent.KEYCODE_BUTTON_START:
+			main_activity.OpenOptionsMenu();
+			return true;
 		}
 		return super.onKeyUp(keyCode, event);
 	}

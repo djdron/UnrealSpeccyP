@@ -30,7 +30,6 @@ import android.widget.Toast;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.app.Activity;
@@ -56,12 +55,11 @@ public class Main extends Activity
 		Emulator.the.InitRom(4, BinRes(R.raw.dos513f));
 		Emulator.the.InitFont(BinRes(R.raw.spxtrm4f));
 		Emulator.the.Init(getFilesDir().toString());
-		Context c = getApplicationContext();
-		control = new Control(c);
+		control = new Control(this);
 		control.setId(1);
-		view = new ViewGLES(c, control);
+		view = new ViewGLES(this, control);
 		view.setId(2);
-		RelativeLayout layout = new RelativeLayout(c);
+		RelativeLayout layout = new RelativeLayout(this);
 		RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 		RelativeLayout.LayoutParams p2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		p1.addRule(RelativeLayout.ABOVE, control.getId());
@@ -178,6 +176,10 @@ public class Main extends Activity
 	{
 		UiModeManager uiModeManager = (UiModeManager)getSystemService(UI_MODE_SERVICE);
 		return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+	}
+	public void OpenOptionsMenu()
+	{
+		openOptionsMenu();
 	}
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
