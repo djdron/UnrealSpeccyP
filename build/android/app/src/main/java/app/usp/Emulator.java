@@ -26,6 +26,12 @@ public class Emulator
 	{
 		System.loadLibrary("usp");
 	}
+	@Override
+	public void finalize()
+	{
+		Done();
+	}
+
 	synchronized native void	InitRom(final int rom_id, final ByteBuffer rom);
 	synchronized native void	InitFont(final ByteBuffer fnt);
 	synchronized native void	Init(final String path);
@@ -75,5 +81,5 @@ public class Emulator
 	synchronized native void	ProfilerBegin(int id);
 	synchronized native void	ProfilerEnd(int id);
 
-	public static Emulator the = new Emulator();
+	public static Emulator the;
 }

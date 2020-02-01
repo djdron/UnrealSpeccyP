@@ -48,13 +48,17 @@ public class Main extends Activity
     public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		Emulator.the.InitRom(0, BinRes(R.raw.sos128_0));
-		Emulator.the.InitRom(1, BinRes(R.raw.sos128_1));
-		Emulator.the.InitRom(2, BinRes(R.raw.sos48));
-		Emulator.the.InitRom(3, BinRes(R.raw.service));
-		Emulator.the.InitRom(4, BinRes(R.raw.dos513f));
-		Emulator.the.InitFont(BinRes(R.raw.spxtrm4f));
-		Emulator.the.Init(getFilesDir().toString());
+		if(Emulator.the == null)
+		{
+			Emulator.the = new Emulator();
+			Emulator.the.InitRom(0, BinRes(R.raw.sos128_0));
+			Emulator.the.InitRom(1, BinRes(R.raw.sos128_1));
+			Emulator.the.InitRom(2, BinRes(R.raw.sos48));
+			Emulator.the.InitRom(3, BinRes(R.raw.service));
+			Emulator.the.InitRom(4, BinRes(R.raw.dos513f));
+			Emulator.the.InitFont(BinRes(R.raw.spxtrm4f));
+			Emulator.the.Init(getFilesDir().toString());
+		}
 		control = new Control(this);
 		control.setId(1);
 		view = new ViewGLES(this, control);
@@ -137,9 +141,8 @@ public class Main extends Activity
 	public void onDestroy()
 	{
 		CancelHideCallback();
-		Emulator.the.Done();
+		EndPause();
 		super.onDestroy();
-    	android.os.Process.killProcess(android.os.Process.myPid());
 	}
     @Override
 	protected void onResume()
