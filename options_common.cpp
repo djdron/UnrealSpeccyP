@@ -216,11 +216,11 @@ void OpSound(eSound s) { op_sound.Set(s); }
 
 static struct eOptionJoy : public xOptions::eOptionInt
 {
-	eOptionJoy() { Set(J_KEMPSTON); }
+	eOptionJoy() { Set(J_FIRST); }
 	virtual const char* Name() const { return "joystick"; }
 	virtual const char** Values() const
 	{
-		static const char* values[] = { "kempston", "cursor", "qaop", "sinclair2", NULL };
+		static const char* values[] = { "cursorenter", "cursor", "kempston", "sinclair2", "qaopm", "qaopspace", NULL };
 		return values;
 	}
 	virtual void Change(bool next = true)
@@ -296,12 +296,14 @@ dword OpJoyKeyFlags()
 {
 	switch(op_joy)
 	{
-	case J_KEMPSTON:	return KF_KEMPSTON;
+	case J_CURSORENTER:	return KF_CURSORENTER;
 	case J_CURSOR:		return KF_CURSOR;
-	case J_QAOP:		return KF_QAOP;
+	case J_KEMPSTON:	return KF_KEMPSTON;
 	case J_SINCLAIR2:	return KF_SINCLAIR2;
+	case J_QAOPM:		return KF_QAOPM;
+	case J_QAOPSPACE:	return KF_QAOPSPACE;
 	}
-	return KF_QAOP;
+	return KF_QAOPM;
 }
 
 }

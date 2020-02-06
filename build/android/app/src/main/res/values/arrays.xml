@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
     <resources>
         <string-array name="joystick_names">
-            <item>@string/joystick_kempston</item>
+            <item>@string/joystick_cursorenter</item>
             <item>@string/joystick_cursor</item>
-            <item>@string/joystick_qaop</item>
+            <item>@string/joystick_kempston</item>
             <item>@string/joystick_sinclair2</item>
+            <item>@string/joystick_qaopm</item>
+            <item>@string/joystick_qaopspace</item>
         </string-array>
         <string-array name="joystick_values">
             <item>0</item>
             <item>1</item>
             <item>2</item>
             <item>3</item>
+            <item>4</item>
+            <item>5</item>
         </string-array>
         <string-array name="sound_chip_names">
             <item>@string/sound_chip_ay</item>

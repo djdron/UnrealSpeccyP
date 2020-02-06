@@ -10,10 +10,12 @@
     <string name="save_file">Save file</string>
     <string name="save_file_desc">Save changed disk image file</string>
     <string name="select_joystick">Joystick</string>
-    <string name="joystick_kempston">Kempston</string>
+    <string name="joystick_cursorenter">Cursor + Enter</string>
     <string name="joystick_cursor">Cursor</string>
-    <string name="joystick_qaop">QAOP</string>
+    <string name="joystick_kempston">Kempston</string>
     <string name="joystick_sinclair2">Sinclair 2</string>
+    <string name="joystick_qaopm">QAOPM</string>
+    <string name="joystick_qaopspace">QAOP + Space</string>
     <string name="use_sensor">Use sensor</string>
     <string name="use_sensor_desc">Control via orientation sensor</string>
     <string name="reset">Reset</string>

@@ -229,7 +229,19 @@ void eSpeccyHandler::OnKey(char key, dword flags)
 
 	if(flags&KF_KEMPSTON)
 		speccy->Device<eKempstonJoy>()->OnKey(key, down);
-	if(flags&KF_CURSOR)
+
+	if(flags&KF_CURSORENTER)
+	{
+		switch(key)
+		{
+		case 'l' : key = '5'; shift = down; break;
+		case 'r' : key = '8'; shift = down; break;
+		case 'u' : key = '7'; shift = down; break;
+		case 'd' : key = '6'; shift = down; break;
+		case 'f' : key = 'e'; shift = false; break;
+		}
+	}
+	else if(flags&KF_CURSOR)
 	{
 		switch(key)
 		{
@@ -238,17 +250,6 @@ void eSpeccyHandler::OnKey(char key, dword flags)
 		case 'u' : key = '7'; shift = down; break;
 		case 'd' : key = '6'; shift = down; break;
 		case 'f' : key = '0'; shift = false; break;
-		}
-	}
-	else if(flags&KF_QAOP)
-	{
-		switch(key)
-		{
-		case 'l' : key = 'O'; break;
-		case 'r' : key = 'P'; break;
-		case 'u' : key = 'Q'; break;
-		case 'd' : key = 'A'; break;
-		case 'f' : key = ' '; break;
 		}
 	}
 	else if(flags&KF_SINCLAIR2)
@@ -260,6 +261,28 @@ void eSpeccyHandler::OnKey(char key, dword flags)
 		case 'u' : key = '9'; break;
 		case 'd' : key = '8'; break;
 		case 'f' : key = '0'; break;
+		}
+	}
+	else if(flags&KF_QAOPM)
+	{
+		switch(key)
+		{
+		case 'l' : key = 'O'; break;
+		case 'r' : key = 'P'; break;
+		case 'u' : key = 'Q'; break;
+		case 'd' : key = 'A'; break;
+		case 'f' : key = 'M'; break;
+		}
+	}
+	else if(flags&KF_QAOPSPACE)
+	{
+		switch(key)
+		{
+		case 'l' : key = 'O'; break;
+		case 'r' : key = 'P'; break;
+		case 'u' : key = 'Q'; break;
+		case 'd' : key = 'A'; break;
+		case 'f' : key = ' '; break;
 		}
 	}
 	speccy->Device<eKeyboard>()->OnKey(key, down, shift, ctrl, alt);

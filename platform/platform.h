@@ -58,17 +58,19 @@ namespace xPlatform
 
 enum eKeyFlags
 {
-	KF_DOWN = 0x01,
-	KF_SHIFT = 0x02,
-	KF_CTRL = 0x04,
-	KF_ALT = 0x08,
+	KF_DOWN			= 0x01,
+	KF_SHIFT		= 0x02,
+	KF_CTRL			= 0x04,
+	KF_ALT			= 0x08,
 
-	KF_KEMPSTON = 0x10,
-	KF_CURSOR = 0x20,
-	KF_QAOP = 0x40,
-	KF_SINCLAIR2 = 0x80,
+	KF_CURSORENTER	= 0x10,
+	KF_CURSOR		= 0x20,
+	KF_KEMPSTON		= 0x40,
+	KF_SINCLAIR2	= 0x80,
+	KF_QAOPM		= 0x100,
+	KF_QAOPSPACE	= 0x200,
 
-	KF_UI_SENDER = 0x100
+	KF_UI_SENDER	= 0x1000
 };
 enum eMouseAction { MA_MOVE, MA_BUTTON, MA_WHEEL };
 enum eAction

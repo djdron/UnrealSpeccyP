@@ -5,8 +5,9 @@
     <string name="save_state">Сохранить состояние</string>
     <string name="load_state">Загрузить состояние</string>
     <string name="select_joystick">Джойстик</string>
-    <string name="joystick_kempston">Кемпстон</string>
+    <string name="joystick_cursorenter">Курсор + Enter</string>
     <string name="joystick_cursor">Курсор</string>
+    <string name="joystick_kempston">Кемпстон</string>
     <string name="joystick_sinclair2">Синклер 2</string>
     <string name="use_sensor">Управление сенсором</string>
     <string name="use_sensor_desc">С помощью датчика ориентации</string>
