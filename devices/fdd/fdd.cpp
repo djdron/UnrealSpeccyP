@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2018 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../std.h"
 
 #include "fdd.h"
-
-#define Min(o, p)	(o < p ? o : p)
 
 //=============================================================================
 //	eUdi::eTrack::Marker
@@ -121,19 +119,21 @@ void eUdi::eTrack::eSector::UpdateCRC()
 eUdi::eUdi(int _cyls, int _sides) : raw(NULL), changed(false)
 {
 	cyls = _cyls; sides = _sides;
+	
+	// create buffer for max tracks/sides/sector len
 	const int max_track_len = 6400;
 	int data_len = max_track_len;
 	int udi_track_len = data_len + data_len / 8 + ((data_len & 7) ? 1 : 0);
-	int size = cyls * sides * udi_track_len;
+	int size = (MAX_CYL + 1) * MAX_SIDE * udi_track_len;
 	raw = new byte[size];
 	memset(raw, 0, size);
-	for(int i = 0; i < cyls; ++i)
+	for(int i = 0; i < MAX_CYL + 1; ++i)
 	{
-		for(int j = 0; j < sides; ++j)
+		for(int j = 0; j < MAX_SIDE; ++j)
 		{
 			eTrack& t = tracks[i][j];
 			t.data_len = data_len;
-			t.data = raw + udi_track_len * (i * sides + j);
+			t.data = raw + udi_track_len * (i * MAX_SIDE + j);
 			t.id = t.data + data_len;
 		}
 	}

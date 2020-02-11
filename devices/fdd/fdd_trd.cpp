@@ -1,35 +1,35 @@
 /*
- Portable ZX-Spectrum emulator.
- Copyright (C) 2001-2018 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
- 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+Portable ZX-Spectrum emulator.
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "../../std.h"
 
 #include "fdd.h"
 
 //=============================================================================
-//	eFdd::CreateTrd
+//	eFdd::Create
 //-----------------------------------------------------------------------------
-void eFdd::CreateTrd(int max_cyl)
+void eFdd::Create(int max_cyl, int max_side)
 {
 	SAFE_DELETE(disk);
-	disk = new eUdi(max_cyl, eUdi::MAX_SIDE);
-	for(int i = 0; i < disk->Cyls(); ++i)
+	disk = new eUdi(max_cyl, max_side);
+	for(int i = 0; i < eUdi::MAX_CYL; ++i)
 	{
-		for(int j = 0; j < disk->Sides(); ++j)
+		for(int j = 0; j < eUdi::MAX_SIDE; ++j)
 		{
 			Seek(i, j);
 			
@@ -102,7 +102,7 @@ bool eFdd::ReadTrd(const void* data, size_t data_size)
 		max_cyl = eUdi::MAX_CYL;
 	if(max_cyl < 80)
 		max_cyl = 80;
-	CreateTrd(max_cyl);
+	Create(max_cyl, eUdi::MAX_SIDE);
 	size_t max_data_size = max_cyl*256*16*2;
 	if(data_size > max_data_size)
 		data_size = max_data_size;

@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2018 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ public:
 protected:
 	int		cyls;
 	int		sides;
-	eTrack	tracks[MAX_CYL][MAX_SIDE];
+	eTrack	tracks[MAX_CYL + 1][MAX_SIDE]; // 1 track beyond
 	byte*	raw;
 	bool	changed;
 };
@@ -121,7 +121,7 @@ protected:
 			Track().Write(pos++, v, marker);
 		}
 	}
-	void CreateTrd(int max_cyl);
+	void Create(int max_cyl, int max_side);
 	bool AddFile(const byte* hdr, const byte* data);
 	bool ReadScl(const void* data, size_t data_size);
 	bool ReadTrd(const void* data, size_t data_size);

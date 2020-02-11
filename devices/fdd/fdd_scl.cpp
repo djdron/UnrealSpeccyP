@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2018 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ bool eFdd::ReadScl(const void* data, size_t data_size)
 	if(memcmp(data, "SINCLAIR", 8) || data_size < size_t(9 + (0x100 + 14)*buf[8]))
 		return false;
 
-	CreateTrd(eUdi::MAX_CYL);
+	Create(eUdi::MAX_CYL, eUdi::MAX_SIDE);
 	int size = 0;
 	for(int i = 0; i < buf[8]; ++i)
 	{
