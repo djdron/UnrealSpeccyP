@@ -117,6 +117,7 @@ bool InitVideo()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
 
 	ePoint pos, size;
 	bool maximized;
