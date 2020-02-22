@@ -138,6 +138,16 @@ public class Main extends Activity
 		AlertDialog.Builder dlg = new AlertDialog.Builder(this);
 		dlg.setMessage(getString(R.string.unable_access_storage));
 		dlg.setCancelable(true);
+		dlg.setPositiveButton(getString(R.string.preferences),
+			new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface di, int i)
+				{
+					startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", getPackageName(), null)));
+				}
+			}
+		);
 		dlg.setNegativeButton(getString(R.string.cancel), null);
 		AlertDialog ad = dlg.create();
 		ad.show();
