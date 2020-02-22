@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ public abstract class FileSelector extends ListActivity
 	abstract boolean LongUpdate(final File path);
 	abstract int LongUpdateTitle();
 
+	protected boolean update_on_resume = true;
 	private boolean async_task = false;
 
 	int PathLevel(final File path)
@@ -78,6 +79,12 @@ public abstract class FileSelector extends ListActivity
 	protected void onResume()
 	{
 		super.onResume();
+		if(update_on_resume)
+			Update();
+		update_on_resume = true;
+	}
+	public void Update()
+	{
 		if(Items().size() > 0)
 		{
 			SetItems();
@@ -138,6 +145,8 @@ public abstract class FileSelector extends ListActivity
 			}
 		}
 	}
+
+	protected void RequestStoragePermission() {}
 	
 	abstract class FSSProgressDialog implements Progress, DialogInterface.OnCancelListener
 	{
@@ -317,6 +326,9 @@ public abstract class FileSelector extends ListActivity
 			case FAIL:					e = getString(R.string.file_select_failed);				break;
 			case UNABLE_CONNECT:		e = getString(R.string.file_select_unable_connect1);	break;
 			case INVALID_INFO:			e = getString(R.string.file_select_invalid_info);		break;
+			case NEED_STORAGE_PERMISSION:
+				RequestStoragePermission();
+				//no break;
 			case OK:
 				State().current_path = path;
 				State().items = items;

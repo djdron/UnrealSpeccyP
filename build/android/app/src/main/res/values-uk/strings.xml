@@ -73,4 +73,8 @@
     <string name="save_slot_empty">нема</string>
     <string name="save_file">Зберегти файл</string>
     <string name="save_file_desc">Збереження зміненого образу диска</string>
+	<string name="cancel">Відміна</string>
+    <string name="ok">Так</string>
+    <string name="unable_access_storage">Немає доступу до сховища</string>
+    <string name="need_storage_permission">Потрібен доступ до сховища для відкриття файлу</string>
 </resources>

@@ -73,4 +73,8 @@
     <string name="save_slot_empty">нет</string>
     <string name="save_file">Сохранить файл</string>
     <string name="save_file_desc">Сохранение измененного образа диска</string>
+	<string name="cancel">Отмена</string>
+    <string name="ok">Да</string>
+    <string name="unable_access_storage">Нет доступа к хранилищу</string>
+    <string name="need_storage_permission">Нужен доступ к хранилищу для открытия файла</string>
 </resources>

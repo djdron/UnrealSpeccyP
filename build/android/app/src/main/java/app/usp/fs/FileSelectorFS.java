@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.os.Environment;
 
 import app.usp.Emulator;
+import app.usp.FileOpen;
 
 public class FileSelectorFS extends FileSelector
 {
@@ -51,6 +52,11 @@ public class FileSelectorFS extends FileSelector
 	@Override
 	protected void onResume()
 	{
+		if(!update_on_resume)
+		{
+			super.onResume();
+			return;
+		}
 		Items().clear(); // always update list because of changed files on other tabs
 		String last_file = Emulator.the.GetLastFile();
 		FileSelectorSourceFS fss = null;
@@ -61,7 +67,7 @@ public class FileSelectorFS extends FileSelector
 			if(last_file.startsWith(r))
 			{
 				File last_file2 = new File(last_file);
-				if(last_file2.exists())
+				if(last_file2.exists() && last_file2.canRead())
 				{
 					fss = fs;
 					break;
@@ -88,11 +94,36 @@ public class FileSelectorFS extends FileSelector
 		}
 		super.onResume();
 	}
+	public void UpdateAll()
+	{
+		Items().clear();
+		update_on_resume = false;
+		Update();
+	}
+	public void ResetToRoot()
+	{
+		Items().clear();
+		State().current_path = new File("/");
+		State().last_name = "";
+		update_on_resume = false;
+		Update();
+	}
+	protected FileOpen FO() { return (FileOpen)getParent(); }
+	protected boolean CheckStoragePermission()
+	{
+		return FO().CheckStoragePermission();
+	}
+	@Override
+	protected void RequestStoragePermission()
+	{
+		FO().RequestStoragePermission(this);
+	}
 	abstract class FileSelectorSourceFS extends FileSelectorSource
 	{
 		abstract public String Root();
 		abstract public File RootPath();
 		static final String ZIP_EXT = "zip";
+		abstract boolean NeedStoragePermission();
 		private boolean IsZipName(final String name)
 		{
 			return FilenameUtils.getExtension(name).equalsIgnoreCase(ZIP_EXT);
@@ -123,6 +154,12 @@ public class FileSelectorFS extends FileSelector
 			if(!p.startsWith(Root())) // not our source
 				return GetItemsResult.OK;
 			items.add(new Item(this, "/.."));
+
+			if(p.equals(Root()) && NeedStoragePermission())
+			{
+				if(!CheckStoragePermission())
+					return GetItemsResult.NEED_STORAGE_PERMISSION;
+			}
 
 			File path = new File(RootPath().getPath() + "/" + p.substring(Root().length()));
 
@@ -204,6 +241,8 @@ public class FileSelectorFS extends FileSelector
 		public File RootPath() { return getCacheDir(); }
 		@Override
 		public String Root() { return "/cache"; }
+		@Override
+		final boolean NeedStoragePermission() { return false; }
 	}
 	class FileSelectorSourceFS_ExternalStorage extends FileSelectorSourceFS
 	{
@@ -211,6 +250,8 @@ public class FileSelectorFS extends FileSelector
 		public File RootPath() { return Environment.getExternalStorageDirectory(); }
 		@Override
 		public String Root() { return "/sdcard"; }
+		@Override
+		final boolean NeedStoragePermission() { return true; }
 	}
 	class FileSelectorSourceFS_ExternalStorageAll extends FileSelectorSourceFS
 	{
@@ -218,5 +259,7 @@ public class FileSelectorFS extends FileSelector
 		public File RootPath() { return new File("/storage"); }
 		@Override
 		public String Root() { return "/storage"; }
+		@Override
+		final boolean NeedStoragePermission() { return true; }
 	}
 }

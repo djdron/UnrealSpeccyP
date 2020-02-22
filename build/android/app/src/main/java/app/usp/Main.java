@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -90,13 +92,68 @@ public class Main extends Activity
 
 		view.requestFocus();
 		view.setKeepScreenOn(true);
+		OpenFile();
+    }
+	static final int RP_STORAGE = 0;
+	private void OpenFile()
+	{
 		String file = Uri.parse(getIntent().toUri(0)).getPath();
 		if(file.length() != 0)
 		{
-			Toast.makeText(getApplicationContext(), String.format(getString(R.string.opening), file), Toast.LENGTH_LONG).show();
-			Emulator.the.Open(file);
+			if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M ||
+					checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == android.content.pm.PackageManager.PERMISSION_GRANTED)
+			{
+				Toast.makeText(this, String.format(getString(R.string.opening), file), Toast.LENGTH_LONG).show();
+				Emulator.the.Open(file);
+			}
+			else
+			{
+				if(shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE))
+				{
+					AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+					dlg.setMessage(getString(R.string.need_storage_permission));
+					dlg.setCancelable(false);
+					dlg.setPositiveButton(getString(R.string.ok),
+							new DialogInterface.OnClickListener()
+							{
+								@Override
+								public void onClick(DialogInterface di, int i)
+								{
+									requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE);
+								}
+							}
+					);
+					AlertDialog ad = dlg.create();
+					ad.show();
+				}
+				else
+				{
+					requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE);
+				}
+			}
 		}
-    }
+	}
+	private void OnOpenFileFailed()
+	{
+		AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+		dlg.setMessage(getString(R.string.unable_access_storage));
+		dlg.setCancelable(true);
+		dlg.setNegativeButton(getString(R.string.cancel), null);
+		AlertDialog ad = dlg.create();
+		ad.show();
+	}
+	@Override
+	public void onRequestPermissionsResult(int code, String[] permissions, int[] grants)
+	{
+		super.onRequestPermissionsResult(code, permissions, grants);
+		if(code == RP_STORAGE)
+		{
+			if(grants[0] == android.content.pm.PackageManager.PERMISSION_GRANTED)
+				OpenFile();
+			else
+				OnOpenFileFailed();
+		}
+	}
 	private void RunHideCallback()
 	{
 		CancelHideCallback();
@@ -206,19 +263,17 @@ public class Main extends Activity
 		EndPause();
 		super.onOptionsMenuClosed(menu);
 	}
-	static final int A_FILE_SELECTOR = 0;
-    static final int A_PREFERENCES = 1;
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
 		EndPause();
     	switch(item.getItemId())
     	{
-    	case R.id.open_file:	startActivityForResult(new Intent(this, FileOpen.class), A_FILE_SELECTOR); return true;
+    	case R.id.open_file:	startActivity(new Intent(this, FileOpen.class)); return true;
 		case R.id.save_state:	Emulator.the.SaveState(); 		return true;
 		case R.id.load_state:	Emulator.the.LoadState(); 		return true;
 		case R.id.reset:		Emulator.the.Reset(); 			return true;
-    	case R.id.preferences:	startActivityForResult(new Intent(this, Preferences.class), A_PREFERENCES); return true;
+    	case R.id.preferences:	startActivity(new Intent(this, Preferences.class)); return true;
 		case R.id.quit:			Exit(); 						return true;
     	}
     	return super.onOptionsItemSelected(item);
