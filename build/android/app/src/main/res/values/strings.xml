@@ -3,7 +3,8 @@
     <string name="app_name">Unreal Speccy Portable</string>
     <string name="opening">Opening \"%s\"</string>
     <string name="need_storage_permission">Need Storage permission to open file</string>
-    <string name="unable_access_storage">Unable access Storage</string>
+    <string name="unable_access_storage">Unable to access Storage</string>
+    <string name="unable_open">Unable to open \"%s\"</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="open_file">Open file</string>

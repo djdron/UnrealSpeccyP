@@ -18,6 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -92,48 +95,95 @@ public class Main extends Activity
 
 		view.requestFocus();
 		view.setKeepScreenOn(true);
-		OpenFile();
+		Open();
     }
 	static final int RP_STORAGE = 0;
-	private void OpenFile()
+	private void Open(Uri uri)
 	{
-		String file = Uri.parse(getIntent().toUri(0)).getPath();
-		if(file.length() != 0)
+		try
 		{
-			if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M ||
-					checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == android.content.pm.PackageManager.PERMISSION_GRANTED)
+			File path = new File(getCacheDir().toString() + "/content/");
+			path.mkdirs();
+			File file = new File(path.getPath() + "/" + uri.getLastPathSegment());
+			File file_tmp = new File(file.getPath() + ".tmp");
+			FileOutputStream os = new FileOutputStream(file_tmp);
+
+			InputStream is = getContentResolver().openInputStream(uri);
+			int len = is.available();
+
+			byte buffer[] = new byte[256*1024];
+			int size = 0;
+			int r = -1;
+			while((r = is.read(buffer)) != -1)
 			{
+				os.write(buffer, 0, r);
+				size += r;
+			}
+			is.close();
+			os.close();
+			if(file_tmp.renameTo(file) && Emulator.the.Open(file.getPath()))
 				Toast.makeText(this, String.format(getString(R.string.opening), file), Toast.LENGTH_LONG).show();
-				Emulator.the.Open(file);
+			else
+				Toast.makeText(this, String.format(getString(R.string.unable_open), file), Toast.LENGTH_LONG).show();
+		}
+		catch(FileNotFoundException e)
+		{
+			Toast.makeText(this, String.format(getString(R.string.unable_open), uri.toString()), Toast.LENGTH_LONG).show();
+		}
+		catch(IOException e)
+		{
+			Toast.makeText(this, String.format(getString(R.string.unable_open), uri.toString()), Toast.LENGTH_LONG).show();
+		}
+	}
+	private void Open()
+	{
+		Intent intent = getIntent();
+		Uri uri = intent.getData();
+		if(uri == null)
+			return;
+		if(!uri.getScheme().equals("file"))
+		{
+			Open(uri);
+			return;
+		}
+		String file = uri.getPath();
+		if(file.isEmpty())
+			return;
+		if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M ||
+				checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == android.content.pm.PackageManager.PERMISSION_GRANTED)
+		{
+			if(Emulator.the.Open(file))
+				Toast.makeText(this, String.format(getString(R.string.opening), file), Toast.LENGTH_LONG).show();
+			else
+				Toast.makeText(this, String.format(getString(R.string.unable_open), file), Toast.LENGTH_LONG).show();
+		}
+		else
+		{
+			if(shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE))
+			{
+				AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+				dlg.setMessage(getString(R.string.need_storage_permission));
+				dlg.setCancelable(false);
+				dlg.setPositiveButton(getString(R.string.ok),
+						new DialogInterface.OnClickListener()
+						{
+							@Override
+							public void onClick(DialogInterface di, int i)
+							{
+								requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE);
+							}
+						}
+				);
+				AlertDialog ad = dlg.create();
+				ad.show();
 			}
 			else
 			{
-				if(shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE))
-				{
-					AlertDialog.Builder dlg = new AlertDialog.Builder(this);
-					dlg.setMessage(getString(R.string.need_storage_permission));
-					dlg.setCancelable(false);
-					dlg.setPositiveButton(getString(R.string.ok),
-							new DialogInterface.OnClickListener()
-							{
-								@Override
-								public void onClick(DialogInterface di, int i)
-								{
-									requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE);
-								}
-							}
-					);
-					AlertDialog ad = dlg.create();
-					ad.show();
-				}
-				else
-				{
-					requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE);
-				}
+				requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE);
 			}
 		}
 	}
-	private void OnOpenFileFailed()
+	private void OnOpenFailed()
 	{
 		AlertDialog.Builder dlg = new AlertDialog.Builder(this);
 		dlg.setMessage(getString(R.string.unable_access_storage));
@@ -159,9 +209,9 @@ public class Main extends Activity
 		if(code == RP_STORAGE)
 		{
 			if(grants[0] == android.content.pm.PackageManager.PERMISSION_GRANTED)
-				OpenFile();
+				Open();
 			else
-				OnOpenFileFailed();
+				OnOpenFailed();
 		}
 	}
 	private void RunHideCallback()

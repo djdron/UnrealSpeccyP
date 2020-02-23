@@ -77,4 +77,5 @@
     <string name="ok">Да</string>
     <string name="unable_access_storage">Нет доступа к хранилищу</string>
     <string name="need_storage_permission">Нужен доступ к хранилищу для открытия файла</string>
+	<string name="unable_open">Не могу открыть \"%s\"</string>
 </resources>
