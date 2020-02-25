@@ -104,8 +104,14 @@ public:
 #if defined(USE_EMBEDDED_RESOURCES) || defined(USE_EXTERN_RESOURCES)
 		data = spxtrm4f;
 #else//USE_EMBEDDED_RESOURCES
-		FILE* f = fopen(xIo::ResourcePath(fname), "rb");
+		const char* name = xIo::ResourcePath(fname);
+		FILE* f = fopen(name, "rb");
 		assert(f);
+		if(!f)
+		{
+			printf("%s - unable to load font\n", name);
+			exit(1);
+		}
 		size_t size = 8 * 256;
 		data = new byte[size];
 		size_t readed = fread(data, 1, size, f);

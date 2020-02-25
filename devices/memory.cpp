@@ -82,6 +82,11 @@ void eRom::LoadRom(int page, const char* rom)
 {
 	FILE* f = fopen(rom, "rb");
 	assert(f);
+	if(!f)
+	{
+		printf("%s - unable to load rom\n", rom);
+		exit(1);
+	}
 	size_t s = fread(memory->Get(page), 1, eMemory::PAGE_SIZE, f);
 	assert(s == eMemory::PAGE_SIZE);
 	fclose(f);
