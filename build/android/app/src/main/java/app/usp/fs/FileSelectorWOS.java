@@ -48,7 +48,7 @@ public class FileSelectorWOS extends FileSelector
 	}
 	abstract class FSSWOS extends FileSelectorSourceHTML
 	{
-		private final String WOS_FS = getApplicationContext().getCacheDir().toString() + "/wos";
+		private final String WOS_FS = getApplicationContext().getFilesDir().toString() + "/wos";
 		public String BaseURL() { return "https://www.worldofspectrum.org"; }
 		public String FullURL(final String _url) { return BaseURL() + _url + ".html"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }

@@ -238,7 +238,7 @@ public class FileSelectorFS extends FileSelector
 	class FileSelectorSourceFS_Cache extends FileSelectorSourceFS
 	{
 		@Override
-		public File RootPath() { return getCacheDir(); }
+		public File RootPath() { return getFilesDir(); }
 		@Override
 		public String Root() { return "/cache"; }
 		@Override

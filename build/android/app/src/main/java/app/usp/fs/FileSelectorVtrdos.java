@@ -46,7 +46,7 @@ public class FileSelectorVtrdos extends FileSelector
 	}
 	abstract class FSSVtrdos extends FileSelectorSourceHTML
 	{
-		protected final String VTRDOS_FS = getApplicationContext().getCacheDir().toString() + "/vtrdos";
+		protected final String VTRDOS_FS = getApplicationContext().getFilesDir().toString() + "/vtrdos";
 		@Override
 		public String BaseURL() { return "https://vtrd.in"; }
 		@Override

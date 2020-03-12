@@ -46,7 +46,7 @@ public class FileSelectorBBB extends FileSelector
 	}
 	class FSSBBB extends FileSelectorSourceWEB
 	{
-		private final String BBB_FS = getApplicationContext().getCacheDir().toString() + "/bbb";
+		private final String BBB_FS = getApplicationContext().getFilesDir().toString() + "/bbb";
 		public String BaseURL() { return "https://bbb.retroscene.org"; }
 		public String JsonEncoding() { return "iso-8859-1"; }
 		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)

@@ -44,7 +44,7 @@ public class FileSelectorRZX extends FileSelector
 	}
 	class FSSRZX extends FileSelectorSourceHTML
 	{
-		private final String RZX_FS = getApplicationContext().getCacheDir().toString() + "/rzx";
+		private final String RZX_FS = getApplicationContext().getFilesDir().toString() + "/rzx";
 		public String BaseURL() { return "https://www.rzxarchive.co.uk"; }
 		public String FullURL(final String _url) { return BaseURL() + _url + ".php"; }
 		public String HtmlEncoding() { return "iso-8859-1"; }

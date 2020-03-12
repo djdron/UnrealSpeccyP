@@ -102,7 +102,7 @@ public class Main extends Activity
 	{
 		try
 		{
-			File path = new File(getCacheDir().toString() + "/content/");
+			File path = new File(getFilesDir().toString() + "/content/");
 			path.mkdirs();
 			File file = new File(path.getPath() + "/" + uri.getLastPathSegment());
 			File file_tmp = new File(file.getPath() + ".tmp");
