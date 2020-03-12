@@ -27,9 +27,11 @@ import java.nio.ByteBuffer;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.view.Menu;
@@ -98,13 +100,34 @@ public class Main extends Activity
 		Open();
     }
 	static final int RP_STORAGE = 0;
+	private String getFileName(Uri uri)
+	{
+		if(uri.getScheme().equals("content"))
+		{
+			Cursor cursor = getContentResolver().query(uri, new String[] { MediaStore.Images.Media.DATA }, null, null, null);
+			if(cursor != null)
+			{
+				try
+				{
+					if(cursor.moveToFirst())
+					{
+						File f = new File(cursor.getString(0));
+						return f.getName();
+					}
+				}
+				catch(Exception e) {}
+				finally { cursor.close(); }
+			}
+		}
+		return uri.getLastPathSegment();
+	}
 	private void Open(Uri uri)
 	{
 		try
 		{
 			File path = new File(getFilesDir().toString() + "/content/");
 			path.mkdirs();
-			File file = new File(path.getPath() + "/" + uri.getLastPathSegment());
+			File file = new File(path.getPath() + "/" + getFileName(uri));
 			File file_tmp = new File(file.getPath() + ".tmp");
 			FileOutputStream os = new FileOutputStream(file_tmp);
 
