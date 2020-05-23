@@ -39,7 +39,7 @@ static void ReplaceStr(std::string& s, const char* from, const char* to)
 static class eWebSourceBBB : public eWebSource
 {
 public:
-	eWebSourceBBB() : eWebSource("bbb", "http://bbb.retroscene.org") {}
+	eWebSourceBBB() : eWebSource("bbb", "https://bbb.retroscene.org") {}
 	virtual bool NeedCache(const std::string& path) const { return !IsRootPath(path); }
 	virtual void GetItems(eWebSourceItems* items, const std::string& path) const
 	{
