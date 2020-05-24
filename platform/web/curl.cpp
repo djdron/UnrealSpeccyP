@@ -30,10 +30,8 @@ namespace xWeb
 
 static struct eCURL_Init
 {
-	eCURL_Init()
-	{
-		curl_global_init(CURL_GLOBAL_ALL);
-	}
+	eCURL_Init() { curl_global_init(CURL_GLOBAL_ALL); }
+	~eCURL_Init() { curl_global_cleanup(); }
 } curl_init;
 
 static size_t _write_callback(char* ptr, size_t size, size_t nmemb, void* userdata)
