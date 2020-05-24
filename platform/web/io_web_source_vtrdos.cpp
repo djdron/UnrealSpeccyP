@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_WEB
 
 #include <regex>
+#include <json.hpp>
 #include "io_web_source.h"
 
 namespace xIo
@@ -138,6 +139,46 @@ public:
 };
 static eWebSourceVTRDOS_Press fs_vtrdos_press;
 static eWebSourceVTRDOS_Games fs_vtrdos_games;
+
+static class eWebSourceVTRDOS_Updates : public eWebSource
+{
+public:
+	eWebSourceVTRDOS_Updates() : eWebSource("updates", "https://vtrd.in") {}
+	virtual bool NeedCache(const std::string& path) const { return true; }
+	virtual void GetItems(eWebSourceItems* items, const std::string& path) const
+	{
+		using namespace std;
+		string url = RootWEB() + "/updates.php?json";
+		string data = xPlatform::xWeb::GetURL(url.c_str());
+		using nlohmann::json;
+		json j;
+		try
+		{
+			j = json::parse(data);
+		}
+		catch(const invalid_argument&)
+		{
+		}
+		for(auto e : j)
+		{
+			auto u = e.find("url");
+			if(u == e.end() || !u->is_string())
+				continue;
+			string url = *u, file_name = url;
+			string::size_type x = file_name.find_last_of('/');
+			if(x != string::npos)
+				file_name.erase(0, x + 1);
+			if(file_name.size() && xPlatform::Handler()->FileTypeSupported(file_name.c_str()))
+			{
+				items->push_back(eWebSourceItem(file_name, false, url));
+			}
+		}
+	}
+	virtual const char* Open(const std::string& _name, const std::string& _url) const
+	{
+		return OpenURL(_url.c_str(), _name.c_str());
+	}
+} fs_vtrdos_updates;
 
 }
 //namespace xIo
