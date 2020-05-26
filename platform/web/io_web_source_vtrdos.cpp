@@ -164,6 +164,13 @@ public:
 			auto u = e.find("url");
 			if(u == e.end() || !u->is_string())
 				continue;
+			auto s = e.find("filesize");
+			if(s != e.end() && s->is_number_unsigned())
+			{
+				size_t size = *s;
+				if(size > 5*1024*1024)
+					continue;
+			}
 			string url = *u, file_name = url;
 			string::size_type x = file_name.find_last_of('/');
 			if(x != string::npos)
