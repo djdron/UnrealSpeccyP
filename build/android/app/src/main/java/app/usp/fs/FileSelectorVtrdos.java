@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,7 +24,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.os.Bundle;
-import app.usp.Emulator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import app.usp.R;
 
 public class FileSelectorVtrdos extends FileSelector
@@ -43,34 +46,32 @@ public class FileSelectorVtrdos extends FileSelector
 		sources.add(new ParserGames());
 		sources.add(new ParserDemos());
 		sources.add(new ParserPress());
+		sources.add(new ParserUpdates());
 	}
-	abstract class FSSVtrdos extends FileSelectorSourceHTML
+	protected final String base_url = "https://vtrd.in";
+	abstract class FSSVtrdosHTML extends FileSelectorSourceHTML
 	{
 		protected final String VTRDOS_FS = getApplicationContext().getFilesDir().toString() + "/vtrdos";
 		@Override
-		public String BaseURL() { return "https://vtrd.in"; }
+		public String TextEncoding() { return "utf-8"; }
 		@Override
-		public String FullURL(final String _url) { return BaseURL() + _url + ".htm"; }
-		@Override
-        public String HtmlEncoding() { return "utf-8"; }
-        @Override
 		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
 			File file = new File(VTRDOS_FS + item.url);
-			return OpenFile(BaseURL() + item.url, file, progress);
+			return OpenFile(base_url + item.url, file, progress);
 		}
 	}
-	class ParserGames extends FSSVtrdos
+	class ParserGames extends FSSVtrdosHTML
 	{
 		@Override
-		public String FullURL(final String _url) { return BaseURL() + "/games.php?t=" + _url; }
-		private final String[] ITEMS2 = new String[]
+		public String FullURL(final String _url) { return base_url + "/games.php?t=" + _url; }
+		private final String[] ITEMS = new String[]
 			{	"/russian", "/demo", "/translate", "/remix", "/123", "/A", "/B",
 				"/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L",
 				"/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V",
 				"/W", "/X", "/Y", "/Z"
 			};
-		private final String[] ITEMS2URLS = new String[]
+		private final String[] ITEMSURLS = new String[]
 		    {	"full_ver", "demo_ver", "translat", "remix", "123",
 				"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
 				"n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
@@ -79,9 +80,9 @@ public class FileSelectorVtrdos extends FileSelector
 		@Override
 		public final String Root() { return "/games"; }
 		@Override
-		public final String[] Patterns() { return PATTERNS; }		
+		public final String[] Patterns() { return PATTERNS; }
 		@Override
-		public void Get(List<Item> items, Matcher m, final String url, final String _name)
+		public void PatternGet(List<Item> items, Matcher m, final String _name)
 		{
 			Item item = new Item(this, m.group(2));
 			item.desc = m.group(3) + " / " + m.group(4) + " [" + m.group(5) + "]";
@@ -89,28 +90,28 @@ public class FileSelectorVtrdos extends FileSelector
 			items.add(item);
 		}
 		@Override
-		public final String[] Items2() { return ITEMS2; }
+		public final String[] Items() { return ITEMS; }
 		@Override
-		public final String[] Items2URLs() { return ITEMS2URLS; }
+		public final String[] ItemsURLs() { return ITEMSURLS; }
 	}
-	class ParserDemos extends FSSVtrdos
+	class ParserDemos extends FSSVtrdosHTML
 	{
 		@Override
 		public String FullURL(final String _url)
 		{
 			if(_url.charAt(0) == '/')
-				return BaseURL() + _url + ".php";
-			return BaseURL() + "/skin/party.php?year=" + _url;
+				return base_url + _url + ".php";
+			return base_url + "/skin/party.php?year=" + _url;
 		}
-		private final String[] ITEMS2 = new String[]
+		private final String[] ITEMS = new String[]
 			{	"/Russian", "/Other", "/1995", "/1996", "/1997", "/1998", "/1999", "/2000", "/2001",
 				"/2002", "/2003", "/2004", "/2005", "/2006", "/2007", "/2008", "/2009", "/2010",
-				"/2011", "/2012", "/2013", "/2014", "/2015", "/2016", "/2017", "/2018", "/2019"
+				"/2011", "/2012", "/2013", "/2014", "/2015", "/2016", "/2017", "/2018", "/2019", "/2020"
 			};
-		private final String[] ITEMS2URLS = new String[]
+		private final String[] ITEMSURLS = new String[]
 			{	"/russian", "/other", "1995", "1996", "1997", "1998", "1999", "2000", "2001",
 				"2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010",
-				"2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"
+				"2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020"
 			};
 		private final String[] PATTERNS = new String[]
 			{   "<a href=\"(.+?)\" target=\"demozdown\">(.+?)</a>",
@@ -121,7 +122,7 @@ public class FileSelectorVtrdos extends FileSelector
 		@Override
 		public final String[] Patterns() { return PATTERNS; }
 		@Override
-		public void Get(List<Item> items, Matcher m, final String url, final String _name)
+		public void PatternGet(List<Item> items, Matcher m, final String _name)
 		{
 			Item item = new Item(this, m.group(2));
 			item.url = "/" + m.group(1);
@@ -132,9 +133,9 @@ public class FileSelectorVtrdos extends FileSelector
 			items.add(item);
 		}
 		@Override
-		public final String[] Items2() { return ITEMS2; }
+		public final String[] Items() { return ITEMS; }
 		@Override
-		public final String[] Items2URLs() { return ITEMS2URLS; }
+		public final String[] ItemsURLs() { return ITEMSURLS; }
 		final String DEMO_SIGN = "demo.php?party=";
 		@Override
 		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
@@ -144,7 +145,7 @@ public class FileSelectorVtrdos extends FileSelector
 				return super.ApplyItem(item, progress);
 			try
 			{
-				String s = LoadText(BaseURL() + "/" + DEMO_SIGN + item.url.substring(idx + DEMO_SIGN.length()), HtmlEncoding(), progress);
+				String s = LoadText(base_url + "/" + DEMO_SIGN + item.url.substring(idx + DEMO_SIGN.length()), TextEncoding(), progress);
 				if(s == null)
 					return ApplyResult.UNABLE_CONNECT1;
 				if(progress.Canceled())
@@ -168,15 +169,15 @@ public class FileSelectorVtrdos extends FileSelector
 			return ApplyResult.FAIL;
 		}
 	}
-	class ParserPress extends FSSVtrdos
+	class ParserPress extends FSSVtrdosHTML
 	{
         @Override
-        public String FullURL(final String _url) { return BaseURL() + "/press.php?l=" + _url; }
-		private final String[] ITEMS2 = new String[]
+        public String FullURL(final String _url) { return base_url + "/press.php?l=" + _url; }
+		private final String[] ITEMS = new String[]
 			{	"/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L",
 				"/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z"
 			};
-		private final String[] ITEMS2URLS = new String[]
+		private final String[] ITEMSURLS = new String[]
 			{	"1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1",
 				"2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2"
 			};
@@ -187,7 +188,7 @@ public class FileSelectorVtrdos extends FileSelector
 		@Override
 		public final String[] Patterns() { return PATTERNS; }
 		@Override
-		public void Get(List<Item> items, Matcher m, final String url, final String _name)
+		public void PatternGet(List<Item> items, Matcher m, final String _name)
 		{
 			String name = m.group(1);
 			char ch1 = _name.charAt(1);
@@ -210,8 +211,49 @@ public class FileSelectorVtrdos extends FileSelector
 			}
 		}
 		@Override
-		public final String[] Items2() { return ITEMS2; }
+		public final String[] Items() { return ITEMS; }
 		@Override
-		public final String[] Items2URLs() { return ITEMS2URLS; }
+		public final String[] ItemsURLs() { return ITEMSURLS; }
+	}
+	class ParserUpdates extends FileSelectorSourceJSON
+	{
+		protected final String VTRDOS_FS = getApplicationContext().getFilesDir().toString() + "/vtrdos";
+		@Override
+		public String TextEncoding() { return "utf-8"; }
+		@Override
+		public String FullURL(final String _url) { return base_url + "/updates.php?json"; }
+		@Override
+		public final String Root() { return "/updates"; }
+		@Override
+		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
+		{
+			String p = item.url;
+			if(!p.startsWith(base_url))
+				return ApplyResult.FAIL;
+			File file = new File(VTRDOS_FS + p.substring(base_url.length()));
+			return OpenFile(p, file, progress);
+		}
+		@Override
+		protected void JsonGet(List<FileSelectorSource.Item> items, JSONObject ji, final String _name)
+		{
+			String t = ji.optString("title", "");
+			if(t.isEmpty())
+				return;
+			String u = ji.optString("url", "");
+			if(u.isEmpty())
+				return;
+			long size = ji.optLong("filesize", 0);
+			if(size > 5*1024*1024)
+				return;
+			Item item = new Item(this, t);
+			item.url = u;
+			item.desc = ji.optString("info", "");
+			items.add(item);
+		}
+		private final String[] EMPTY_ITEMS = {};
+		@Override
+		public final String[] Items() { return EMPTY_ITEMS; }
+		@Override
+		public final String[] ItemsURLs() { return EMPTY_ITEMS; }
 	}
 }

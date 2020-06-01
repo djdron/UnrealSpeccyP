@@ -18,31 +18,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp.fs;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-
-abstract class FileSelectorSourceHTML extends FileSelectorSourceWEB
+abstract class FileSelectorSourceJSON extends FileSelectorSourceWEB
 {
-	abstract public String[] Patterns();
-	abstract public void PatternGet(List<Item> items, Matcher m, final String _name);
+	abstract protected void JsonGet(List<Item> items, JSONObject j, final String _name);
 	@Override
 	public GetItemsResult ParseText(final String _text, List<Item> items, final String _name, FileSelector.Progress progress)
 	{
-		boolean ok = false;
-		for(String p : Patterns())
+		JSONArray jitems = null;
+		try
 		{
-			Pattern pt = Pattern.compile(p);
-			Matcher m = pt.matcher(_text);
-			while(m.find())
-			{
-				ok = true;
-				PatternGet(items, m, _name);
-			}
+			jitems = (JSONArray) new JSONTokener(_text).nextValue();
 		}
-		if(ok)
-			return GetItemsResult.OK;
-		return GetItemsResult.INVALID_INFO;
+		catch(Exception e) { return GetItemsResult.INVALID_INFO; }
+		for(int i = 0; i < jitems.length(); ++i)
+		{
+			try
+			{
+				JsonGet(items, jitems.getJSONObject(i), _name);
+			}
+			catch(JSONException e) {}
+		}
+		return GetItemsResult.OK;
 	}
 }

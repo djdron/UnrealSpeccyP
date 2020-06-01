@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,12 +26,91 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.util.List;
 
 import app.usp.Emulator;
 
 
 abstract class FileSelectorSourceWEB extends FileSelectorSource
 {
+	abstract String Root();
+	abstract String FullURL(final String _url);
+	abstract String TextEncoding();
+	abstract String[] Items();
+	abstract String[] ItemsURLs();
+
+	@Override
+	public GetItemsResult GetItems(final File path, List<Item> items, FileSelector.Progress progress)
+	{
+		File path_up = path.getParentFile();
+		if(Root() == null)
+		{
+			if(path_up == null)
+			{
+				for(String i : Items())
+				{
+					items.add(new Item(this, i));
+				}
+				return GetItemsResult.OK;
+			}
+			items.add(new Item(this, "/.."));
+		}
+		else
+		{
+			if(path_up == null)
+			{
+				items.add(new Item(this, Root()));
+				return GetItemsResult.OK;
+			}
+			File r = path;
+			for(;;)
+			{
+				File p = r.getParentFile();
+				if(p.getParentFile() == null)
+					break;
+				r = p;
+			}
+			if(!r.toString().equals(Root()))
+				return GetItemsResult.OK;
+			items.add(new Item(this, "/.."));
+			if(path_up.getParent() == null)
+			{
+				if(Items().length == 0)
+				{
+					return ParseURL("", items, "", progress);
+				}
+				else
+				{
+					for(String i : Items())
+					{
+						items.add(new Item(this, i));
+					}
+				}
+				return GetItemsResult.OK;
+			}
+		}
+		int idx = 0;
+		String n = "/" + path.getName();
+		for(String i : Items())
+		{
+			if(i.equals(n))
+			{
+				return ParseURL(ItemsURLs()[idx], items, n, progress);
+			}
+			++idx;
+		}
+		return GetItemsResult.FAIL;
+	}
+	protected GetItemsResult ParseURL(final String _url, List<Item> items, final String _name, FileSelector.Progress progress)
+	{
+		String s = LoadText(FullURL(_url), TextEncoding(), progress);
+		if(s == null)
+			return GetItemsResult.UNABLE_CONNECT;
+		if(progress.Canceled())
+			return GetItemsResult.CANCELED;
+		return ParseText(s, items, _name, progress);
+	}
+	abstract public GetItemsResult ParseText(final String _text, List<Item> items, final String _name, FileSelector.Progress progress);
 	protected boolean LoadFile(final String _url, final File _name, FileSelector.Progress progress)
 	{
 		try

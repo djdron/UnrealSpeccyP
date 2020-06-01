@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
-import app.usp.Emulator;
 import app.usp.R;
 
 public class FileSelectorBBB extends FileSelector
@@ -44,101 +43,64 @@ public class FileSelectorBBB extends FileSelector
 		super.onCreate(savedInstanceState);
 		sources.add(new FSSBBB());
 	}
-	class FSSBBB extends FileSelectorSourceWEB
+	class FSSBBB extends FileSelectorSourceJSON
 	{
 		private final String BBB_FS = getApplicationContext().getFilesDir().toString() + "/bbb";
-		public String BaseURL() { return "https://bbb.retroscene.org"; }
-		public String JsonEncoding() { return "iso-8859-1"; }
+		public String base_url = "https://bbb.retroscene.org";
+		@Override
+		public String FullURL(final String _url) { return base_url + "/unreal_demos.php?l=" + _url; }
+		@Override
+		public String TextEncoding() { return "iso-8859-1"; }
+		@Override
+		public final String Root() { return null; }
+		@Override
 		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
 			String p = item.url;
-			if(!p.startsWith(BaseURL()))
+			if(!p.startsWith(base_url))
 				return ApplyResult.FAIL;
-			File file = new File(BBB_FS + p.substring(BaseURL().length()));
+			File file = new File(BBB_FS + p.substring(base_url.length()));
 			return OpenFile(p, file, progress);
 		}
-		public GetItemsResult GetItems(final File path, List<Item> items, FileSelector.Progress progress)
+		@Override
+		public GetItemsResult ParseText(final String _text, List<Item> items, final String _name, FileSelector.Progress progress)
 		{
-			File path_up = path.getParentFile();
-			if(path_up == null)
-			{
-				for(String i : ITEMS2)
-				{
-					items.add(new Item(this, i));
-				}
-				return GetItemsResult.OK;
-			}
-			items.add(new Item(this, "/.."));
-			int idx = 0;
-			String n = "/" + path.getName();
-			for(String i : ITEMS2)
-			{
-				if(i.equals(n))
-				{
-					return ParseJSON(ITEMS2URLS[idx], items, n, progress);
-				}
-				++idx;
-			}
-			return GetItemsResult.FAIL;
+			return super.ParseText("[" + _text + "]", items, _name, progress);
 		}
-		protected GetItemsResult ParseJSON(String _url, List<Item> items, final String _name, FileSelector.Progress progress)
+		@Override
+		protected void JsonGet(List<FileSelectorSource.Item> items, JSONObject ji, final String _name)
 		{
-			String s0 = LoadText(BaseURL() + "/unreal_demos.php?l=" + _url, JsonEncoding(), progress);
-			if(s0 == null)
-				return GetItemsResult.UNABLE_CONNECT;
-			if(progress.Canceled())
-				return GetItemsResult.CANCELED;
-			String s = "{ \"items\": [ " + s0 + " ] }";
-			JSONObject json = null;
-			try
-			{
-				json = new JSONObject(s);
-			}
-			catch(JSONException e) { return GetItemsResult.INVALID_INFO; }
-			JSONArray jitems = null;
-			try
-			{
-				jitems = json.getJSONArray("items");
-			}
-			catch(JSONException e) { return GetItemsResult.INVALID_INFO; }
-			for(int i = 0; i < jitems.length(); ++i)
-			{
-				try
-				{
-					JSONObject ji = jitems.getJSONObject(i);
-					String t = ji.getString("title");
-					if(t == null)
-						continue;
-					String u = ji.getString("url");
-					if(u == null)
-						continue;
-					String a = ji.getString("author");
-					String y = ji.getString("year");
-					String c = ji.getString("city");
-					Item item = new Item(this, t);
-					item.desc = "";
-					if(a != null && a.length() > 0)
-						item.desc += a;
-					if(y != null && y.length() > 0)
-						item.desc += "'" + y;
-					if(c != null && c.length() > 0)
-						item.desc += " / " + c;
-					item.url = u;
-					items.add(item);
-				}
-				catch(JSONException e) {}
-			}
-			return GetItemsResult.OK;
+			String t = ji.optString("title", "");
+			if(t.isEmpty())
+				return;
+			String u = ji.optString("url", "");
+			if(u.isEmpty())
+				return;
+			String a = ji.optString("author", "");
+			String y = ji.optString("year", "");
+			String c = ji.optString("city", "");
+			Item item = new Item(this, t);
+			item.url = u;
+			item.desc = a;
+			if(!y.isEmpty())
+				item.desc += "'" + y;
+			if(!c.isEmpty())
+				item.desc += " / " + c;
+			items.add(item);
 		}
-		private final String[] ITEMS2 = new String[]
+		private final String[] ITEMS = new String[]
 			{	"/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H",
 				"/I", "/J", "/K", "/L", "/M", "/N", "/O", "/P", "/Q",
 				"/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z"
 			};
-		private final String[] ITEMS2URLS = new String[]
+		private final String[] ITEMSURLS = new String[]
 		    {	"@", "a", "b", "c", "d", "e", "f", "g", "h",
 				"i", "j", "k", "l", "m", "n", "o", "p", "q",
 				"r", "s", "t", "u", "v", "w", "x", "y", "z"
 		    };
+		@Override
+		public final String[] Items() { return ITEMS; }
+		@Override
+		public final String[] ItemsURLs() { return ITEMSURLS; }
 	}
 }

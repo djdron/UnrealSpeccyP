@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2019 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -45,44 +45,23 @@ public class FileSelectorRZX extends FileSelector
 	class FSSRZX extends FileSelectorSourceHTML
 	{
 		private final String RZX_FS = getApplicationContext().getFilesDir().toString() + "/rzx";
-		public String BaseURL() { return "https://www.rzxarchive.co.uk"; }
-		public String FullURL(final String _url) { return BaseURL() + _url + ".php"; }
-		public String HtmlEncoding() { return "iso-8859-1"; }
+		protected final String base_url = "https://www.rzxarchive.co.uk";
+		@Override
+		public String FullURL(final String _url) { return base_url + _url + ".php"; }
+		@Override
+		public String TextEncoding() { return "iso-8859-1"; }
+		@Override
 		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
 			File file = new File(RZX_FS + item.url);
-			return OpenFile(BaseURL() + item.url, file, progress);
+			return OpenFile(base_url + item.url, file, progress);
 		}
-		public GetItemsResult GetItems(final File path, List<Item> items, FileSelector.Progress progress)
-		{
-			File path_up = path.getParentFile();
-			if(path_up == null)
-			{
-				for(String i : Items2())
-				{
-					items.add(new Item(this, i));
-				}
-				return GetItemsResult.OK;
-			}
-			items.add(new Item(this, "/.."));
-			int idx = 0;
-			String n = "/" + path.getName();
-			for(String i : Items2())
-			{
-				if(i.equals(n))
-				{
-					return ParseURL(Items2URLs()[idx], items, n, progress);
-				}
-				++idx;
-			}
-			return GetItemsResult.FAIL;
-		}
-		private final String[] ITEMS2 = new String[]
+		private final String[] ITEMS = new String[]
 			{	"/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H",
 				"/I", "/J", "/K", "/L", "/M", "/N", "/O", "/P", "/Q",
 				"/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z"
 			};
-		private final String[] ITEMS2URLS = new String[]
+		private final String[] ITEMSURLS = new String[]
 		    {	"/0", "/a", "/b", "/c", "/d", "/e", "/f", "/g", "/h",
 				"/i", "/j", "/k", "/l", "/m", "/n", "/o", "/p", "/q",
 				"/r", "/s", "/t", "/u", "/v", "/w", "/x", "/y", "/z"
@@ -110,7 +89,7 @@ public class FileSelectorRZX extends FileSelector
 		}
 		
 		@Override
-		public void Get(List<Item> items, Matcher m, final String url, final String _name)
+		public void PatternGet(List<Item> items, Matcher m, final String _name)
 		{
 			if(m.group(3) != null)
 			{
@@ -121,8 +100,8 @@ public class FileSelectorRZX extends FileSelector
 			}
 		}
 		@Override
-		public final String[] Items2() { return ITEMS2; }
+		public final String[] Items() { return ITEMS; }
 		@Override
-		public final String[] Items2URLs() { return ITEMS2URLS; }
+		public final String[] ItemsURLs() { return ITEMSURLS; }
 	}
 }
