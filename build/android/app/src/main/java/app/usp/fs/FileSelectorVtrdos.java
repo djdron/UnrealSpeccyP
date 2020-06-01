@@ -36,7 +36,7 @@ public class FileSelectorVtrdos extends FileSelector
 	@Override
 	State State() { return state; }
 	@Override
-	boolean LongUpdate(final File path) { return PathLevel(path) >= 2; }
+	boolean LongUpdate(final File path) { return PathLevel(path) >= 2 || path.getPath().equals(parser_updates_root); }
 	@Override
 	int LongUpdateTitle() { return R.string.accessing_web; }
     @Override
@@ -215,6 +215,7 @@ public class FileSelectorVtrdos extends FileSelector
 		@Override
 		public final String[] ItemsURLs() { return ITEMSURLS; }
 	}
+	static protected final String parser_updates_root = "/updates";
 	class ParserUpdates extends FileSelectorSourceJSON
 	{
 		protected final String VTRDOS_FS = getApplicationContext().getFilesDir().toString() + "/vtrdos";
@@ -223,7 +224,7 @@ public class FileSelectorVtrdos extends FileSelector
 		@Override
 		public String FullURL(final String _url) { return base_url + "/updates.php?json"; }
 		@Override
-		public final String Root() { return "/updates"; }
+		public final String Root() { return parser_updates_root; }
 		@Override
 		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
