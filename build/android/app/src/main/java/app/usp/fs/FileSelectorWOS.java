@@ -47,10 +47,10 @@ public class FileSelectorWOS extends FileSelector
 		sources.add(new ParserAdventures());
 		sources.add(new ParserSimulators());
 		sources.add(new ParserEducational());
-		sources.add(new ParserUtilities());
-		sources.add(new ParserDemos());
-		sources.add(new ParserMisc());
-		sources.add(new ParserXRated());
+//		sources.add(new ParserUtilities());
+//		sources.add(new ParserDemos());
+//		sources.add(new ParserMisc());
+//		sources.add(new ParserXRated());
 	}
 	abstract class FSSWOS extends FileSelectorSourceJSON
 	{
