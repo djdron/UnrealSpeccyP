@@ -19,13 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package app.usp.fs;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.os.Bundle;
-import app.usp.Emulator;
+
+import org.json.JSONObject;
+
 import app.usp.R;
 
 public class FileSelectorWOS extends FileSelector
@@ -44,96 +45,177 @@ public class FileSelectorWOS extends FileSelector
 		super.onCreate(savedInstanceState);
 		sources.add(new ParserGames());
 		sources.add(new ParserAdventures());
+		sources.add(new ParserSimulators());
+		sources.add(new ParserEducational());
 		sources.add(new ParserUtilities());
+		sources.add(new ParserDemos());
+		sources.add(new ParserMisc());
+		sources.add(new ParserXRated());
 	}
-	abstract class FSSWOS extends FileSelectorSourceHTML
+	abstract class FSSWOS extends FileSelectorSourceJSON
 	{
 		private final String WOS_FS = getApplicationContext().getFilesDir().toString() + "/wos";
-		private final String base_url = "https://www.worldofspectrum.org";
+		private final String base_url = "https://worldofspectrum.org";
+		abstract protected String URLSection();
 		@Override
-		public String FullURL(final String _url) { return base_url + _url + ".html"; }
+		public String FullURL(final String _url)
+		{
+			return base_url + "/software/ajax_software_items/" + URLSection() +
+					"?columns%5B0%5D%5Bdata%5D=az&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=" + _url +
+					"&columns%5B1%5D%5Bdata%5D=title&columns%5B8%5D%5Bdata%5D=availability&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=1" +
+					"&order%5B0%5D%5Bcolumn%5D=1&order%5B0%5D%5Bdir%5D=asc&length=-1";
+		}
 		@Override
 		public String TextEncoding() { return "iso-8859-1"; }
 		private final String[] ITEMS = new String[]
 				{	"/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H", "/I", "/J", "/K", "/L",
-						"/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z"
+					"/M", "/N", "/O", "/P", "/Q", "/R", "/S", "/T", "/U", "/V", "/W", "/X", "/Y", "/Z"
 				};
-		private final String[] PATTERNS = new String[] { "<A HREF=\"/infoseekid.cgi\\?id=(\\d+)\">(.+)</A>\\s+(\\d*) (.+?)\\s+\\s+" };
+		private final String[] ITEMSURLS = new String[]
+				{	"%23", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
+					"M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+				};
 		@Override
-		public final String[] Patterns() { return PATTERNS; }
-		@Override
-		public void PatternGet(List<Item> items, Matcher m, final String _name)
+		public GetItemsResult ParseText(final String _text, List<Item> items, final String _name, FileSelector.Progress progress)
 		{
-			Item item = new Item(this, m.group(2));
-			item.desc = m.group(4) + " " + m.group(3);
-			item.url = m.group(1);
+			int idx_beg = _text.indexOf("\"data\":");
+			int idx_end = _text.lastIndexOf(",\"draw\":");
+			if(idx_beg < 0 || idx_end < 0)
+				return GetItemsResult.INVALID_INFO;
+			idx_beg += 7; // strlen of "data:"
+			if(idx_end <= idx_beg)
+				return GetItemsResult.INVALID_INFO;
+			return super.ParseText(_text.substring(idx_beg, idx_end), items, _name, progress);
+		}
+		@Override
+		protected void JsonGet(List<FileSelectorSource.Item> items, JSONObject ji, final String _name)
+		{
+			Object to = ji.opt("title");
+			if(JSONObject.NULL.equals(to))
+				return;
+			Object uo = ji.optString("slug");
+			if(JSONObject.NULL.equals(uo))
+				return;
+
+			String t = to.toString();
+			Item item = new Item(this, t);
+			item.url = uo.toString();
+			item.desc = "";
+			String tp = ji.optString("title_publisher");
+			if(!tp.isEmpty())
+			{
+				int idx = tp.indexOf(t);
+				if(idx == 0)
+				{
+					tp = tp.substring(idx + t.length());
+					idx = tp.indexOf(" (");
+					if(idx == 0 && tp.charAt(tp.length() - 1) == ')')
+					{
+						tp = tp.substring(2, tp.length() - 1);
+						if(!tp.isEmpty())
+						{
+							item.desc += tp;
+						}
+					}
+				}
+			}
+			Object yo = ji.opt("release_year");
+			if(!JSONObject.NULL.equals(yo))
+				item.desc += "'" + yo;
+			Object eto = ji.optString("entry_type");
+			if(!JSONObject.NULL.equals(eto))
+			{
+				if(!item.desc.isEmpty())
+					item.desc += " - ";
+				item.desc += eto;
+			}
 			items.add(item);
 		}
 		@Override
 		public final String[] Items() { return ITEMS; }
-		final String HTTP_URL = base_url + "/pub/sinclair";
+		@Override
+		public final String[] ItemsURLs() { return ITEMSURLS; }
+		final String URL_START = "/pub/sinclair";
 		@Override
 		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
-			String s = LoadText(base_url + "/infoseekid.cgi?id=" + item.url, TextEncoding(), progress);
+			String s = LoadText(base_url + "/archive/software/" + URLSection() + "/" + item.url, TextEncoding(), progress);
 			if(s == null)
 				return ApplyResult.UNABLE_CONNECT1;
 			if(progress.Canceled())
 				return ApplyResult.CANCELED;
 
 			String url = null;
-			Pattern pt = Pattern.compile("<A HREF=\"(.+?)\" TITLE=\"Download to play off-line in an emulator\">.+?</A>");
+			Pattern pt = Pattern.compile("<th>Play</th>(?s).+?<th>File</th>.+?<a href=\"(.+?)\"");
 			Matcher m = pt.matcher(s);
 			if(m.find())
 			{
-				url = base_url + m.group(1);
+				url = m.group(1);
 			}
 			if(url == null)
 				return ApplyResult.NOT_AVAILABLE;
-			if(!url.startsWith(HTTP_URL))
+			int idx = url.indexOf(URL_START);
+			if(idx == -1)
 				return ApplyResult.FAIL;
-			String p = url.substring(HTTP_URL.length());
+			String p = url.substring(idx + URL_START.length());
 			File f = new File(WOS_FS + p);
 			return OpenFile(url, f, progress);
 		}
 	}
 	class ParserGames extends FSSWOS
 	{
-		private final String[] ITEMSURLS = new String[]
-		    {	"/games/1", "/games/a", "/games/b", "/games/c", "/games/d", "/games/e", "/games/f",
-				"/games/g", "/games/h", "/games/i", "/games/j", "/games/k", "/games/l", "/games/m",
-				"/games/n", "/games/o", "/games/p", "/games/q", "/games/r", "/games/s", "/games/t",
-				"/games/u", "/games/v", "/games/w", "/games/x", "/games/y", "/games/z"
-		    };
+		@Override
+		protected String URLSection() { return "games"; }
 		@Override
 		public final String Root() { return "/games"; }
-		@Override
-		public final String[] ItemsURLs() { return ITEMSURLS; }
 	}
 	class ParserAdventures extends FSSWOS
 	{
-		private final String[] ITEMSURLS = new String[]
-		    {	"/textadv/1", "/textadv/a", "/textadv/b", "/textadv/c", "/textadv/d", "/textadv/e", "/textadv/f",
-				"/textadv/g", "/textadv/h", "/textadv/i", "/textadv/j", "/textadv/k", "/textadv/l", "/textadv/m",
-				"/textadv/n", "/textadv/o", "/textadv/p", "/textadv/q", "/textadv/r", "/textadv/s", "/textadv/t",
-				"/textadv/u", "/textadv/v", "/textadv/w", "/textadv/x", "/textadv/y", "/textadv/z"
-		    };
+		@Override
+		protected String URLSection() { return "text-adventures"; }
 		@Override
 		public final String Root() { return "/adventures"; }
+	}
+	class ParserSimulators extends FSSWOS
+	{
 		@Override
-		public final String[] ItemsURLs() { return ITEMSURLS; }
+		protected String URLSection() { return "simulators"; }
+		@Override
+		public final String Root() { return "/simulators"; }
+	}
+	class ParserEducational extends FSSWOS
+	{
+		@Override
+		protected String URLSection() { return "educational"; }
+		@Override
+		public final String Root() { return "/educational"; }
 	}
 	class ParserUtilities extends FSSWOS
 	{
-		private final String[] ITEMSURLS = new String[]
-		    {	"/utils/1", "/utils/a", "/utils/b", "/utils/c", "/utils/d", "/utils/e", "/utils/f",
-				"/utils/g", "/utils/h", "/utils/i", "/utils/j", "/utils/k", "/utils/l", "/utils/m",
-				"/utils/n", "/utils/o", "/utils/p", "/utils/q", "/utils/r", "/utils/s", "/utils/t",
-				"/utils/u", "/utils/v", "/utils/w", "/utils/x", "/utils/y", "/utils/z"
-		    };
+		@Override
+		protected String URLSection() { return "utilities"; }
 		@Override
 		public final String Root() { return "/utilities"; }
+	}
+	class ParserDemos extends FSSWOS
+	{
 		@Override
-		public final String[] ItemsURLs() { return ITEMSURLS; }
+		protected String URLSection() { return "demos"; }
+		@Override
+		public final String Root() { return "/demos"; }
+	}
+	class ParserMisc extends FSSWOS
+	{
+		@Override
+		protected String URLSection() { return "miscellaneous"; }
+		@Override
+		public final String Root() { return "/misc"; }
+	}
+	class ParserXRated extends FSSWOS
+	{
+		@Override
+		protected String URLSection() { return "xrated"; }
+		@Override
+		public final String Root() { return "/xrated"; }
 	}
 }
