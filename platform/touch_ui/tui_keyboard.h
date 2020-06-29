@@ -21,10 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#ifdef _ANDROID
-#define USE_TUI
-#endif//_ANDROID
-
 #ifdef USE_TUI
 
 namespace xPlatform

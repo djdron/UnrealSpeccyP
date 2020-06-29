@@ -11,16 +11,11 @@ android {
 
         minSdkVersion 19
         targetSdkVersion 29
-
-        ndk {
-            moduleName "usp"
-        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
         debug {
             jniDebuggable true
@@ -31,8 +26,8 @@ android {
         abortOnError false
     }
     externalNativeBuild {
-        ndkBuild {
-            path 'Android.mk'
+        cmake {
+            path '../../cmake/CMakeLists.txt'
         }
     }
 }

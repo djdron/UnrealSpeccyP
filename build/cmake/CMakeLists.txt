@@ -23,6 +23,8 @@ set(PROJECT unreal_speccy_portable)
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS")
 set(APPLE_IOS 1)
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Android")
+set(ANDROID 1)
 endif()
 
 #core
@@ -56,7 +58,7 @@ source_group("devices\\sound" FILES ${SRCCXX_DEVICES_SOUND} ${SRCH_DEVICES_SOUND
 
 #3rdparty libs
 
-if(NOT APPLE_IOS AND (USE_SDL OR USE_SDL2) AND USE_WEB AND NOT EMSCRIPTEN)
+if(NOT APPLE_IOS AND NOT ANDROID AND (USE_SDL OR USE_SDL2) AND USE_WEB AND NOT EMSCRIPTEN)
 find_package(CURL REQUIRED)
 if(CURL_FOUND)
 	include_directories(${CURL_INCLUDE_DIRS})
@@ -139,7 +141,7 @@ source_group("platform\\oal" FILES ${SRCCXX_PLATFORM_OPENAL})
 
 endif(USE_WX_WIDGETS OR APPLE_IOS)
 
-if(USE_SDL OR USE_SDL2 OR APPLE_IOS)
+if(NOT ANDROID AND (USE_SDL OR USE_SDL2 OR APPLE_IOS))
 
 file(GLOB SRCCXX_UI "../../ui/*.cpp")
 file(GLOB SRCH_UI "../../ui/*.h")
@@ -162,9 +164,9 @@ source_group("platform\\web" FILES ${SRCCXX_PLATFORM_WEB} ${SRCH_PLATFORM_WEB})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 endif(USE_WEB)
 
-endif(USE_SDL OR USE_SDL2 OR APPLE_IOS)
+endif(NOT ANDROID AND (USE_SDL OR USE_SDL2 OR APPLE_IOS))
 
-if(USE_SDL2 OR APPLE_IOS)
+if(USE_SDL2 OR APPLE_IOS OR ANDROID)
 
 file(GLOB SRCCXX_PLATFORM_GLES2 "../../platform/gles2/*.cpp")
 file(GLOB SRCH_PLATFORM_GLES2 "../../platform/gles2/*.h")
@@ -172,7 +174,7 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM_GLES2})
 list(APPEND SRCH ${SRCH_PLATFORM_GLES2})
 source_group("platform\\gles2" FILES ${SRCCXX_PLATFORM_GLES2} ${SRCH_PLATFORM_GLES2})
 
-endif(USE_SDL2 OR APPLE_IOS)
+endif(USE_SDL2 OR APPLE_IOS OR ANDROID)
 
 if(MSVC)
 add_definitions(-DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOCOLOR)
@@ -265,6 +267,29 @@ endforeach(_file)
 foreach(_file ${COPY_RES_FONT})
 set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "res/font")
 endforeach(_file)
+
+elseif(ANDROID)
+
+set(PROJECT usp)
+
+file(GLOB SRCCXX_PLATFORM_ANDROID "../../platform/android/*.cpp")
+file(GLOB SRCH_PLATFORM_ANDROID "../../platform/android/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_ANDROID})
+list(APPEND SRCH ${SRCH_PLATFORM_ANDROID})
+source_group("platform\\android" FILES ${SRCCXX_PLATFORM_ANDROID} ${SRCH_PLATFORM_ANDROID})
+
+file(GLOB SRCCXX_PLATFORM_TOUCH_UI "../../platform/touch_ui/*.cpp")
+file(GLOB SRCH_PLATFORM_TOUCH_UI "../../platform/touch_ui/*.h")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_TOUCH_UI})
+list(APPEND SRCH ${SRCH_PLATFORM_TOUCH_UI})
+source_group("platform\\touch_ui" FILES ${SRCCXX_PLATFORM_TOUCH_UI} ${SRCH_PLATFORM_TOUCH_UI})
+
+add_definitions(-DUSE_EXTERN_RESOURCES -DUSE_CONFIG -DUSE_ZIP -D_ANDROID -DUSE_GLES2 -DUSE_TUI)
+
+add_platform_io_stuff()
+
+add_library(${PROJECT} SHARED ${SRCCXX} ${SRCC} ${SRCH})
+target_link_libraries(${PROJECT} GLESv2)
 
 elseif(USE_WX_WIDGETS)
 
