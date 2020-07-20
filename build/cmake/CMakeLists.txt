@@ -178,7 +178,7 @@ endif(USE_SDL2 OR APPLE_IOS OR ANDROID)
 
 if(MSVC)
 add_definitions(-DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOCOLOR)
-add_definitions("/wd4244 /wd4996 /wd4800")
+add_definitions("/wd4244 /wd4996 /wd4800 /wd4267")
 set(variables CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
 foreach(variable ${variables})
 	if(${variable} MATCHES "/MD")
