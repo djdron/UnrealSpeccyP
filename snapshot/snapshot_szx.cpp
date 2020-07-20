@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "../platform/platform.h"
+
 #ifdef USE_ZIP
 #include <zlib.h>
 #endif//USE_ZIP
-
-#include "../platform/platform.h"
 
 #include "../z80/z80.h"
 #include "../devices/memory.h"
