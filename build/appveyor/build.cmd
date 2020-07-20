@@ -26,5 +26,5 @@ SET BUILD_DIR=build_win32_benchmark
 mkdir %BUILD_DIR%
 cd %BUILD_DIR%
 
-cmake .. -DUSE_SDL=0 -DUSE_BENCHMARK=1
-cmake --build .
+cmake .. -A x64 -DUSE_SDL=0 -DUSE_BENCHMARK=1
+cmake --build . --config Release
