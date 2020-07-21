@@ -4,7 +4,9 @@ build_script:
   - build/appveyor/build.cmd
 
 artifacts:
-  - path: build/cmake/build_win32_benchmark/Release/unreal_speccy_portable.exe 
+  - path: build/cmake/build_win32_library/Release/unreal_speccy_portable.*
+    name: Unreal Speccy Portable library
+  - path: build/cmake/build_win32_benchmark/Release/unreal_speccy_portable.exe
     name: Unreal Speccy Portable benchmark
   - path: build/cmake/build_win32_sdl2/Release/unreal_speccy_portable.exe
-    name: Unreal Speccy Portable sdl2 gles2 angle
+    name: Unreal Speccy Portable sdl2 gles2 angle curl

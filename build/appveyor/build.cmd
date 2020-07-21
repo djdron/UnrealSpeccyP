@@ -32,6 +32,11 @@ cd ../cmake
 
 rem goto :build_sdl2
 
+rem build library
+set BUILD_DIR=build_win32_library
+set BUILD_ARGS=-DUSE_SDL=0 -DUSE_LIBRARY=1
+call :build
+
 rem build benchmark
 set BUILD_DIR=build_win32_benchmark
 set BUILD_ARGS=-DUSE_SDL=0 -DUSE_BENCHMARK=1
@@ -53,13 +58,22 @@ call :download
 if errorlevel 1 exit /b 1
 !7ZIP! x %ANGLELIB%
 
+set CURLLIB=curl-7.61.1.7z
+set URL=https://github.com/djdron/UnrealSpeccyP/releases/download/angle-chromium84/%CURLLIB%
+set DEST=%CURLLIB%
+call :download
+if errorlevel 1 exit /b 1
+!7ZIP! x %CURLLIB%
+
 for %%I in (.) do set CUR_DIR=%%~dpnI
-set SDL2LIB_DIR=%CUR_DIR%\SDL2-2.0.12
-set ANGLELIB_DIR=%CUR_DIR%\angle-chromium84
+set SDL2LIB_DIR=%CUR_DIR%/SDL2-2.0.12
+set ANGLELIB_DIR=%CUR_DIR%/angle-chromium84
+set CURLLIB_DIR=%CUR_DIR%/curl-7.61.1
 set BUILD_DIR=build_win32_sdl2
 set ANGLE_ARGS=-DANGLE_INCLUDE_DIR=%ANGLELIB_DIR%/include -DANGLE_LIBRARY=%ANGLELIB_DIR%/lib/x64/libGLESv2.lib;%ANGLELIB_DIR%/lib/x64/libEGL.lib
-set SDL2_ARGS=-DSDL2_INCLUDE_DIRS=%SDL2LIB_DIR%\include -DSDL2_LIBRARIES=%SDL2LIB_DIR%\lib\x64\SDL2main.lib;%SDL2LIB_DIR%\lib\x64\SDL2.lib
-set BUILD_ARGS=-DUSE_SDL=0 -DUSE_SDL2=1 -DUSE_WEB=0 %ANGLE_ARGS% %SDL2_ARGS%
+set SDL2_ARGS=-DSDL2_INCLUDE_DIRS=%SDL2LIB_DIR%/include -DSDL2_LIBRARIES=%SDL2LIB_DIR%/lib/x64/SDL2main.lib;%SDL2LIB_DIR%/lib/x64/SDL2.lib
+set CURL_ARGS=-DCURL_INCLUDE_DIR=%CURLLIB_DIR%/include -DCURL_LIBRARY=%CURLLIB_DIR%/lib/x64/libcurl.lib
+set BUILD_ARGS=-DUSE_SDL=0 -DUSE_SDL2=1 %ANGLE_ARGS% %SDL2_ARGS% %CURL_ARGS%
 echo %BUILD_ARGS%
 call :build
 

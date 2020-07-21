@@ -161,7 +161,9 @@ file(GLOB SRCH_PLATFORM_WEB "../../platform/web/*.h")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_WEB})
 list(APPEND SRCH ${SRCH_PLATFORM_WEB})
 source_group("platform\\web" FILES ${SRCCXX_PLATFORM_WEB} ${SRCH_PLATFORM_WEB})
+if(NOT MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+endif(NOT MSVC)
 endif(USE_WEB)
 
 endif(NOT ANDROID AND (USE_SDL OR USE_SDL2 OR APPLE_IOS))
@@ -469,6 +471,6 @@ endif(APPLE_IOS)
 
 target_link_libraries(${PROJECT} ${THIRDPARTY_LIBRARIES})
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+if(MSVC)
 set_target_properties(${PROJECT} PROPERTIES LINK_FLAGS "/MANIFEST:NO /LARGEADDRESSAWARE")
-endif()
+endif(MSVC)
