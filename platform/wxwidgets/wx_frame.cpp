@@ -119,7 +119,7 @@ private:
 		ID_Reset = 1, ID_ResetToServiceRomToggle, ID_Size200, ID_Size300, ID_Minimize, ID_Zoom,
 		ID_ViewFillScreen, ID_ViewSmallBorder, ID_ViewNoBorder, ID_ViewFilteringToggle, ID_FullScreenToggle,
 		ID_TapeToggle, ID_TapeFastToggle, ID_AutoPlayImageToggle,
-		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOP, ID_JoySinclair2,
+		ID_JoyCursor, ID_JoyKempston, ID_JoyQAOPSpace, ID_JoySinclair2,
 		ID_PauseToggle, ID_TrueSpeedToggle, ID_Mode48kToggle,
 		ID_BetaDiskDriveA, ID_BetaDiskDriveB, ID_BetaDiskDriveC, ID_BetaDiskDriveD,
 		ID_SoundChipAY, ID_SoundChipYM,
@@ -131,7 +131,7 @@ private:
 	{
 		wxMenuItem* kempston;
 		wxMenuItem* cursor;
-		wxMenuItem* qaop;
+		wxMenuItem* qaop_space;
 		wxMenuItem* sinclair2;
 	};
 	struct eViewMenuItems
@@ -197,7 +197,7 @@ BEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(Frame::ID_SoundChipStereoMONO, Frame::OnSoundChipStereo)
 	EVT_MENU(Frame::ID_JoyKempston,	Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoyCursor,	Frame::OnJoy)
-	EVT_MENU(Frame::ID_JoyQAOP,		Frame::OnJoy)
+	EVT_MENU(Frame::ID_JoyQAOPSpace,Frame::OnJoy)
 	EVT_MENU(Frame::ID_JoySinclair2,Frame::OnJoy)
 	EVT_MENU(Frame::ID_PauseToggle,	Frame::OnPauseToggle)
 	EVT_MENU(Frame::ID_TrueSpeedToggle,	Frame::OnTrueSpeedToggle)
@@ -312,7 +312,7 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const eCmdLine& cmdline)
 	wxMenu* menuJoy = new wxMenu;
 	menu_joy.cursor = menuJoy->Append(ID_JoyCursor, _("&Cursor"), _(""), wxITEM_CHECK);
 	menu_joy.kempston = menuJoy->Append(ID_JoyKempston, _("&Kempston"), _(""), wxITEM_CHECK);
-	menu_joy.qaop = menuJoy->Append(ID_JoyQAOP, _("&QAOP"), _(""), wxITEM_CHECK);
+	menu_joy.qaop_space = menuJoy->Append(ID_JoyQAOPSpace, _("&QAOPSpace"), _(""), wxITEM_CHECK);
 	menu_joy.sinclair2 = menuJoy->Append(ID_JoySinclair2, _("&Sinclair 2"), _(""), wxITEM_CHECK);
 	menuDevice->Append(-1, _("&Joystick"), menuJoy);
 
@@ -683,7 +683,7 @@ void Frame::OnJoy(wxCommandEvent& event)
 	{
 	case ID_JoyKempston:	OpJoystick(J_KEMPSTON);	SetStatusText(_("Kempston selected"));	break;
 	case ID_JoyCursor:		OpJoystick(J_CURSOR);	SetStatusText(_("Cursor selected"));	break;
-	case ID_JoyQAOP:		OpJoystick(J_QAOP);		SetStatusText(_("QAOP selected"));		break;
+	case ID_JoyQAOPSpace:	OpJoystick(J_QAOPSPACE);SetStatusText(_("QAOPSpace selected"));		break;
 	case ID_JoySinclair2:	OpJoystick(J_SINCLAIR2);SetStatusText(_("Sinclair 2 selected"));break;
 	}
 	UpdateJoyMenu();
@@ -858,7 +858,7 @@ void Frame::UpdateJoyMenu()
 	eJoystick joy = OpJoystick();
 	menu_joy.kempston->Check(joy == J_KEMPSTON);
 	menu_joy.cursor->Check(joy == J_CURSOR);
-	menu_joy.qaop->Check(joy == J_QAOP);
+	menu_joy.qaop_space->Check(joy == J_QAOPSPACE);
 	menu_joy.sinclair2->Check(joy == J_SINCLAIR2);
 }
 //=============================================================================
