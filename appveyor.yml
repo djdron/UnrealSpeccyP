@@ -1,5 +1,8 @@
 skip_branch_with_pr: true
 
+install:
+  - git submodule update --init --recursive
+
 build_script:
   - build/appveyor/build.cmd
 
@@ -10,3 +13,5 @@ artifacts:
     name: Unreal Speccy Portable benchmark
   - path: build/cmake/build_win32_sdl2/Release/unreal_speccy_portable.exe
     name: Unreal Speccy Portable sdl2 gles2 angle curl
+  - path: build/cmake/build_win32_wxwidgets/Release/unreal_speccy_portable.exe 
+    name: Unreal Speccy Portable wxWidgets OpenAL Soft
