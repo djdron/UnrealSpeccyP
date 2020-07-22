@@ -1,9 +1,11 @@
+#ifndef WX_RES
 #define RT_MANIFEST 24 
 #define APP_MANIFEST 1
 APP_MANIFEST RT_MANIFEST "style.manifest"
+#else//WX_RES
+#define wxUSE_RC_MANIFEST 1
+#define wxUSE_DPI_AWARE_MANIFEST 1
+#include "wx/msw/wx.rc"
+#endif//WX_RES
 
 unreal_speccy_portable ICON "unreal_speccy_portable.ico"
-
-#ifdef WX_RES
-#include "wx/msw/wx.rc"
-#endif

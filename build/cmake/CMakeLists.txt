@@ -331,6 +331,11 @@ source_group("platform\\wxwidgets" FILES ${SRCCXX_PLATFORM_WX_WIDGETS} ${SRCH_PL
 
 IF(WIN32)
 add_definitions(-DWX_RES)
+if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "8")
+add_definitions(-DWX_CPU_AMD64)
+else()
+add_definitions(-DWX_CPU_X86)
+endif()
 SET(SRCRES "../win/unreal_speccy_portable.rc")
 source_group("platform\\win\\res" FILES ${SRCRES})
 ENDIF(WIN32)
