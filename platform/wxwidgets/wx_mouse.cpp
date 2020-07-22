@@ -93,6 +93,7 @@ MouseCapture::MouseCapture(wxWindow* parent) : wxPopupWindow(parent)
 #else//_WINDOWS
 	SetSize(wxSize(0, 0));
 #endif//_WINDOWS
+	SetExtraStyle(GetExtraStyle()&~wxWS_EX_BLOCK_EVENTS); // unblock events (blocked by default)
 	Position(wxPoint(0, 0), wxSize(0, 0));
 	Show();
 	wxImage image_blank(1, 1);
@@ -177,6 +178,7 @@ void MouseCapture::OnClose(wxCloseEvent& event)
 	if(HasCapture())
 		ReleaseMouse();
 	SetCursor(wxNullCursor);
+	Hide();
 	wxCommandEvent ev(evtMouseCapture, false);
 	ProcessEvent(ev);
 //	wxLogDebug(_("OnClose()"));
