@@ -80,6 +80,7 @@ set ANGLE_ARGS=-DANGLE_INCLUDE_DIR=%ANGLELIB_DIR%/include -DANGLE_LIBRARY=%ANGLE
 set SDL2_ARGS=-DSDL2_INCLUDE_DIRS=%SDL2LIB_DIR%/include -DSDL2_LIBRARIES=%SDL2LIB_DIR%/lib/x64/SDL2main.lib;%SDL2LIB_DIR%/lib/x64/SDL2.lib
 set CURL_ARGS=-DCURL_INCLUDE_DIR=%CURLLIB_DIR%/include -DCURL_LIBRARY=%CURLLIB_DIR%/lib/x64/libcurl.lib
 set BUILD_ARGS=-DUSE_SDL=0 -DUSE_SDL2=1 %ANGLE_ARGS% %SDL2_ARGS% %CURL_ARGS%
+set BUILD_TARGET=--target PACKAGE
 call :build
 
 
@@ -93,10 +94,12 @@ if errorlevel 1 exit /b 1
 set OPENALLIB_DIR=%CUR_DIR%\openal-soft-1.20.1-bin
 del %OPENALLIB_DIR% /S /Q /F>nul
 !7ZIP! x %OPENALLIB%
+copy /Y %OPENALLIB_DIR%\bin\Win64\soft_oal.dll %OPENALLIB_DIR%\libs\Win64\OpenAL32.dll
 
 set OPENALDIR=%OPENALLIB_DIR%
 set BUILD_DIR=build_win32_wxwidgets
 set BUILD_ARGS=-DUSE_SDL=0 -DUSE_WX_WIDGETS=1
+set BUILD_TARGET=--target PACKAGE
 call :build
 
 exit /b
@@ -110,7 +113,7 @@ del %BUILD_DIR% /S /Q /F>nul
 mkdir %BUILD_DIR%
 pushd %BUILD_DIR%
 cmake .. -A x64 %BUILD_ARGS%
-cmake --build . --config Release
+cmake --build . --config Release %BUILD_TARGET%
 popd
 exit /b
 
