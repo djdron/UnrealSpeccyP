@@ -473,9 +473,9 @@ void Frame::OnAbout(wxCommandEvent& event)
 	wxAboutDialogInfo info;
 	info.SetName(GetTitle());
 	info.SetDescription(_("Portable ZX Spectrum emulator."));
-	info.SetCopyright(_("Copyright (C) 2001-2014 SMT, Dexus, Alone Coder, deathsoft, djdron, scor."));
+	info.SetCopyright(_("Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor."));
 #ifndef _MAC
-	info.SetVersion(_("0.0.57"));
+	info.SetVersion(_("0.0.90"));
 	info.SetWebSite(_("https://bitbucket.org/djdron/unrealspeccyp"));
 	info.SetLicense(_(
 "This program is free software: you can redistribute it and/or modify\n\
@@ -506,7 +506,7 @@ void Frame::OnOpenFile(wxCommandEvent& event)
 			L"All files|*.*|"
 			L"Snapshot files (*.sna;*.z80;*.szx)|*.sna;*.z80;*.szx;*.SNA;*.Z80;*.SZX|"
 			L"Replay files (*.rzx)|*.rzx;*.RZX|"
-			L"Disk images (*.trd;*.scl;*.fdi)|*.trd;*.scl;*.fdi;*.TRD;*.SCL;*.FDI|"
+			L"Disk images (*.trd;*.scl;*.fdi;*.td0;*.udi)|*.trd;*.scl;*.fdi;*.td0;*.udi;*.TRD;*.SCL;*.FDI;*.TD0;*.UDI|"
 			L"Tape files (*.tap;*.csw;*.tzx)|*.tap;*.csw;*.tzx;*.TAP;*.CSW;*.TZX|"
 			L"ZIP archives (*.zip)|*.zip;*.ZIP"
 		);
