@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=UnrealSpeccy
+Comment=ZX-Spectrum emulator
+Exec=unreal_speccy_portable %f
+Icon=icon-32x32
+Type=Application
+Categories=emulators;
+MimeType=application/usp-zx-snapshot;application/usp-zx-disk;application/usp-zx-tape;
