@@ -24,7 +24,7 @@ DESKTOP_ENTRY = opk/default.gcw0.desktop
 ICON = opk/icon-32x32.png
 
 STD_OPTS  = -G0 -O3 -Wall -c -fmessage-length=0 -finline-functions -fomit-frame-pointer -fno-builtin -fno-exceptions -fno-pic -DNDEBUG
-CXXFLAGS  = $(STD_OPTS) -fno-rtti -fno-threadsafe-statics -D_POSIX -DUSE_SDL -DSDL_KEYS_DINGOO `$(SDLCONFIG) --cflags`
+CXXFLAGS  = $(STD_OPTS) -fno-rtti -fno-threadsafe-statics -D_POSIX -DUSE_SDL -DSDL_KEYS_DINGOO -DSDL_USE_JOYSTICK -DRG350 `$(SDLCONFIG) --cflags`
 CFLAGS    = $(STD_OPTS)
 LFLAGS    = -s `$(SDLCONFIG) --libs`
 
