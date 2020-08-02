@@ -23,6 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#ifdef RG350
+extern int gcw_fullscreen;
+#endif
+
 namespace xZ80 { class eZ80; }
 class eMemory;
 

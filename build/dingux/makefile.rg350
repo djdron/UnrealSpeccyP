@@ -28,7 +28,7 @@ CXXFLAGS  = $(STD_OPTS) -fno-rtti -fno-threadsafe-statics -D_POSIX -DUSE_SDL -DS
 CFLAGS    = $(STD_OPTS)
 LFLAGS    = -s `$(SDLCONFIG) --libs`
 
-all: build
+all: mkdirs build
 
 mkdirs:
 	mkdir -p $(DIST_PATH)
@@ -65,6 +65,8 @@ clean:
 	rm -rf $(CXX_DEPS)
 	rm -rf $(C_OBJS)
 	rm -rf $(C_DEPS)
-	rm -rf $(BIN_TARGET)
+	rm -rf $(DIST_PATH)
+	rm -rf opk/res
+	rm -rf opk/$(PROJECT_NAME)
 
 .PHONY: mkdirs clean build all

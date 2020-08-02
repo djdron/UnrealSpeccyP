@@ -39,6 +39,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "file_type.h"
 #include "snapshot/rzx.h"
 
+#ifdef RG350
+int gcw_fullscreen = 1;
+#endif//RG350
+
 namespace xPlatform
 {
 
@@ -362,9 +366,30 @@ static struct eOption48K : public xOptions::eOptionBool
 
 static struct eOptionResetToServiceRom : public xOptions::eOptionBool
 {
+	#ifdef RG350
+	virtual const char* Name() const { return "reset to s-rom"; }
+	#else
 	virtual const char* Name() const { return "reset to service rom"; }
+	#endif
 	virtual int Order() const { return 79; }
 } op_reset_to_service_rom;
+
+#ifdef RG350
+static struct eOptionFullscreen : public xOptions::eOptionBool
+{
+	virtual const char* Name() const { return "fullscreen"; }
+	virtual void Change(bool next = true)
+	{
+		eOptionBool::Change();
+		Apply();
+	}
+	virtual void Apply()
+	{
+                gcw_fullscreen = !gcw_fullscreen;
+	}
+	virtual int Order() const { return 75; }
+} op_fullscreen;
+#endif
 
 eActionResult eSpeccyHandler::OnAction(eAction action)
 {
