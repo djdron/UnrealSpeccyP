@@ -37,6 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DINGOO_BUTTON_Y             SDLK_LSHIFT
 #define DINGOO_BUTTON_SELECT        SDLK_ESCAPE
 #define DINGOO_BUTTON_START         SDLK_RETURN
+#define DINGOO_BUTTON_POWER         SDLK_END
 
 namespace xPlatform
 {
@@ -75,6 +76,7 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	case DINGOO_BUTTON_X:		return '1';
 	case DINGOO_BUTTON_Y:		return ' ';
 
+	case DINGOO_BUTTON_POWER:
 	case DINGOO_BUTTON_SELECT:
 		b_select = _flags&KF_DOWN;
 		if(b_select && b_start)
