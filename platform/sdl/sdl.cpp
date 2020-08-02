@@ -149,15 +149,20 @@ void Loop1()
 		case SDL_KEYUP:
 			ProcessKey(e);
 			break;
-#ifdef SDL_USE_JOYSTICK
-		case SDL_JOYBUTTONDOWN:
-		case SDL_JOYBUTTONUP:
-		case SDL_JOYAXISMOTION:
-		case SDL_JOYHATMOTION:
-			ProcessJoy(e);
-			break;
-#endif//SDL_USE_JOYSTICK
+		#ifdef SDL_USE_JOYSTICK
+			case SDL_JOYBUTTONDOWN:
+			case SDL_JOYBUTTONUP:
+			case SDL_JOYAXISMOTION:
+			case SDL_JOYHATMOTION:
+			#ifndef RG350
+				ProcessJoy(e);
+			#endif
+		#endif//SDL_USE_JOYSTICK
 		default:
+		#ifdef RG350
+			//invoke processjoy to stop A-stick continuing to report movemet when centred
+			ProcessJoy(e);
+		#endif //RG350
 			break;
 		}
 	}
