@@ -44,7 +44,19 @@ $(BIN_TARGET): $(CXX_OBJS) $(C_OBJS)
 	$(CXX) $(LFLAGS) $^ -o$(BIN_TARGET)
 
 $(OPK_TARGET): $(BIN_TARGET) $(DESKTOP_ENTRY) $(ICON)
-	mksquashfs $^ $@ -noappend -no-exports -no-xattrs -all-root
+	rm -f $(OPK_TARGET)
+	rm -rf opk/res 
+	cp $(BIN_TARGET) opk
+	mkdir opk/res
+	mkdir opk/res/font
+	cp $(SRC_PATH)/res/font/spxtrm4f.fnt opk/res/font
+	mkdir opk/res/rom
+	cp $(SRC_PATH)/res/rom/dos513f.rom opk/res/rom
+	cp $(SRC_PATH)/res/rom/service.rom opk/res/rom
+	cp $(SRC_PATH)/res/rom/sos128_0.rom opk/res/rom
+	cp $(SRC_PATH)/res/rom/sos128_1.rom opk/res/rom
+	cp $(SRC_PATH)/res/rom/sos48.rom opk/res/rom
+	mksquashfs opk $@ -noappend -no-exports -no-xattrs -all-root
 
 build: $(OPK_TARGET)
 
