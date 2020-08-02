@@ -35,7 +35,7 @@ class eDesktop : public eDialog
 public:
 	eDesktop()
 	{
-		_CreateFont(6, 6, "/media/data/local/home/.usp/font/spxtrm4f.fnt");
+		_CreateFont(6, 6, "res/font/spxtrm4f.fnt");
 	}
 	byte* VideoData() const { return Focused() ? screen : NULL; }
 	bool Focused() const
