@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define SCREEN_WIDTH  320
 #define SCREEN_HEIGHT 240
-#define BPP            16
+#define BPP            32
 #define BORDER_WIDTH   32
 #define BORDER_HEIGHT  24
 
@@ -69,11 +69,7 @@ bool InitVideo()
 	if(!screen)
 		return false;
 #else//SDL_NO_OFFSCREEN
-	#ifdef RG350
-		screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, BPP, SDL_HWSURFACE|SDL_TRIPLEBUF);
-	#else
-		screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, BPP, SDL_HWSURFACE|SDL_DOUBLEBUF);
-	#endif //RG350
+	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, BPP, SDL_HWSURFACE|SDL_DOUBLEBUF);
 	if(!screen)
 		return false;
 	offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, SCREEN_WIDTH, SCREEN_HEIGHT, BPP,
@@ -104,11 +100,11 @@ void UpdateScreen()
 		gcw_fullscreen_current = gcw_fullscreen;
 		if(gcw_fullscreen)
 		{
-			screen = SDL_SetVideoMode(SCREEN_WIDTH - 2 * BORDER_WIDTH, SCREEN_HEIGHT - 2 * BORDER_HEIGHT, BPP, SDL_HWSURFACE|SDL_TRIPLEBUF);
+			screen = SDL_SetVideoMode(SCREEN_WIDTH - 2 * BORDER_WIDTH, SCREEN_HEIGHT - 2 * BORDER_HEIGHT, BPP, SDL_HWSURFACE|SDL_DOUBLEBUF);
 		}
 		else
 		{
-			screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, BPP, SDL_HWSURFACE|SDL_TRIPLEBUF);
+			screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, BPP, SDL_HWSURFACE|SDL_DOUBLEBUF);
 		}
 	}
 #endif
