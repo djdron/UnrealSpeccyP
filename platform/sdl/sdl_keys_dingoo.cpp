@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DINGOO_BUTTON_Y             SDLK_LSHIFT
 #define DINGOO_BUTTON_SELECT        SDLK_ESCAPE
 #define DINGOO_BUTTON_START         SDLK_RETURN
-#define DINGOO_BUTTON_POWER         SDLK_END
+#define DINGOO_BUTTON_POWER         SDLK_HOME
 
 namespace xPlatform
 {
