@@ -237,8 +237,9 @@ public class ViewGLES extends GLSurfaceView
 				return true;
 			}
 			break;
+		case KeyEvent.KEYCODE_F1:
 		case KeyEvent.KEYCODE_BUTTON_START:
-			main_activity.OpenOptionsMenu();
+			main_activity.OpenMenu();
 			return true;
 		}
 		return super.onKeyUp(keyCode, event);

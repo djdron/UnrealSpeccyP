@@ -32,6 +32,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.view.Menu;
@@ -87,7 +88,7 @@ public class Main extends Activity
 				@Override
 				public void onSystemUiVisibilityChange(int visibility)
 				{
-					if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
+					if(!paused && (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
 					{
 						RunHideCallback();
 					}
@@ -320,9 +321,21 @@ public class Main extends Activity
 		UiModeManager uiModeManager = (UiModeManager)getSystemService(UI_MODE_SERVICE);
 		return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
 	}
-	public void OpenOptionsMenu()
+	public void OpenMenu()
 	{
-		openOptionsMenu();
+		CancelHideCallback();
+		BeginPause();
+		PopupMenu m = new PopupMenu(this, control);
+		m.inflate(R.menu.menu_tv);
+		m.show();
+		m.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+		{
+			@Override
+			public boolean onMenuItemClick(MenuItem item)
+			{
+				return OnMenuItemSelected(item);
+			}
+		});
 	}
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -349,6 +362,13 @@ public class Main extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+	    if(OnMenuItemSelected(item))
+	    	return true;
+	    return super.onOptionsItemSelected(item);
+    }
+
+	private boolean OnMenuItemSelected(MenuItem item)
+	{
 		EndPause();
     	switch(item.getItemId())
     	{
@@ -359,7 +379,7 @@ public class Main extends Activity
     	case R.id.preferences:	startActivity(new Intent(this, Preferences.class)); return true;
 		case R.id.quit:			Exit(); 						return true;
     	}
-    	return super.onOptionsItemSelected(item);
+    	return false;
     }
 	final private void Exit()
 	{
