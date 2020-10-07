@@ -316,7 +316,7 @@ public class Main extends Activity
 			Emulator.the.VideoPaused(false);
 		}
 	}
-	private boolean IsTV()
+	public boolean IsTV()
 	{
 		UiModeManager uiModeManager = (UiModeManager)getSystemService(UI_MODE_SERVICE);
 		return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;

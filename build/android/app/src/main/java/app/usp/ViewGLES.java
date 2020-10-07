@@ -232,8 +232,15 @@ public class ViewGLES extends GLSurfaceView
 		case KeyEvent.KEYCODE_BACK:
 			if(!event.isLongPress())
 			{
-				control.OnToggle();
-				UpdateControls();
+				if(main_activity.IsTV())
+				{
+					main_activity.OpenMenu();
+				}
+				else
+				{
+					control.OnToggle();
+					UpdateControls();
+				}
 				return true;
 			}
 			break;
