@@ -45,10 +45,10 @@ public class FileSelectorWOS extends FileSelector
 		super.onCreate(savedInstanceState);
 		sources.add(new ParserGames());
 		sources.add(new ParserAdventures());
-		sources.add(new ParserSimulators());
+//		sources.add(new ParserSimulators());
 		sources.add(new ParserEducational());
-//		sources.add(new ParserUtilities());
-//		sources.add(new ParserDemos());
+		sources.add(new ParserUtilities());
+		sources.add(new ParserDemos());
 //		sources.add(new ParserMisc());
 //		sources.add(new ParserXRated());
 	}
@@ -62,7 +62,7 @@ public class FileSelectorWOS extends FileSelector
 		{
 			return base_url + "/software/ajax_software_items/" + URLSection() +
 					"?columns%5B0%5D%5Bdata%5D=az&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=" + _url +
-					"&columns%5B1%5D%5Bdata%5D=title&columns%5B8%5D%5Bdata%5D=availability&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=1" +
+					"&columns%5B1%5D%5Bdata%5D=title&columns%5B8%5D%5Bdata%5D=availability&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=Available" +
 					"&order%5B0%5D%5Bcolumn%5D=1&order%5B0%5D%5Bdir%5D=asc&length=-1";
 		}
 		@Override
