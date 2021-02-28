@@ -89,6 +89,7 @@ public:
 		}
 	}
 	void SelectPage(int page) { page_selected = page; memory->SetPage(0, page_selected); }
+	int PageSelected() const { return page_selected; }
 	bool DosSelected() const { return page_selected == ROM_DOS; }
 	void Mode48k(bool on) { mode_48k = on; }
 	int ROM_SOS() const { return mode_48k ? ROM_48 : ROM_128_0; }

@@ -163,6 +163,14 @@ size_t eZ80Accessor::StoreState(eSnapshot_SNA* s)
 	byte p7FFD = memory->Page(3) - eMemory::P_RAM0;
 	if(!devices->Get<eUla>()->FirstScreen())
 		p7FFD |= 0x08;
+	switch(devices->Get<eRom>()->PageSelected())
+	{
+	case eRom::ROM_128_0:
+	case eRom::ROM_48:
+	case eRom::ROM_DOS:
+		p7FFD |= 0x10;
+		break;
+	}
 	byte pFE = devices->Get<eUla>()->BorderColor();
 	s->p7FFD = p7FFD;
 	s->pFE = pFE;
