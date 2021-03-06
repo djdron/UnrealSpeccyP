@@ -1079,6 +1079,10 @@ void eZ80_FastTape::StepTrap()
 {
 	if((pc & 0xFFFF) != 0x056B)
 		return;
+
+	bool is_load = (alt.f&CF) != 0;
+	byte alt_a = alt.a;
+
 	eTape* tape = devices->Get<eTape>();
 	dword pulse;
 	do
@@ -1093,20 +1097,26 @@ void eZ80_FastTape::StepTrap()
 	while(pulse > 770);
 	++tape->tape.play_pointer;
 
-	// loading header
+	// loading flag byte
 	l = 0;
+	h = 0;
 	for(dword bit = 0x80; bit; bit >>= 1)
 	{
 		if(tape->tape.play_pointer >= tape->tape.end_of_tape ||
 				(pulse = tape->tape_pulse[*tape->tape.play_pointer++]) == (dword)-1)
 		{
 			tape->Stop();
-			pc = 0x05E2;
+			pc = 0x05DF;
 			return;
 		}
 		l |= (pulse > 1240) ? bit : 0;
 		++tape->tape.play_pointer;
 	}
+
+	if(l != alt_a)
+		is_load = false;
+
+	h ^= l;
 
 	// loading data
 	do
@@ -1118,13 +1128,16 @@ void eZ80_FastTape::StepTrap()
 					(pulse = tape->tape_pulse[*tape->tape.play_pointer++]) == (dword)-1)
 			{
 				tape->Stop();
-				pc = 0x05E2;
+				pc = 0x05DF;
 				return;
 			}
 			l |= (pulse > 1240) ? bit : 0;
 			++tape->tape.play_pointer;
 		}
-		memory->Write(ix++, l);
+		h ^= l;
+		if(is_load)
+			memory->Write(ix, l);
+		++ix;
 		--de;
 	}
 	while(de & 0xFFFF);
@@ -1137,16 +1150,18 @@ void eZ80_FastTape::StepTrap()
 				(pulse = tape->tape_pulse[*tape->tape.play_pointer++]) == (dword)-1)
 		{
 			tape->Stop();
-			pc = 0x05E2;
+			pc = 0x05DF;
 			return;
 		}
 		l |= (pulse > 1240) ? bit : 0;
 		++tape->tape.play_pointer;
 	}
+	h ^= l;
 	pc = 0x05DF;
-	f |= CF;
 	bc = 0xB001;
-	h = 0;
+	++tape->tape.play_pointer;
+	if(tape->tape.play_pointer >= tape->tape.end_of_tape)
+		tape->Stop();
 }
 
 }
