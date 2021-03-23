@@ -208,6 +208,13 @@ static struct eOptionVolume : public xOptions::eOptionInt
 	virtual int Order() const { return 30; }
 } op_volume;
 
+static struct eOptionAutoPlayImage : public xOptions::eOptionBool
+{
+	eOptionAutoPlayImage() { Set(true); }
+	virtual const char* Name() const { return "auto play image"; }
+	virtual int Order() const { return 55; }
+} op_auto_play_image;
+
 eVolume	OpVolume() { return (eVolume)(int)op_volume; }
 void OpVolume(eVolume v) { op_volume.Set(v); }
 
@@ -305,6 +312,9 @@ dword OpJoyKeyFlags()
 	}
 	return KF_QAOPM;
 }
+
+bool OpAutoPlayImage() { return op_auto_play_image; }
+void OpAutoPlayImage(bool v) { op_auto_play_image.Set(v); }
 
 }
 //namespace xPlatform

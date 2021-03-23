@@ -51,7 +51,8 @@ static struct eFileTypeZIP : public eFileType
 	}
 private:
 	bool Open(unzFile h, char* name = NULL) const;
-	bool OpenCurrent(unzFile h, char* name = NULL) const;
+	enum eOpenResult { OR_FAIL, OR_OK, OR_OK_TRYNEXT };
+	eOpenResult OpenCurrent(unzFile h, char* name = NULL) const;
 } ft_zip;
 
 static voidpf ZOpen(voidpf opaque, const void* filename, int mode)
@@ -101,7 +102,7 @@ bool eFileTypeZIP::Open(const char* name) const
 		bool ok = false;
 		if(unzLocateFile(h, contain_name, 0) == UNZ_OK)
 		{
-			ok = OpenCurrent(h);
+			ok = (OpenCurrent(h) != OR_FAIL);
 		}
 		unzClose(h);
 		return ok;
@@ -136,46 +137,72 @@ bool eFileTypeZIP::Open(unzFile h, char* name) const
 	if(!h)
 		return false;
 	bool ok = false;
+	bool stored_auto_play = OpAutoPlayImage();
+	eDrive stored_drive = OpDrive();
+	OpDrive(D_A);
 	if(unzGoToFirstFile(h) == UNZ_OK)
 	{
-		for(;;)
+		bool try_next = true;
+		do
 		{
-			if(OpenCurrent(h, name))
+			switch(OpenCurrent(h, name))
 			{
+			case OR_FAIL:
+				try_next = true;
+				break;
+			case OR_OK:
 				ok = true;
+				try_next = false;
+				break;
+			case OR_OK_TRYNEXT:
+				ok = true;
+				try_next = true;
+				name = NULL; // do not return next files names
+				OpAutoPlayImage(false); // do not try to auto play next images
+				switch(OpDrive())
+				{
+				case D_A:	OpDrive(D_B);	break;
+				case D_B:	OpDrive(D_C);	break;
+				case D_C:	OpDrive(D_D);	break;
+				case D_D:	OpDrive(D_A);	break;
+				}
 				break;
 			}
-			if(unzGoToNextFile(h) == UNZ_END_OF_LIST_OF_FILE)
-				break;
 		}
+		while(try_next && unzGoToNextFile(h) != UNZ_END_OF_LIST_OF_FILE);
 	}
 	unzClose(h);
+	OpAutoPlayImage(stored_auto_play);
+	OpDrive(stored_drive);
 	return ok;
 }
 
-bool eFileTypeZIP::OpenCurrent(unzFile h, char* name) const
+eFileTypeZIP::eOpenResult eFileTypeZIP::OpenCurrent(unzFile h, char* name) const
 {
 	unz_file_info fi;
 	char n[xIo::MAX_PATH_LEN];
 	if(unzGetCurrentFileInfo(h, &fi, n, xIo::MAX_PATH_LEN, NULL, 0, NULL, 0) != UNZ_OK)
-		return false;
+		return OR_FAIL;
 	const eFileType* t = eFileType::FindByName(n);
 	if(!t)
-		return false;
+		return OR_FAIL;
 	if(unzOpenCurrentFile(h) != UNZ_OK)
-		return false;
+		return OR_FAIL;
 
-	bool ok = false;
+	eOpenResult res = OR_FAIL;
 	byte* buf = new byte[fi.uncompressed_size];
 	if(unzReadCurrentFile(h, buf, fi.uncompressed_size) == int(fi.uncompressed_size))
 	{
-		ok = t->Open(buf, fi.uncompressed_size);
-		if(ok && name)
-			strcpy(name, n);
+		if(t->Open(buf, fi.uncompressed_size))
+		{
+			if(name)
+				strcpy(name, n);
+			res = t->IsDisk() ? OR_OK_TRYNEXT : OR_OK;
+		}
 	}
 	SAFE_DELETE_ARRAY(buf);
 	unzCloseCurrentFile(h);
-	return ok;
+	return res;
 }
 
 bool eFileTypeZIP::Contain(const char* name, char* contain_path, char* contain_name) const

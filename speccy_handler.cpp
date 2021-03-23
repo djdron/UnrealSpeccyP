@@ -338,13 +338,6 @@ static struct eOptionTapeFast : public xOptions::eOptionBool
 	virtual int Order() const { return 50; }
 } op_tape_fast;
 
-static struct eOptionAutoPlayImage : public xOptions::eOptionBool
-{
-	eOptionAutoPlayImage() { Set(true); }
-	virtual const char* Name() const { return "auto play image"; }
-	virtual int Order() const { return 55; }
-} op_auto_play_image;
-
 static struct eOption48K : public xOptions::eOptionBool
 {
 	virtual const char* Name() const { return "mode 48k"; }
@@ -572,7 +565,7 @@ static struct eFileTypeTRD : public eFileType
 	{
 		eWD1793* wd = sh.speccy->Device<eWD1793>();
 		bool ok = wd->Open(Type(), OpDrive(), data, data_size);
-		if(ok && op_auto_play_image)
+		if(ok && OpAutoPlayImage())
 		{
 			sh.OnAction(A_RESET);
 			if(sh.speccy->Mode48k())
@@ -606,6 +599,7 @@ static struct eFileTypeTRD : public eFileType
 		return ok;
 	}
 	virtual const char* Type() const { return "trd"; }
+	virtual bool IsDisk() const { return true; }
 } ft_trd;
 static struct eFileTypeSCL : public eFileTypeTRD
 {
@@ -663,7 +657,7 @@ static struct eFileTypeTAP : public eFileType
 	virtual bool Open(const void* data, size_t data_size) const
 	{
 		bool ok = sh.speccy->Device<eTape>()->Open(Type(), data, data_size);
-		if(ok && op_auto_play_image)
+		if(ok && OpAutoPlayImage())
 		{
 			sh.OnAction(A_RESET);
 			sh.speccy->Devices().Get<eRom>()->SelectPage(sh.speccy->Devices().Get<eRom>()->ROM_SOS());

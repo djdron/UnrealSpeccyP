@@ -49,6 +49,9 @@ void OpVolume(eVolume v);
 eSound OpSound();
 void OpSound(eSound s);
 
+bool OpAutoPlayImage();
+void OpAutoPlayImage(bool v);
+
 }
 //namespace xPlatform
 

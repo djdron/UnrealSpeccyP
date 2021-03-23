@@ -42,6 +42,7 @@ struct eFileType : public eList<eFileType>
 	virtual bool Contain(const char* name, char* contain_path, char* contain_name) const { return false; }
 	virtual const char* Type() const = 0;
 	virtual xIo::eFileSelect* FileSelect(const char* path) const { return NULL; }
+	virtual bool IsDisk() const { return false; }
 
 	static const eFileType* Find(const char* type)
 	{
