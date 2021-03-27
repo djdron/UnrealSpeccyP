@@ -244,6 +244,15 @@ jboolean Java_app_usp_Emulator_Open(JNIEnv* env, jobject obj, jstring jfile)
     env->ReleaseStringUTFChars(jfile, file);
     return ok;
 }
+jboolean Java_app_usp_Emulator_OpenData(JNIEnv* env, jobject obj, jstring jfile, jobject file_data)
+{
+	const char* file = env->GetStringUTFChars(jfile, NULL);
+	void* buf = env->GetDirectBufferAddress(file_data);
+	auto size = env->GetDirectBufferCapacity(file_data);
+	bool ok = xPlatform::Handler()->OnOpenFile(file, buf, size);
+	env->ReleaseStringUTFChars(jfile, file);
+	return ok;
+}
 jstring Java_app_usp_Emulator_GetLastFile(JNIEnv* env, jobject obj)
 {
 	return env->NewStringUTF(xPlatform::OpLastFile());

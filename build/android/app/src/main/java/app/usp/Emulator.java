@@ -52,6 +52,7 @@ public class Emulator
 	synchronized native void	VideoPaused(boolean on);
 
 	public synchronized native boolean	Open(final String file);
+	public synchronized native boolean	OpenData(final String file, final ByteBuffer file_data);
 	public synchronized native String	GetLastFile();
 	synchronized native void	LoadState();
 	synchronized native void	SaveState();
