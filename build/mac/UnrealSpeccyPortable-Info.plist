@@ -12,6 +12,8 @@
 				<string>trd</string>
 				<string>scl</string>
 				<string>fdi</string>
+				<string>td0</string>
+				<string>udi</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>UnrealSpeccyPortable</string>
@@ -65,7 +67,7 @@
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleGetInfoString</key>
 	<string>Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</string>
+Copyright (C) 2001-2021 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</string>
 	<key>CFBundleIconFile</key>
 	<string>UnrealSpeccyPortable</string>
 	<key>CFBundleIdentifier</key>
@@ -77,7 +79,7 @@ Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</strin
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.0.80</string>
+	<string>0.0.90</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
@@ -85,7 +87,7 @@ Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor.</strin
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright (C) 2001-2017 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+	<string>Copyright (C) 2001-2021 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
