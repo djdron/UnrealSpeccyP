@@ -165,6 +165,7 @@ bool eFileTypeZIP::Open(unzFile h, char* name) const
 				case D_B:	OpDrive(D_C);	break;
 				case D_C:	OpDrive(D_D);	break;
 				case D_D:	OpDrive(D_A);	break;
+				default: break;
 				}
 				break;
 			}
