@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 docker build -t build-macos ./macOS
 docker run --name build-macos -it build-macos
