@@ -1,6 +1,8 @@
 #!/bin/bash
 
 tar -xJf ./angle-chromium89.tar.xz
+tar -xJf ./dmg-template.tar.xz
+
 git clone https://bitbucket.org/djdron/unrealspeccyp.git usp
 cd usp/build/cmake
 mkdir build_macos
@@ -12,6 +14,7 @@ export GLES2_LIB_PATH=$GLES2_PATH/lib/macOS/x64
 osxcross-conf
 cmake .. -G Ninja -DUSE_SDL2=1 -DUSE_SDL=0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/osxcross/target/toolchain.cmake -DOPENGLES2_INCLUDE_DIR=$GLES2_INCLUDE_PATH -DOPENGLES2_gl_LIBRARY=$GLES2_LIB_PATH/libGLESv2.dylib
 cmake --build . -- -j 4
+
 cd UnrealSpeccyPortable.app/Contents
 mkdir lib
 cd lib
@@ -27,4 +30,10 @@ $INTOOL -change ./libGLESv2.dylib @rpath/libGLESv2.dylib ./UnrealSpeccyPortable
 $INTOOL -change /opt/local/lib/libSDL2-2.0.0.dylib @rpath/libSDL2-2.0.0.dylib ./UnrealSpeccyPortable
 $INTOOL -add_rpath @executable_path/../lib/ ./UnrealSpeccyPortable
 cd ../../..
+
 zip /build/UnrealSpeccyPortable.app.zip ./UnrealSpeccyPortable.app -r
+cd /build
+unzip ./UnrealSpeccyPortable.app.zip -d ./dmg-template
+export PATH=/build/libdmg-hfsplus/build/dmg/:$PATH
+mkisofs -R -V UnrealSpeccyPortable -o ./UnrealSpeccyPortable.iso ./dmg-template
+dmg ./UnrealSpeccyPortable.iso ./UnrealSpeccyPortable.dmg
