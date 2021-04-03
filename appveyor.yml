@@ -4,29 +4,37 @@ image:
 
 skip_branch_with_pr: true
 
-install:
-  - cmd: choco install -y wixtoolset
-  - cmd: git submodule update --init --recursive
-
-build_script:
-  - cmd: build/appveyor/build.cmd
-  - sh: build/docker/build_macos.sh
-
-artifacts:
-  - path: build/cmake/build_win32_library/Release/unreal_speccy_portable.*
-    name: library
-  - path: build/cmake/build_win32_benchmark/Release/unreal_speccy_portable.exe
-    name: benchmark
-  - path: build/cmake/build_win32_sdl2/unreal-speccy-portable_0.0.90_win32_sdl2_gles2_angle_curl.msi
-    name: sdl2 gles2 angle curl
-  - path: build/cmake/build_win32_wxwidgets/unreal-speccy-portable_0.0.90_win32_wxwidgets_openal.msi
-    name: wxWidgets OpenAL Soft
-
 for:
 -
   matrix:
     only:
+      - image: Visual Studio 2019
+
+  install:
+    - choco install -y wixtoolset
+    - git submodule update --init --recursive
+
+  build_script:
+    - build/appveyor/build.cmd
+
+  artifacts:
+    - path: build/cmake/build_win32_library/Release/unreal_speccy_portable.*
+      name: library
+    - path: build/cmake/build_win32_benchmark/Release/unreal_speccy_portable.exe
+      name: benchmark
+    - path: build/cmake/build_win32_sdl2/unreal-speccy-portable_0.0.90_win32_sdl2_gles2_angle_curl.msi
+      name: sdl2 gles2 angle curl
+    - path: build/cmake/build_win32_wxwidgets/unreal-speccy-portable_0.0.90_win32_wxwidgets_openal.msi
+      name: wxWidgets OpenAL Soft
+
+-
+  matrix:
+    only:
       - image: Ubuntu
+
+  build_script:
+    - build/docker/build_macos.sh
+
   artifacts:
     - path: build/docker/unreal-speccy-portable_0.0.90_x86_64_sdl2_gles2_angle_curl.dmg
       name: sdl2 gles2 angle curl
