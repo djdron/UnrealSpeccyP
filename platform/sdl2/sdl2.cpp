@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2018 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2021 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ static const char* USP_HomePath()
 }
 #endif//SDL_DEFAULT_FOLDER
 
-static bool Init()
+bool Init()
 {
 #ifndef SDL_DEFAULT_FOLDER
 	const char* usp_home_path = USP_HomePath();
@@ -89,7 +89,6 @@ static bool Init()
 	{
 		xIo::PathCreate(usp_home_path);
 		xIo::SetProfilePath(usp_home_path);
-//		xIo::SetRootPath(usp_home_path);
 		OpLastFile(usp_home_path);
 	}
 #else//SDL_DEFAULT_FOLDER
@@ -178,9 +177,6 @@ void Loop1()
 	UpdateAudio();
 }
 
-void Loop();
-
-#ifndef SDL_NO_MAINLOOP
 void Loop()
 {
 	eTick last_tick;
@@ -197,10 +193,11 @@ void Loop()
 			quit = true;
 	}
 }
-#endif//SDL_NO_MAINLOOP
 
 }
 //namespace xPlatform
+
+#ifndef SDL_NO_MAIN
 
 int main(int argc, char* argv[])
 {
@@ -215,5 +212,7 @@ int main(int argc, char* argv[])
 	xPlatform::Done();
 	return 0;
 }
+
+#endif//SDL_NO_MAIN
 
 #endif//USE_SDL2

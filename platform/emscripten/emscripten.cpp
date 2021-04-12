@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2021 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/options.h"
 #include "../platform.h"
 #include "../io.h"
+#include <SDL.h>
 #include <emscripten.h>
 #include <string>
 
@@ -55,10 +56,11 @@ std::string GetURL(const char* _url)
 }
 #endif//USE_WEB
 
-
+bool Init();
 void Loop1();
+void Done();
 
-void Loop()
+static void Setup()
 {
 	using namespace xOptions;
 	struct eOptionBX : public eOptionB
@@ -67,46 +69,75 @@ void Loop()
 	};
 	eOptionBX* o = (eOptionBX*)eOptionB::Find("quit");
 	SAFE_CALL(o)->Unuse();
-
-	eOptionInt* zoom = (eOptionInt*)eOptionB::Find("zoom");
-	SAFE_CALL(zoom)->Set(1); // fill screen
-
-	EM_ASM
-	(
-		Module.onReady();
-	);
-	emscripten_set_main_loop(xPlatform::Loop1, 0, true);
 }
-
-void Done();
 
 }
 //namespace xPlatform
 
+EMSCRIPTEN_KEEPALIVE
+extern "C"
+void mainFS()
+{
+	if(!xPlatform::Init())
+	{
+		xPlatform::Done();
+		return;
+	}
+	EM_ASM
+	(
+		Module.onReady();
+	);
+	emscripten_set_main_loop(xPlatform::Loop1, 0, false);
+}
+
+int main(int argc, char* argv[])
+{
+	xPlatform::Setup();
+	EM_ASM
+	(
+		FS.mkdir('/cache');
+		FS.mount(IDBFS, {}, '/cache');
+		FS.syncfs(true, function(err) { ccall('mainFS', 'v'); });
+	);
+	emscripten_exit_with_live_runtime();
+	return 0;
+}
+
+namespace xIo
+{
+void SyncFS()
+{
+	xOptions::Store();
+	EM_ASM
+	(
+		FS.syncfs(function(err) {});
+	);
+}
+
+}
+//namespace xIo
+
 extern "C"
 {
 
-EMSCRIPTEN_KEEPALIVE
-void OpenFileData(const char* url, const char* data, int size)
+static void OnLoadOK(const char* name)
 {
-	xPlatform::Handler()->OnOpenFile(url, data, size);
+	xIo::SyncFS();
+	xPlatform::Handler()->OnOpenFile(name);
 }
 
-static void OnLoadOK(void* url, void* data, int size)
+static void OnLoadFail(const char* name)
 {
-	xPlatform::Handler()->OnOpenFile((const char*)url, data, size);
-	free(url);
-}
-
-static void OnLoadFail(void* url)
-{
-	free(url);
 }
 
 EMSCRIPTEN_KEEPALIVE
 void OpenFile(const char* url)
 {
-	emscripten_async_wget_data(url, strdup(url), OnLoadOK, OnLoadFail);
+	std::string name = url;
+	auto p = name.rfind('/');
+	if(p != std::string::npos)
+		name.erase(0, p + 1);
+	emscripten_async_wget(url, xIo::ProfilePath(name.c_str()), OnLoadOK, OnLoadFail);
 }
 
 EMSCRIPTEN_KEEPALIVE

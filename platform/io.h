@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2010 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2021 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@ const char* ProfilePath(const char* path);
 
 bool PathCreate(const char* path);
 void GetPathParent(char* parent, const char* path);
+
+void SyncFS();
 
 }
 //namespace xIo

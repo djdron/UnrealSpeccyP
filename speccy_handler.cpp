@@ -326,8 +326,11 @@ bool eSpeccyHandler::OnSaveFile(const char* name)
 	while(e > path && *e != '\\' && *e != '/')
 		--e;
 	*e = 0;
-	if(xIo::PathCreate(path))
-		return t->Store(name);
+	if(xIo::PathCreate(path) && t->Store(name))
+	{
+		xIo::SyncFS();
+		return true;
+	}
 	return false;
 }
 
