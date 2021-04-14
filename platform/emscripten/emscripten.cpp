@@ -95,6 +95,7 @@ int main(int argc, char* argv[])
 	xPlatform::Setup();
 	EM_ASM
 	(
+		Module.onInit();
 		FS.mkdir('/cache');
 		FS.mount(IDBFS, {}, '/cache');
 		FS.syncfs(true, function(err) { ccall('mainFS', 'v'); });
