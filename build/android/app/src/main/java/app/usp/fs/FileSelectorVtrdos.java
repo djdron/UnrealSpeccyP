@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2021 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -106,12 +106,14 @@ public class FileSelectorVtrdos extends FileSelector
 		private final String[] ITEMS = new String[]
 			{	"/Russian", "/Other", "/1995", "/1996", "/1997", "/1998", "/1999", "/2000", "/2001",
 				"/2002", "/2003", "/2004", "/2005", "/2006", "/2007", "/2008", "/2009", "/2010",
-				"/2011", "/2012", "/2013", "/2014", "/2015", "/2016", "/2017", "/2018", "/2019", "/2020"
+				"/2011", "/2012", "/2013", "/2014", "/2015", "/2016", "/2017", "/2018", "/2019", "/2020",
+				"/2021"
 			};
 		private final String[] ITEMSURLS = new String[]
 			{	"/russian", "/other", "1995", "1996", "1997", "1998", "1999", "2000", "2001",
 				"2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010",
-				"2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020"
+				"2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020",
+				"2021"
 			};
 		private final String[] PATTERNS = new String[]
 			{   "<a href=\"(.+?)\" target=\"demozdown\">(.+?)</a>",
@@ -182,7 +184,7 @@ public class FileSelectorVtrdos extends FileSelector
 				"2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2"
 			};
 		private final String[] PATTERNS = new String[]
-			{	"<td class=\"nowrap\"><b>(.+?)</b></td>\n<td>(?s)(.+?)\n</td>\n</tr>" };
+			{	"<td class=\"nowrap\"><b>(.+?)</b></td>\n<td>(?s)(.+?)</td>\n</tr>" };
 		@Override
 		public final String Root() { return "/press"; }
 		@Override
@@ -201,7 +203,7 @@ public class FileSelectorVtrdos extends FileSelector
 			else if(ch0 != ch1)
 				return;
 
-			Pattern pt = Pattern.compile("<a class=\"rpad\" href=\"(.+?)\">(.+?)</a>");
+			Pattern pt = Pattern.compile("<span style=\"white-space: nowrap;\"><a href=\"(.+?)\">(.+?)</a>");
 			Matcher m2 = pt.matcher(m.group(2));
 			while(m2.find())
 			{
