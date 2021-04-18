@@ -110,7 +110,7 @@ public:
 			char l = tolower(url[0]);
 			url = RootWEB() + "/press.php?l=" + (l > 'n' ? "2" : "1");
 			string data = xPlatform::xWeb::GetURL(url.c_str());
-			regex expr("<a class=\"rpad\" href=\"(.+?)\">.+?</a>");
+			regex expr("<span style=\"white-space: nowrap;\"><a href=\"(.+?)\">.+?</a>");
 			string::const_iterator beg = data.begin(), end = data.end();
 			smatch m;
 			while(regex_search(beg, end, m, expr))
