@@ -117,7 +117,7 @@ public class FileSelectorVtrdos extends FileSelector
 			};
 		private final String[] PATTERNS = new String[]
 			{   "<a href=\"(.+?)\" target=\"demozdown\">(.+?)</a>",
-				"<a href=\"(.+?)\">&nbsp;&nbsp;(.+)</a></td><td>(.+?)</td>",
+				"<a href=\"(.+?)\">(.+?)</a></td><td>(.+?)</td>",
 			};
 		@Override
 		public final String Root() { return "/demos"; }
