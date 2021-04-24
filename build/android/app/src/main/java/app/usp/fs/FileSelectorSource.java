@@ -33,7 +33,7 @@ abstract class FileSelectorSource
 		String desc;
 		String url;
 	};
-	enum GetItemsResult { OK, FAIL, UNABLE_CONNECT, INVALID_INFO, CANCELED, NEED_STORAGE_PERMISSION }
+	enum GetItemsResult { OK, FAIL, UNABLE_CONNECT, INVALID_INFO, CANCELED }
 	abstract public GetItemsResult GetItems(final File path, List<Item> items, FileSelector.Progress progress);
 	enum ApplyResult { OK, FAIL, UNABLE_CONNECT1, UNABLE_CONNECT2, INVALID_INFO, NOT_AVAILABLE, UNSUPPORTED_FORMAT, CANCELED }
 	abstract public ApplyResult ApplyItem(Item item, FileSelector.Progress progress);

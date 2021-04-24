@@ -27,10 +27,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
 import android.os.Bundle;
-import android.os.Environment;
 
 import app.usp.Emulator;
-import app.usp.FileOpen;
 
 public class FileSelectorFS extends FileSelector
 {
@@ -47,7 +45,6 @@ public class FileSelectorFS extends FileSelector
 		super.onCreate(savedInstanceState);
 		sources.add(new FileSelectorSourceFS_Cache());
 		sources.add(new FileSelectorSourceFS_ExternalStorage());
-		sources.add(new FileSelectorSourceFS_ExternalStorageAll());
     }
 	@Override
 	protected void onResume()
@@ -108,22 +105,11 @@ public class FileSelectorFS extends FileSelector
 		update_on_resume = false;
 		Update();
 	}
-	protected FileOpen FO() { return (FileOpen)getParent(); }
-	protected boolean CheckStoragePermission()
-	{
-		return FO().CheckStoragePermission();
-	}
-	@Override
-	protected void RequestStoragePermission()
-	{
-		FO().RequestStoragePermission(this);
-	}
 	abstract class FileSelectorSourceFS extends FileSelectorSource
 	{
 		abstract public String Root();
 		abstract public File RootPath();
 		static final String ZIP_EXT = "zip";
-		abstract boolean NeedStoragePermission();
 		private boolean IsZipName(final String name)
 		{
 			return FilenameUtils.getExtension(name).equalsIgnoreCase(ZIP_EXT);
@@ -154,12 +140,6 @@ public class FileSelectorFS extends FileSelector
 			if(!p.startsWith(Root())) // not our source
 				return GetItemsResult.OK;
 			items.add(new Item(this, "/.."));
-
-			if(p.equals(Root()) && NeedStoragePermission())
-			{
-				if(!CheckStoragePermission())
-					return GetItemsResult.NEED_STORAGE_PERMISSION;
-			}
 
 			File path = new File(RootPath().getPath() + "/" + p.substring(Root().length()));
 
@@ -241,25 +221,12 @@ public class FileSelectorFS extends FileSelector
 		public File RootPath() { return getFilesDir(); }
 		@Override
 		public String Root() { return "/cache"; }
-		@Override
-		final boolean NeedStoragePermission() { return false; }
 	}
 	class FileSelectorSourceFS_ExternalStorage extends FileSelectorSourceFS
 	{
 		@Override
-		public File RootPath() { return Environment.getExternalStorageDirectory(); }
+		public File RootPath() { return getExternalFilesDir(null); }
 		@Override
 		public String Root() { return "/sdcard"; }
-		@Override
-		final boolean NeedStoragePermission() { return true; }
-	}
-	class FileSelectorSourceFS_ExternalStorageAll extends FileSelectorSourceFS
-	{
-		@Override
-		public File RootPath() { return new File("/storage"); }
-		@Override
-		public String Root() { return "/storage"; }
-		@Override
-		final boolean NeedStoragePermission() { return true; }
 	}
 }

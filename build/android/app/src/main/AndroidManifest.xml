@@ -3,7 +3,6 @@
 		package="app.usp"
 		android:installLocation="auto"
 		android:versionName="0.0.86.16" android:versionCode="71">
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
 	<uses-feature android:glEsVersion="0x00020000" android:required="true"/>
 	<uses-feature android:name="android.hardware.gamepad" android:required="false"/>

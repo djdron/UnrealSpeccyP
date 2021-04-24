@@ -146,8 +146,6 @@ public abstract class FileSelector extends ListActivity
 		}
 	}
 
-	protected void RequestStoragePermission() {}
-	
 	abstract class FSSProgressDialog implements Progress, DialogInterface.OnCancelListener
 	{
 		FSSProgressDialog(final int _res_title, final int _res_message)
@@ -326,9 +324,6 @@ public abstract class FileSelector extends ListActivity
 			case FAIL:					e = getString(R.string.file_select_failed);				break;
 			case UNABLE_CONNECT:		e = getString(R.string.file_select_unable_connect1);	break;
 			case INVALID_INFO:			e = getString(R.string.file_select_invalid_info);		break;
-			case NEED_STORAGE_PERMISSION:
-				RequestStoragePermission();
-				//no break;
 			case OK:
 				State().current_path = path;
 				State().items = items;

@@ -18,14 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp;
 
-import android.Manifest;
-import android.app.AlertDialog;
 import android.app.TabActivity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TabHost;
@@ -93,52 +88,5 @@ public class FileOpen extends TabActivity
 		case android.R.id.home:	onBackPressed(); break;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	static final int RP_STORAGE = 0;
-	FileSelectorFS permission_requestor;
-	public boolean CheckStoragePermission()
-	{
-		return android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M ||
-				checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == android.content.pm.PackageManager.PERMISSION_GRANTED;
-	}
-	public void RequestStoragePermission(FileSelectorFS fs)
-	{
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-		{
-			permission_requestor = fs;
-			requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE);
-		}
-	}
-	@Override
-	public void onRequestPermissionsResult(int code, String[] permissions, int[] grants)
-	{
-		super.onRequestPermissionsResult(code, permissions, grants);
-		if(code == RP_STORAGE)
-		{
-			if(grants[0] == android.content.pm.PackageManager.PERMISSION_GRANTED)
-				permission_requestor.UpdateAll();
-			else
-			{
-				permission_requestor.ResetToRoot();
-				AlertDialog.Builder dlg = new AlertDialog.Builder(this);
-				dlg.setMessage(getString(R.string.unable_access_storage));
-				dlg.setCancelable(true);
-				dlg.setPositiveButton(getString(R.string.preferences),
-					new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface di, int i)
-						{
-							startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", getPackageName(), null)));
-						}
-					}
-				);
-				dlg.setNegativeButton(getString(R.string.cancel), null);
-				AlertDialog ad = dlg.create();
-				ad.show();
-			}
-		}
-		permission_requestor = null;
 	}
 }
