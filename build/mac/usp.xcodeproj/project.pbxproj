@@ -661,8 +661,8 @@
 				INFOPLIST_FILE = "UnrealSpeccyPortable-Info.plist";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
-					"-I/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/lib/wx/include/osx_cocoa-unicode-3.0",
-					"-I/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/include/wx-3.0",
+					"-I/usr/local/lib/wx/include/osx_cocoa-unicode-3.0",
+					"-I/usr/local/include/wx-3.0",
 					"-D_FILE_OFFSET_BITS=64",
 					"-DWXUSINGDLL",
 					"-D__WXMAC__",
@@ -670,7 +670,7 @@
 					"-D__WXOSX_COCOA__",
 				);
 				OTHER_LDFLAGS = (
-					"-L/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/lib",
+					"-L/usr/local/lib",
 					"-lwx_osx_cocoau_gl-3.0",
 					"-lwx_osx_cocoau_adv-3.0",
 					"-lwx_osx_cocoau_core-3.0",
@@ -694,8 +694,8 @@
 				LLVM_LTO = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
-					"-I/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/lib/wx/include/osx_cocoa-unicode-3.0",
-					"-I/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/include/wx-3.0",
+					"-I/usr/local/lib/wx/include/osx_cocoa-unicode-3.0",
+					"-I/usr/local/include/wx-3.0",
 					"-D_FILE_OFFSET_BITS=64",
 					"-DWXUSINGDLL",
 					"-D__WXMAC__",
@@ -703,7 +703,7 @@
 					"-D__WXOSX_COCOA__",
 				);
 				OTHER_LDFLAGS = (
-					"-L/opt/local/Library/Frameworks/wxWidgets.framework/Versions/wxWidgets/3.0/lib",
+					"-L/usr/local/lib",
 					"-lwx_osx_cocoau_gl-3.0",
 					"-lwx_osx_cocoau_adv-3.0",
 					"-lwx_osx_cocoau_core-3.0",
