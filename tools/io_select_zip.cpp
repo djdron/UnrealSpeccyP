@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../platform/io.h"
 #include "io_select.h"
-#include <unzip.h>
+#include "unzip.h"
 
 namespace xIo
 {

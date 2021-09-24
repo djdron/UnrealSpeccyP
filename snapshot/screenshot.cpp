@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_PNG
 
-#include <png.h>
+#include "png.h"
 #include "../speccy.h"
 #include "../file_type.h"
 

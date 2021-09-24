@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../platform/platform.h"
 
 #ifdef USE_CONFIG
-#include <tinyxml2.h>
+#include "tinyxml2.h"
 #include "../platform/io.h"
 #endif//USE_CONFIG
 

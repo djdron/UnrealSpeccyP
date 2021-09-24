@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_ZIP
 
-#include <unzip.h>
+#include "unzip.h"
 #include "platform/io.h"
 #include "options_common.h"
 #include "tools/stream_memory.h"
