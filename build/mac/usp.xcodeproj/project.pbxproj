@@ -68,6 +68,12 @@
 		5C9485ED15F0116100985CF2 /* file_type_zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485E915F0116100985CF2 /* file_type_zip.cpp */; };
 		5C9485EE15F0116100985CF2 /* file_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485EA15F0116100985CF2 /* file_type.cpp */; };
 		5C9485EF15F0116100985CF2 /* speccy_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9485EC15F0116100985CF2 /* speccy_handler.cpp */; };
+		DA20793025C0B27C0098789D /* fdd_td0_lzh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA20792F25C0B27C0098789D /* fdd_td0_lzh.cpp */; };
+		DA69A6D025C0B15200987DDC /* fdd_fdi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA69A6CF25C0B15200987DDC /* fdd_fdi.cpp */; };
+		DA7C162925C0B1E6007285CE /* fdd_scl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7C162825C0B1E6007285CE /* fdd_scl.cpp */; };
+		DA7C162C25C0B1F3007285CE /* fdd_udi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7C162B25C0B1F3007285CE /* fdd_udi.cpp */; };
+		DA7C162F25C0B20C007285CE /* fdd_trd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7C162E25C0B20C007285CE /* fdd_trd.cpp */; };
+		DA7C163225C0B236007285CE /* fdd_td0.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7C163125C0B236007285CE /* fdd_td0.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -187,6 +193,12 @@
 		5C9485EB15F0116100985CF2 /* file_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = file_type.h; path = ../../file_type.h; sourceTree = SOURCE_ROOT; };
 		5C9485EC15F0116100985CF2 /* speccy_handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = speccy_handler.cpp; path = ../../speccy_handler.cpp; sourceTree = SOURCE_ROOT; };
 		5CA765F8119DD606000C0142 /* UnrealSpeccyPortable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnrealSpeccyPortable.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA20792F25C0B27C0098789D /* fdd_td0_lzh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fdd_td0_lzh.cpp; sourceTree = "<group>"; };
+		DA69A6CF25C0B15200987DDC /* fdd_fdi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fdd_fdi.cpp; sourceTree = "<group>"; };
+		DA7C162825C0B1E6007285CE /* fdd_scl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fdd_scl.cpp; sourceTree = "<group>"; };
+		DA7C162B25C0B1F3007285CE /* fdd_udi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fdd_udi.cpp; sourceTree = "<group>"; };
+		DA7C162E25C0B20C007285CE /* fdd_trd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fdd_trd.cpp; sourceTree = "<group>"; };
+		DA7C163125C0B236007285CE /* fdd_td0.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fdd_td0.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -407,6 +419,12 @@
 		5C6524EA1428C6DE0060688D /* fdd */ = {
 			isa = PBXGroup;
 			children = (
+				DA20792F25C0B27C0098789D /* fdd_td0_lzh.cpp */,
+				DA7C163125C0B236007285CE /* fdd_td0.cpp */,
+				DA7C162E25C0B20C007285CE /* fdd_trd.cpp */,
+				DA7C162B25C0B1F3007285CE /* fdd_udi.cpp */,
+				DA7C162825C0B1E6007285CE /* fdd_scl.cpp */,
+				DA69A6CF25C0B15200987DDC /* fdd_fdi.cpp */,
 				5C6524EB1428C6DE0060688D /* fdd.cpp */,
 				5C6524EC1428C6DE0060688D /* fdd.h */,
 				5C6524ED1428C6DE0060688D /* wd1793.cpp */,
@@ -553,6 +571,7 @@
 			files = (
 				5C24EBF0183982EC00771FDD /* profiler.cpp in Sources */,
 				5C24EB9A183962AD00771FDD /* pngget.c in Sources */,
+				DA7C162F25C0B20C007285CE /* fdd_trd.cpp in Sources */,
 				5C24EBA3183962AD00771FDD /* unzip.c in Sources */,
 				5C24EBC318396A8300771FDD /* wx_cmdline.cpp in Sources */,
 				5C24EB9F183962AD00771FDD /* pngwrite.c in Sources */,
@@ -563,6 +582,8 @@
 				5C6524671428C61C0060688D /* screenshot.cpp in Sources */,
 				5C24EBC418396A8300771FDD /* wx_frame.cpp in Sources */,
 				5C56D8C11AEC4EBF0036B690 /* io_select_zip.cpp in Sources */,
+				DA69A6D025C0B15200987DDC /* fdd_fdi.cpp in Sources */,
+				DA7C162C25C0B1F3007285CE /* fdd_udi.cpp in Sources */,
 				5C24EBA1183962AD00771FDD /* pngwutil.c in Sources */,
 				5C6524681428C61C0060688D /* snapshot.cpp in Sources */,
 				5C24EB98183962AD00771FDD /* png.c in Sources */,
@@ -580,6 +601,8 @@
 				5C6525041428C6DE0060688D /* fdd.cpp in Sources */,
 				5C24EB9C183962AD00771FDD /* pngset.c in Sources */,
 				5C24EBF1183982EC00771FDD /* sound_mixer.cpp in Sources */,
+				DA7C162925C0B1E6007285CE /* fdd_scl.cpp in Sources */,
+				DA7C163225C0B236007285CE /* fdd_td0.cpp in Sources */,
 				5C6525051428C6DE0060688D /* wd1793.cpp in Sources */,
 				5C6525061428C6DE0060688D /* kempston_joy.cpp in Sources */,
 				5C6525071428C6DE0060688D /* kempston_mouse.cpp in Sources */,
@@ -605,6 +628,7 @@
 				5C24EBC218396A8300771FDD /* wx_canvas.cpp in Sources */,
 				5C9485ED15F0116100985CF2 /* file_type_zip.cpp in Sources */,
 				5C9485EE15F0116100985CF2 /* file_type.cpp in Sources */,
+				DA20793025C0B27C0098789D /* fdd_td0_lzh.cpp in Sources */,
 				5C9485EF15F0116100985CF2 /* speccy_handler.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
