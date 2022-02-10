@@ -48,9 +48,23 @@ static SDL_Joystick* joystick = NULL;
 #endif//SDL_USE_JOYSTICK
 
 #ifndef SDL_DEFAULT_FOLDER
-static const char* GetHomePath()
+const char* GetHomePath()
 {
 	static char home_path[xIo::MAX_PATH_LEN];
+#ifdef SDL_USE_PREF_PATH
+	char* p = SDL_GetPrefPath("", "");
+	if(p)
+	{
+		strcpy(home_path, p);
+		SDL_free(p);
+		int l = strlen(home_path);
+		while(--l >= 0 && (home_path[l] == '\\' || home_path[l] == '/'))
+		{
+			home_path[l] = 0;
+		}
+		return home_path;
+	}
+#endif//SDL_USE_PREF_PATH
 	const char* h = getenv("HOME");
 	if(h)
 	{
@@ -66,7 +80,6 @@ static const char* GetHomePath()
 	}
 	return NULL;
 }
-
 static const char* USP_HomePath()
 {
 	static char usp_home_path[xIo::MAX_PATH_LEN];

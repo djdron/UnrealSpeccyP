@@ -394,6 +394,7 @@ set_source_files_properties(../uwp/SDL_winrt_main_NonXAML.cpp PROPERTIES COMPILE
 set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /nodefaultlib:vccorlibd /nodefaultlib:msvcrtd vccorlibd.lib msvcrtd.lib")
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /nodefaultlib:vccorlib /nodefaultlib:msvcrt vccorlib.lib msvcrt.lib")
 source_group("platform\\uwp" FILES ${SRCCXX_PLATFORM_UWP})
+add_definitions(-D_UWP -DSDL_USE_PREF_PATH)
 endif(UWP)
 if(WIN32)
 set(OPENGLES2_INCLUDE_DIR "${ANGLE_INCLUDE_DIR}")
