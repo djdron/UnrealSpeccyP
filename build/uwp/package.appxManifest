@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package
+	xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"	xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+	xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+	IgnorableNamespaces="uap mp">
+
+	<Identity Name="57972196-48B6-3723-A05C-E2E196024334" Publisher="CN=djdron" Version="0.0.91.0" />
+	<mp:PhoneIdentity PhoneProductId="57972196-48B6-3723-A05C-E2E196024334" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+	<Properties>
+		<DisplayName>Unreal Speccy Portable</DisplayName>
+		<PublisherDisplayName>djdron</PublisherDisplayName>
+		<Logo>assets\logo_store.png</Logo>
+	</Properties>
+	<Dependencies>
+		<TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+	</Dependencies>
+	<Resources>
+		<Resource Language="x-generate" />
+	</Resources>
+	<Applications>
+		<Application Id="App" Executable="unreal_speccy_portable.exe" EntryPoint="unreal_speccy_portable.App">
+			<uap:VisualElements
+				DisplayName="Unreal Speccy Portable"
+				Description="Portable ZX-Spectrum emulator supports Z80 128K (Pentagon) AY/YM, Beeper, Beta Disk, Tape, Kempston Joystick/Mouse, Snapshots, Replays. Supported formats: sna, z80, szx, rzx, tap, tzx, csw, trd, scl, fdi, td0, udi, zip."
+				BackgroundColor="#336699"
+				Square150x150Logo="assets\logo.png"
+				Square44x44Logo="assets\logo_44.png">
+				<uap:SplashScreen Image="assets\splash.png" />
+				<uap:DefaultTile/>
+			</uap:VisualElements>
+		</Application>
+	</Applications>
+
+	<Capabilities>
+		<Capability Name="internetClient"/></Capabilities>
+</Package>
