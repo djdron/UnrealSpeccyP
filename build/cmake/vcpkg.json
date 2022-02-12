@@ -1,0 +1,8 @@
+﻿{
+	"name": "unreal_speccy_portable",
+	"dependencies": [
+		"sdl2",
+		"angle",
+		"curl"
+	]
+}
