@@ -44,7 +44,7 @@ void ProcessMouse(SDL_Event& e);
 
 #ifdef SDL_USE_JOYSTICK
 void ProcessJoy(SDL_Event& e);
-static SDL_Joystick* joystick = NULL;
+static SDL_GameController* controller = NULL;
 #endif//SDL_USE_JOYSTICK
 
 #ifndef SDL_DEFAULT_FOLDER
@@ -112,14 +112,17 @@ bool Init()
 
 	Uint32 init_flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO;
 #ifdef SDL_USE_JOYSTICK
-	init_flags |= SDL_INIT_JOYSTICK;
+	init_flags |= SDL_INIT_GAMECONTROLLER;
 #endif//SDL_USE_JOYSTICK
 	if(SDL_Init(init_flags) < 0)
         return false;
 
 #ifdef SDL_USE_JOYSTICK
-	SDL_JoystickEventState(SDL_ENABLE);
-	joystick = SDL_JoystickOpen(0);
+	SDL_GameControllerEventState(SDL_ENABLE);
+	controller = SDL_GameControllerOpen(0);
+#ifdef _UWP
+	SDL_SetHint(SDL_HINT_WINRT_HANDLE_BACK_BUTTON, "1");
+#endif//_UWP
 #endif//SDL_USE_JOYSTICK
 
     sdl_inited = true;
@@ -134,10 +137,10 @@ bool Init()
 void Done()
 {
 #ifdef SDL_USE_JOYSTICK
-	if(joystick)
+	if(controller)
 	{
-		SDL_JoystickClose(joystick);
-		joystick = NULL;
+		SDL_GameControllerClose(controller);
+		controller = NULL;
 	}
 #endif//SDL_USE_JOYSTICK
 	DoneAudio();
@@ -171,10 +174,9 @@ void Loop1()
 			break;
 #endif//SDL_USE_MOUSE
 #ifdef SDL_USE_JOYSTICK
-		case SDL_JOYBUTTONDOWN:
-		case SDL_JOYBUTTONUP:
-		case SDL_JOYAXISMOTION:
-		case SDL_JOYHATMOTION:
+		case SDL_CONTROLLERBUTTONDOWN:
+		case SDL_CONTROLLERBUTTONUP:
+		case SDL_CONTROLLERAXISMOTION:
 			ProcessJoy(e);
 			break;
 #endif//SDL_USE_JOYSTICK
