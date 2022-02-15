@@ -179,6 +179,17 @@ void Loop1()
 		case SDL_CONTROLLERAXISMOTION:
 			ProcessJoy(e);
 			break;
+		case SDL_CONTROLLERDEVICEADDED:
+			if(!controller)
+				controller = SDL_GameControllerOpen(e.cdevice.which);
+			break;
+		case SDL_CONTROLLERDEVICEREMOVED:
+			if(SDL_GameControllerFromInstanceID(e.cdevice.which) == controller)
+			{
+				SDL_GameControllerClose(controller);
+				controller = NULL;
+			}
+			break;
 #endif//SDL_USE_JOYSTICK
 		case SDL_DROPFILE:
 			Handler()->OnOpenFile(e.drop.file);
