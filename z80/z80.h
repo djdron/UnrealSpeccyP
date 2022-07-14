@@ -110,7 +110,7 @@ protected:
 	byte Fetch()
 	{
 		--fetches;
-		++r_low;// = (cpu->r & 0x80) + ((cpu->r+1) & 0x7F);
+		r_low = ((r_low + 1)&0x7f)|(r_low&0x80);
 		t += 4;
 		return Read(pc++);
 	}

@@ -102,11 +102,13 @@ void eZ80::Update(int int_len, int* nmi_pending)
 		if(iff1 && t != eipos) // int enabled in CPU not issued after EI
 		{
 			Int();
-			break;
 		}
-		Step();
-		if(halted)
-			break;
+		else
+		{
+			Step();
+			if(halted)
+				break;
+		}
 	}
 	eipos = -1;
 	if(handler.step)
@@ -170,7 +172,7 @@ void eZ80::Int()
 	memptr = intad;
 	halted = 0;
 	iff1 = iff2 = 0;
-	++r_low;
+	r_low = ((r_low + 1)&0x7f)|(r_low&0x80);
 }
 //=============================================================================
 //	eZ80::Nmi
