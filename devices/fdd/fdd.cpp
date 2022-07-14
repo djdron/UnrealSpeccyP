@@ -162,6 +162,7 @@ bool eFdd::Open(const char* type, const void* data, size_t data_size)
 		ok = ReadUdi(data, data_size);
 	else if(!strcmp(type, "td0"))
 		ok = ReadTd0(data, data_size);
+	Seek(0, 0);
 	SAFE_CALL(disk)->Changed(false);
 	return ok;
 }

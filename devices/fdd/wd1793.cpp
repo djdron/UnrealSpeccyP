@@ -59,7 +59,7 @@ bool eWD1793::Open(const char* type, int drive, const void* data, size_t data_si
 	{
 		found_sec = NULL;
 		status = ST_NOTRDY;
-		rqs = R_INTRQ;
+		rqs = R_NONE;
 		state = S_IDLE;
 	}
 	return fdds[drive].Open(type, data, data_size);
@@ -266,6 +266,12 @@ void eWD1793::Process(int tact)
 				FindMarker();
 				break;
 			}
+			if(!wd93_nodelay)
+				next += fdd->TSByte()*(found_sec->data - found_sec->id);
+			state = S_WAIT;
+			state_next = S_RDSEC;
+			break;
+		case S_RDSEC:
 			found_sec->data[-1] == 0xf8 ? status |= ST_RECORDT : status &= ~ST_RECORDT;
 			rwptr = found_sec->data - fdd->Track().data;
 			rwlen = found_sec->Len();
@@ -465,7 +471,7 @@ void eWD1793::Process(int tact)
 			}
 			if(!wd93_nodelay)
 			{
-				next += 1 * Z80FQ / 1000;
+				next += 32;
 			}
 			state = S_WAIT;
 			break;
@@ -518,7 +524,10 @@ void eWD1793::Process(int tact)
 		case S_VERIFY:
 			if(!(cmd & CB_SEEK_VERIFY))
 			{
-				state = S_IDLE;
+				status |= ST_BUSY;
+				state_next = S_IDLE;
+				state = S_WAIT;
+				next += 128;
 				break;
 			}
 			end_waiting_am = next + 6 * Z80FQ / FDD_RPS; //max wait disk 6 turns
@@ -697,6 +706,8 @@ void eWD1793::IoWrite(word port, byte v, int tact)
 			state = S_IDLE;
 			rqs = R_INTRQ;
 			status &= ~ST_BUSY;
+			cmd = v;
+			next = speccy->T() + tact;
 			return;
 		}
 		if(status & ST_BUSY)
