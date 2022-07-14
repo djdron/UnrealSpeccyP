@@ -98,6 +98,9 @@ void eFdd::Create(int max_cyl, int max_side)
 bool eFdd::ReadTrd(const void* data, size_t data_size)
 {
 	int max_cyl = data_size / (256 * 16 * 2);
+	int rest = data_size % (256 * 16 * 2);
+	if(rest)
+		++max_cyl;
 	if(max_cyl > eUdi::MAX_CYL)
 		max_cyl = eUdi::MAX_CYL;
 	if(max_cyl < 80)
