@@ -101,21 +101,24 @@ void Opx2E() { // ld xl,nn
 }
 void Opx34() { // inc (ix+nn)
 	signed char ofs = Read(pc++);
-	byte v = Read(ix + ofs);
+	memptr = ix + ofs;
+	byte v = Read(memptr);
 	inc8(v);
-	Write(ix + ofs, v);
+	Write(memptr, v);
 	t += 15;
 }
 void Opx35() { // dec (ix+nn)
 	signed char ofs = Read(pc++);
-	byte v = Read(ix + ofs);
+	memptr = ix + ofs;
+	byte v = Read(memptr);
 	dec8(v);
-	Write(ix + ofs, v);
+	Write(memptr, v);
 	t += 15;
 }
 void Opx36() { // ld (ix+nn),nn
 	signed char ofs = Read(pc++);
-	Write(ix + ofs, Read(pc++));
+	memptr = ix + ofs;
+	Write(memptr, Read(pc++));
 	t += 11;
 }
 void Opx39() { // add ix,sp
@@ -135,7 +138,8 @@ void Opx45() { // ld b,xl
 }
 void Opx46() { // ld b,(ix+nn)
 	signed char ofs = Read(pc++);
-	b = Read(ix + ofs);
+	memptr = ix + ofs;
+	b = Read(memptr);
 	t += 11;
 }
 void Opx4C() { // ld c,xh
@@ -146,7 +150,8 @@ void Opx4D() { // ld c,xl
 }
 void Opx4E() { // ld c,(ix+nn)
 	signed char ofs = Read(pc++);
-	c = Read(ix + ofs);
+	memptr = ix + ofs;
+	c = Read(memptr);
 	t += 11;
 }
 void Opx54() { // ld d,xh
@@ -157,7 +162,8 @@ void Opx55() { // ld d,xl
 }
 void Opx56() { // ld d,(ix+nn)
 	signed char ofs = Read(pc++);
-	d = Read(ix + ofs);
+	memptr = ix + ofs;
+	d = Read(memptr);
 	t += 11;
 }
 void Opx5C() { // ld e,xh
@@ -168,7 +174,8 @@ void Opx5D() { // ld e,xl
 }
 void Opx5E() { // ld e,(ix+nn)
 	signed char ofs = Read(pc++);
-	e = Read(ix + ofs);
+	memptr = ix + ofs;
+	e = Read(memptr);
 	t += 11;
 }
 void Opx60() { // ld xh,b
@@ -188,7 +195,8 @@ void Opx65() { // ld xh,xl
 }
 void Opx66() { // ld h,(ix+nn)
 	signed char ofs = Read(pc++);
-	h = Read(ix + ofs);
+	memptr = ix + ofs;
+	h = Read(memptr);
 	t += 11;
 }
 void Opx67() { // ld xh,a
@@ -211,7 +219,8 @@ void Opx6C() { // ld xl,xh
 }
 void Opx6E() { // ld l,(ix+nn)
 	signed char ofs = Read(pc++);
-	l = Read(ix + ofs);
+	memptr = ix + ofs;
+	l = Read(memptr);
 	t += 11;
 }
 void Opx6F() { // ld xl,a
@@ -219,37 +228,44 @@ void Opx6F() { // ld xl,a
 }
 void Opx70() { // ld (ix+nn),b
 	signed char ofs = Read(pc++);
-	Write(ix + ofs, b);
+	memptr = ix + ofs;
+	Write(memptr, b);
 	t += 11;
 }
 void Opx71() { // ld (ix+nn),c
 	signed char ofs = Read(pc++);
-	Write(ix + ofs, c);
+	memptr = ix + ofs;
+	Write(memptr, c);
 	t += 11;
 }
 void Opx72() { // ld (ix+nn),d
 	signed char ofs = Read(pc++);
-	Write(ix + ofs, d);
+	memptr = ix + ofs;
+	Write(memptr, d);
 	t += 11;
 }
 void Opx73() { // ld (ix+nn),e
 	signed char ofs = Read(pc++);
-	Write(ix + ofs, e);
+	memptr = ix + ofs;
+	Write(memptr, e);
 	t += 11;
 }
 void Opx74() { // ld (ix+nn),h
 	signed char ofs = Read(pc++);
-	Write(ix + ofs, h);
+	memptr = ix + ofs;
+	Write(memptr, h);
 	t += 11;
 }
 void Opx75() { // ld (ix+nn),l
 	signed char ofs = Read(pc++);
-	Write(ix + ofs, l);
+	memptr = ix + ofs;
+	Write(memptr, l);
 	t += 11;
 }
 void Opx77() { // ld (ix+nn),a
 	signed char ofs = Read(pc++);
-	Write(ix + ofs, a);
+	memptr = ix + ofs;
+	Write(memptr, a);
 	t += 11;
 }
 void Opx7C() { // ld a,xh
@@ -260,7 +276,8 @@ void Opx7D() { // ld a,xl
 }
 void Opx7E() { // ld a,(ix+nn)
 	signed char ofs = Read(pc++);
-	a = Read(ix + ofs);
+	memptr = ix + ofs;
+	a = Read(memptr);
 	t += 11;
 }
 void Opx84() { // add a,xh
@@ -271,7 +288,8 @@ void Opx85() { // add a,xl
 }
 void Opx86() { // add a,(ix+nn)
 	signed char ofs = Read(pc++);
-	add8(Read(ix + ofs));
+	memptr = ix + ofs;
+	add8(Read(memptr));
 	t += 11;
 }
 void Opx8C() { // adc a,xh
@@ -282,7 +300,8 @@ void Opx8D() { // adc a,xl
 }
 void Opx8E() { // adc a,(ix+nn)
 	signed char ofs = Read(pc++);
-	adc8(Read(ix + ofs));
+	memptr = ix + ofs;
+	adc8(Read(memptr));
 	t += 11;
 }
 void Opx94() { // sub xh
@@ -293,7 +312,8 @@ void Opx95() { // sub xl
 }
 void Opx96() { // sub (ix+nn)
 	signed char ofs = Read(pc++);
-	sub8(Read(ix + ofs));
+	memptr = ix + ofs;
+	sub8(Read(memptr));
 	t += 11;
 }
 void Opx9C() { // sbc a,xh
@@ -304,7 +324,8 @@ void Opx9D() { // sbc a,xl
 }
 void Opx9E() { // sbc a,(ix+nn)
 	signed char ofs = Read(pc++);
-	sbc8(Read(ix + ofs));
+	memptr = ix + ofs;
+	sbc8(Read(memptr));
 	t += 11;
 }
 void OpxA4() { // and xh
@@ -315,7 +336,8 @@ void OpxA5() { // and xl
 }
 void OpxA6() { // and (ix+nn)
 	signed char ofs = Read(pc++);
-	and8(Read(ix + ofs));
+	memptr = ix + ofs;
+	and8(Read(memptr));
 	t += 11;
 }
 void OpxAC() { // xor xh
@@ -326,7 +348,8 @@ void OpxAD() { // xor xl
 }
 void OpxAE() { // xor (ix+nn)
 	signed char ofs = Read(pc++);
-	xor8(Read(ix + ofs));
+	memptr = ix + ofs;
+	xor8(Read(memptr));
 	t += 11;
 }
 void OpxB4() { // or xh
@@ -337,7 +360,8 @@ void OpxB5() { // or xl
 }
 void OpxB6() { // or (ix+nn)
 	signed char ofs = Read(pc++);
-	or8(Read(ix + ofs));
+	memptr = ix + ofs;
+	or8(Read(memptr));
 	t += 11;
 }
 void OpxBC() { // cp xh
@@ -348,7 +372,8 @@ void OpxBD() { // cp xl
 }
 void OpxBE() { // cp (ix+nn)
 	signed char ofs = Read(pc++);
-	cp8(Read(ix + ofs));
+	memptr = ix + ofs;
+	cp8(Read(memptr));
 	t += 11;
 }
 void OpxE1() { // pop ix

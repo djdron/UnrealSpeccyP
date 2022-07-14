@@ -101,21 +101,24 @@ void Opy2E() { // ld yl,nn
 }
 void Opy34() { // inc (iy+nn)
 	signed char ofs = Read(pc++);
-	byte v = Read(iy + ofs);
+	memptr = iy + ofs;
+	byte v = Read(memptr);
 	inc8(v);
-	Write(iy + ofs, v);
+	Write(memptr, v);
 	t += 15;
 }
 void Opy35() { // dec (iy+nn)
 	signed char ofs = Read(pc++);
-	byte v = Read(iy + ofs);
+	memptr = iy + ofs;
+	byte v = Read(memptr);
 	dec8(v);
-	Write(iy + ofs, v);
+	Write(memptr, v);
 	t += 15;
 }
 void Opy36() { // ld (iy+nn),nn
 	signed char ofs = Read(pc++);
-	Write(iy + ofs, Read(pc++));
+	memptr = iy + ofs;
+	Write(memptr, Read(pc++));
 	t += 11;
 }
 void Opy39() { // add iy,sp
@@ -135,7 +138,8 @@ void Opy45() { // ld b,yl
 }
 void Opy46() { // ld b,(iy+nn)
 	signed char ofs = Read(pc++);
-	b = Read(iy + ofs);
+	memptr = iy + ofs;
+	b = Read(memptr);
 	t += 11;
 }
 void Opy4C() { // ld c,yh
@@ -146,7 +150,8 @@ void Opy4D() { // ld c,yl
 }
 void Opy4E() { // ld c,(iy+nn)
 	signed char ofs = Read(pc++);
-	c = Read(iy + ofs);
+	memptr = iy + ofs;
+	c = Read(memptr);
 	t += 11;
 }
 void Opy54() { // ld d,yh
@@ -157,7 +162,8 @@ void Opy55() { // ld d,yl
 }
 void Opy56() { // ld d,(iy+nn)
 	signed char ofs = Read(pc++);
-	d = Read(iy + ofs);
+	memptr = iy + ofs;
+	d = Read(memptr);
 	t += 11;
 }
 void Opy5C() { // ld e,yh
@@ -168,7 +174,8 @@ void Opy5D() { // ld e,yl
 }
 void Opy5E() { // ld e,(iy+nn)
 	signed char ofs = Read(pc++);
-	e = Read(iy + ofs);
+	memptr = iy + ofs;
+	e = Read(memptr);
 	t += 11;
 }
 void Opy60() { // ld yh,b
@@ -188,7 +195,8 @@ void Opy65() { // ld yh,yl
 }
 void Opy66() { // ld h,(iy+nn)
 	signed char ofs = Read(pc++);
-	h = Read(iy + ofs);
+	memptr = iy + ofs;
+	h = Read(memptr);
 	t += 11;
 }
 void Opy67() { // ld yh,a
@@ -211,7 +219,8 @@ void Opy6C() { // ld yl,yh
 }
 void Opy6E() { // ld l,(iy+nn)
 	signed char ofs = Read(pc++);
-	l = Read(iy + ofs);
+	memptr = iy + ofs;
+	l = Read(memptr);
 	t += 11;
 }
 void Opy6F() { // ld yl,a
@@ -219,37 +228,44 @@ void Opy6F() { // ld yl,a
 }
 void Opy70() { // ld (iy+nn),b
 	signed char ofs = Read(pc++);
-	Write(iy + ofs, b);
+	memptr = iy + ofs;
+	Write(memptr, b);
 	t += 11;
 }
 void Opy71() { // ld (iy+nn),c
 	signed char ofs = Read(pc++);
-	Write(iy + ofs, c);
+	memptr = iy + ofs;
+	Write(memptr, c);
 	t += 11;
 }
 void Opy72() { // ld (iy+nn),d
 	signed char ofs = Read(pc++);
-	Write(iy + ofs, d);
+	memptr = iy + ofs;
+	Write(memptr, d);
 	t += 11;
 }
 void Opy73() { // ld (iy+nn),e
 	signed char ofs = Read(pc++);
-	Write(iy + ofs, e);
+	memptr = iy + ofs;
+	Write(memptr, e);
 	t += 11;
 }
 void Opy74() { // ld (iy+nn),h
 	signed char ofs = Read(pc++);
-	Write(iy + ofs, h);
+	memptr = iy + ofs;
+	Write(memptr, h);
 	t += 11;
 }
 void Opy75() { // ld (iy+nn),l
 	signed char ofs = Read(pc++);
-	Write(iy + ofs, l);
+	memptr = iy + ofs;
+	Write(memptr, l);
 	t += 11;
 }
 void Opy77() { // ld (iy+nn),a
 	signed char ofs = Read(pc++);
-	Write(iy + ofs, a);
+	memptr = iy + ofs;
+	Write(memptr, a);
 	t += 11;
 }
 void Opy7C() { // ld a,yh
@@ -260,7 +276,8 @@ void Opy7D() { // ld a,yl
 }
 void Opy7E() { // ld a,(iy+nn)
 	signed char ofs = Read(pc++);
-	a = Read(iy + ofs);
+	memptr = iy + ofs;
+	a = Read(memptr);
 	t += 11;
 }
 void Opy84() { // add a,yh
@@ -271,7 +288,8 @@ void Opy85() { // add a,yl
 }
 void Opy86() { // add a,(iy+nn)
 	signed char ofs = Read(pc++);
-	add8(Read(iy + ofs));
+	memptr = iy + ofs;
+	add8(Read(memptr));
 	t += 11;
 }
 void Opy8C() { // adc a,yh
@@ -282,7 +300,8 @@ void Opy8D() { // adc a,yl
 }
 void Opy8E() { // adc a,(iy+nn)
 	signed char ofs = Read(pc++);
-	adc8(Read(iy + ofs));
+	memptr = iy + ofs;
+	adc8(Read(memptr));
 	t += 11;
 }
 void Opy94() { // sub yh
@@ -293,7 +312,8 @@ void Opy95() { // sub yl
 }
 void Opy96() { // sub (iy+nn)
 	signed char ofs = Read(pc++);
-	sub8(Read(iy + ofs));
+	memptr = iy + ofs;
+	sub8(Read(memptr));
 	t += 11;
 }
 void Opy9C() { // sbc a,yh
@@ -304,7 +324,8 @@ void Opy9D() { // sbc a,yl
 }
 void Opy9E() { // sbc a,(iy+nn)
 	signed char ofs = Read(pc++);
-	sbc8(Read(iy + ofs));
+	memptr = iy + ofs;
+	sbc8(Read(memptr));
 	t += 11;
 }
 void OpyA4() { // and yh
@@ -315,7 +336,8 @@ void OpyA5() { // and yl
 }
 void OpyA6() { // and (iy+nn)
 	signed char ofs = Read(pc++);
-	and8(Read(iy + ofs));
+	memptr = iy + ofs;
+	and8(Read(memptr));
 	t += 11;
 }
 void OpyAC() { // xor yh
@@ -326,7 +348,8 @@ void OpyAD() { // xor yl
 }
 void OpyAE() { // xor (iy+nn)
 	signed char ofs = Read(pc++);
-	xor8(Read(iy + ofs));
+	memptr = iy + ofs;
+	xor8(Read(memptr));
 	t += 11;
 }
 void OpyB4() { // or yh
@@ -337,7 +360,8 @@ void OpyB5() { // or yl
 }
 void OpyB6() { // or (iy+nn)
 	signed char ofs = Read(pc++);
-	or8(Read(iy + ofs));
+	memptr = iy + ofs;
+	or8(Read(memptr));
 	t += 11;
 }
 void OpyBC() { // cp yh
@@ -348,7 +372,8 @@ void OpyBD() { // cp yl
 }
 void OpyBE() { // cp (iy+nn)
 	signed char ofs = Read(pc++);
-	cp8(Read(iy + ofs));
+	memptr = iy + ofs;
+	cp8(Read(memptr));
 	t += 11;
 }
 void OpyE1() { // pop iy
