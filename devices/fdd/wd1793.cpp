@@ -128,7 +128,7 @@ void eWD1793::Process(int tact)
 		fdd->Motor(0);
 	}
 	fdd->DiskPresent() ? status &= ~ST_NOTRDY : status |= ST_NOTRDY;
-	if(!(cmd & 0x80)) //seek/step commands
+	if((cmd & 0x80) == 0 || (cmd & 0xf0) == 0xd0) //seek/step commands
 	{
 		status &= ~(ST_TRK00|ST_INDEX);
 		if(fdd->Motor() && (system & 0x08))
