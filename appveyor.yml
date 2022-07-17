@@ -33,8 +33,10 @@ for:
       - image: Ubuntu
 
   build_script:
-    - build/docker/build_macos.sh
+    - build/appveyor/build.sh
 
   artifacts:
+    - path: build/cmake/build_emscripten/unreal-speccy-portable_0.0.90_emscripten_sdl2_gles2.zip
+      name: sdl2 gles2 emscripten
     - path: build/docker/unreal-speccy-portable_0.0.90_x86_64_sdl2_gles2_angle_curl.dmg
       name: sdl2 gles2 angle curl
