@@ -75,15 +75,15 @@ void ProcessJoy(SDL_Event& e)
 	switch(e.type)
 	{
 	case SDL_CONTROLLERBUTTONDOWN:
-		if(e.cbutton.button != SDL_CONTROLLER_BUTTON_INVALID && e.cbutton.button < SDL_CONTROLLER_BUTTON_MAX)
+		if(e.cbutton.button != (Uint8)SDL_CONTROLLER_BUTTON_INVALID && e.cbutton.button < SDL_CONTROLLER_BUTTON_MAX)
 			pad.buttons[e.cbutton.button] = true;
 		break;
 	case SDL_CONTROLLERBUTTONUP:
-		if(e.cbutton.button != SDL_CONTROLLER_BUTTON_INVALID && e.cbutton.button < SDL_CONTROLLER_BUTTON_MAX)
+		if(e.cbutton.button != (Uint8)SDL_CONTROLLER_BUTTON_INVALID && e.cbutton.button < SDL_CONTROLLER_BUTTON_MAX)
 			pad.buttons[e.cbutton.button] = false;
 		break;
 	case SDL_CONTROLLERAXISMOTION:
-		if(e.caxis.axis != SDL_CONTROLLER_AXIS_INVALID && e.caxis.axis < SDL_CONTROLLER_AXIS_MAX)
+		if(e.caxis.axis != (Uint8)SDL_CONTROLLER_AXIS_INVALID && e.caxis.axis < SDL_CONTROLLER_AXIS_MAX)
 			pad.axes[e.caxis.axis] = float(e.caxis.value)/32768;
 		break;
 	default:
