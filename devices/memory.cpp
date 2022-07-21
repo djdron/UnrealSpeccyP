@@ -115,6 +115,7 @@ void eRom::Init()
 //-----------------------------------------------------------------------------
 void eRom::Reset()
 {
+	lock_48k = false;
 	SelectPage(mode_48k ? ROM_48 : ROM_SYS);
 }
 //=============================================================================
@@ -129,6 +130,9 @@ bool eRom::IoWrite(word port) const
 //-----------------------------------------------------------------------------
 void eRom::IoWrite(word port, byte v, int tact)
 {
+	if(lock_48k)
+		return;
+	lock_48k = (v & 0x20) != 0;
 	SelectPage((page_selected & ~1) + ((v >> 4) & 1));
 }
 
@@ -137,6 +141,7 @@ void eRom::IoWrite(word port, byte v, int tact)
 //-----------------------------------------------------------------------------
 void eRam::Reset()
 {
+	lock_48k = false;
 	memory->SetPage(1, eMemory::P_RAM5);
 	memory->SetPage(2, eMemory::P_RAM2);
 	memory->SetPage(3, eMemory::P_RAM0);
@@ -153,6 +158,9 @@ bool eRam::IoWrite(word port) const
 //-----------------------------------------------------------------------------
 void eRam::IoWrite(word port, byte v, int tact)
 {
+	if(lock_48k)
+		return;
+	lock_48k = (v & 0x20) != 0;
 	int page = eMemory::P_RAM0 + (v & 7);
 	memory->SetPage(3, page);
 }
