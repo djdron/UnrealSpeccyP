@@ -29,6 +29,8 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsStore")
 set(UWP 1)
 endif()
 
+set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
+
 #core
 file(GLOB SRCCXX_ROOT "../../*.cpp")
 file(GLOB SRCH_ROOT "../../*.h")
