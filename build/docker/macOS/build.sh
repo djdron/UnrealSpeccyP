@@ -10,7 +10,7 @@ sed -i 's/\bopenssl dgst -ripemd160 -verify\b/openssl dgst -provider default -pr
 #workaround universal binaries with arm64, not i386
 sed -i 's/ARCH="i386-x86_64"/ARCH="arm64-x86_64"/g' $(command -v osxcross-macports)
 
-export MACOSX_DEPLOYMENT_TARGET=11.0
+export MACOSX_DEPLOYMENT_TARGET=12.0
 
 osxcross-macports install libsdl2 -universal
 
