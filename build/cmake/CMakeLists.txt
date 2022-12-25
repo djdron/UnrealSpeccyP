@@ -29,8 +29,6 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsStore")
 set(UWP 1)
 endif()
 
-set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
-
 #core
 file(GLOB SRCCXX_ROOT "../../*.cpp")
 file(GLOB SRCH_ROOT "../../*.h")
