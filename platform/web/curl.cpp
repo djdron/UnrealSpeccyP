@@ -41,9 +41,15 @@ static size_t _write_callback(char* ptr, size_t size, size_t nmemb, void* userda
 	return size*nmemb;
 }
 
-std::string GetURL(const char* path)
+std::string GetURL(const char* path, const char* header)
 {
 	CURL* curl = curl_easy_init();
+	curl_slist* slist = NULL;
+	if(header)
+	{
+		slist = curl_slist_append(slist, header);
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist);
+	}
 	curl_easy_setopt(curl, CURLOPT_URL, path);
 	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
@@ -54,6 +60,8 @@ std::string GetURL(const char* path)
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file_data);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _write_callback);
 	curl_easy_perform(curl);
+	if(slist)
+		curl_slist_free_all(slist);
 	curl_easy_cleanup(curl);
 	return file_data;
 }

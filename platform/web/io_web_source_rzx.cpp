@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2016 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2022 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_WEB
 
-#include <regex>
+#include <json.hpp>
 #include "io_web_source.h"
 
 namespace xIo
@@ -29,7 +29,7 @@ namespace xIo
 static class eWebSourceRZX : public eWebSource
 {
 public:
-	eWebSourceRZX() : eWebSource("rzx", "https://rzxarchive.co.uk") {}
+	eWebSourceRZX() : eWebSource("rzx", "https://api.vtrd.in/v1/rzx") {}
 	virtual bool NeedCache(const std::string& path) const { return !IsRootPath(path); }
 	virtual void GetItems(eWebSourceItems* items, const std::string& path) const
 	{
@@ -48,32 +48,37 @@ public:
 			url.erase(0, Root().length());
 			url.erase(url.length() - 1, 1); // remove last /
 			url.insert(0, RootWEB());
-			url += ".php";
-			string data = xPlatform::xWeb::GetURL(url.c_str());
-			smatch m;
-			regex expr("<font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"(.+?)\"|<font size=2 color=red>).+?");
-			string::const_iterator beg = data.begin(), end = data.end();
-			while(std::regex_search(beg, end, m, expr))
+			string data = xPlatform::xWeb::GetURL(url.c_str(), "Authorization: Bearer SD0XHmQZzbZpK1PyPbIgfL2P4iaCeQ02gTJogfPH43A88FN6B02dFJbJo0Ho");
+			using nlohmann::json;
+			json j;
+			try
 			{
-				string file_name = m[3].str();
-				if(!file_name.empty())
-				{
-					string::size_type x = file_name.find_last_of('/');
-					if(x != string::npos)
-						file_name.erase(0, x + 1);
-					items->push_back(eWebSourceItem(file_name, false));
-				}
-				beg = m[0].second;
+				j = json::parse(data);
+			}
+			catch(const invalid_argument&)
+			{
+			}
+
+			auto d = j.find("data");
+			if(d == j.end() || !d->is_array())
+				return;
+			
+			for(auto e : *d)
+			{
+				auto u = e.find("path");
+				if(u == e.end() || !u->is_string())
+					continue;
+				string url = *u, file_name = url;
+				string::size_type x = file_name.find_last_of('/');
+				if(x != string::npos)
+					file_name.erase(0, x + 1);
+				items->push_back(eWebSourceItem(file_name, false, url));
 			}
 		}
 	}
 	virtual const char* Open(const std::string& _name, const std::string& _url) const
 	{
-		using namespace std;
-		string url(_name);
-		url.erase(0, Root().length());
-		url.insert(0, RootWEB());
-		return OpenURL(url.c_str(), _name.c_str());
+		return OpenURL(_url.c_str(), _name.c_str());
 	}
 } fs_rzx;
 

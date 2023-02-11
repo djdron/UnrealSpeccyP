@@ -64,7 +64,7 @@ namespace xPlatform
 {
 namespace xWeb
 {
-std::string GetURL(const char* path);
+std::string GetURL(const char* path, const char* header = NULL);
 }
 //namespace xWeb
 }
