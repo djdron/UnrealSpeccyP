@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2022 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,17 +19,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package app.usp.fs;
 
 import java.io.File;
+import java.net.URLConnection;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.os.Bundle;
-import app.usp.Emulator;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import app.usp.R;
 
 public class FileSelectorRZX extends FileSelector
 {
-	private static State state = new State();
+	private static final State state = new State();
 	@Override
 	State State() { return state; }
 	@Override
@@ -42,19 +45,27 @@ public class FileSelectorRZX extends FileSelector
 		super.onCreate(savedInstanceState);
 		sources.add(new FSSRZX());
 	}
-	class FSSRZX extends FileSelectorSourceHTML
+	class FSSRZX extends FileSelectorSourceJSON
 	{
 		private final String RZX_FS = getApplicationContext().getFilesDir().toString() + "/rzx";
-		protected final String base_url = "https://www.rzxarchive.co.uk";
+		protected final String base_url = "https://api.vtrd.in/v1/rzx";
 		@Override
-		public String FullURL(final String _url) { return base_url + _url + ".php"; }
+		public String FullURL(final String _url) { return base_url + _url; }
 		@Override
 		public String TextEncoding() { return "iso-8859-1"; }
 		@Override
+		protected void SetupConnection(URLConnection connection)
+		{
+			connection.setRequestProperty("Authorization", "Bearer SD0XHmQZzbZpK1PyPbIgfL2P4iaCeQ02gTJogfPH43A88FN6B02dFJbJo0Ho");
+		}
+		@Override
 		public ApplyResult ApplyItem(Item item, FileSelector.Progress progress)
 		{
-			File file = new File(RZX_FS + item.url);
-			return OpenFile(base_url + item.url, file, progress);
+			int pos = item.url.lastIndexOf("/rzx/");
+			if(pos == -1)
+				return ApplyResult.FAIL;
+			File file = new File(RZX_FS + item.url.substring(pos + 4));
+			return OpenFile(item.url, file, progress);
 		}
 		private final String[] ITEMS = new String[]
 			{	"/123", "/A", "/B", "/C", "/D", "/E", "/F", "/G", "/H",
@@ -66,38 +77,37 @@ public class FileSelectorRZX extends FileSelector
 				"/i", "/j", "/k", "/l", "/m", "/n", "/o", "/p", "/q",
 				"/r", "/s", "/t", "/u", "/v", "/w", "/x", "/y", "/z"
 		    };
-		private final String[] PATTERNS = new String[] { "<font size=2>(.+?)(?:<br>.+?|</td>)<td align=center><font size=2>(.+?)</td><td align=center>(?:<font size=1><A HREF=\"(.+?)\"|<font size=2 color=red>).+?" };
 		@Override
 		public final String Root() { return null; }
+
 		@Override
-		public final String[] Patterns() { return PATTERNS; }
-		
-		private final String UnescapeHTML(String s)
+		protected JSONArray TextToJSONArray(final String _text)
 		{
-			String r = s;
-			Pattern p = Pattern.compile("&#([0-9]+);");
-			Matcher m = p.matcher(r);
-			int x = 0;
-			while(m.find())
+			try
 			{
-				String c = new String(Character.toChars(Integer.parseInt(m.group(1))));
-				r = r.substring(0,  m.start() - x) + c + r.substring(m.end() - x);
-				x += m.end() - m.start() - c.length();
+				JSONObject json = (JSONObject) new JSONTokener(_text).nextValue();
+				return json.optJSONArray("data");
 			}
-			r = r.replaceAll("&amp;", "&");
-			return r;
+			catch(Exception e) { return null; }
 		}
-		
+
 		@Override
-		public void PatternGet(List<Item> items, Matcher m, final String _name)
+		public void JsonGet(List<FileSelectorSource.Item> items, JSONObject ji, final String _name)
 		{
-			if(m.group(3) != null)
-			{
-				Item item = new Item(this, UnescapeHTML(m.group(1)));
-				item.desc = UnescapeHTML(m.group(2));
-				item.url = m.group(3);
-				items.add(item);
-			}
+			String name = ji.optString("name", "");
+			if(name.isEmpty())
+				return;
+			String url = ji.optString("path", "");
+			if(url.isEmpty())
+				return;
+			String info = ji.optString("info", "");
+			String author = ji.optString("submitter", "");
+			Item item = new Item(this, name);
+			item.url = url;
+			item.desc = author;
+			if(!info.isEmpty())
+				item.desc += " / " + info;
+			items.add(item);
 		}
 		@Override
 		public final String[] Items() { return ITEMS; }

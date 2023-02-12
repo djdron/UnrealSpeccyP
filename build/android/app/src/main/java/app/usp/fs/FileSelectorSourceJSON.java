@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2022 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,15 +28,20 @@ import java.util.List;
 abstract class FileSelectorSourceJSON extends FileSelectorSourceWEB
 {
 	abstract protected void JsonGet(List<Item> items, JSONObject j, final String _name);
+	protected JSONArray TextToJSONArray(final String _text)
+	{
+		try
+		{
+			return (JSONArray) new JSONTokener(_text).nextValue();
+		}
+		catch(Exception e) { return null; }
+	}
 	@Override
 	public GetItemsResult ParseText(final String _text, List<Item> items, final String _name, FileSelector.Progress progress)
 	{
-		JSONArray jitems = null;
-		try
-		{
-			jitems = (JSONArray) new JSONTokener(_text).nextValue();
-		}
-		catch(Exception e) { return GetItemsResult.INVALID_INFO; }
+		JSONArray jitems = TextToJSONArray(_text);
+		if(jitems == null)
+			return GetItemsResult.INVALID_INFO;
 		for(int i = 0; i < jitems.length(); ++i)
 		{
 			try

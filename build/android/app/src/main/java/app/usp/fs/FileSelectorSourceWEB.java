@@ -151,11 +151,13 @@ abstract class FileSelectorSourceWEB extends FileSelectorSource
 		}
 		return false;
 	}
+	protected void SetupConnection(URLConnection connection) {}
 	protected String LoadText(final String _url, final String _encoding, FileSelector.Progress progress)
 	{
 		try
 		{
 			URLConnection connection = new URL(_url).openConnection();
+			SetupConnection(connection);
 			InputStream is = connection.getInputStream();
 			int len = connection.getContentLength();
 			byte buffer[] = new byte[16384];
