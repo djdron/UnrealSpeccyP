@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Φορητό Unreal Speccy</string>
+    <string name="opening">Άνοιγμα του \"%s\"</string>
+    <string name="need_storage_permission">Απαιτείται άδεια αποθήκευσης για να ανοίξετε το αρχείο</string>
+    <string name="unable_access_storage">Δεν είναι δυνατή η πρόσβαση στον αποθηκευτικό χώρο</string>
+    <string name="unable_open">Αδυναμία ανοίγματος του \"%s\"</string>
+    <string name="cancel">Άκυρο</string>
+    <string name="open_file">Άνοιγμα αρχείου</string>
+    <string name="save_state">Αποθήκευση κατάστασης</string>
+    <string name="load_state">Φόρτωση κατάστασης</string>
+    <string name="save_slot">Αποθήκευση υποδοχής</string>
+    <string name="save_slot_empty">κενή</string>
+    <string name="save_file">Αποθήκευση αρχείου</string>
+    <string name="save_file_desc">Αποθήκευση τροποποιημένου αρχείου εικόνας δίσκου</string>
+    <string name="select_joystick">Χειριστήριο</string>
+    <string name="joystick_cursorenter">Δρομέας + Enter</string>
+    <string name="joystick_cursor">Δρομέας</string>
+    <string name="use_sensor">Χρήση αισθητήρα</string>
+    <string name="use_sensor_desc">Έλεγχος μέσω αισθητήρα προσανατολισμού</string>
+    <string name="reset">Επαναφορά</string>
+    <string name="quit">Έξοδος</string>
+    <string name="preferences">Προτιμήσεις</string>
+    <string name="pref_control">Χειριστήρια</string>
+    <string name="pref_sound">Ήχος</string>
+    <string name="sound_chip">Τύπος τσιπ ήχου</string>
+    <string name="sound_chip_stereo">Λειτουργία στέρεο του τσιπ</string>
+    <string name="sound_chip_stereo_mono">μονό</string>
+    <string name="pref_peripherals">Περιφερειακά</string>
+
+    <string name="auto_play_image">Αυτόματη εκκίνηση προγραμμάτων</string>
+    <string name="auto_play_image_desc">Μετά το άνοιγμα των αρχείων</string>
+    <string name="drive">Beta μονάδα δίσκου</string>
+    <string name="mode_48k">Λειτουργία 48K</string>
+    <string name="reset_to_service_rom">Επαναφορά στη service ROM</string>
+    <string name="service_rom_desc">Υπηρεσία επαναφοράς Mr Gluk</string>
+    <string name="file_selector">Επιλογή αρχείου</string>
+    <string name="tape">Κασέτα</string>
+    <string name="tape_na">Μη διαθέσιμο (ανοίξτε πρώτα το αρχείο κασέτας)</string>
+    <string name="tape_started">Ξεκίνησε (πατήστε για παύση)</string>
+    <string name="tape_stopped">Σταμάτησε (πατήστε για έναρξη)</string>
+    <string name="tape_fast">Γρήγορη κασέτα</string>
+    <string name="tape_fast_desc">Χρήση παγίδων κασέτας</string>
+
+    <string name="pref_view">Εμφάνιση</string>
+    <string name="zoom">Λειτουργία ζουμ</string>
+    <string name="zoom_none">Κανένα</string>
+    <string name="zoom_fill">Γέμισμα οθόνης</string>
+    <string name="zoom_small_border">Μικρό περιθώριο</string>
+    <string name="zoom_no_border">Χωρίς περιθώριο</string>
+    <string name="filtering">Φιλτράρισμα</string>
+    <string name="gigascreen_desc">Περισσότερα χρώματα λιγότερο τρέμουλο</string>
+    <string name="black_and_white">Ασπρόμαυρο</string>
+    <string name="av_timer_sync">Συγχρονισμός A/V με το χρόνο</string>
+    <string name="av_timer_sync_desc">Ομαλότερη αναπαραγωγή σε ορισμένες συσκευές</string>
+    <string name="skip_frames">Παράλειψη καρέ</string>
+    <string name="skip_frames_none">Κανένα</string>
+
+    <string name="file_system">Αρχεία</string>
+
+    <string name="accessing_web">Πρόσβαση στον ιστό</string>
+    <string name="downloading_image">Λήψη εικόνας&#8230;</string>
+    <string name="gathering_list">Συγκέντρωση λίστας&#8230;</string>
+    <string name="canceling">Ακύρωση&#8230;</string>
+
+    <string name= "file_select_open_error">"Σφάλμα ανοίγματος : %s"</string>
+    <string name= "file_select_update_error">"Σφάλμα ενημέρωσης : %s"</string>
+    <string name= "file_select_failed">αποτυχία</string>
+    <string name= "file_select_unable_connect1">αδυναμία σύνδεσης στον διακομιστή</string>
+    <string name= "file_select_unable_connect2">αδυναμία λήψης</string>
+    <string name= "file_select_invalid_info">μη έγκυρες πληροφορίες</string>
+    <string name= "file_select_not_available">μη διαθέσιμο</string>
+    <string name= "file_select_unsupported_format">μη υποστηριζόμενη μορφή</string>
+
+    <string name= "rzx_finished">RZX - αναπαραγωγή ολοκληρώθηκε</string>
+    <string name= "rzx_sync_lost">RZX - συγχρονισμός χάθηκε</string>
+    <string name= "rzx_invalid">RZX - μη έγκυρα δεδομένα</string>
+    <string name= "rzx_unsupported">RZX - μη υποστηριζόμενη μορφή</string>
+</resources>
