@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 
-#if defined(_WINDOWS) || defined(_LINUX) || defined(_MAC)
+#if defined(_WINDOWS) || defined(_LINUX) || defined(_MAC) || defined(_HAIKU)
 
 #ifndef USE_BENCHMARK
 #ifndef USE_LIBRARY

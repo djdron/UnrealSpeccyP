@@ -1,0 +1,98 @@
+1	German	application/x-vnd.unreal-speccy-portable	2972438328
+100% scale	USPWindow		100% Zoom
+128k	USPWindow		128k
+128k mode enabled	USPWindow		128k Modus aktiviert
+200% scale	USPWindow		200% Zoom
+300% scale	USPWindow		300% Zoom
+48k	USPWindow		48k
+48k mode enabled	USPWindow		48k Modus aktiviert
+About	USPWindow		Über
+Auto launch off	USPWindow		Autostart aus
+Auto launch on	USPWindow		Autostart an
+Auto launch programs	USPWindow		Programme auto-starten
+AY Stereo	USPWindow		AY Stereo
+AY-3-8910	USPWindow		AY-3-8910
+Beta disk drive	USPWindow		Beta Disk Drive
+Bilinear	USPWindow		Bilinear
+Could not find app resources.\n	USPWindow		App-Ressourcen nicht gefunden.\n
+Could not find icon in app resources (data: %p, size: %ld).\n	USPWindow		Kein Icon in App-Ressourcen gefunden (Daten: %p, Größe: %ld).\n
+Could not init native document mime type (%s): %s.\n	USPWindow		Nativen Dokumenten MIME Typ nicht gefunden (%s): %s.\n
+Could not install native document mime type (%s): %s.\n	USPWindow		Nativer Dokumenten MIME Typ konnte nicht installiert werden (%s): %s.\n
+Could not open file	USPWindow		Datei konnte nicht geöffnet werden
+Could not set vector icon of mime type.\n	USPWindow		Vektoricon des MIME Typs konnte nicht gesetzt werden.\n
+Cursor	USPWindow		Cursor
+Cursor + Enter	USPWindow		Cursor + Enter
+Device	USPWindow		Gerät
+Fast tape off	USPWindow		Fast Tape aus
+Fast tape on	USPWindow		Fast Tape ein
+File	USPWindow		Datei
+File save FAILED	USPWindow		Datei speichern fehlgeschlagen
+File save OK	USPWindow		Datei speichern erfolgreich
+File was successfully opened	USPWindow		Datei wurde erfolgreich geöffnet
+Filetypes registered!	USPWindow		Dateitypen registriert!
+Filtering	USPWindow		Filter
+Filtering disabled	USPWindow		Filter aus
+Filtering enabled	USPWindow		Filter ein
+Full screen	USPWindow		Vollbild
+Help	USPWindow		Hilfe
+Joystick	USPWindow		Joystick
+Kempson mouse grab	USPWindow		Kempson Maus fangen
+Kempston	USPWindow		Kempston
+Mode 48k	USPWindow		48k Modus
+Mono	USPWindow		Mono
+Mouse grabbed (Alt+G)	USPWindow		Maus fangen (Alt+G)
+Mute	USPWindow		Stumm
+OK	USPWindow		OK
+Open file…	USPWindow		Datei öffnen…
+Open from web…	USPWindow		Datei aus Web…
+Open…	USPWindow		Öffnen…
+OSD keyboard	USPWindow		Bildschirm-Tastatur
+OSD menu	USPWindow		Bildschirm-Menü
+Pause	USPWindow		Pause
+Paused	USPWindow		Pausiert
+QAOP + Space	USPWindow		QAOP + Space
+QAOPM	USPWindow		QAOPM
+Quick load	USPWindow		Quick Load
+Quick load FAILED	USPWindow		Quick Load fehlgeschlagen
+Quick load OK	USPWindow		Quick Load erfolgreich
+Quick save	USPWindow		Quick Save
+Quick save FAILED	USPWindow		Quick Save fehlgeschlagen
+Quick save OK	USPWindow		Quick Save erfolgreich
+Quit	USPWindow		Beenden
+Ready	USPWindow		Bereit
+Register filetypes	USPWindow		Dateitypen registrieren
+Reset	USPWindow		Zurücksetzen
+Reset to service ROM	USPWindow		Zurücksetzen auf Service-ROM
+Reset to usual ROM	USPWindow		Zurücksetzen auf Standard-ROM
+Save screenshot…	USPWindow		Screenshot speichern…
+Save slot	USPWindow		Slot speichern
+Save SNA snapshot…	USPWindow		SNA Snapshot speichern…
+Save…	USPWindow		Speichern…
+Screenshot save FAILED	USPWindow		Screenshot speichern fehlgeschlagen
+Screenshot save OK	USPWindow		Screenshot speichern erfolgreich
+Sinclair 2	USPWindow		Sinclair 2
+Smart border disabled	USPWindow		Smart-Zoom aus
+Smart border enabled	USPWindow		Smarr-Zoom ein
+Smart border scale	USPWindow		Smart-Zoom
+Sound chip	USPWindow		Soundchip
+Start / Stop tape	USPWindow		Start / Stopp Tape
+Tape fast	USPWindow		Tape Fast
+Tape not inserted	USPWindow		Kein Tape eingelegt
+Tape started	USPWindow		Tape gestartet
+Tape stopped	USPWindow		Tape gestoppt
+View	USPWindow		Ansicht
+Virtual keyboard	USPWindow		Virtuelle Tastatur
+Visit homepage	USPWindow		Homepage öffnen
+Volume	USPWindow		Lautstärke
+XBR	USPWindow		XBR
+XBR Filtering disabled	USPWindow		XBR Filter aus
+XBR Filtering enabled	USPWindow		XBR Filter ein
+YM2149F	USPWindow		YM2149F
+Cancel	USPWebWindow		Abbrechen
+Download file	USPWebWindow		Datei herunterladen
+File	USPWebWindow		Datei
+items	USPWebWindow		Objekte
+Open	USPWebWindow		Öffnen
+Open download folder	USPWebWindow		Download-Ordner öffnen
+Open file from web…	USPWebWindow		Datei aus Web öffnen…
+Keyboard layout	USPKeyboardWindow		Tastatur-Layout

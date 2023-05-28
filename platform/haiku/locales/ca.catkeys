@@ -1,0 +1,98 @@
+1	Catalan	application/x-vnd.unreal-speccy-portable	2972438328
+100% scale	USPWindow		Escala al 100 %
+128k	USPWindow		128 k
+128k mode enabled	USPWindow		Mode de 128 k habilitat
+200% scale	USPWindow		Escala al 200%
+300% scale	USPWindow		Escala al 300 %
+48k	USPWindow		48 k
+48k mode enabled	USPWindow		Mode de 48 k habilitat
+About	USPWindow		Quant a
+Auto launch off	USPWindow		Arrencada automàtica inhabilitada
+Auto launch on	USPWindow		Arrencada automàtica habilitada
+Auto launch programs	USPWindow		Obre programes automàticament
+AY Stereo	USPWindow		Estèreo AY
+AY-3-8910	USPWindow		AY-3-8910
+Beta disk drive	USPWindow		Unitat de disc beta
+Bilinear	USPWindow		Bilineal
+Could not find app resources.\n	USPWindow		No s'han pogut trobar els recursos de l'aplicació.\n
+Could not find icon in app resources (data: %p, size: %ld).\n	USPWindow		No s'ha pogut trobar la icona als recursos de l'aplicació (dades: %p, mida: %ld).\n
+Could not init native document mime type (%s): %s.\n	USPWindow		No s'ha pogut iniciar el tipus MIME de document natiu (%s): %s.\n
+Could not install native document mime type (%s): %s.\n	USPWindow		No s'ha pogut instal·lar el tipus MIME de document natiu (%s): %s.\n
+Could not open file	USPWindow		No s'ha pogut obrir el fitxer.
+Could not set vector icon of mime type.\n	USPWindow		No s'ha pogut establir la icona vectorial del tipus MIME.\n
+Cursor	USPWindow		Cursor
+Cursor + Enter	USPWindow		Cursor + Retorn
+Device	USPWindow		Dispositiu
+Fast tape off	USPWindow		Cinta ràpida inhabilitada
+Fast tape on	USPWindow		Cinta ràpida habilitada
+File	USPWindow		Fitxer
+File save FAILED	USPWindow		S'ha produït un error en desar el fitxer.
+File save OK	USPWindow		El fitxer s'ha desat correctament.
+File was successfully opened	USPWindow		El fitxer s'ha obert correctament.
+Filetypes registered!	USPWindow		Tipus de fitxers registrats!
+Filtering	USPWindow		Filtratge
+Filtering disabled	USPWindow		Filtratge inhabilitat
+Filtering enabled	USPWindow		Filtratge habilitat
+Full screen	USPWindow		Pantalla completa
+Help	USPWindow		Ajuda
+Joystick	USPWindow		Palanca de control
+Kempson mouse grab	USPWindow		Agafador del ratolí Kempson
+Kempston	USPWindow		Kempston
+Mode 48k	USPWindow		Mode de 48 k
+Mono	USPWindow		Mono
+Mouse grabbed (Alt+G)	USPWindow		Ratolí agafat (Alt+G)
+Mute	USPWindow		Silencia
+OK	USPWindow		D'acord
+Open file…	USPWindow		Obre un fitxer...
+Open from web…	USPWindow		Obre des del web...
+Open…	USPWindow		Obre...
+OSD keyboard	USPWindow		Teclat OSD
+OSD menu	USPWindow		Menú OSD
+Pause	USPWindow		Interromp
+Paused	USPWindow		Interromput
+QAOP + Space	USPWindow		QAOP + Espai
+QAOPM	USPWindow		QAOPM
+Quick load	USPWindow		Càrrega ràpida
+Quick load FAILED	USPWindow		Ha fallat la càrrega ràpida
+Quick load OK	USPWindow		Càrrega ràpida correcta
+Quick save	USPWindow		Desament ràpid
+Quick save FAILED	USPWindow		Ha fallat el desament ràpid.
+Quick save OK	USPWindow		Desament ràpid correcte
+Quit	USPWindow		Surt
+Ready	USPWindow		A punt
+Register filetypes	USPWindow		Registra els tipus de fitxer
+Reset	USPWindow		Restableix
+Reset to service ROM	USPWindow		Restableix a la ROM de servei
+Reset to usual ROM	USPWindow		Restableix a la ROM habitual
+Save screenshot…	USPWindow		Desa la captura de pantalla...
+Save slot	USPWindow		Desa la ranura
+Save SNA snapshot…	USPWindow		Desa la instantània de l'SNA...
+Save…	USPWindow		Desa...
+Screenshot save FAILED	USPWindow		Ha fallat desar la captura de pantalla.
+Screenshot save OK	USPWindow		Captura de pantalla desada correctament
+Sinclair 2	USPWindow		Sinclair 2
+Smart border disabled	USPWindow		Vora intel·ligent inhabilitada
+Smart border enabled	USPWindow		Vora intel·ligent habilitada
+Smart border scale	USPWindow		Escala de la vora intel·ligent
+Sound chip	USPWindow		Xip de so
+Start / Stop tape	USPWindow		Inicia / atura la cinta
+Tape fast	USPWindow		Cinta ràpida
+Tape not inserted	USPWindow		No s'ha inserit la cinta.
+Tape started	USPWindow		Cinta iniciada
+Tape stopped	USPWindow		Cinta aturada
+View	USPWindow		Visualització
+Virtual keyboard	USPWindow		Teclat virtual
+Visit homepage	USPWindow		Visteu la pàgina d'inici
+Volume	USPWindow		Volum
+XBR	USPWindow		XBR
+XBR Filtering disabled	USPWindow		Filtre XBR inhabilitat
+XBR Filtering enabled	USPWindow		Filtre XBR habilitat
+YM2149F	USPWindow		YM2149F
+Cancel	USPWebWindow		Cancel·la
+Download file	USPWebWindow		Baixa el fitxer
+File	USPWebWindow		Fitxer
+items	USPWebWindow		elements
+Open	USPWebWindow		Obre
+Open download folder	USPWebWindow		Obre la carpeta de baixades
+Open file from web…	USPWebWindow		Obre el fitxer des del web...
+Keyboard layout	USPKeyboardWindow		Disposició del teclat
