@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2021 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2023 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -107,13 +107,13 @@ public class FileSelectorVtrdos extends FileSelector
 			{	"/Russian", "/Other", "/1995", "/1996", "/1997", "/1998", "/1999", "/2000", "/2001",
 				"/2002", "/2003", "/2004", "/2005", "/2006", "/2007", "/2008", "/2009", "/2010",
 				"/2011", "/2012", "/2013", "/2014", "/2015", "/2016", "/2017", "/2018", "/2019", "/2020",
-				"/2021"
+				"/2021", "/2022", "/2023"
 			};
 		private final String[] ITEMSURLS = new String[]
 			{	"/russian", "/other", "1995", "1996", "1997", "1998", "1999", "2000", "2001",
 				"2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010",
 				"2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020",
-				"2021"
+				"2021", "2022", "2023"
 			};
 		private final String[] PATTERNS = new String[]
 			{   "<a href=\"(.+?)\" target=\"demozdown\">(.+?)</a>",
