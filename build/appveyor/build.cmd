@@ -86,12 +86,12 @@ call :build
 
 rem build wxWidgets OpenAL Soft-------------------------------------------------
 
-set OPENALLIB=openal-soft-1.20.1-bin.zip
-set URL=https://openal-soft.org/openal-binaries/%OPENALLIB%
+set OPENALLIB=openal-soft-1.23.1-bin.zip
+set URL=https://github.com/kcat/openal-soft/releases/download/1.23.1/%OPENALLIB%
 set DEST=%OPENALLIB%
 call :download
 if errorlevel 1 exit /b 1
-set OPENALLIB_DIR=%CUR_DIR%\openal-soft-1.20.1-bin
+set OPENALLIB_DIR=%CUR_DIR%\openal-soft-1.23.1-bin
 del %OPENALLIB_DIR% /S /Q /F>nul
 !7ZIP! x %OPENALLIB%
 copy /Y %OPENALLIB_DIR%\bin\Win64\soft_oal.dll %OPENALLIB_DIR%\libs\Win64\OpenAL32.dll
