@@ -1,0 +1,98 @@
+1	Spanish	application/x-vnd.unreal-speccy-portable	2972438328
+100% scale	USPWindow		Escala 100%
+128k	USPWindow		128k
+128k mode enabled	USPWindow		128k mode enabled
+200% scale	USPWindow		Escala 200%
+300% scale	USPWindow		Escala 300%
+48k	USPWindow		48k
+48k mode enabled	USPWindow		48k mode enabled
+About	USPWindow		Acerca de
+Auto launch off	USPWindow		Auto launch off
+Auto launch on	USPWindow		Auto launch on
+Auto launch programs	USPWindow		Auto launch programs
+AY Stereo	USPWindow		AY Stereo
+AY-3-8910	USPWindow		AY-3-8910
+Beta disk drive	USPWindow		Beta disk drive
+Bilinear	USPWindow		Bilinear
+Could not find app resources.\n	USPWindow		Could not find app resources.\n
+Could not find icon in app resources (data: %p, size: %ld).\n	USPWindow		Could not find icon in app resources (data: %p, size: %ld).\n
+Could not init native document mime type (%s): %s.\n	USPWindow		Could not init native document mime type (%s): %s.\n
+Could not install native document mime type (%s): %s.\n	USPWindow		Could not install native document mime type (%s): %s.\n
+Could not open file	USPWindow		No se pudo abrir archivo
+Could not set vector icon of mime type.\n	USPWindow		Could not set vector icon of mime type.\n
+Cursor	USPWindow		Cursor
+Cursor + Enter	USPWindow		Cursor + Enter
+Device	USPWindow		Dispositivo
+Fast tape off	USPWindow		Fast tape off
+Fast tape on	USPWindow		Fast tape on
+File	USPWindow		Archivo
+File save FAILED	USPWindow		File save FAILED
+File save OK	USPWindow		File save OK
+File was successfully opened	USPWindow		El archivo se ha abierto exitosamente
+Filetypes registered!	USPWindow		Tipos de archivo registrados.
+Filtering	USPWindow		Filtering
+Filtering disabled	USPWindow		Filtering disabled
+Filtering enabled	USPWindow		Filtering enabled
+Full screen	USPWindow		Pantalla completa
+Help	USPWindow		Ayuda
+Joystick	USPWindow		Joystick
+Kempson mouse grab	USPWindow		Kempson mouse grab
+Kempston	USPWindow		Kempston
+Mode 48k	USPWindow		Mode 48k
+Mono	USPWindow		Mono
+Mouse grabbed (Alt+G)	USPWindow		Mouse grabbed (Alt+G)
+Mute	USPWindow		Silencio
+OK	USPWindow		Aceptar
+Open file…	USPWindow		Abrir archivo…
+Open from web…	USPWindow		Open from web…
+Open…	USPWindow		Abrir…
+OSD keyboard	USPWindow		OSD keyboard
+OSD menu	USPWindow		OSD menu
+Pause	USPWindow		Pausa
+Paused	USPWindow		Pausado
+QAOP + Space	USPWindow		QAOP + Space
+QAOPM	USPWindow		QAOPM
+Quick load	USPWindow		Quick load
+Quick load FAILED	USPWindow		Quick load FAILED
+Quick load OK	USPWindow		Quick load OK
+Quick save	USPWindow		Quick save
+Quick save FAILED	USPWindow		Quick save FAILED
+Quick save OK	USPWindow		Quick save OK
+Quit	USPWindow		Salir
+Ready	USPWindow		Ready
+Register filetypes	USPWindow		Register filetypes
+Reset	USPWindow		Restablecer
+Reset to service ROM	USPWindow		Reset to service ROM
+Reset to usual ROM	USPWindow		Reset to usual ROM
+Save screenshot…	USPWindow		Guardar captura de pantalla…
+Save slot	USPWindow		Save slot
+Save SNA snapshot…	USPWindow		Save SNA snapshot…
+Save…	USPWindow		Guardar…
+Screenshot save FAILED	USPWindow		Screenshot save FAILED
+Screenshot save OK	USPWindow		Screenshot save OK
+Sinclair 2	USPWindow		Sinclair 2
+Smart border disabled	USPWindow		Smart border disabled
+Smart border enabled	USPWindow		Smart border enabled
+Smart border scale	USPWindow		Smart border scale
+Sound chip	USPWindow		Sound chip
+Start / Stop tape	USPWindow		Start / Stop tape
+Tape fast	USPWindow		Tape fast
+Tape not inserted	USPWindow		Tape not inserted
+Tape started	USPWindow		Tape started
+Tape stopped	USPWindow		Tape stopped
+View	USPWindow		View
+Virtual keyboard	USPWindow		Teclado virtual
+Visit homepage	USPWindow		Visit homepage
+Volume	USPWindow		Volumen
+XBR	USPWindow		XBR
+XBR Filtering disabled	USPWindow		XBR Filtering disabled
+XBR Filtering enabled	USPWindow		XBR Filtering enabled
+YM2149F	USPWindow		YM2149F
+Cancel	USPWebWindow		Cancelar
+Download file	USPWebWindow		Descargar archivo
+File	USPWebWindow		Archivo
+items	USPWebWindow		elementos
+Open	USPWebWindow		Abrir
+Open download folder	USPWebWindow		Abrir carpeta de descargas
+Open file from web…	USPWebWindow		Abrir archivo remoto…
+Keyboard layout	USPKeyboardWindow		Distribución del teclado

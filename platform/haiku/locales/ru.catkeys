@@ -1,0 +1,98 @@
+1	Russian	application/x-vnd.unreal-speccy-portable	2972438328
+100% scale	USPWindow		Масштаб 100%
+128k	USPWindow		128кб
+128k mode enabled	USPWindow		128кб режим включен
+200% scale	USPWindow		Масштаб 200%
+300% scale	USPWindow		Масштаб 300%
+48k	USPWindow		48кб
+48k mode enabled	USPWindow		48кб режим включен
+About	USPWindow		О программе
+Auto launch off	USPWindow		Автозапуск выключен
+Auto launch on	USPWindow		Автозапуск включен
+Auto launch programs	USPWindow		Автозапуск программ
+AY Stereo	USPWindow		AY Стерео
+AY-3-8910	USPWindow		AY-3-8910
+Beta disk drive	USPWindow		Дисковод
+Bilinear	USPWindow		Билинейное
+Could not find app resources.\n	USPWindow		Не могу найти файлы ресурсов программы.\n
+Could not find icon in app resources (data: %p, size: %ld).\n	USPWindow		Иконка не найдена в ресурсах приложения (data: %p, size: %ld).\n
+Could not init native document mime type (%s): %s.\n	USPWindow		Не могу инициализировать mime-тип(%s): %s.\n
+Could not install native document mime type (%s): %s.\n	USPWindow		Не могу установить mime-тип (%s): %s.\n
+Could not open file	USPWindow		Ошибка открытия файла
+Could not set vector icon of mime type.\n	USPWindow		Не могу установить иконку для mime-типа.\n
+Cursor	USPWindow		Курсор
+Cursor + Enter	USPWindow		Курсор + Enter
+Device	USPWindow		Периферия
+Fast tape off	USPWindow		Быстрая загрузка с ленты выключена
+Fast tape on	USPWindow		Быстрая загрузка с ленты включена
+File	USPWindow		Файл
+File save FAILED	USPWindow		Ошибка сохранения файла
+File save OK	USPWindow		Сохранение выполнено
+File was successfully opened	USPWindow		Файл успешно загружен
+Filetypes registered!	USPWindow		Файловые типы зарегистрированы!
+Filtering	USPWindow		Сглаживание
+Filtering disabled	USPWindow		Сглаживание выключено
+Filtering enabled	USPWindow		Сглаживание включено
+Full screen	USPWindow		Полноэкранный режим
+Help	USPWindow		Справка
+Joystick	USPWindow		Джойстик
+Kempson mouse grab	USPWindow		Кемпстон мышь (захват)
+Kempston	USPWindow		Кемпстон
+Mode 48k	USPWindow		Режим 48кб
+Mono	USPWindow		Моно
+Mouse grabbed (Alt+G)	USPWindow		Мышь захвачена (Alt+G)
+Mute	USPWindow		Без звука
+OK	USPWindow		ОК
+Open file…	USPWindow		Открыть файл…
+Open from web…	USPWindow		Открыть из интернета…
+Open…	USPWindow		Открыть…
+OSD keyboard	USPWindow		OSD клавиатура
+OSD menu	USPWindow		OSD меню
+Pause	USPWindow		Пауза
+Paused	USPWindow		Пауза
+QAOP + Space	USPWindow		QAOP + Пробел
+QAOPM	USPWindow		QAOPM
+Quick load	USPWindow		Быстрая загрузка
+Quick load FAILED	USPWindow		Ошибка быстрой загрузки
+Quick load OK	USPWindow		Быстрая загрузка выполнена
+Quick save	USPWindow		Быстрое сохранение
+Quick save FAILED	USPWindow		Ошибка быстрого сохранения
+Quick save OK	USPWindow		Быстрое сохранение выполнено
+Quit	USPWindow		Выход
+Ready	USPWindow		Готов
+Register filetypes	USPWindow		Зарегистрировать файловые типы
+Reset	USPWindow		Сброс
+Reset to service ROM	USPWindow		Сброс в сервисное ПЗУ
+Reset to usual ROM	USPWindow		Сброс в стандартное ПЗУ
+Save screenshot…	USPWindow		Сохранить снимок экрана…
+Save slot	USPWindow		Сохранить в слот
+Save SNA snapshot…	USPWindow		Сохранить SNA снапшот…
+Save…	USPWindow		Сохранить…
+Screenshot save FAILED	USPWindow		Ошибка сохранения снимка экрана
+Screenshot save OK	USPWindow		Снимок экрана сохранён
+Sinclair 2	USPWindow		Синклер 2
+Smart border disabled	USPWindow		Умное масштабирование выключено
+Smart border enabled	USPWindow		Умное масштабирование включено
+Smart border scale	USPWindow		Умное масштабирование бордюра
+Sound chip	USPWindow		Звуковой чип
+Start / Stop tape	USPWindow		Старт / Стоп загрузки с ленты
+Tape fast	USPWindow		Быстрая загрузка с ленты
+Tape not inserted	USPWindow		Лента отсутсвует
+Tape started	USPWindow		Лента включена
+Tape stopped	USPWindow		Лента остановлена
+View	USPWindow		Вид
+Virtual keyboard	USPWindow		Виртуальная клавиатура
+Visit homepage	USPWindow		Открыть сайт проекта
+Volume	USPWindow		Громкость
+XBR	USPWindow		XBR
+XBR Filtering disabled	USPWindow		XBR сглаживание выключено
+XBR Filtering enabled	USPWindow		XBR сглаживание включено
+YM2149F	USPWindow		YM2149F
+Cancel	USPWebWindow		Отмена
+Download file	USPWebWindow		Загрузить файл
+File	USPWebWindow		Файл
+items	USPWebWindow		объектов
+Open	USPWebWindow		Открыть
+Open download folder	USPWebWindow		Открыть каталог с загрузками
+Open file from web…	USPWebWindow		Открыть файл из интернета…
+Keyboard layout	USPKeyboardWindow		Виртуальная клавиатура

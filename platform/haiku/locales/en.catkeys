@@ -1,0 +1,98 @@
+1	English	application/x-vnd.unreal-speccy-portable	2972438328
+Could not find app resources.\n	USPWindow		Could not find app resources.\n
+Smart border enabled	USPWindow		Smart border enabled
+QAOPM	USPWindow		QAOPM
+Cancel	USPWebWindow		Cancel
+Auto launch on	USPWindow		Auto launch on
+Could not find icon in app resources (data: %p, size: %ld).\n	USPWindow		Could not find icon in app resources (data: %p, size: %ld).\n
+OK	USPWindow		OK
+Quick load FAILED	USPWindow		Quick load FAILED
+Register filetypes	USPWindow		Register filetypes
+Ready	USPWindow		Ready
+Paused	USPWindow		Paused
+Filetypes registered!	USPWindow		Filetypes registered!
+Open from web…	USPWindow		Open from web…
+Volume	USPWindow		Volume
+Tape started	USPWindow		Tape started
+Fast tape off	USPWindow		Fast tape off
+300% scale	USPWindow		300% scale
+48k mode enabled	USPWindow		48k mode enabled
+XBR Filtering disabled	USPWindow		XBR Filtering disabled
+QAOP + Space	USPWindow		QAOP + Space
+48k	USPWindow		48k
+Visit homepage	USPWindow		Visit homepage
+128k mode enabled	USPWindow		128k mode enabled
+200% scale	USPWindow		200% scale
+Keyboard layout	USPKeyboardWindow		Keyboard layout
+items	USPWebWindow		items
+About	USPWindow		About
+Save…	USPWindow		Save…
+Save slot	USPWindow		Save slot
+Could not set vector icon of mime type.\n	USPWindow		Could not set vector icon of mime type.\n
+Smart border scale	USPWindow		Smart border scale
+100% scale	USPWindow		100% scale
+Filtering	USPWindow		Filtering
+Open file from web…	USPWebWindow		Open file from web…
+View	USPWindow		View
+Mute	USPWindow		Mute
+Help	USPWindow		Help
+Cursor + Enter	USPWindow		Cursor + Enter
+File save FAILED	USPWindow		File save FAILED
+AY Stereo	USPWindow		AY Stereo
+Save SNA snapshot…	USPWindow		Save SNA snapshot…
+AY-3-8910	USPWindow		AY-3-8910
+File	USPWebWindow		File
+Cursor	USPWindow		Cursor
+Full screen	USPWindow		Full screen
+Quit	USPWindow		Quit
+Fast tape on	USPWindow		Fast tape on
+Quick load	USPWindow		Quick load
+Sinclair 2	USPWindow		Sinclair 2
+File	USPWindow		File
+Mode 48k	USPWindow		Mode 48k
+Screenshot save FAILED	USPWindow		Screenshot save FAILED
+Open file…	USPWindow		Open file…
+128k	USPWindow		128k
+File was successfully opened	USPWindow		File was successfully opened
+XBR	USPWindow		XBR
+Auto launch programs	USPWindow		Auto launch programs
+Joystick	USPWindow		Joystick
+Save screenshot…	USPWindow		Save screenshot…
+Filtering disabled	USPWindow		Filtering disabled
+Could not open file	USPWindow		Could not open file
+Kempson mouse grab	USPWindow		Kempson mouse grab
+XBR Filtering enabled	USPWindow		XBR Filtering enabled
+Reset to service ROM	USPWindow		Reset to service ROM
+OSD keyboard	USPWindow		OSD keyboard
+Open download folder	USPWebWindow		Open download folder
+Virtual keyboard	USPWindow		Virtual keyboard
+YM2149F	USPWindow		YM2149F
+Bilinear	USPWindow		Bilinear
+Screenshot save OK	USPWindow		Screenshot save OK
+Tape not inserted	USPWindow		Tape not inserted
+Tape stopped	USPWindow		Tape stopped
+Download file	USPWebWindow		Download file
+Filtering enabled	USPWindow		Filtering enabled
+Quick load OK	USPWindow		Quick load OK
+Quick save FAILED	USPWindow		Quick save FAILED
+Quick save	USPWindow		Quick save
+Tape fast	USPWindow		Tape fast
+Start / Stop tape	USPWindow		Start / Stop tape
+Beta disk drive	USPWindow		Beta disk drive
+Mono	USPWindow		Mono
+Open	USPWebWindow		Open
+Quick save OK	USPWindow		Quick save OK
+Open…	USPWindow		Open…
+Could not init native document mime type (%s): %s.\n	USPWindow		Could not init native document mime type (%s): %s.\n
+Reset	USPWindow		Reset
+Device	USPWindow		Device
+File save OK	USPWindow		File save OK
+Sound chip	USPWindow		Sound chip
+Pause	USPWindow		Pause
+Mouse grabbed (Alt+G)	USPWindow		Mouse grabbed (Alt+G)
+Kempston	USPWindow		Kempston
+Could not install native document mime type (%s): %s.\n	USPWindow		Could not install native document mime type (%s): %s.\n
+OSD menu	USPWindow		OSD menu
+Smart border disabled	USPWindow		Smart border disabled
+Reset to usual ROM	USPWindow		Reset to usual ROM
+Auto launch off	USPWindow		Auto launch off

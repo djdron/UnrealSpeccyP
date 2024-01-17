@@ -25,7 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef __HAIKU__
+#include <errno.h>
+#else
 #include <sys/errno.h>
+#endif
 
 namespace xIo
 {
@@ -73,6 +77,11 @@ bool PathIsRoot(const char* path) {	return !strcmp(path, root_path); }
 
 bool MkDir(const char* path)
 {
+#ifdef __HAIKU__
+	struct stat st;
+	if (stat(path, &st) == 0)
+		return true;
+#endif
 	if(mkdir(path, 0777) != 0)
 	{
 		if(errno != EEXIST)

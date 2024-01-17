@@ -13,6 +13,7 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 option(USE_WX_WIDGETS "wxWidgets + OpenAL + OpenGL version" OFF)
 option(USE_SDL "SDL version" ON)
 option(USE_SDL2 "SDL2 version" OFF)
+option(USE_HAIKU "Haiku version" OFF)
 option(USE_BENCHMARK "benchmark mode (console)" OFF)
 option(USE_LIBRARY "library mode" OFF)
 option(USE_WEB "use web sources (SDL or iOS versions)" ON)
@@ -60,7 +61,7 @@ source_group("devices\\sound" FILES ${SRCCXX_DEVICES_SOUND} ${SRCH_DEVICES_SOUND
 
 #3rdparty libs
 
-if(NOT APPLE_IOS AND NOT ANDROID AND (USE_SDL OR USE_SDL2) AND USE_WEB AND NOT EMSCRIPTEN)
+if(NOT APPLE_IOS AND NOT ANDROID AND (USE_SDL OR USE_SDL2 OR USE_HAIKU) AND USE_WEB AND NOT EMSCRIPTEN)
 find_package(CURL REQUIRED)
 if(CURL_FOUND)
 	include_directories(${CURL_INCLUDE_DIRS})
@@ -144,7 +145,7 @@ source_group("platform\\oal" FILES ${SRCCXX_PLATFORM_OPENAL})
 
 endif(USE_WX_WIDGETS OR APPLE_IOS)
 
-if(NOT ANDROID AND (USE_SDL OR USE_SDL2 OR APPLE_IOS))
+if(NOT ANDROID AND (USE_SDL OR USE_SDL2 OR APPLE_IOS OR USE_HAIKU))
 
 file(GLOB SRCCXX_UI "../../ui/*.cpp")
 file(GLOB SRCH_UI "../../ui/*.h")
@@ -169,7 +170,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 endif(NOT MSVC)
 endif(USE_WEB)
 
-endif(NOT ANDROID AND (USE_SDL OR USE_SDL2 OR APPLE_IOS))
+endif(NOT ANDROID AND (USE_SDL OR USE_SDL2 OR APPLE_IOS OR USE_HAIKU))
 
 if(USE_SDL2 OR APPLE_IOS OR ANDROID)
 
@@ -359,6 +360,22 @@ add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH} ${SRCRES})
 target_link_libraries(${PROJECT} wx::core wx::base wx::adv wx::aui wx::gl)
 target_link_libraries(${PROJECT} ${OPENGL_LIBRARIES})
 
+elseif(USE_HAIKU)
+
+#Haiku
+file(GLOB SRCCXX_PLATFORM_HAIKU "../../platform/haiku/*.cpp")
+add_definitions(-DAPP_SIGNATURE="application/x-vnd.unreal-speccy-portable" -DUSE_HAIKU -DUSE_PNG -DUSE_UI -DUSE_CONFIG -DUSE_ZIP)
+if(USE_WEB)
+add_definitions(-DUSE_WEB)
+endif(USE_WEB)
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_HAIKU})
+source_group("platform\\haiku" FILES ${SRCCXX_PLATFORM_HAIKU})
+
+add_platform_io_stuff()
+
+add_executable(${PROJECT} WIN32 ${SRCCXX} ${SRCC} ${SRCH})
+target_link_libraries(${PROJECT} -lbe -lmedia -ldevice -lgame -ltracker -llocalestub -lpng)
+
 elseif(USE_SDL)
 
 #SDL
@@ -539,6 +556,24 @@ add_library(${PROJECT} SHARED ${SRCCXX} ${SRCC} ${SRCH})
 endif(APPLE_IOS)
 
 target_link_libraries(${PROJECT} ${THIRDPARTY_LIBRARIES})
+
+if(HAIKU)
+add_custom_target(Resources ALL
+	DEPENDS ${PROJECT}
+	SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../platform/haiku/resources.rdef)
+add_custom_command(TARGET Resources
+	COMMAND rc -o resources.rsrc ${CMAKE_CURRENT_SOURCE_DIR}/../../platform/haiku/resources.rdef
+	COMMENT "${P} Compiling resource file."
+	VERBATIM)
+add_custom_command(TARGET Resources
+	COMMAND xres -o ${PROJECT} resources.rsrc
+	COMMENT "${P} Adding compiled resources to '${PROJECT}' executable."
+	VERBATIM)
+add_custom_command(TARGET Resources
+	COMMAND mimeset --all ${PROJECT}
+	COMMENT "${P} Updating MIME types for '${PROJECT}' executable."
+	VERBATIM)
+endif(HAIKU)
 
 if(MSVC AND NOT UWP)
 set_target_properties(${PROJECT} PROPERTIES LINK_FLAGS "/MANIFEST:NO /LARGEADDRESSAWARE")
