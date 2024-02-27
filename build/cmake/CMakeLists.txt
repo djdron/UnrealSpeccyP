@@ -165,7 +165,7 @@ file(GLOB SRCCXX_IMGUI "../../3rdparty/imgui/*.cpp")
 file(GLOB SRCH_IMGUI "../../3rdparty/imgui/*.h")
 list(APPEND SRCCXX ${SRCCXX_IMGUI})
 list(APPEND SRCH ${SRCH_IMGUI})
-source_group("imgui" FILES ${SRCCXX_IMGUI} ${SRCH_IMGUI})
+source_group("platform\\imgui" FILES ${SRCCXX_IMGUI} ${SRCH_IMGUI})
 add_definitions(-DIMGUI_IMPL_OPENGL_ES2 -DUSE_IMGUI)
 
 include_directories("../../3rdparty/imgui/")
@@ -173,7 +173,7 @@ file(GLOB SRCCXX_IMGUI_BACKENDS "../../3rdparty/imgui/backends/imgui_impl_sdl2.c
 file(GLOB SRCH_IMGUI_BACKENDS "../../3rdparty/imgui/backends/imgui_impl_sdl2.h" "../../3rdparty/imgui/backends/imgui_impl_opengl3.h")
 list(APPEND SRCCXX ${SRCCXX_IMGUI_BACKENDS})
 list(APPEND SRCH ${SRCH_IMGUI_BACKENDS})
-source_group("imgui\\backends" FILES ${SRCCXX_IMGUI_BACKENDS} ${SRCH_IMGUI_BACKENDS})
+source_group("platform\\imgui\\backends" FILES ${SRCCXX_IMGUI_BACKENDS} ${SRCH_IMGUI_BACKENDS})
 endif(USE_SDL2 AND USE_IMGUI)
 
 if(USE_WEB)
