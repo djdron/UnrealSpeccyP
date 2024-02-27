@@ -25,10 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/tick.h"
 #include "../io.h"
 
-#ifdef USE_IMGUI
-#include "../../3rdparty/imgui/backends/imgui_impl_sdl2.h"
-#include "../../3rdparty/imgui/backends/imgui_impl_opengl3.h"
-#endif//USE_IMGUI
 
 namespace xPlatform
 {
@@ -42,6 +38,12 @@ void DoneAudio();
 void UpdateAudio();
 void UpdateScreen();
 void ProcessKey(SDL_Event& e);
+
+namespace xImGui
+{
+void ProcessEvent(const SDL_Event& e, bool* need_keyboard, bool* need_mouse);
+}
+//namespace xImGui
 
 #ifdef SDL_USE_MOUSE
 void ProcessMouse(SDL_Event& e);
@@ -162,7 +164,9 @@ void Loop1()
 	SDL_Event e;
 	while(SDL_PollEvent(&e))
 	{
-		if(!ImGui_ImplSDL2_ProcessEvent(&e))
+		bool ui_need_keyboard = false;
+		bool ui_need_mouse = false;
+		xImGui::ProcessEvent(e, &ui_need_keyboard, &ui_need_mouse);
 		switch(e.type)
 		{
 		case SDL_QUIT:
@@ -170,13 +174,15 @@ void Loop1()
 			break;
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
-			ProcessKey(e);
+			if(!ui_need_keyboard)
+				ProcessKey(e);
 			break;
 #ifdef SDL_USE_MOUSE
 		case SDL_MOUSEBUTTONDOWN:
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEMOTION:
-			ProcessMouse(e);
+			if(!ui_need_mouse)
+				ProcessMouse(e);
 			break;
 #endif//SDL_USE_MOUSE
 #ifdef SDL_USE_JOYSTICK
