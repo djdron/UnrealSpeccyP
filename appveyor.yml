@@ -11,7 +11,7 @@ for:
       - image: Visual Studio 2019
 
   install:
-    - choco install -y wixtoolset
+    - choco install -y wixtoolset --version=3.11.2
     - git submodule update --init --recursive
 
   build_script:
@@ -31,6 +31,9 @@ for:
   matrix:
     only:
       - image: Ubuntu
+
+  install:
+    - git submodule update --init 3rdparty/imgui
 
   build_script:
     - build/appveyor/build.sh
