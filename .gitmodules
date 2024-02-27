@@ -1,3 +1,7 @@
 [submodule "3rdparty/wxWidgets"]
 	path = 3rdparty/wxWidgets
 	url = https://github.com/wxWidgets/wxWidgets.git
+
+[submodule "3rdparty/imgui"]
+	path = 3rdparty/imgui
+	url = https://github.com/ocornut/imgui.git
