@@ -11,7 +11,7 @@ for:
       - image: Visual Studio 2019
 
   install:
-    - choco install -y wixtoolset
+    - choco install -y wixtoolset --version=3.11.2
     - git submodule update --init --recursive
 
   build_script:

@@ -48,12 +48,12 @@ call :build
 
 rem build sdl2 gles2 angle curl-------------------------------------------------
 
-set SDL2LIB=SDL2-devel-2.0.12-VC.zip
-set URL=https://www.libsdl.org/release/%SDL2LIB%
+set SDL2LIB=SDL2-devel-2.30.0-VC.zip
+set URL=https://github.com/libsdl-org/SDL/releases/download/release-2.30.0/%SDL2LIB%
 set DEST=%SDL2LIB%
 call :download
 if errorlevel 1 exit /b 1
-set SDL2LIB_DIR=%CUR_DIR%\SDL2-2.0.12
+set SDL2LIB_DIR=%CUR_DIR%\SDL2-2.30.0
 del %SDL2LIB_DIR% /S /Q /F>nul
 !7ZIP! x %SDL2LIB%
 
