@@ -25,6 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/tick.h"
 #include "../io.h"
 
+#ifdef USE_IMGUI
+#include "../../3rdparty/imgui/backends/imgui_impl_sdl2.h"
+#include "../../3rdparty/imgui/backends/imgui_impl_opengl3.h"
+#endif//USE_IMGUI
+
 namespace xPlatform
 {
 
@@ -157,6 +162,7 @@ void Loop1()
 	SDL_Event e;
 	while(SDL_PollEvent(&e))
 	{
+		if(!ImGui_ImplSDL2_ProcessEvent(&e))
 		switch(e.type)
 		{
 		case SDL_QUIT:
