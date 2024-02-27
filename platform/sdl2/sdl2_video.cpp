@@ -24,13 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../gles2/gles2.h"
 #include "../../tools/options.h"
 
-#ifdef USE_IMGUI
-#include "../../3rdparty/imgui/backends/imgui_impl_sdl2.h"
-#include "../../3rdparty/imgui/backends/imgui_impl_opengl3.h"
-#endif//USE_IMGUI
-
 namespace xPlatform
 {
+
+namespace xImGui
+{
+void Init(SDL_Window* window, SDL_GLContext context);
+void Done();
+void Update();
+}
+//namespace xImGui
 
 SDL_Window* window = NULL;
 static SDL_GLContext context = NULL;
@@ -150,19 +153,7 @@ bool InitVideo()
 	SDL_FreeSurface(icon_sufrace);
 #endif//_LINUX
 
-#ifdef USE_IMGUI
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-    ImGui::StyleColorsDark();
-
-	ImGui_ImplSDL2_InitForOpenGL(window, context);
-	ImGui_ImplOpenGL3_Init();
-#endif//USE_IMGUI
+	xImGui::Init(window, context);
 
 	gles2 = eGLES2::Create();
 	return true;
@@ -172,11 +163,7 @@ void DoneVideo()
 {
 	SAFE_DELETE(gles2);
 
-#ifdef USE_IMGUI
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
-#endif//USE_IMGUI
+	xImGui::Done();
 
 	if(context)
 	{
@@ -199,21 +186,7 @@ void UpdateScreen()
 	SDL_GL_GetDrawableSize(window, &s.x, &s.y);
 	gles2->Draw(ZERO, s);
 
-#ifdef USE_IMGUI
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
-    ImGui::NewFrame();
-
-	static bool show_demo_window = true;
-    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-    if(show_demo_window)
-        ImGui::ShowDemoWindow(&show_demo_window);
-
-	// Rendering
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-#endif//USE_IMGUI
+	xImGui::Update();
 
 	SDL_GL_SwapWindow(window);
 }
