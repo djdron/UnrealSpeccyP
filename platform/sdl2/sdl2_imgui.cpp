@@ -39,8 +39,8 @@ void Init(SDL_Window* window, SDL_GLContext context)
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-//  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-
+//	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+	io.Fonts->AddFontFromFileTTF("res/font/Roboto-Regular.ttf", 20.0f);
 	ImGui::StyleColorsDark();
 
 	ImGui_ImplSDL2_InitForOpenGL(window, context);
