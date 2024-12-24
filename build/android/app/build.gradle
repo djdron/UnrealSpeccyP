@@ -1,6 +1,9 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdk 34
+    buildFeatures {
+        buildConfig = true
+    }
+    compileSdk 35
 
     defaultConfig {
         applicationId "app.usp"
@@ -9,7 +12,7 @@ android {
 //        targetSdkVersion 10
 
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
     }
 
     buildTypes {
@@ -30,5 +33,5 @@ android {
             path '../../cmake/CMakeLists.txt'
         }
     }
-    ndkVersion '26.3.11579264'
+    ndkVersion '27.2.12479018'
 }
