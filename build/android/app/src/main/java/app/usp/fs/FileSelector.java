@@ -76,6 +76,11 @@ public abstract class FileSelector extends ListActivity
 		getListView().setFastScrollEnabled(true);
 	}
 	@Override
+	public void onBackPressed()
+	{
+		getParent().onBackPressed();
+	}
+	@Override
 	protected void onResume()
 	{
 		super.onResume();
