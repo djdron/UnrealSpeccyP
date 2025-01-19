@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.TabHost;
 import app.usp.fs.FileSelectorFS;
 import app.usp.fs.FileSelectorRZX;
@@ -36,6 +37,7 @@ public class FileOpen extends TabActivity
     @Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+		getWindow().requestFeature(Window.FEATURE_OPTIONS_PANEL);
 		super.onCreate(savedInstanceState);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.file_open);

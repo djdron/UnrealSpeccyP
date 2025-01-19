@@ -27,12 +27,14 @@ import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.view.MenuItem;
+import android.view.Window;
 
 public class Preferences extends PreferenceActivity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		getWindow().requestFeature(Window.FEATURE_OPTIONS_PANEL);
 		super.onCreate(savedInstanceState);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getFragmentManager().beginTransaction().replace(android.R.id.content, new PreferencesFragment()).commit();
