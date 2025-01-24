@@ -21,7 +21,7 @@ git clone https://github.com/djdron/UnrealSpeccyP.git usp
 cd usp/build/cmake
 mkdir build_macos
 cd build_macos
-export OSXCROSS_HOST=x86_64-apple-darwin22.2
+export OSXCROSS_HOST=x86_64-apple-darwin23.6
 export GLES2_PATH=/build/angle-chromium89
 #export GLES2_PATH=/build/angle-chromium108
 export GLES2_INCLUDE_PATH=$GLES2_PATH/include
