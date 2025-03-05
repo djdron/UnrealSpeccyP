@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
+void OpSpeed(int v);
+
 #ifdef SDL_USE_MOUSE
 bool ProcessMouseGrab(SDL_Event& e);
 #endif//SDL_USE_MOUSE
@@ -39,6 +41,12 @@ static bool PreProcessKey(SDL_Event& e)
 	if(ProcessMouseGrab(e))
 		return true;
 #endif//SDL_USE_MOUSE
+	switch(e.key.keysym.sym)
+	{
+	case SDLK_F8:
+		OpSpeed(e.type == SDL_KEYDOWN ? 5 : 0);
+		return true;
+	}
 	if(e.type != SDL_KEYUP)
 		return false;
 	switch(e.key.keysym.sym)

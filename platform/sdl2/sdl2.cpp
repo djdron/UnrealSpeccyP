@@ -22,11 +22,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SDL.h>
 #include "../../options_common.h"
+#include "../../tools/options.h"
 #include "../../tools/tick.h"
 #include "../io.h"
 
 namespace xPlatform
 {
+
+static struct eOptionSpeed : public xOptions::eOptionInt
+{
+	virtual const char* Name() const { return "speed"; }
+	virtual const char** Values() const
+	{
+		static const char* values[] = { "1x", "2x", "3x", "4x", "5x", "6x", "7x", "8x", "9x", "10x", NULL };
+		return values;
+	}
+	virtual void Change(bool next = true)
+	{
+		eOptionInt::Change(0, 10, next);
+	}
+	virtual int Order() const { return 69; }
+} op_speed;
+
+int OpSpeed() { return op_speed; }
+void OpSpeed(int v) { op_speed.Set(v); }
 
 static bool sdl_inited = false;
 
@@ -209,6 +228,8 @@ void Loop()
 	last_tick.SetCurrent();
 	while(!quit)
 	{
+		for(int i = OpSpeed(); --i >= 0;)
+			Handler()->OnLoop();
 		Loop1();
 		while(last_tick.Passed().Ms() < 15)
 		{

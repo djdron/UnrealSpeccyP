@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
+int OpSpeed();
+
 static SDL_AudioDeviceID device = 0;
 
 static eSoundMixer sound_mixer;
@@ -95,7 +97,7 @@ void UpdateAudio()
 	SDL_LockAudioDevice(device);
 	sound_mixer.Update();
 	static bool audio_filled = false;
-	bool audio_filled_new = sound_mixer.Ready() > 44100*2*2/50*7; // 7-frame data
+	bool audio_filled_new = !OpSpeed() && sound_mixer.Ready() > 44100*2*2/50*7; // 7-frame data
 	if(audio_filled != audio_filled_new)
 	{
 		audio_filled = audio_filled_new;
