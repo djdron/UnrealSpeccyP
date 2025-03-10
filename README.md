@@ -11,6 +11,8 @@ Created to be ported to many platforms such as Windows/Linux/Mac/Symbian/WinMobi
 
 ### Download
 
+[<img src="https://f-droid.org/badge/get-it-on.svg" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/app.usp)
+
 Official releases can be downloaded from [the GitHub releases page](https://github.com/djdron/UnrealSpeccyP/releases) or from [the Bitbucket downloads page](https://bitbucket.org/djdron/unrealspeccyp/downloads/).
 
 ### Authors
