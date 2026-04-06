@@ -262,7 +262,7 @@ void eGLES2Impl::Draw(const ePoint& pos, const ePoint& size)
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture_ui);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, texture_buffer_ui);
-		sprite_screen->Draw(texture_ui, pos, size, 0.99f, sx_ui, sy_ui); // force alpha blend
+		sprite_screen->Draw(texture_ui, pos, size, 0.99f, sx_ui, sy_ui, filtering); // force alpha blend
 	}
 #endif//USE_UI
 //	glFlush();
