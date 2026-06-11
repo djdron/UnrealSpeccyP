@@ -370,16 +370,37 @@ public class Main extends Activity
 	private boolean OnMenuItemSelected(MenuItem item)
 	{
 		EndPause();
-    	switch(item.getItemId())
-    	{
-    	case R.id.open_file:	startActivity(new Intent(this, FileOpen.class)); return true;
-		case R.id.save_state:	Emulator.the.SaveState(); 		return true;
-		case R.id.load_state:	Emulator.the.LoadState(); 		return true;
-		case R.id.reset:		Emulator.the.Reset(); 			return true;
-    	case R.id.preferences:	startActivity(new Intent(this, Preferences.class)); return true;
-		case R.id.quit:			Exit(); 						return true;
-    	}
-    	return false;
+		if(item.getItemId() == R.id.open_file)
+		{
+			startActivity(new Intent(this, FileOpen.class));
+			return true;
+		}
+		else if(item.getItemId() == R.id.save_state)
+		{
+			Emulator.the.SaveState();
+			return true;
+		}
+		else if(item.getItemId() == R.id.load_state)
+		{
+			Emulator.the.LoadState();
+			return true;
+		}
+		else if(item.getItemId() == R.id.reset)
+		{
+			Emulator.the.Reset();
+			return true;
+		}
+		else if(item.getItemId() == R.id.preferences)
+		{
+			startActivity(new Intent(this, Preferences.class));
+			return true;
+		}
+		else if(item.getItemId() == R.id.quit)
+		{
+			Exit();
+			return true;
+		}
+		return false;
     }
 	final private void Exit()
 	{

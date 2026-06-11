@@ -3,7 +3,8 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    compileSdk 35
+    buildToolsVersion "37.0.0"
+    compileSdk 37
 
     defaultConfig {
         applicationId "app.usp"
@@ -12,7 +13,7 @@ android {
 //        targetSdkVersion 10
 
         minSdkVersion 21
-        targetSdkVersion 35
+        targetSdkVersion 37
     }
 
     buildTypes {
@@ -24,15 +25,15 @@ android {
         }
     }
     lint {
-        checkReleaseBuilds false
-        abortOnError false
+        checkReleaseBuilds = false
+        abortOnError = false
     }
-    namespace 'app.usp'
+    namespace = 'app.usp'
     externalNativeBuild {
         cmake {
             path '../../cmake/CMakeLists.txt'
-            version '3.31.1'
+            version = '4.1.2'
         }
     }
-    ndkVersion '28.0.13004108'
+    ndkVersion = '29.0.14206865'
 }
