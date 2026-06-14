@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2026 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -68,9 +68,9 @@ public class Main extends Activity
 			Emulator.the.Init(getFilesDir().toString());
 		}
 		control = new Control(this);
-		control.setId(1);
+		control.setId(View.NO_ID);
 		view = new ViewGLES(this, control);
-		view.setId(2);
+		view.setId(View.NO_ID);
 		RelativeLayout layout = new RelativeLayout(this);
 		RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 		RelativeLayout.LayoutParams p2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -82,19 +82,12 @@ public class Main extends Activity
 		layout.addView(control, p2);
 		setContentView(layout);
 
-		getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(
-			new View.OnSystemUiVisibilityChangeListener()
+		getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> {
+			if(!paused && (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
 			{
-				@Override
-				public void onSystemUiVisibilityChange(int visibility)
-				{
-					if(!paused && (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
-					{
-						RunHideCallback();
-					}
-				}
+				RunHideCallback();
 			}
-		);
+		});
 
 		view.requestFocus();
 		view.setKeepScreenOn(true);
@@ -189,14 +182,7 @@ public class Main extends Activity
 				dlg.setMessage(getString(R.string.need_storage_permission));
 				dlg.setCancelable(false);
 				dlg.setPositiveButton(getString(R.string.ok),
-						new DialogInterface.OnClickListener()
-						{
-							@Override
-							public void onClick(DialogInterface di, int i)
-							{
-								requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE);
-							}
-						}
+					(di, i) -> requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE)
 				);
 				AlertDialog ad = dlg.create();
 				ad.show();
@@ -213,14 +199,7 @@ public class Main extends Activity
 		dlg.setMessage(getString(R.string.unable_access_storage));
 		dlg.setCancelable(true);
 		dlg.setPositiveButton(getString(R.string.preferences),
-			new DialogInterface.OnClickListener()
-			{
-				@Override
-				public void onClick(DialogInterface di, int i)
-				{
-					startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", getPackageName(), null)));
-				}
-			}
+			(di, i) -> startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", getPackageName(), null)))
 		);
 		dlg.setNegativeButton(getString(R.string.cancel), null);
 		AlertDialog ad = dlg.create();
@@ -242,11 +221,7 @@ public class Main extends Activity
 	{
 		CancelHideCallback();
 		BeginPause();
-		hide_runnable = new Runnable()
-		{
-			@Override
-			public void run() { HideSystemUI(); }
-		};
+		hide_runnable = this::HideSystemUI;
 		hide_callback = new Handler(getApplicationContext().getMainLooper());
 		hide_callback.postDelayed(hide_runnable, 3000);
 	}
@@ -328,14 +303,7 @@ public class Main extends Activity
 		PopupMenu m = new PopupMenu(this, control);
 		m.inflate(R.menu.menu_tv);
 		m.show();
-		m.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
-		{
-			@Override
-			public boolean onMenuItemClick(MenuItem item)
-			{
-				return OnMenuItemSelected(item);
-			}
-		});
+		m.setOnMenuItemClickListener(item -> OnMenuItemSelected(item));
 	}
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
