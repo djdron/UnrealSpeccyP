@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui.h"
 #include "../platform/io.h"
 #include <ctype.h>
+#include "../3rdparty/utfcpp/utf8.h"
 
 #ifdef USE_UI
 
@@ -142,18 +143,31 @@ public:
 	byte* data;
 }font;
 
+// Map a Unicode codepoint to a font glyph index, or '?' if not in the font.
+static int MapToFont(uint32_t cp)
+{
+	if(cp < 0x80)
+		return toupper(cp);
+	if(cp >= 0x0410 && cp <= 0x042F) // А-Я
+		return cp - 0x0410 + 0x60;
+	if(cp >= 0x0430 && cp <= 0x044F) // а-я
+		return cp - 0x0430 + 0x60;
+	if(cp == 0x0401 || cp == 0x0451) // Ё/ё -> Е
+		return 0x65;
+	return '?';
+}
+
 void DrawText(const eRect& r, const char* s)
 {
-	//	strupr(const_cast<char*>(s));
 	ePoint p = r.Beg();
-	for(int i = 0; s[i]; ++i)
+	const char* it = s;
+	const char* end = s + strlen(s);
+	while(it < end)
 	{
 		if(p.x + font.w > r.right)
 			break;
-		char c = toupper(s[i]);
-		if(byte(c) >= 128) // non-ASCII
-			c = '?';
-		font.Draw(c, p);
+		uint32_t cp = utf8::unchecked::next(it);
+		font.Draw(MapToFont(cp), p);
 		p.x += font.w;
 	}
 }
