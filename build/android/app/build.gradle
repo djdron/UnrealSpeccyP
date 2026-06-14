@@ -12,7 +12,7 @@ android {
 //        minSdkVersion 8
 //        targetSdkVersion 10
 
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 37
     }
 
@@ -36,4 +36,7 @@ android {
         }
     }
     ndkVersion = '29.0.14206865'
+}
+dependencies {
+    implementation 'androidx.activity:activity:1.13.0'
 }

@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,11 +39,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.app.Activity;
+import androidx.activity.ComponentActivity;
 import android.app.UiModeManager;
 import app.usp.ctl.Control;
 
-public class Main extends Activity
+public class Main extends ComponentActivity
 {
 	private ViewGLES view;
 	private Control control;

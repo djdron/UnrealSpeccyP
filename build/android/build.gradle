@@ -15,3 +15,8 @@ allprojects {
         google()
     }
 }
+subprojects.forEach { project ->
+    project.tasks.withType(JavaCompile) {
+        options.compilerArgs += ['-Xlint:deprecation']
+    }
+}
