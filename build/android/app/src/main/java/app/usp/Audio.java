@@ -21,7 +21,7 @@ package app.usp;
 import java.nio.ByteBuffer;
 
 import android.media.AudioFormat;
-import android.media.AudioManager;
+import android.media.AudioAttributes;
 import android.media.AudioTrack;
 
 public class Audio
@@ -29,12 +29,22 @@ public class Audio
 	Audio()
 	{
 		final int freq = 44100;
-		final int channels = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
+		final int channels = AudioFormat.CHANNEL_OUT_STEREO;
 		final int format = AudioFormat.ENCODING_PCM_16BIT;
 		final int buf_size = AudioTrack.getMinBufferSize(freq, channels, format);
-		track = new AudioTrack(	AudioManager.STREAM_MUSIC,
-				freq, channels, format, buf_size + 44100*2*2*5/50, // 5-frame additional size
-				AudioTrack.MODE_STREAM);
+		track = new AudioTrack.Builder()
+				.setAudioAttributes(new AudioAttributes.Builder()
+						.setUsage(AudioAttributes.USAGE_GAME)
+						.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+						.build())
+				.setAudioFormat(new AudioFormat.Builder()
+						.setSampleRate(freq)
+						.setChannelMask(channels)
+						.setEncoding(format)
+						.build())
+				.setBufferSizeInBytes(buf_size + 44100*2*2*5/50) // 5-frame additional size
+				.setTransferMode(AudioTrack.MODE_STREAM)
+				.build();
 		track.play();
 	}
 	void Update(boolean skip_data)
