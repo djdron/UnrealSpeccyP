@@ -45,7 +45,7 @@ public class FileSelectorBBB extends FileSelector
 	}
 	class FSSBBB extends FileSelectorSourceJSON
 	{
-		private final String BBB_FS = getApplicationContext().getFilesDir().toString() + "/bbb";
+		private final String BBB_FS = getContext().getFilesDir().toString() + "/bbb";
 		public String base_url = "https://bbb.retroscene.org";
 		@Override
 		public String FullURL(final String _url) { return base_url + "/unreal_demos.php?l=" + _url; }

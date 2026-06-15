@@ -47,7 +47,7 @@ public class FileSelectorRZX extends FileSelector
 	}
 	class FSSRZX extends FileSelectorSourceJSON
 	{
-		private final String RZX_FS = getApplicationContext().getFilesDir().toString() + "/rzx";
+		private final String RZX_FS = getContext().getFilesDir().toString() + "/rzx";
 		protected final String base_url = "https://api.vtrd.in/v1/rzx";
 		@Override
 		public String FullURL(final String _url) { return base_url + _url; }

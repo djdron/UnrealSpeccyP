@@ -232,7 +232,7 @@ public class ViewGLES extends GLSurfaceView
 		case KeyEvent.KEYCODE_BACK:
 			if(!event.isLongPress())
 			{
-				if(main_activity.IsTV())
+				if(true)//main_activity.IsTV())
 				{
 					main_activity.OpenMenu();
 				}
@@ -245,6 +245,7 @@ public class ViewGLES extends GLSurfaceView
 			}
 			break;
 		case KeyEvent.KEYCODE_F1:
+		case KeyEvent.KEYCODE_MENU:
 		case KeyEvent.KEYCODE_BUTTON_START:
 			main_activity.OpenMenu();
 			return true;

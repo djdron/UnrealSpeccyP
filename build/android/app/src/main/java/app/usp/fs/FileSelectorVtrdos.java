@@ -51,7 +51,7 @@ public class FileSelectorVtrdos extends FileSelector
 	protected final String base_url = "https://vtrd.in";
 	abstract class FSSVtrdosHTML extends FileSelectorSourceHTML
 	{
-		protected final String VTRDOS_FS = getApplicationContext().getFilesDir().toString() + "/vtrdos";
+		protected final String VTRDOS_FS = getContext().getFilesDir().toString() + "/vtrdos";
 		@Override
 		public String TextEncoding() { return "utf-8"; }
 		@Override
@@ -220,7 +220,7 @@ public class FileSelectorVtrdos extends FileSelector
 	static protected final String parser_updates_root = "/updates";
 	class ParserUpdates extends FileSelectorSourceJSON
 	{
-		protected final String VTRDOS_FS = getApplicationContext().getFilesDir().toString() + "/vtrdos";
+		protected final String VTRDOS_FS = getContext().getFilesDir().toString() + "/vtrdos";
 		@Override
 		public String TextEncoding() { return "utf-8"; }
 		@Override

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<style name="Theme.USP" parent="@android:style/Theme.DeviceDefault">
+	<style name="Theme.USP" parent="Theme.Material3.Dark">
+		<item name="colorPrimaryDark">#000000</item>
+		<item name="colorPrimary">#A0A0A0</item>
 	</style>
 </resources>

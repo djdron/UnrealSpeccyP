@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2026 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,21 +22,23 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
+import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import app.usp.R;
 
-public abstract class FileSelector extends ListActivity
+public abstract class FileSelector extends Fragment
 {
 	interface Progress
 	{
@@ -48,7 +50,7 @@ public abstract class FileSelector extends ListActivity
 	{
 		File current_path = new File("/");
 		String last_name = "";
-		List<FileSelectorSource.Item> items = new ArrayList<FileSelectorSource.Item>();
+		List<FileSelectorSource.Item> items = new ArrayList<>();
 	}
 	abstract State State();
 	List<FileSelectorSource.Item> Items() { return State().items; }
@@ -57,6 +59,9 @@ public abstract class FileSelector extends ListActivity
 
 	protected boolean update_on_resume = true;
 	private boolean async_task = false;
+
+	protected RecyclerView recyclerView;
+	protected MyListAdapter adapter;
 
 	int PathLevel(final File path)
 	{
@@ -67,21 +72,26 @@ public abstract class FileSelector extends ListActivity
 		return l;
 	}
 
-	protected List<FileSelectorSource> sources = new ArrayList<FileSelectorSource>();
+	protected List<FileSelectorSource> sources = new ArrayList<>();
+
+	@Nullable
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+	{
+		View view = inflater.inflate(R.layout.fragment_list, container, false);
+		recyclerView = view.findViewById(R.id.recyclerView);
+		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+		return view;
+	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
 	{
-		super.onCreate(savedInstanceState);
-		getListView().setFastScrollEnabled(true);
+		super.onViewCreated(view, savedInstanceState);
 	}
 	@Override
-	public void onBackPressed()
-	{
-		getParent().onBackPressed();
-	}
-	@Override
-	protected void onResume()
+	public void onResume()
 	{
 		super.onResume();
 		if(update_on_resume)
@@ -102,7 +112,8 @@ public abstract class FileSelector extends ListActivity
 	}
 	private void SetItems()
 	{
-		setListAdapter(new MyListAdapter(new ArrayList<FileSelectorSource.Item>(Items())));
+		adapter = new MyListAdapter(new ArrayList<>(Items()));
+		recyclerView.setAdapter(adapter);
 	}
 	private void SelectItem(final String name)
 	{
@@ -113,7 +124,7 @@ public abstract class FileSelector extends ListActivity
 			{
 				if(i.name.equals(name))
 				{
-					getListView().setSelection(idx);
+					recyclerView.scrollToPosition(idx);
 					break;
 				}
 				++idx;
@@ -121,10 +132,8 @@ public abstract class FileSelector extends ListActivity
 		}
 	}
 
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id)
+	protected void FileClicked(int position)
 	{
-		super.onListItemClick(l, v, position, id);
 		if(async_task)
 			return;
 
@@ -196,7 +205,7 @@ public abstract class FileSelector extends ListActivity
 		}
 		private ProgressDialog CreateProgress()
 		{
-			ProgressDialog pd = new ProgressDialog(FileSelector.this);
+			ProgressDialog pd = new ProgressDialog(getContext());
 			pd.setTitle(getString(res_title));
 			pd.setMessage(getString(res_message));
 			pd.setOnCancelListener(this);
@@ -211,7 +220,7 @@ public abstract class FileSelector extends ListActivity
 		{
 			canceled = true;
 			pd.dismiss();
-			pd = new ProgressDialog(FileSelector.this);
+			pd = new ProgressDialog(getContext());
 			pd.setTitle(getString(res_title));
 			pd.setMessage(getString(R.string.canceling));
 			pd.setCancelable(false);
@@ -272,11 +281,11 @@ public abstract class FileSelector extends ListActivity
 			if(e != null)
 			{
 				String me = String.format(getString(R.string.file_select_open_error), e);
-				Toast.makeText(getApplicationContext(), me, Toast.LENGTH_LONG).show();
+				Toast.makeText(getContext(), me, Toast.LENGTH_LONG).show();
 			}
 			async_task = false;
 			if(r == FileSelectorSource.ApplyResult.OK)
-				finish();
+				getActivity().finish();
 		}
 	}
 
@@ -342,47 +351,67 @@ public abstract class FileSelector extends ListActivity
 			if(e != null)
 			{
 				String me = String.format(getString(R.string.file_select_update_error), e);
-				Toast.makeText(getApplicationContext(), me, Toast.LENGTH_LONG).show();
+				Toast.makeText(getContext(), me, Toast.LENGTH_LONG).show();
 			}
 			async_task = false;
 		}
 	}
-	
-	private class MyListAdapter extends BaseAdapter
+
+	private class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.FileViewHolder>
 	{
-		private List<FileSelectorSource.Item> items;
-		private LayoutInflater inf;
-		private int dp_5, dp_10;
-		MyListAdapter(List<FileSelectorSource.Item> _items)
+		private final List<FileSelectorSource.Item> items;
+		private final int dp_5;
+		private final int dp_10;
+
+		public MyListAdapter(List<FileSelectorSource.Item> items)
 		{
-			items = _items;
-			inf = LayoutInflater.from(getBaseContext());
+			this.items = items;
 			final float scale = getResources().getDisplayMetrics().density;
 			dp_5 = (int) (5 * scale + 0.5f);
-			dp_10 = (int) (10 * scale + 0.5f);
+			dp_10 = (int) (10 * scale + 0.5f);		}
+
+		@NonNull
+		@Override
+		public FileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+			View view = LayoutInflater.from(parent.getContext())
+					.inflate(R.layout.file_selector_item, parent, false);
+			return new FileViewHolder(view);
 		}
+
 		@Override
-		public int getCount() { return items.size(); }
-		@Override
-		public Object getItem(int pos) { return items.get(pos); }
-		@Override
-		public long getItemId(int pos) { return 0; }
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
-			if(convertView == null)
-			{
-				convertView = inf.inflate(R.layout.file_selector_item, null);
-			}
-			TextView t1 = (TextView)convertView.findViewById(R.id.textLine);
-			TextView t2 = (TextView)convertView.findViewById(R.id.textLine2);
+		public void onBindViewHolder(@NonNull FileViewHolder holder, int position) {
 			FileSelectorSource.Item item = items.get(position);
-			t1.setText(item.name);
-			t2.setText(item.desc);
-			t2.setVisibility(item.desc == null ? View.GONE : 0);
-			int p = item.desc == null ? dp_10 : dp_5;
-			convertView.setPadding(dp_10, p, dp_10, p);
-			return convertView;
+
+			holder.t1.setText(item.name);
+			holder.t2.setText(item.desc);
+
+			if (item.desc == null) {
+				holder.t2.setVisibility(View.GONE);
+				holder.itemView.setPadding(dp_10, dp_10, dp_10, dp_10);
+			} else {
+				holder.t2.setVisibility(View.VISIBLE);
+				holder.itemView.setPadding(dp_10, dp_5, dp_10, dp_5);
+			}
+
+			holder.itemView.setOnClickListener(v -> FileClicked(position));
+		}
+
+		@Override
+		public int getItemCount() {
+			return items.size();
+		}
+
+		class FileViewHolder extends RecyclerView.ViewHolder
+		{
+			final TextView t1;
+			final TextView t2;
+
+			public FileViewHolder(@NonNull View itemView)
+			{
+				super(itemView);
+				t1 = itemView.findViewById(R.id.textLine);
+				t2 = itemView.findViewById(R.id.textLine2);
+			}
 		}
 	}
 }

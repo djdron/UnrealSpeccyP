@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2011 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2026 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,76 +18,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp;
 
-import android.app.TabActivity;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.Window;
-import android.widget.TabHost;
-import app.usp.fs.FileSelectorFS;
-import app.usp.fs.FileSelectorRZX;
-import app.usp.fs.FileSelectorVtrdos;
-import app.usp.fs.FileSelectorWOS;
-import app.usp.fs.FileSelectorBBB;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.widget.ViewPager2;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
-public class FileOpen extends TabActivity
+public class FileOpen extends FragmentActivity
 {
 	private static int active_tab = 0;
-    @Override
+	private ViewPager2 viewPager;
+
+	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		getWindow().requestFeature(Window.FEATURE_OPTIONS_PANEL);
 		super.onCreate(savedInstanceState);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.file_open);
 
-		Resources res = getResources();
-		TabHost tabHost = getTabHost();
-		Intent intent = new Intent().setClass(this, FileSelectorFS.class);
-		TabHost.TabSpec spec = tabHost.newTabSpec("file_select_fs")
-								.setIndicator(res.getString(R.string.file_system))
-								.setContent(intent);
-		tabHost.addTab(spec);
+		TabLayout tabLayout = findViewById(R.id.tabLayout);
+		viewPager = findViewById(R.id.viewPager);
 
-		intent = new Intent().setClass(this, FileSelectorVtrdos.class);
-		spec = tabHost.newTabSpec("file_select_vtrdos")
-								.setIndicator(res.getString(R.string.vtrdos))
-								.setContent(intent);
-		tabHost.addTab(spec);
+		FileTabsAdapter tabsAdapter = new FileTabsAdapter(this);
+		viewPager.setAdapter(tabsAdapter);
 
-		intent = new Intent().setClass(this, FileSelectorWOS.class);
-		spec = tabHost.newTabSpec("file_select_wos")
-								.setIndicator(res.getString(R.string.wos))
-								.setContent(intent);
-		tabHost.addTab(spec);
-
-		intent = new Intent().setClass(this, FileSelectorRZX.class);
-		spec = tabHost.newTabSpec("file_select_rzx")
-								.setIndicator(res.getString(R.string.rzx))
-								.setContent(intent);
-		tabHost.addTab(spec);
-
-		intent = new Intent().setClass(this, FileSelectorBBB.class);
-		spec = tabHost.newTabSpec("file_select_bbb")
-								.setIndicator(res.getString(R.string.bbb))
-								.setContent(intent);
-		tabHost.addTab(spec);
-		
-	    tabHost.setCurrentTab(active_tab);
+		new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+			switch(position)
+			{
+				case 0: tab.setText(R.string.file_system); break;
+				case 1: tab.setText(R.string.vtrdos); break;
+				case 2: tab.setText(R.string.wos); break;
+				case 3: tab.setText(R.string.rzx); break;
+				case 4: tab.setText(R.string.bbb); break;
+			}
+		}).attach();
+		viewPager.setCurrentItem(active_tab, false);
 	}
-    @Override
+
+	@Override
 	public void onDestroy()
 	{
-    	active_tab = getTabHost().getCurrentTab();
-    	super.onDestroy();
+		if(viewPager != null)
+			active_tab = viewPager.getCurrentItem();
+		super.onDestroy();
 	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch(item.getItemId())
+		if(item.getItemId() == android.R.id.home)
 		{
-		case android.R.id.home:	onBackPressed(); break;
+			getOnBackPressedDispatcher().onBackPressed();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}

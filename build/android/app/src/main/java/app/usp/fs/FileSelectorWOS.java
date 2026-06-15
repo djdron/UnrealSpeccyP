@@ -54,7 +54,7 @@ public class FileSelectorWOS extends FileSelector
 	}
 	abstract class FSSWOS extends FileSelectorSourceJSON
 	{
-		private final String WOS_FS = getApplicationContext().getFilesDir().toString() + "/wos";
+		private final String WOS_FS = getContext().getFilesDir().toString() + "/wos";
 		private final String base_url = "https://worldofspectrum.org";
 		abstract protected String URLSection();
 		@Override
