@@ -38,9 +38,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
-import android.content.res.Configuration;
 import androidx.activity.ComponentActivity;
-import android.app.UiModeManager;
 import app.usp.ctl.Control;
 
 public class Main extends ComponentActivity
@@ -290,27 +288,19 @@ public class Main extends ComponentActivity
 			Emulator.the.VideoPaused(false);
 		}
 	}
-	public boolean IsTV()
-	{
-		UiModeManager uiModeManager = (UiModeManager)getSystemService(UI_MODE_SERVICE);
-		return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
-	}
 	public void OpenMenu()
 	{
 		CancelHideCallback();
 		BeginPause();
 		PopupMenu m = new PopupMenu(this, control);
-		m.inflate(R.menu.menu_tv);
+		m.inflate(R.menu.menu);
 		m.show();
 		m.setOnMenuItemClickListener(item -> OnMenuItemSelected(item));
 	}
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	if(IsTV())
-			getMenuInflater().inflate(R.menu.menu_tv, menu);
-    	else
-		    getMenuInflater().inflate(R.menu.menu, menu);
+		getMenuInflater().inflate(R.menu.menu, menu);
 		return super.onCreateOptionsMenu(menu);
     }
 	@Override
