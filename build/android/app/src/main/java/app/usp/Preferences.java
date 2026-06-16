@@ -18,8 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp;
 
+import android.app.UiModeManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -77,6 +80,7 @@ public class Preferences extends FragmentActivity
 		private CheckBoxPreference black_and_white;
 		private CheckBoxPreference av_timer_sync;
 		private ListPreference skip_frames;
+		private ListPreference theme;
 
 		final static private String select_joystick_id = "joystick";
 		final static private String sound_chip_id = "sound chip";
@@ -93,6 +97,7 @@ public class Preferences extends FragmentActivity
 		final static private String filtering_id = "filtering";
 		final static private String gigascreen_id = "gigascreen";
 		final static private String black_and_white_id = "black and white";
+		final static private String theme_id = "theme";
 
 		@Override
 		public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey)
@@ -117,6 +122,7 @@ public class Preferences extends FragmentActivity
 			black_and_white = findPreference(black_and_white_id);
 			av_timer_sync = findPreference(av_timer_sync_id);
 			skip_frames = findPreference(skip_frames_id);
+			theme = findPreference(theme_id);
 			LoadValues();
 			UpdateDescs();
 
@@ -237,6 +243,14 @@ public class Preferences extends FragmentActivity
 				break;
 			case skip_frames_id:
 				Emulator.the.SetOptionInt(skip_frames_id, Integer.parseInt(skip_frames.getValue()));
+				break;
+			case theme_id:
+				UiModeManager uiModeManager = (UiModeManager)getActivity().getSystemService(Context.UI_MODE_SERVICE);
+				int mode = theme.getValue().equals("dark") ? UiModeManager.MODE_NIGHT_YES : (theme.getValue().equals("light") ? UiModeManager.MODE_NIGHT_NO : UiModeManager.MODE_NIGHT_AUTO);
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) // Android 12+
+					uiModeManager.setApplicationNightMode(mode);
+				else
+					uiModeManager.setNightMode(mode);
 				break;
 			}
 		}

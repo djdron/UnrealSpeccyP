@@ -26,8 +26,11 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import android.app.AlertDialog;
+import android.app.UiModeManager;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -39,6 +42,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
 import androidx.activity.ComponentActivity;
+import androidx.preference.PreferenceManager;
 import app.usp.ctl.Control;
 
 public class Main extends ComponentActivity
@@ -52,6 +56,14 @@ public class Main extends ComponentActivity
 	@Override
     public void onCreate(Bundle savedInstanceState)
 	{
+		String theme = PreferenceManager.getDefaultSharedPreferences(this).getString("theme", "dark");
+		UiModeManager uiModeManager = (UiModeManager)getSystemService(Context.UI_MODE_SERVICE);
+		int mode = theme.equals("dark") ? UiModeManager.MODE_NIGHT_YES : (theme.equals("light") ? UiModeManager.MODE_NIGHT_NO : UiModeManager.MODE_NIGHT_AUTO);
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) // Android 12+
+			uiModeManager.setApplicationNightMode(mode);
+		else
+			uiModeManager.setNightMode(mode);
+
 		super.onCreate(savedInstanceState);
 		if(Emulator.the == null)
 		{
