@@ -49,6 +49,11 @@
     <string name="skip_frames">Пропуск кадров</string>
     <string name="skip_frames_none">Нет</string>
 
+    <string name="theme">Тема</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_system">Системная</string>
+
     <string name="file_system">Файлы</string>
 
     <string name="accessing_web">Обращение к интернету</string>

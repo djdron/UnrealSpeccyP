@@ -48,6 +48,11 @@
     <string name="skip_frames">Пропуск кадрів</string>
     <string name="skip_frames_none">Немає</string>
 
+    <string name="theme">Тема</string>
+    <string name="theme_dark">Темна</string>
+    <string name="theme_light">Світла</string>
+    <string name="theme_system">Системна</string>
+
     <string name="file_system">Файли</string>
 
     <string name="accessing_web">Звернення до інтернету</string>

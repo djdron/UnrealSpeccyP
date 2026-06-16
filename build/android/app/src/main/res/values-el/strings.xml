@@ -56,6 +56,11 @@
     <string name="skip_frames">Παράλειψη καρέ</string>
     <string name="skip_frames_none">Κανένα</string>
 
+    <string name="theme">θέμα</string>
+    <string name="theme_dark">Σκούρο</string>
+    <string name="theme_light">Ανοιχτόχρωμο</string>
+    <string name="theme_system">Συστήματος</string>
+
     <string name="file_system">Αρχεία</string>
 
     <string name="accessing_web">Πρόσβαση στον ιστό</string>
