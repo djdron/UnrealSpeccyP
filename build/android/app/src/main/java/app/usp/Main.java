@@ -163,8 +163,7 @@ public class Main extends ComponentActivity
 		String file = uri.getPath();
 		if(file.isEmpty())
 			return;
-		if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M ||
-				checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == android.content.pm.PackageManager.PERMISSION_GRANTED)
+		if(checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == android.content.pm.PackageManager.PERMISSION_GRANTED)
 		{
 			if(Emulator.the.Open(file))
 				Toast.makeText(this, String.format(getString(R.string.opening), file), Toast.LENGTH_LONG).show();
