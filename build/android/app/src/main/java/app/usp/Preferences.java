@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
@@ -31,8 +32,10 @@ import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.fragment.app.FragmentActivity;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 
 public class Preferences extends FragmentActivity
@@ -99,6 +102,9 @@ public class Preferences extends FragmentActivity
 		final static private String black_and_white_id = "black and white";
 		final static private String theme_id = "theme";
 
+		private static int scroll_stored = 0;
+		private static int scroll_offset_stored = 0;
+
 		@Override
 		public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey)
 		{
@@ -150,6 +156,15 @@ public class Preferences extends FragmentActivity
 			}
 		}
 		@Override
+		public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+		{
+			super.onViewCreated(view, savedInstanceState);
+			if(scroll_stored != 0 || scroll_offset_stored != 0)
+			{
+				((LinearLayoutManager) getListView().getLayoutManager()).scrollToPositionWithOffset(scroll_stored, scroll_offset_stored);
+			}
+		}
+		@Override
 		public void onResume()
 		{
 			super.onResume();
@@ -160,6 +175,10 @@ public class Preferences extends FragmentActivity
 		{
 			super.onPause();
 			Emulator.the.StoreOptions();
+			LinearLayoutManager lm = (LinearLayoutManager)getListView().getLayoutManager();
+			scroll_stored = lm.findFirstVisibleItemPosition();
+			View topView = lm.getChildAt(0);
+			scroll_offset_stored = (topView == null) ? 0 : (topView.getTop() - getListView().getPaddingTop());
 			getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 		}
 		private void LoadValues()
