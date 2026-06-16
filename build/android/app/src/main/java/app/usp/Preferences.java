@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2026 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,31 +21,33 @@ package app.usp;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceGroup;
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.ListPreference;
+import androidx.fragment.app.FragmentActivity;
+import androidx.preference.PreferenceFragmentCompat;
+
 import android.view.MenuItem;
 import android.view.Window;
 
-public class Preferences extends PreferenceActivity
+public class Preferences extends FragmentActivity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		getWindow().requestFeature(Window.FEATURE_OPTIONS_PANEL);
 		super.onCreate(savedInstanceState);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getFragmentManager().beginTransaction().replace(android.R.id.content, new PreferencesFragment()).commit();
+		getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new PreferencesFragment()).commit();
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch(item.getItemId())
+		if(item.getItemId() == android.R.id.home)
 		{
-			case android.R.id.home:	onBackPressed(); break;
+			getOnBackPressedDispatcher().onBackPressed();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -55,7 +57,7 @@ public class Preferences extends PreferenceActivity
 	final static public String use_sensor_id = "use sensor";
 	final static public String use_keyboard_id = "use keyboard";
 
-	public static class PreferencesFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener
+	public static class PreferencesFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener
 	{
 		private ListPreference select_joystick;
 		private CheckBoxPreference use_sensor;
@@ -93,55 +95,66 @@ public class Preferences extends PreferenceActivity
 		final static private String black_and_white_id = "black and white";
 
 		@Override
-		public void onCreate(Bundle savedInstanceState)
+		public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey)
 		{
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preferences);
-			select_joystick = (ListPreference)getPreferenceManager().findPreference(select_joystick_id);
-			use_sensor = (CheckBoxPreference)getPreferenceManager().findPreference(use_sensor_id);
-			sound_chip = (ListPreference)getPreferenceManager().findPreference(sound_chip_id);
-			sound_chip_stereo = (ListPreference)getPreferenceManager().findPreference(sound_chip_stereo_id);
-			auto_play_image = (CheckBoxPreference)getPreferenceManager().findPreference(auto_play_image_id);
-			save_slot = (ListPreference)getPreferenceManager().findPreference(save_slot_id);
-			save_file = getPreferenceManager().findPreference(save_file_id);
-			select_drive = (ListPreference)getPreferenceManager().findPreference(select_drive_id);
-			tape = getPreferenceManager().findPreference(tape_id);
-			tape_fast = (CheckBoxPreference)getPreferenceManager().findPreference(tape_fast_id);
-			mode_48k = (CheckBoxPreference)getPreferenceManager().findPreference(mode_48k_id);
-			reset_to_service_rom = (CheckBoxPreference)getPreferenceManager().findPreference(reset_to_service_rom_id);
-			select_zoom = (ListPreference)getPreferenceManager().findPreference(select_zoom_id);
-			filtering = (CheckBoxPreference)getPreferenceManager().findPreference(filtering_id);
-			gigascreen = (CheckBoxPreference)getPreferenceManager().findPreference(gigascreen_id);
-			black_and_white = (CheckBoxPreference)getPreferenceManager().findPreference(black_and_white_id);
-			av_timer_sync = (CheckBoxPreference)getPreferenceManager().findPreference(av_timer_sync_id);
-			skip_frames = (ListPreference)getPreferenceManager().findPreference(skip_frames_id);
+			setPreferencesFromResource(R.xml.preferences, rootKey);
+			removeIconSpace(getPreferenceScreen());
+			select_joystick = findPreference(select_joystick_id);
+			use_sensor = findPreference(use_sensor_id);
+			sound_chip = findPreference(sound_chip_id);
+			sound_chip_stereo = findPreference(sound_chip_stereo_id);
+			auto_play_image = findPreference(auto_play_image_id);
+			save_slot = findPreference(save_slot_id);
+			save_file = findPreference(save_file_id);
+			select_drive = findPreference(select_drive_id);
+			tape = findPreference(tape_id);
+			tape_fast = findPreference(tape_fast_id);
+			mode_48k = findPreference(mode_48k_id);
+			reset_to_service_rom = findPreference(reset_to_service_rom_id);
+			select_zoom = findPreference(select_zoom_id);
+			filtering = findPreference(filtering_id);
+			gigascreen = findPreference(gigascreen_id);
+			black_and_white = findPreference(black_and_white_id);
+			av_timer_sync = findPreference(av_timer_sync_id);
+			skip_frames = findPreference(skip_frames_id);
 			LoadValues();
 			UpdateDescs();
 
-			tape.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
-					Emulator.the.TapeToggle();
-					UpdateDescs();
-					return true;
-				}
+			tape.setOnPreferenceClickListener(preference -> {
+				Emulator.the.TapeToggle();
+				UpdateDescs();
+				return true;
 			});
-			save_file.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
-					Emulator.the.SaveFile();
-					UpdateDescs();
-					return true;
-				}
+			save_file.setOnPreferenceClickListener(preference -> {
+				Emulator.the.SaveFile();
+				UpdateDescs();
+				return true;
 			});
-			getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+		}
+		private void removeIconSpace(Preference preference)
+		{
+			preference.setIconSpaceReserved(false);
+			if(preference instanceof PreferenceGroup)
+			{
+				PreferenceGroup group = (PreferenceGroup)preference;
+				for(int i = 0; i < group.getPreferenceCount(); i++)
+				{
+					removeIconSpace(group.getPreference(i));
+				}
+			}
 		}
 		@Override
-		public void onDestroy()
+		public void onResume()
 		{
-			getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+			super.onResume();
+			getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+		}
+		@Override
+		public void onPause()
+		{
+			super.onPause();
 			Emulator.the.StoreOptions();
-			super.onDestroy();
+			getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 		}
 		private void LoadValues()
 		{
@@ -164,11 +177,6 @@ public class Preferences extends PreferenceActivity
 		}
 		private void UpdateDescs()
 		{
-			select_joystick.setSummary(select_joystick.getEntry());
-			sound_chip.setSummary(sound_chip.getEntry());
-			sound_chip_stereo.setSummary(sound_chip_stereo.getEntry());
-			save_slot.setSummary(save_slot.getEntry());
-			select_drive.setSummary(select_drive.getEntry());
 			switch(Emulator.the.TapeState())
 			{
 				case 0:	tape.setSummary(R.string.tape_na);		tape.setEnabled(false);	break;
@@ -176,64 +184,60 @@ public class Preferences extends PreferenceActivity
 				case 2:	tape.setSummary(R.string.tape_started);	tape.setEnabled(true);	break;
 			}
 			save_file.setEnabled(Emulator.the.DiskChanged());
-			select_zoom.setSummary(select_zoom.getEntry());
-			skip_frames.setSummary(skip_frames.getEntry());
 		}
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
 		{
-			if(key.equals(select_joystick_id))
+			switch(key)
 			{
+			case select_joystick_id:
 				Emulator.the.SetOptionInt(select_joystick_id, Integer.parseInt(select_joystick.getValue()));
-				UpdateDescs();
-			}
-			else if(key.equals(sound_chip_id))
-			{
+				break;
+			case sound_chip_id:
 				Emulator.the.SetOptionInt(sound_chip_id, Integer.parseInt(sound_chip.getValue()));
-				UpdateDescs();
-			}
-			else if(key.equals(sound_chip_stereo_id))
-			{
+				break;
+			case sound_chip_stereo_id:
 				Emulator.the.SetOptionInt(sound_chip_stereo_id, Integer.parseInt(sound_chip_stereo.getValue()));
-				UpdateDescs();
-			}
-			else if(key.equals(auto_play_image_id))
+				break;
+			case auto_play_image_id:
 				Emulator.the.SetOptionBool(auto_play_image_id, auto_play_image.isChecked());
-			else if(key.equals(save_slot_id))
-			{
+				break;
+			case save_slot_id:
 				Emulator.the.SetOptionInt(save_slot_id, Integer.parseInt(save_slot.getValue()));
-				UpdateDescs();
-			}
-			else if(key.equals(select_drive_id))
-			{
+				break;
+			case select_drive_id:
 				Emulator.the.SetOptionInt(select_drive_id, Integer.parseInt(select_drive.getValue()));
-				UpdateDescs();
-			}
-			else if(key.equals(mode_48k_id))
+				break;
+			case mode_48k_id:
 				Emulator.the.SetOptionBool(mode_48k_id, mode_48k.isChecked());
-			else if(key.equals(reset_to_service_rom_id))
+				break;
+			case reset_to_service_rom_id:
 				Emulator.the.SetOptionBool(reset_to_service_rom_id, reset_to_service_rom.isChecked());
-			else if(key.equals(tape_fast_id))
+				break;
+			case tape_fast_id:
 				Emulator.the.SetOptionBool(tape_fast_id, tape_fast.isChecked());
-			else if(key.equals(select_zoom_id))
-			{
+				break;
+			case select_zoom_id:
 				Emulator.the.SetOptionInt(select_zoom_id, Integer.parseInt(select_zoom.getValue()));
-				UpdateDescs();
-			}
-			else if(key.equals(use_sensor_id))
+				break;
+			case use_sensor_id:
 				Emulator.the.SetOptionBool(use_sensor_id, use_sensor.isChecked());
-			else if(key.equals(filtering_id))
+				break;
+			case filtering_id:
 				Emulator.the.SetOptionBool(filtering_id, filtering.isChecked());
-			else if(key.equals(gigascreen_id))
+				break;
+			case gigascreen_id:
 				Emulator.the.SetOptionBool(gigascreen_id, gigascreen.isChecked());
-			else if(key.equals(black_and_white_id))
+				break;
+			case black_and_white_id:
 				Emulator.the.SetOptionBool(black_and_white_id, black_and_white.isChecked());
-			else if(key.equals(av_timer_sync_id))
+				break;
+			case av_timer_sync_id:
 				Emulator.the.SetOptionBool(av_timer_sync_id, av_timer_sync.isChecked());
-			else if(key.equals(skip_frames_id))
-			{
+				break;
+			case skip_frames_id:
 				Emulator.the.SetOptionInt(skip_frames_id, Integer.parseInt(skip_frames.getValue()));
-				UpdateDescs();
+				break;
 			}
 		}
 	}
