@@ -122,23 +122,18 @@ public class ViewGLES extends GLSurfaceView
 			if(code > 0)
 			{
 				Handler h = new Handler(context.getMainLooper());
-				h.post(new Runnable()
-				{
-					@Override
-					public void run()
+				h.post(() -> {
+					String msg = null;
+					switch(code)
 					{
-						String msg = null;
-						switch(code)
-						{
-						case 1:	msg = context.getString(R.string.rzx_finished);		break;
-						case 2:	msg = context.getString(R.string.rzx_sync_lost);	break;
-						case 3:	msg = context.getString(R.string.rzx_invalid);		break;
-						case 4:	msg = context.getString(R.string.rzx_unsupported);	break;
-						}
-						if(msg != null)
-						{
-							Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-						}
+					case 1:	msg = context.getString(R.string.rzx_finished);		break;
+					case 2:	msg = context.getString(R.string.rzx_sync_lost);	break;
+					case 3:	msg = context.getString(R.string.rzx_invalid);		break;
+					case 4:	msg = context.getString(R.string.rzx_unsupported);	break;
+					}
+					if(msg != null)
+					{
+						Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
 					}
 				});
 			}
@@ -205,20 +200,16 @@ public class ViewGLES extends GLSurfaceView
 	private Audio audio;
 	private Video video;
 	private ControlSensor sensor;
-	private Main main_activity;
+	public Runnable open_menu;
 
 	public ViewGLES(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
 		setEGLContextClientVersion(2);
 		setEGLConfigChooser(false);
-	}
-	public void Init(Main _main_activity)
-	{
-		main_activity = _main_activity;
 		audio = new Audio();
-		video = new Video(main_activity);
-		sensor = new ControlSensor(main_activity);
+		video = new Video(context);
+		sensor = new ControlSensor(context);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		setOnKeyListener(new ControlKeys());
@@ -233,14 +224,14 @@ public class ViewGLES extends GLSurfaceView
 		case KeyEvent.KEYCODE_BACK:
 			if(!event.isLongPress())
 			{
-				main_activity.OpenMenu();
+				open_menu.run();
 				return true;
 			}
 			break;
 		case KeyEvent.KEYCODE_F1:
 		case KeyEvent.KEYCODE_MENU:
 		case KeyEvent.KEYCODE_BUTTON_START:
-			main_activity.OpenMenu();
+			open_menu.run();
 			return true;
 		}
 		return super.onKeyUp(keyCode, event);

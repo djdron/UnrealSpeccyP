@@ -79,7 +79,7 @@ public class Main extends ComponentActivity
 		view = findViewById(R.id.view_gles);
 		control = findViewById(R.id.control);
 
-		view.Init(this);
+		view.open_menu = this::OpenMenu;
 
 		getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> {
 			if(!paused && (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
@@ -289,7 +289,7 @@ public class Main extends ComponentActivity
 			Emulator.the.VideoPaused(false);
 		}
 	}
-	public void OpenMenu()
+	private void OpenMenu()
 	{
 		CancelHideCallback();
 		BeginPause();
