@@ -245,7 +245,7 @@ public class ViewGLES extends GLSurfaceView
 	private boolean InLandscapeMode() { return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE; }
 	public void OnActivityResume()	{ onResume();	sensor.Install(); }
 	public void OnActivityPause()	{ onPause();	sensor.Uninstall(); }
-	private void UpdateControls()
+	public void UpdateControls()
 	{
 		final boolean a = InLandscapeMode();
 		final boolean k = Emulator.the.GetOptionBool(Preferences.use_keyboard_id);

@@ -343,6 +343,12 @@ public class Main extends ComponentActivity
 			Emulator.the.LoadState();
 			return true;
 		}
+		else if(item.getItemId() == R.id.toggle_control)
+		{
+			control.OnToggle();
+			view.UpdateControls();
+			return true;
+		}
 		else if(item.getItemId() == R.id.reset)
 		{
 			Emulator.the.Reset();

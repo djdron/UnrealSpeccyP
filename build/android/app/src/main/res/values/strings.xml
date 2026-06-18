@@ -8,6 +8,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="open_file">Open file</string>
+    <string name="toggle_control">Toggle Keyboard/Joystick</string>
     <string name="save_state">Save state</string>
     <string name="load_state">Load state</string>
     <string name="save_slot">Save slot</string>
