@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import android.app.AlertDialog;
 import android.app.UiModeManager;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -41,6 +42,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
 import androidx.activity.ComponentActivity;
+import androidx.constraintlayout.widget.Guideline;
 import androidx.preference.PreferenceManager;
 import app.usp.ctl.Control;
 
@@ -79,6 +81,12 @@ public class Main extends ComponentActivity
 		view = findViewById(R.id.view_gles);
 		control = findViewById(R.id.control);
 
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+		{
+			Guideline guideline = findViewById(R.id.control_guideline);
+			guideline.setGuidelinePercent(1.0f);
+		}
+
 		view.open_menu = this::OpenMenu;
 
 		getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> {
@@ -92,6 +100,14 @@ public class Main extends ComponentActivity
 		view.setKeepScreenOn(true);
 		Open();
     }
+	@Override
+	public void onConfigurationChanged(Configuration newConfig)
+	{
+		super.onConfigurationChanged(newConfig);
+		Guideline guideline = findViewById(R.id.control_guideline);
+		float percent = (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) ? 1.0f : 0.6f;
+		guideline.setGuidelinePercent(percent);
+	}
 	static final int RP_STORAGE = 0;
 	private String getFileName(Uri uri)
 	{
