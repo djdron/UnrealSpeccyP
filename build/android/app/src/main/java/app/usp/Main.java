@@ -78,7 +78,7 @@ public class Main extends ComponentActivity
 		}
 		control = new Control(this);
 		control.setId(View.NO_ID);
-		view = new ViewGLES(this, control);
+		view = new ViewGLES(this);
 		view.setId(View.NO_ID);
 		RelativeLayout layout = new RelativeLayout(this);
 		RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);

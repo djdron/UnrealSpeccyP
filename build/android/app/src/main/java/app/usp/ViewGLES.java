@@ -36,7 +36,6 @@ import app.usp.ctl.ControlOverlayKeyboard;
 import app.usp.ctl.ControlOverlayReplay;
 import app.usp.ctl.ControlSensor;
 import app.usp.ctl.ControlTouch;
-import app.usp.ctl.Control;
 
 public class ViewGLES extends GLSurfaceView
 {
@@ -204,16 +203,14 @@ public class ViewGLES extends GLSurfaceView
 	}
 	private Audio audio;
 	private Video video;
-	private Control control;
 	private ControlSensor sensor;
 	private Main main_activity;
 
-	public ViewGLES(Main _main_activity, Control _control)
+	public ViewGLES(Main _main_activity)
 	{
 		super(_main_activity);
 		setEGLContextClientVersion(2);
 		setEGLConfigChooser(false);
-		control = _control;
 		main_activity = _main_activity;
 		audio = new Audio();
 		video = new Video(main_activity);
@@ -232,15 +229,7 @@ public class ViewGLES extends GLSurfaceView
 		case KeyEvent.KEYCODE_BACK:
 			if(!event.isLongPress())
 			{
-				if(true)//main_activity.IsTV())
-				{
-					main_activity.OpenMenu();
-				}
-				else
-				{
-					control.OnToggle();
-					UpdateControls();
-				}
+				main_activity.OpenMenu();
 				return true;
 			}
 			break;
