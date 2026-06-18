@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
-import androidx.preference.CheckBoxPreference;
+import androidx.preference.SwitchPreferenceCompat;
 import androidx.preference.ListPreference;
 import androidx.fragment.app.FragmentActivity;
 import androidx.preference.PreferenceFragmentCompat;
@@ -66,22 +66,22 @@ public class Preferences extends FragmentActivity
 	public static class PreferencesFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener
 	{
 		private ListPreference select_joystick;
-		private CheckBoxPreference use_sensor;
+		private SwitchPreferenceCompat use_sensor;
 		private ListPreference sound_chip;
 		private ListPreference sound_chip_stereo;
 		private ListPreference save_slot;
 		private Preference save_file;
 		private ListPreference select_drive;
 		private Preference tape;
-		private CheckBoxPreference auto_play_image;
-		private CheckBoxPreference tape_fast;
-		private CheckBoxPreference mode_48k;
-		private CheckBoxPreference reset_to_service_rom;
+		private SwitchPreferenceCompat auto_play_image;
+		private SwitchPreferenceCompat tape_fast;
+		private SwitchPreferenceCompat mode_48k;
+		private SwitchPreferenceCompat reset_to_service_rom;
 		private ListPreference select_zoom;
-		private CheckBoxPreference filtering;
-		private CheckBoxPreference gigascreen;
-		private CheckBoxPreference black_and_white;
-		private CheckBoxPreference av_timer_sync;
+		private SwitchPreferenceCompat filtering;
+		private SwitchPreferenceCompat gigascreen;
+		private SwitchPreferenceCompat black_and_white;
+		private SwitchPreferenceCompat av_timer_sync;
 		private ListPreference skip_frames;
 		private ListPreference theme;
 
