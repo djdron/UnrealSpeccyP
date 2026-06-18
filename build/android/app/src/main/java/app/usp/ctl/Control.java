@@ -20,6 +20,7 @@ package app.usp.ctl;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,9 +34,9 @@ public class Control extends ImageView
     private Bitmap joystick;
     private boolean keyboard_active = false;
 
-	public Control(Context context)
+	public Control(Context context, AttributeSet attrs)
 	{
-		super(context);
+		super(context, attrs);
 
 		int width = 0;
 		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)

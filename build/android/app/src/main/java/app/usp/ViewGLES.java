@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2020 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2026 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import android.os.Handler;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -206,11 +207,14 @@ public class ViewGLES extends GLSurfaceView
 	private ControlSensor sensor;
 	private Main main_activity;
 
-	public ViewGLES(Main _main_activity)
+	public ViewGLES(Context context, AttributeSet attrs)
 	{
-		super(_main_activity);
+		super(context, attrs);
 		setEGLContextClientVersion(2);
 		setEGLConfigChooser(false);
+	}
+	public void Init(Main _main_activity)
+	{
 		main_activity = _main_activity;
 		audio = new Audio();
 		video = new Video(main_activity);

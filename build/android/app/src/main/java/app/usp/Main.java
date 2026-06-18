@@ -35,7 +35,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,20 +75,11 @@ public class Main extends ComponentActivity
 			Emulator.the.InitFont(BinRes(R.raw.spxtrm4f));
 			Emulator.the.Init(getFilesDir().toString());
 		}
-		control = new Control(this);
-		control.setId(View.NO_ID);
-		view = new ViewGLES(this);
-		view.setId(View.NO_ID);
-		RelativeLayout layout = new RelativeLayout(this);
-		RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-		RelativeLayout.LayoutParams p2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-		p1.addRule(RelativeLayout.ABOVE, control.getId());
-		p1.addRule(RelativeLayout.CENTER_HORIZONTAL);
-		p2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		p2.addRule(RelativeLayout.CENTER_HORIZONTAL);
-		layout.addView(view, p1);
-		layout.addView(control, p2);
-		setContentView(layout);
+		setContentView(R.layout.main);
+		view = findViewById(R.id.view_gles);
+		control = findViewById(R.id.control);
+
+		view.Init(this);
 
 		getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> {
 			if(!paused && (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
