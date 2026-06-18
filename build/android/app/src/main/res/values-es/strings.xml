@@ -2,6 +2,7 @@
 <resources>
     <string name="opening">Abriendo \"%s\"</string>
     <string name="open_file">Abrir archivo</string>
+    <string name="toggle_control">Alternar Teclado/Joystick</string>
     <string name="save_state">Guardar estado</string>
     <string name="load_state">Cargar estado</string>
     <string name="use_sensor">Usar sensor</string>

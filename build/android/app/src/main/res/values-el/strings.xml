@@ -7,6 +7,7 @@
     <string name="unable_open">Αδυναμία ανοίγματος του \"%s\"</string>
     <string name="cancel">Άκυρο</string>
     <string name="open_file">Άνοιγμα αρχείου</string>
+    <string name="toggle_control">Εναλλαγή Πληκτρολογίου/Χειριστηρίου</string>
     <string name="save_state">Αποθήκευση κατάστασης</string>
     <string name="load_state">Φόρτωση κατάστασης</string>
     <string name="save_slot">Αποθήκευση υποδοχής</string>
