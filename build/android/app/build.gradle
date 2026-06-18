@@ -8,17 +8,14 @@ android {
 
     defaultConfig {
         applicationId "app.usp"
-
-//        minSdkVersion 8
-//        targetSdkVersion 10
-
         minSdkVersion 23
         targetSdkVersion 37
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
         }
         debug {
             jniDebuggable true
