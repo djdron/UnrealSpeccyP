@@ -2,5 +2,6 @@
 <resources>
 	<style name="Theme.USP" parent="Theme.Material3.DayNight.NoActionBar">
 		<item name="android:statusBarColor">#000000</item>
+		<item name="android:fitsSystemWindows">true</item>
 	</style>
 </resources>
