@@ -42,6 +42,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
 import androidx.activity.ComponentActivity;
+import androidx.activity.OnBackPressedCallback;
 import androidx.constraintlayout.widget.Guideline;
 import androidx.preference.PreferenceManager;
 import app.usp.ctl.Control;
@@ -88,6 +89,10 @@ public class Main extends ComponentActivity
 		}
 
 		view.open_menu = this::OpenMenu;
+		getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+			@Override
+			public void handleOnBackPressed() { OpenMenu(); }
+		});
 
 		getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> {
 			if(!paused && (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
@@ -99,7 +104,7 @@ public class Main extends ComponentActivity
 		view.requestFocus();
 		view.setKeepScreenOn(true);
 		Open();
-    }
+	}
 	@Override
 	public void onConfigurationChanged(Configuration newConfig)
 	{

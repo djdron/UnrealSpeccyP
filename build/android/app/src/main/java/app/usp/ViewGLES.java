@@ -217,17 +217,22 @@ public class ViewGLES extends GLSurfaceView
 		setOnTouchListener(video);
 	}
 	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+		switch(keyCode)
+		{
+			case KeyEvent.KEYCODE_F1:
+			case KeyEvent.KEYCODE_MENU:
+			case KeyEvent.KEYCODE_BUTTON_START:
+				return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event)
 	{
 		switch(keyCode)
 		{
-		case KeyEvent.KEYCODE_BACK:
-			if(!event.isLongPress())
-			{
-				open_menu.run();
-				return true;
-			}
-			break;
 		case KeyEvent.KEYCODE_F1:
 		case KeyEvent.KEYCODE_MENU:
 		case KeyEvent.KEYCODE_BUTTON_START:
