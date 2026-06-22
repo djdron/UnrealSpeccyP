@@ -20,6 +20,11 @@ package app.usp;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
@@ -35,6 +40,13 @@ public class FileOpen extends FragmentActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.file_open);
+
+		View rootLayout = findViewById(android.R.id.content);
+		ViewCompat.setOnApplyWindowInsetsListener(rootLayout, (view, insets) -> {
+			Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+			view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+			return insets;
+		});
 
 		TabLayout tabLayout = findViewById(R.id.tabLayout);
 		viewPager = findViewById(R.id.viewPager);

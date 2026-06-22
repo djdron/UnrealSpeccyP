@@ -26,6 +26,9 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.SwitchPreferenceCompat;
@@ -159,6 +162,11 @@ public class Preferences extends FragmentActivity
 		public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
 		{
 			super.onViewCreated(view, savedInstanceState);
+			ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
+				Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+				v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+				return insets;
+			});
 			if(scroll_stored != 0 || scroll_offset_stored != 0)
 			{
 				((LinearLayoutManager) getListView().getLayoutManager()).scrollToPositionWithOffset(scroll_stored, scroll_offset_stored);

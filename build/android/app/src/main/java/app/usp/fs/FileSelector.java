@@ -81,14 +81,7 @@ public abstract class FileSelector extends Fragment
 		View view = inflater.inflate(R.layout.fragment_list, container, false);
 		recyclerView = view.findViewById(R.id.recyclerView);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
 		return view;
-	}
-
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-	{
-		super.onViewCreated(view, savedInstanceState);
 	}
 	@Override
 	public void onResume()
