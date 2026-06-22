@@ -44,6 +44,10 @@ import android.content.Intent;
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
 import androidx.constraintlayout.widget.Guideline;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.preference.PreferenceManager;
 import app.usp.ctl.Control;
 
@@ -94,11 +98,12 @@ public class Main extends ComponentActivity
 			public void handleOnBackPressed() { OpenMenu(); }
 		});
 
-		getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> {
-			if(!paused && (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
+		ViewCompat.setOnApplyWindowInsetsListener(getWindow().getDecorView(), (view, insets) -> {
+			if(!paused && insets.isVisible(WindowInsetsCompat.Type.systemBars()))
 			{
 				RunHideCallback();
 			}
+			return insets;
 		});
 
 		view.requestFocus();
@@ -257,13 +262,11 @@ public class Main extends ComponentActivity
 	{
 		CancelHideCallback();
 		EndPause();
-		getWindow().getDecorView().setSystemUiVisibility(
-				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-						| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-						| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-						| View.SYSTEM_UI_FLAG_FULLSCREEN
-						| View.SYSTEM_UI_FLAG_IMMERSIVE);
+
+		WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(getWindow(), getWindow().getDecorView());
+		WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+		controller.hide(WindowInsetsCompat.Type.systemBars());
+		controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
 	}
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus)
