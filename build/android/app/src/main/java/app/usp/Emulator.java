@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package app.usp;
 
+import androidx.annotation.Keep;
+
 import java.nio.ByteBuffer;
 
 public class Emulator
@@ -60,6 +62,7 @@ public class Emulator
 	synchronized native void	Reset();
 	public synchronized native boolean	FileTypeSupported(final String name);
 
+	@Keep
 	public class ReplayProgress
 	{
 		public int frame_current;
