@@ -11,6 +11,8 @@ sed -i 's/\bopenssl dgst -ripemd160 -verify\b/openssl dgst -provider default -pr
 #workaround universal binaries with arm64, not i386
 sed -i 's/ARCH="i386-x86_64"/ARCH="arm64-x86_64"/g' $(command -v osxcross-macports)
 
+ln -s /usr/lib/x86_64-linux-gnu/libxml2.so /usr/lib/x86_64-linux-gnu/libxml2.so.2
+
 export MACOSX_DEPLOYMENT_TARGET=10.9
 #export MACOSX_DEPLOYMENT_TARGET=12.0
 
@@ -21,7 +23,7 @@ git clone https://github.com/djdron/UnrealSpeccyP.git usp
 cd usp/build/cmake
 mkdir build_macos
 cd build_macos
-export OSXCROSS_HOST=x86_64-apple-darwin23.6
+export OSXCROSS_HOST=x86_64-apple-darwin25.1
 export GLES2_PATH=/build/angle-chromium89
 #export GLES2_PATH=/build/angle-chromium108
 export GLES2_INCLUDE_PATH=$GLES2_PATH/include
