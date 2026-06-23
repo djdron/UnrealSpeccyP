@@ -16,33 +16,30 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package app.usp.fs;
+package app.usp.fs
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.Pattern
 
+abstract class FileSelectorSourceHTML : FileSelectorSourceWEB() {
 
-abstract class FileSelectorSourceHTML extends FileSelectorSourceWEB
-{
-	abstract public String[] Patterns();
-	abstract public void PatternGet(List<Item> items, Matcher m, final String _name);
-	@Override
-	public GetItemsResult ParseText(final String _text, List<Item> items, final String _name, FileSelector.Progress progress)
-	{
-		boolean ok = false;
-		for(String p : Patterns())
-		{
-			Pattern pt = Pattern.compile(p);
-			Matcher m = pt.matcher(_text);
-			while(m.find())
-			{
-				ok = true;
-				PatternGet(items, m, _name);
+	abstract fun Patterns(): Array<String>
+
+	abstract fun PatternGet(items: MutableList<Item>, m: java.util.regex.Matcher, name: String)
+
+	override fun ParseText(text: String, items: MutableList<Item>, name: String, progress: FileSelector.Progress): GetItemsResult {
+
+		var ok = false
+
+		for (p in Patterns()) {
+			val pt = Pattern.compile(p)
+			val m = pt.matcher(text)
+
+			while (m.find()) {
+				ok = true
+				PatternGet(items, m, name)
 			}
 		}
-		if(ok)
-			return GetItemsResult.OK;
-		return GetItemsResult.INVALID_INFO;
+
+		return if (ok) GetItemsResult.OK else GetItemsResult.INVALID_INFO
 	}
 }

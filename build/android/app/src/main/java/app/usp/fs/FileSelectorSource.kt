@@ -16,25 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package app.usp.fs;
+package app.usp.fs
 
-import java.io.File;
-import java.util.List;
+import java.io.File
 
-abstract class FileSelectorSource
-{
-	class Item
-	{
-		Item(FileSelectorSource _source, final String _name) { source = _source; name = _name; }
+abstract class FileSelectorSource {
 
-		FileSelectorSource source;
+	class Item(var source: FileSelectorSource, var name: String) {
+		var desc: String? = null
+		var url: String? = null
+	}
 
-		String name;
-		String desc;
-		String url;
-	};
-	enum GetItemsResult { OK, FAIL, UNABLE_CONNECT, INVALID_INFO, CANCELED }
-	abstract public GetItemsResult GetItems(final File path, List<Item> items, FileSelector.Progress progress);
-	enum ApplyResult { OK, FAIL, UNABLE_CONNECT1, UNABLE_CONNECT2, INVALID_INFO, NOT_AVAILABLE, UNSUPPORTED_FORMAT, CANCELED }
-	abstract public ApplyResult ApplyItem(Item item, FileSelector.Progress progress);
+	enum class GetItemsResult { OK, FAIL, UNABLE_CONNECT, INVALID_INFO, CANCELED }
+	abstract fun GetItems(path: File, items: MutableList<Item>, progress: FileSelector.Progress): GetItemsResult
+	enum class ApplyResult { OK, FAIL, UNABLE_CONNECT1, UNABLE_CONNECT2, INVALID_INFO, NOT_AVAILABLE, UNSUPPORTED_FORMAT, CANCELED }
+	abstract fun ApplyItem(item: Item, progress: FileSelector.Progress): ApplyResult
 }
