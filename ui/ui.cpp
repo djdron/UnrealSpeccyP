@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../std.h"
 #include "ui.h"
 #include "../platform/io.h"
+#include "../tools/utf8.h"
 #include <ctype.h>
 
 #ifdef USE_UI
@@ -121,7 +122,7 @@ public:
 	}
 	void Draw(int _char, const ePoint& p)
 	{
-		if(_char >= 128) // non-ASCII
+		if(_char < 0 || _char >= 256) // font contains only 256 chars
 			_char = '?';
 		int pitch = 256;
 		byte* src = data + _char + pitch*1;
@@ -142,18 +143,29 @@ public:
 	byte* data;
 }font;
 
-void DrawText(const eRect& r, const char* s)
+// Map a Unicode codepoint to a font glyph index, or '?' if not in the font.
+static int MapToFont(dword cp)
 {
-	//	strupr(const_cast<char*>(s));
+	if(cp < 0x80)
+		return toupper(cp);
+	if(cp >= 0x0410 && cp <= 0x042F) // А-Я
+		return cp - 0x0410 + 0x60;
+	if(cp >= 0x0430 && cp <= 0x044F) // а-я
+		return cp - 0x0430 + 0x60;
+	if(cp == 0x0401 || cp == 0x0451) // Ё/ё -> Е
+		return 0x65;
+	return '?';
+}
+
+void DrawText(const eRect& r, const char* _s)
+{
 	ePoint p = r.Beg();
-	for(int i = 0; s[i]; ++i)
+	for(const char* s = _s; *s;)
 	{
 		if(p.x + font.w > r.right)
 			break;
-		char c = toupper(s[i]);
-		if(byte(c) >= 128) // non-ASCII
-			c = '?';
-		font.Draw(c, p);
+		dword cp = xUtf8::Next(&s);
+		font.Draw(MapToFont(cp), p);
 		p.x += font.w;
 	}
 }
