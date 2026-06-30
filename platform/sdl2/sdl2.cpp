@@ -113,6 +113,14 @@ static const char* USP_HomePath()
 }
 #endif//SDL_DEFAULT_FOLDER
 
+void LoopUpdate();
+int SDLCALL EventFilter(void* userdata, SDL_Event* event)
+{
+	if(event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_EXPOSED)
+		LoopUpdate();
+	return 1;
+}
+
 bool Init()
 {
 #ifndef SDL_DEFAULT_FOLDER
@@ -150,6 +158,8 @@ bool Init()
 		return false;
 	if(!InitAudio())
 		return false;
+
+	SDL_AddEventWatch(EventFilter, NULL);
 	return true;
 }
 
@@ -167,6 +177,13 @@ void Done()
 	if(sdl_inited)
 		SDL_Quit();
 	Handler()->OnDone();
+}
+
+void LoopUpdate()
+{
+	Handler()->OnLoop();
+	UpdateScreen();
+	UpdateAudio();
 }
 
 static bool quit = false;
@@ -217,9 +234,7 @@ void Loop1()
 			break;
 		}
 	}
-	Handler()->OnLoop();
-	UpdateScreen();
-	UpdateAudio();
+	LoopUpdate();
 }
 
 void Loop()
