@@ -39,6 +39,8 @@ mkdir lib
 cd lib
 cp $GLES2_LIB_PATH/* .
 cp /osxcross/macports/pkgs/opt/local/lib/libSDL2-2.0.0.dylib .
+sed -i 's/\/opt\/local\/lib\/libGLESv2.dylib/libGLESv2.dylib\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00/g' ./libSDL2-2.0.0.dylib
+sed -i 's/\/opt\/local\/lib\/libEGL.dylib/libEGL.dylib\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00/g' ./libSDL2-2.0.0.dylib
 export OTOOL=$OSXCROSS_HOST-otool
 export INTOOL=$OSXCROSS_HOST-install_name_tool
 $INTOOL -id @rpath/libEGL.dylib ./libEGL.dylib
