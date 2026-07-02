@@ -123,6 +123,9 @@ int SDLCALL EventFilter(void* userdata, SDL_Event* event)
 
 bool Init()
 {
+	SDL_Delay(20000);
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+
 #ifndef SDL_DEFAULT_FOLDER
 	const char* usp_home_path = USP_HomePath();
 	if(usp_home_path)
