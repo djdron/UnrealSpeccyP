@@ -61,10 +61,18 @@ class FileSelectorRZX : FileSelector() {
 
 		override fun ApplyItem(item: Item, progress: Progress): ApplyResult {
 			val url = item.url ?: return ApplyResult.FAIL
-			val pos = url.lastIndexOf("/rzx/")
-			if (pos == -1) return ApplyResult.FAIL
-
-			val file = File(rzxFs + url.substring(pos + 4))
+			var pos = url.lastIndexOf("/rzx/")
+			if (pos == -1)
+			{
+				pos = url.lastIndexOf("/zxdb/")
+				if(pos == -1)
+					return ApplyResult.FAIL
+				else
+					pos += 5
+			}
+			else
+				pos += 4
+			val file = File(rzxFs + url.substring(pos))
 			return OpenFile(url, file, progress)
 		}
 
