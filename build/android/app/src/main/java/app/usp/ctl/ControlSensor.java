@@ -23,9 +23,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.display.DisplayManager;
 import android.view.Display;
 import android.view.Surface;
-import android.view.WindowManager;
 import app.usp.Emulator;
 import app.usp.Preferences;
 
@@ -34,25 +34,28 @@ public class ControlSensor implements SensorEventListener
 	static final float SENSOR_THRESHOLD = 1.0f;
 	private Sensor accelerometer;
 	private SensorManager sensor_manager;
-	private WindowManager window_manager;
-    private Display display;
-    public ControlSensor(Context context)
-    {
+	private Display display;
+	public ControlSensor(Context context)
+	{
 		sensor_manager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
 		accelerometer = sensor_manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		window_manager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-		display = window_manager.getDefaultDisplay();
-    }
-    public void Install()
-    {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+			display = context.getDisplay();
+		} else {
+			DisplayManager display_manager = (DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
+			display = display_manager.getDisplay(android.view.Display.DEFAULT_DISPLAY);
+		}
+	}
+	public void Install()
+	{
 		if(Emulator.the.GetOptionBool(Preferences.use_sensor_id))
 			sensor_manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-    }
-    public void Uninstall()
-    {
+	}
+	public void Uninstall()
+	{
 		if(Emulator.the.GetOptionBool(Preferences.use_sensor_id))
 			sensor_manager.unregisterListener(this);
-    }
+	}
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy)
 	{
@@ -61,7 +64,7 @@ public class ControlSensor implements SensorEventListener
 	public void onSensorChanged(SensorEvent event)
 	{
 		if(event.sensor.getType() != Sensor.TYPE_ACCELEROMETER)
-            return;
+			return;
 		float sx = 0, sy = 0; 
 		switch(display.getRotation())
 		{
@@ -76,7 +79,7 @@ public class ControlSensor implements SensorEventListener
 		case Surface.ROTATION_180:
 			sx = event.values[0];
 			sy = -event.values[1];
-            break;
+			break;
 		case Surface.ROTATION_270:
 			sx = -event.values[1];
 			sy = -event.values[0];
