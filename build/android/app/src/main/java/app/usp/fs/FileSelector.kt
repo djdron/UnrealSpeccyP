@@ -21,18 +21,22 @@ package app.usp.fs
 import java.io.File
 import java.util.ArrayList
 
-import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
-import android.os.AsyncTask
+import android.widget.ProgressBar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import app.usp.R
 
 abstract class FileSelector : Fragment() {
@@ -97,7 +101,7 @@ abstract class FileSelector : Fragment() {
 			SetItems()
 			SelectItem(getState().last_name)
 		} else {
-			UpdateAsync(getState().current_path, getState().last_name, LongUpdateTitle()).execute()
+			UpdateAsync(context as androidx.lifecycle.LifecycleOwner, getState().current_path, getState().last_name, LongUpdateTitle())
 		}
 	}
 
@@ -125,14 +129,14 @@ abstract class FileSelector : Fragment() {
 		if (f == "/..") {
 			val parent = getState().current_path.parentFile
 			if (parent != null) {
-				UpdateAsync(parent, "/" + getState().current_path.name, LongUpdateTitle()).execute()
+				UpdateAsync(context as androidx.lifecycle.LifecycleOwner, parent, "/" + getState().current_path.name, LongUpdateTitle())
 			}
 		} else {
 			if (f.startsWith("/")) {
-				UpdateAsync(File(getState().current_path.path + f), "", LongUpdateTitle()).execute()
+				UpdateAsync(context as androidx.lifecycle.LifecycleOwner, File(getState().current_path.path + f), "", LongUpdateTitle())
 			} else {
 				getState().last_name = f
-				ApplyAsync(getItems()[position]).execute()
+				ApplyAsync(context as androidx.lifecycle.LifecycleOwner, getItems()[position])
 			}
 		}
 	}
@@ -142,97 +146,94 @@ abstract class FileSelector : Fragment() {
 		private val res_message: Int
 	) : Progress, DialogInterface.OnCancelListener {
 
-		private var pd: ProgressDialog? = null
+		private var dialog: AlertDialog? = null
+		private var progressBar: ProgressBar? = null
 		private var time_last: Long = 0
 		var value_last: Int = 0
 		var canceled: Boolean = false
-
 		fun Create() {
-			pd = CreateProgress()
-			pd?.show()
+			val inflater = LayoutInflater.from(context)
+			val view = inflater.inflate(R.layout.progress_dialog_layout, null)
+
+			progressBar = view.findViewById(R.id.progress_bar)
+			val messageTextView = view.findViewById<TextView>(R.id.progress_message)
+			messageTextView?.setText(res_message)
+
+			dialog = AlertDialog.Builder(requireContext())
+				.setTitle(res_title)
+				.setView(view)
+				.setOnCancelListener(this)
+				.setCancelable(true)
+				.setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
+					dialogInterface.cancel()
+				}
+				.create()
+
+			dialog?.setCanceledOnTouchOutside(false)
+			dialog?.show()
 			time_last = System.nanoTime()
 		}
 
 		fun Destroy() {
-			pd?.dismiss()
+			dialog?.dismiss()
+			dialog = null
+			progressBar = null
 		}
 
 		fun Update(value: Int, value_max: Int) {
-			if (pd == null) return
-			if (Canceled()) return
+			if (dialog == null || Canceled()) return
+
 			val time = System.nanoTime()
-			if (time - time_last < 0.5 * 1e9) return // update each 0.5 sec
+			if (time - time_last < 0.5 * 1e9) return
 			time_last = time
-			if (pd!!.isIndeterminate && (value - value_last) * 3 < value_max) {
-				pd?.dismiss()
-				pd = CreateProgress()
-				pd?.isIndeterminate = false
-				pd?.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-				pd?.show()
-			}
-			if (!pd!!.isIndeterminate) {
-				pd?.max = value_max
-				pd?.progress = value
+
+			progressBar?.let { pb ->
+				pb.max = value_max
+				pb.progress = value
 			}
 			value_last = value
 		}
-
-		private fun CreateProgress(): ProgressDialog {
-			val pd = ProgressDialog(context)
-			pd.setTitle(getString(res_title))
-			pd.setMessage(getString(res_message))
-			pd.setOnCancelListener(this)
-			pd.setCancelable(true)
-			pd.setCanceledOnTouchOutside(false)
-			return pd
-		}
-
 		override fun Canceled(): Boolean {
 			return canceled
 		}
-
 		override fun onCancel(di: DialogInterface) {
 			canceled = true
-			pd?.dismiss()
-			pd = ProgressDialog(context)
-			pd?.setTitle(getString(res_title))
-			pd?.setMessage(getString(R.string.canceling))
-			pd?.setCancelable(false)
-			pd?.show()
+			dialog?.dismiss()
+
+			dialog = AlertDialog.Builder(requireContext())
+				.setTitle(res_title)
+				.setMessage(getString(R.string.canceling))
+				.setCancelable(false)
+				.create()
+			dialog?.show()
 		}
 	}
 
-	private inner class ApplyAsync(var item: FileSelectorSource.Item) :
-		AsyncTask<Void?, Int?, FileSelectorSource.ApplyResult>() {
-
-		private val progress: FSSProgressDialog = object : FSSProgressDialog(
-			R.string.accessing_web,
-			R.string.downloading_image
-		) {
-			override fun OnProgress(current: Int?, max: Int?) {
-				publishProgress(current, max)
-			}
-		}
-
-		override fun onPreExecute() {
+	private fun ApplyAsync(lifecycleOwner: androidx.lifecycle.LifecycleOwner, item: FileSelectorSource.Item) {
+		lifecycleOwner.lifecycleScope.launch {
 			async_task = true
-			if (LongUpdate(getState().current_path)) {
-				progress.Create()
+
+			val progress = object : FSSProgressDialog(R.string.accessing_web, R.string.downloading_image) {
+				override fun OnProgress(current: Int?, max: Int?) {
+					if (current != null && max != null) {
+						lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+							Update(current, max)
+						}
+					}
+				}
 			}
-		}
 
-		override fun doInBackground(vararg args: Void?): FileSelectorSource.ApplyResult {
-			return item.source.ApplyItem(item, progress)
-		}
+			progress.Create()
 
-		override fun onProgressUpdate(vararg values: Int?) {
-			progress.Update(values[0]!!, values[1]!!)
-		}
+			val result = withContext(Dispatchers.IO) {
+				item.source.ApplyItem(item, progress)
+			}
 
-		override fun onPostExecute(r: FileSelectorSource.ApplyResult) {
 			progress.Destroy()
+
 			var e: String? = null
-			when(r) {
+			when(result) {
+				FileSelectorSource.ApplyResult.OK -> activity?.finish()
 				FileSelectorSource.ApplyResult.FAIL -> e = getString(R.string.file_select_failed)
 				FileSelectorSource.ApplyResult.UNABLE_CONNECT1 -> e = getString(R.string.file_select_unable_connect1)
 				FileSelectorSource.ApplyResult.UNABLE_CONNECT2 -> e = getString(R.string.file_select_unable_connect2)
@@ -246,51 +247,37 @@ abstract class FileSelector : Fragment() {
 				Toast.makeText(context, me, Toast.LENGTH_LONG).show()
 			}
 			async_task = false
-			if (r == FileSelectorSource.ApplyResult.OK) {
-				activity?.finish()
-			}
 		}
 	}
 
-	private inner class UpdateAsync(
-		private val path: File,
-		private val select_after_update: String,
-		res_title: Int
-	) : AsyncTask<Void?, Int?, FileSelectorSource.GetItemsResult>() {
-
-		private val progress: FSSProgressDialog = object : FSSProgressDialog(
-			res_title,
-			R.string.gathering_list
-		) {
-			override fun OnProgress(current: Int?, max: Int?) {
-				publishProgress(current, max)
-			}
-		}
-		private val items: MutableList<FileSelectorSource.Item> = ArrayList()
-
-		override fun onPreExecute() {
+	private fun UpdateAsync(lifecycleOwner: androidx.lifecycle.LifecycleOwner, path: File, select_after_update: String, res_title: Int) {
+		lifecycleOwner.lifecycleScope.launch {
 			async_task = true
-			if (LongUpdate(path)) {
-				progress.Create()
+			val progress = object : FSSProgressDialog(res_title, R.string.gathering_list) {
+				override fun OnProgress(current: Int?, max: Int?) {
+					if (current != null && max != null) {
+						lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+							Update(current, max)
+						}
+					}
+				}
 			}
-		}
 
-		override fun doInBackground(vararg args: Void?): FileSelectorSource.GetItemsResult {
-			for (s in sources) {
-				val r = s.GetItems(path, items, progress)
-				if (r != FileSelectorSource.GetItemsResult.OK) return r
+			if (LongUpdate(path)) progress.Create()
+
+			val items = ArrayList<FileSelectorSource.Item>()
+			val result = withContext(Dispatchers.IO) {
+				var r = FileSelectorSource.GetItemsResult.OK
+				for (s in sources) {
+					r = s.GetItems(path, items, progress)
+					if (r != FileSelectorSource.GetItemsResult.OK) break
+				}
+				r
 			}
-			return FileSelectorSource.GetItemsResult.OK
-		}
 
-		override fun onProgressUpdate(vararg values: Int?) {
-			progress.Update(values[0]!!, values[1]!!)
-		}
-
-		override fun onPostExecute(r: FileSelectorSource.GetItemsResult) {
 			progress.Destroy()
 			var e: String? = null
-			when(r) {
+			when(result) {
 				FileSelectorSource.GetItemsResult.FAIL -> e = getString(R.string.file_select_failed)
 				FileSelectorSource.GetItemsResult.UNABLE_CONNECT -> e = getString(R.string.file_select_unable_connect1)
 				FileSelectorSource.GetItemsResult.INVALID_INFO -> e = getString(R.string.file_select_invalid_info)
