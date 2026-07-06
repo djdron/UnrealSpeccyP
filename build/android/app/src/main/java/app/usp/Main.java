@@ -39,10 +39,11 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.content.Intent;
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.constraintlayout.widget.Guideline;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -58,6 +59,13 @@ public class Main extends ComponentActivity
 	private Handler hide_callback;
 	private Runnable hide_runnable;
 	private boolean paused = false;
+	private final ActivityResultLauncher<String> requestPermissionLauncher =
+		registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+			if(isGranted)
+				Open();
+			else
+				OnOpenFailed();
+		});
 
 	@Override
     public void onCreate(Bundle savedInstanceState)
@@ -206,14 +214,14 @@ public class Main extends ComponentActivity
 				dlg.setMessage(getString(R.string.need_storage_permission));
 				dlg.setCancelable(false);
 				dlg.setPositiveButton(getString(R.string.ok),
-					(di, i) -> requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE)
+					(di, i) -> requestPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 				);
 				AlertDialog ad = dlg.create();
 				ad.show();
 			}
 			else
 			{
-				requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_STORAGE);
+				requestPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
 			}
 		}
 	}
@@ -228,18 +236,6 @@ public class Main extends ComponentActivity
 		dlg.setNegativeButton(getString(R.string.cancel), null);
 		AlertDialog ad = dlg.create();
 		ad.show();
-	}
-	@Override
-	public void onRequestPermissionsResult(int code, String[] permissions, int[] grants)
-	{
-		super.onRequestPermissionsResult(code, permissions, grants);
-		if(code == RP_STORAGE)
-		{
-			if(grants[0] == android.content.pm.PackageManager.PERMISSION_GRANTED)
-				Open();
-			else
-				OnOpenFailed();
-		}
 	}
 	private void RunHideCallback()
 	{
