@@ -83,9 +83,11 @@ class FileSelectorVtrdos : FileSelector() {
 		override fun Patterns(): Array<String> = PATTERNS
 
 		override fun PatternGet(items: MutableList<Item>, m: java.util.regex.Matcher, name: String) {
-			val item = Item(this, m.group(2))
-			item.desc = m.group(3) + " / " + m.group(4) + " [" + m.group(5) + "]"
-			item.url = m.group(1)
+			val name = m.group(2) ?: return
+			val href = m.group(1) ?: return
+			val item = Item(this, name)
+			item.desc = "${m.group(3)} / ${m.group(4)} [${m.group(5)}]"
+			item.url = href
 			items.add(item)
 		}
 
@@ -129,8 +131,10 @@ class FileSelectorVtrdos : FileSelector() {
 		override fun Patterns(): Array<String> = PATTERNS
 
 		override fun PatternGet(items: MutableList<Item>, m: java.util.regex.Matcher, name: String) {
-			val item = Item(this, m.group(2))
-			item.url = "/" + m.group(1)
+			val name = m.group(2) ?: return
+			val href = m.group(1) ?: return
+			val item = Item(this, name)
+			item.url = "/$href"
 			if (m.groupCount() > 2) {
 				item.desc = m.group(3)
 			}
@@ -159,8 +163,9 @@ class FileSelectorVtrdos : FileSelector() {
 				val m = pt.matcher(s)
 
 				if (m.find()) {
-					val item2 = Item(this, m.group(2))
-					val href = m.group(1)
+					val name = m.group(2) ?: return ApplyResult.FAIL
+					val href = m.group(1) ?: return ApplyResult.FAIL
+					val item2 = Item(this, name)
 					if (href.startsWith("../")) {
 						item2.url = "/" + href.substring(3)
 					} else {

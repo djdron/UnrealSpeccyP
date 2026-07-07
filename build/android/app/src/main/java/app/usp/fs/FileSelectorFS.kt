@@ -78,7 +78,7 @@ class FileSelectorFS : FileSelector() {
 			val r = fss.RootPath().path
 			val lastFileLocal = File(fss.Root() + "/" + lastFile.substring(r.length))
 			getState().last_name = lastFileLocal.name
-			getState().current_path = lastFileLocal.parentFile
+			getState().current_path = lastFileLocal.parentFile ?: File("/")
 		} else {
 			getState().current_path = File("/")
 			getState().last_name = ""
