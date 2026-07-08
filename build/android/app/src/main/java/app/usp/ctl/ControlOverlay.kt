@@ -16,36 +16,33 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package app.usp.ctl;
+package app.usp.ctl
 
-import android.os.SystemClock;
+import android.os.SystemClock
 
-public class ControlOverlay
-{
-	protected boolean active = false;
-	protected long touch_time = 0;
+fun NextPot(_v: Int): Int {
+	var v = _v - 1
+	v = v or (v ushr 1)
+	v = v or (v ushr 2)
+	v = v or (v ushr 4)
+	v = v or (v ushr 8)
+	v = v or (v ushr 16)
+	return ++v
+}
 
-	static int NextPot(int v)
-	{
-		--v;
-		v |= (v >> 1);
-		v |= (v >> 2);
-		v |= (v >> 4);
-		v |= (v >> 8);
-		v |= (v >> 16);
-		return ++v;
-	}
-	public void Active(boolean on)
-	{
-		if(!active && on)
-		{
-			touch_time = SystemClock.uptimeMillis();
+open class ControlOverlay {
+	protected var active: Boolean = false
+	protected var touch_time: Long = 0
+
+	open fun Active(on: Boolean) {
+		if (!active && on) {
+			touch_time = SystemClock.uptimeMillis()
 		}
-		active = on;
+		active = on
 	}
-	public void KickVisible()
-	{
-		Active(false);
-		Active(true);
+
+	fun KickVisible() {
+		Active(false)
+		Active(true)
 	}
 }

@@ -71,6 +71,8 @@ public class Emulator
 	}
 	public synchronized native ReplayProgress ReplayProgress();
 	public synchronized native boolean ReplayActive();
+	//Kotlin helper
+	public ReplayProgress getReplayProgress() { return ReplayProgress(); }
 
 	synchronized native int		GetOptionInt(final String name);
 	synchronized native void	SetOptionInt(final String name, int value);
