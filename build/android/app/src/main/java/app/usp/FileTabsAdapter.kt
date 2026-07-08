@@ -16,16 +16,31 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package app.usp;
+package app.usp
 
-import com.google.android.material.color.DynamicColors;
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
 
-public class Application extends android.app.Application
-{
-	@Override
-	public void onCreate()
-	{
-		super.onCreate();
-		DynamicColors.applyToActivitiesIfAvailable(this);
+import app.usp.fs.FileSelectorFS
+import app.usp.fs.FileSelectorRZX
+import app.usp.fs.FileSelectorVtrdos
+import app.usp.fs.FileSelectorWOS
+import app.usp.fs.FileSelectorBBB
+
+class FileTabsAdapter(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
+
+	override fun createFragment(position: Int): Fragment {
+		return when (position) {
+			1 -> FileSelectorVtrdos()
+			2 -> FileSelectorWOS()
+			3 -> FileSelectorRZX()
+			4 -> FileSelectorBBB()
+			else -> FileSelectorFS()
+		}
+	}
+
+	override fun getItemCount(): Int {
+		return 5
 	}
 }
