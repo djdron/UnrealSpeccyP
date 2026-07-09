@@ -33,6 +33,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -101,7 +102,7 @@ abstract class FileSelector : Fragment() {
 			SetItems()
 			SelectItem(getState().last_name)
 		} else {
-			UpdateAsync(context as androidx.lifecycle.LifecycleOwner, getState().current_path, getState().last_name, LongUpdateTitle())
+			UpdateAsync(context as LifecycleOwner, getState().current_path, getState().last_name, LongUpdateTitle())
 		}
 	}
 
@@ -129,14 +130,14 @@ abstract class FileSelector : Fragment() {
 		if (f == "/..") {
 			val parent = getState().current_path.parentFile
 			if (parent != null) {
-				UpdateAsync(context as androidx.lifecycle.LifecycleOwner, parent, "/" + getState().current_path.name, LongUpdateTitle())
+				UpdateAsync(context as LifecycleOwner, parent, "/" + getState().current_path.name, LongUpdateTitle())
 			}
 		} else {
 			if (f.startsWith("/")) {
-				UpdateAsync(context as androidx.lifecycle.LifecycleOwner, File(getState().current_path.path + f), "", LongUpdateTitle())
+				UpdateAsync(context as LifecycleOwner, File(getState().current_path.path + f), "", LongUpdateTitle())
 			} else {
 				getState().last_name = f
-				ApplyAsync(context as androidx.lifecycle.LifecycleOwner, getItems()[position])
+				ApplyAsync(context as LifecycleOwner, getItems()[position])
 			}
 		}
 	}
@@ -209,7 +210,7 @@ abstract class FileSelector : Fragment() {
 		}
 	}
 
-	private fun ApplyAsync(lifecycleOwner: androidx.lifecycle.LifecycleOwner, item: FileSelectorSource.Item) {
+	private fun ApplyAsync(lifecycleOwner: LifecycleOwner, item: FileSelectorSource.Item) {
 		lifecycleOwner.lifecycleScope.launch {
 			async_task = true
 
@@ -250,7 +251,7 @@ abstract class FileSelector : Fragment() {
 		}
 	}
 
-	private fun UpdateAsync(lifecycleOwner: androidx.lifecycle.LifecycleOwner, path: File, select_after_update: String, res_title: Int) {
+	private fun UpdateAsync(lifecycleOwner: LifecycleOwner, path: File, select_after_update: String, res_title: Int) {
 		lifecycleOwner.lifecycleScope.launch {
 			async_task = true
 			val progress = object : FSSProgressDialog(res_title, R.string.gathering_list) {
