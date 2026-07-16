@@ -48,7 +48,11 @@ public class Emulator
 	public synchronized native void	GLSpriteSetColor(int handle, float r, float g, float b);
 
 	synchronized native int		Update();
-	synchronized native int		UpdateAudio(ByteBuffer buf, boolean skip_data);
+
+	synchronized native void	AudioInit();
+	synchronized native void	AudioDone();
+	synchronized native int		AudioUpdate(boolean skip_data);
+
 	public synchronized native void	OnKey(char key, boolean down, boolean shift, boolean alt);
 	public synchronized native void	OnTouch(boolean keyboard, float x, float y, boolean down, int pointer_id);
 	synchronized native void	VideoPaused(boolean on);

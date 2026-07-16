@@ -40,40 +40,8 @@ import app.usp.ctl.ControlTouch
 
 class ViewGLES(context: Context, attrs: AttributeSet?) : GLSurfaceView(context, attrs) {
 
-	private class SyncTimer {
-		private var time_emulated: Long = 0
-		private var time_real: Long = 0
-		private var time_real_last: Long = 0
-
-		companion object {
-			const val TIME_FRAME: Long = 20000000 // 20ms per frame - 50fps
-		}
-
-		fun Sync() {
-			time_real += System.nanoTime() - time_real_last
-			time_emulated += TIME_FRAME
-			val TIME_DIFF: Long = 10000000 // 10ms - sync diff
-
-			while (time_emulated - time_real > TIME_DIFF) {
-				val t = System.nanoTime()
-				try {
-					Thread.sleep(1)
-				} catch (e: InterruptedException) {
-				}
-				time_real += System.nanoTime() - t
-			}
-			if (time_emulated - time_real < 0) {
-				time_real = 0
-				time_emulated = 0
-			}
-			time_real_last = System.nanoTime()
-
-//			while (System.nanoTime() - last_time < FRAME_TIME) {
-//				Thread.yield()
-//				java.util.concurrent.locks.LockSupport.parkNanos(1)
-//			}
-//			last_time = System.nanoTime()
-		}
+	companion object {
+		const val TIME_FRAME: Long = 20000000 // 20ms per frame - 50fps
 	}
 
 	private inner class Video(private val context: Context) : ControlTouch(), Renderer {
@@ -84,7 +52,6 @@ class ViewGLES(context: Context, attrs: AttributeSet?) : GLSurfaceView(context, 
 
 		private var width = 0
 		private var height = 0
-		private var sync_timer: SyncTimer? = null
 
 		override fun OnTouch(x: Float, y: Float, down: Boolean, pid: Int) {
 			control_replay.OnTouch(x, y, down, pid)
@@ -136,43 +103,26 @@ class ViewGLES(context: Context, attrs: AttributeSet?) : GLSurfaceView(context, 
 
 		override fun onDrawFrame(gl_unused: GL10?) {
 			Emulator.the.ProfilerEnd(2)
+			val time_frame_end = System.nanoTime() + TIME_FRAME*4/5
+			ShowMessage(Emulator.the.Update())
 			if (control_fast_forward.Pressed()) {
-				val time_frame_end = System.nanoTime() + SyncTimer.TIME_FRAME*4/5
-				ShowMessage(Emulator.the.Update())
-				Draw()
-				audio.Update(false)
-
-				for (frames in 1 until 15) { // do not speedup faster than 15x
+				for (frames in 1 until 10) { // do not speedup faster than 10x
+					Emulator.the.AudioUpdate(true)
+					ShowMessage(Emulator.the.Update())
 					if (System.nanoTime() > time_frame_end) break
-					ShowMessage(Emulator.the.Update())
-					audio.Update(true)
-				}
-			} else {
-				val skip_frames = Emulator.the.GetOptionInt(Preferences.skip_frames_id)
-				for (f in 0..skip_frames) {
-					ShowMessage(Emulator.the.Update())
-					if (f == skip_frames) {
-						Draw()
-					}
-					audio.Update(false)
-					sync_timer?.Sync()
 				}
 			}
+			Draw()
+			Emulator.the.AudioUpdate(false)
 			Emulator.the.ProfilerBegin(2)
 		}
 
 		override fun onSurfaceChanged(gl_unused: GL10?, w: Int, h: Int) {
 			width = w
 			height = h
-			sync_timer = if (Emulator.the.GetOptionBool(Preferences.av_timer_sync_id)) {
-				SyncTimer()
-			} else {
-				null
-			}
 		}
 	}
 
-	private val audio: Audio = Audio()
 	private val video: Video = Video(context)
 	private val sensor: ControlSensor = ControlSensor(context)
 
@@ -221,11 +171,13 @@ class ViewGLES(context: Context, attrs: AttributeSet?) : GLSurfaceView(context, 
 	fun OnActivityResume() {
 		onResume()
 		sensor.Install()
+		Emulator.the.AudioInit();
 	}
 
 	fun OnActivityPause() {
 		onPause()
 		sensor.Uninstall()
+		Emulator.the.AudioDone();
 	}
 
 	fun UpdateControls() {

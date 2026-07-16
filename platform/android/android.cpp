@@ -1,6 +1,6 @@
 /*
 Portable ZX-Spectrum emulator.
-Copyright (C) 2001-2015 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
+Copyright (C) 2001-2026 SMT, Dexus, Alone Coder, deathsoft, djdron, scor
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ namespace xPlatform
 void ProcessKey(char key, bool down, bool shift, bool alt);
 void InitSound();
 void DoneSound();
-int UpdateSound(byte* buf, bool skip_data);
+int UpdateSound(bool skip_data);
 
 static struct eOptionAVTimerSync : public xOptions::eOptionBool
 {
@@ -212,11 +212,19 @@ void Java_app_usp_Emulator_GLSpriteSetColor(JNIEnv* env, jobject obj, jint handl
 	sprites[handle]->SetColor(r, g, b);
 }
 
-jint Java_app_usp_Emulator_UpdateAudio(JNIEnv* env, jobject obj, jobject byte_buffer, jboolean skip_data)
+void Java_app_usp_Emulator_AudioInit(JNIEnv* env, jobject obj)
+{
+	xPlatform::InitSound();
+}
+void Java_app_usp_Emulator_AudioDone(JNIEnv* env, jobject obj)
+{
+	xPlatform::DoneSound();
+}
+
+jint Java_app_usp_Emulator_AudioUpdate(JNIEnv* env, jobject obj, jboolean skip_data)
 {
 	PROFILER_SECTION(u_aud);
-	byte* buf = (byte*)env->GetDirectBufferAddress(byte_buffer);
-	return xPlatform::UpdateSound(buf, skip_data);
+	return xPlatform::UpdateSound(skip_data);
 }
 
 void Java_app_usp_Emulator_OnKey(JNIEnv* env, jobject obj, jchar key, jboolean down, jboolean shift, jboolean alt)

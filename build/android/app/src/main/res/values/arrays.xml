@@ -91,22 +91,6 @@
             <item>2</item>
             <item>3</item>
         </string-array>
-        <string-array name="skip_frames_names">
-            <item>@string/skip_frames_none</item>
-            <item>@string/skip_frames_1</item>
-            <item>@string/skip_frames_2</item>
-            <item>@string/skip_frames_3</item>
-            <item>@string/skip_frames_4</item>
-            <item>@string/skip_frames_5</item>
-        </string-array>
-        <string-array name="skip_frames_values">
-            <item>0</item>
-            <item>1</item>
-            <item>2</item>
-            <item>3</item>
-            <item>4</item>
-            <item>5</item>
-        </string-array>
         <string-array name="theme_names">
             <item>@string/theme_dark</item>
             <item>@string/theme_light</item>

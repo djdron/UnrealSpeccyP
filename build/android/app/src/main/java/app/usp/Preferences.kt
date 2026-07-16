@@ -54,8 +54,6 @@ open class Preferences : FragmentActivity() {
 	}
 
 	companion object {
-		const val av_timer_sync_id = "av timer sync"
-		const val skip_frames_id = "skip frames"
 		const val use_sensor_id = "use sensor"
 		const val use_keyboard_id = "use keyboard"
 	}
@@ -78,8 +76,6 @@ open class Preferences : FragmentActivity() {
 		private lateinit var filtering: SwitchPreferenceCompat
 		private lateinit var gigascreen: SwitchPreferenceCompat
 		private lateinit var black_and_white: SwitchPreferenceCompat
-		private lateinit var av_timer_sync: SwitchPreferenceCompat
-		private lateinit var skip_frames: ListPreference
 		private lateinit var theme: ListPreference
 
 		companion object {
@@ -123,8 +119,6 @@ open class Preferences : FragmentActivity() {
 			filtering = findPreference(filtering_id)!!
 			gigascreen = findPreference(gigascreen_id)!!
 			black_and_white = findPreference(black_and_white_id)!!
-			av_timer_sync = findPreference(av_timer_sync_id)!!
-			skip_frames = findPreference(skip_frames_id)!!
 			theme = findPreference(theme_id)!!
 			LoadValues()
 			UpdateDescs()
@@ -196,8 +190,6 @@ open class Preferences : FragmentActivity() {
 			filtering.isChecked = Emulator.the.GetOptionBool(filtering_id)
 			gigascreen.isChecked = Emulator.the.GetOptionBool(gigascreen_id)
 			black_and_white.isChecked = Emulator.the.GetOptionBool(black_and_white_id)
-			av_timer_sync.isChecked = Emulator.the.GetOptionBool(av_timer_sync_id)
-			skip_frames.setValueIndex(Emulator.the.GetOptionInt(skip_frames_id))
 		}
 
 		private fun UpdateDescs() {
@@ -234,8 +226,6 @@ open class Preferences : FragmentActivity() {
 				filtering_id -> 		Emulator.the.SetOptionBool(filtering_id, filtering.isChecked)
 				gigascreen_id -> 		Emulator.the.SetOptionBool(gigascreen_id, gigascreen.isChecked)
 				black_and_white_id -> 	Emulator.the.SetOptionBool(black_and_white_id, black_and_white.isChecked)
-				av_timer_sync_id -> 	Emulator.the.SetOptionBool(av_timer_sync_id, av_timer_sync.isChecked)
-				skip_frames_id -> 		Emulator.the.SetOptionInt(skip_frames_id, skip_frames.value.toInt())
 				theme_id -> {
 					val uiModeManager = requireActivity().getSystemService(UI_MODE_SERVICE) as UiModeManager
 					val mode = when (theme.value) {

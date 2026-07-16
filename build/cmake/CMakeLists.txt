@@ -274,6 +274,8 @@ elseif(ANDROID)
 
 set(PROJECT usp)
 
+find_package (oboe REQUIRED CONFIG)
+
 file(GLOB SRCCXX_PLATFORM_ANDROID "../../platform/android/*.cpp")
 file(GLOB SRCH_PLATFORM_ANDROID "../../platform/android/*.h")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_ANDROID})
@@ -291,7 +293,7 @@ add_definitions(-DUSE_EXTERN_RESOURCES -DUSE_CONFIG -DUSE_ZIP -D_ANDROID -DUSE_G
 add_platform_io_stuff()
 
 add_library(${PROJECT} SHARED ${SRCCXX} ${SRCC} ${SRCH})
-target_link_libraries(${PROJECT} GLESv2)
+target_link_libraries(${PROJECT} GLESv2 oboe::oboe)
 
 elseif(USE_WX_WIDGETS)
 

@@ -44,10 +44,6 @@
     <string name="filtering">Фільтрація</string>
     <string name="gigascreen_desc">Більше кольорів, менше блимає</string>
     <string name="black_and_white">Чорно-білий режим</string>
-    <string name="av_timer_sync">Синхронізація за таймером</string>
-    <string name="av_timer_sync_desc">Більш плавна емуляція на деяких пристроях</string>
-    <string name="skip_frames">Пропуск кадрів</string>
-    <string name="skip_frames_none">Немає</string>
 
     <string name="theme">Тема</string>
     <string name="theme_dark">Темна</string>

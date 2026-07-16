@@ -45,10 +45,6 @@
     <string name="gigascreen">Гигаскрин</string>
     <string name="gigascreen_desc">Больше цветов, меньше мерцание</string>
     <string name="black_and_white">Чёрно-белый режим</string>
-    <string name="av_timer_sync">Синхронизация по таймеру</string>
-    <string name="av_timer_sync_desc">Более плавная эмуляция на некоторых устройствах</string>
-    <string name="skip_frames">Пропуск кадров</string>
-    <string name="skip_frames_none">Нет</string>
 
     <string name="theme">Тема</string>
     <string name="theme_dark">Тёмная</string>

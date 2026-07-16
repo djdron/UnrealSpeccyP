@@ -70,15 +70,6 @@
     <string name="gigascreen">GigaScreen</string>
     <string name="gigascreen_desc">More colors less blinking</string>
     <string name="black_and_white">Black-and-white</string>
-    <string name="av_timer_sync">A/V sync by timer</string>
-    <string name="av_timer_sync_desc">Smoother playback on some devices</string>
-    <string name="skip_frames">Skip frames</string>
-    <string name="skip_frames_none">None</string>
-    <string name="skip_frames_1">1</string>
-    <string name="skip_frames_2">2</string>
-    <string name="skip_frames_3">3</string>
-    <string name="skip_frames_4">4</string>
-    <string name="skip_frames_5">5</string>
 
     <string name="theme">Theme</string>
     <string name="theme_dark">Dark</string>

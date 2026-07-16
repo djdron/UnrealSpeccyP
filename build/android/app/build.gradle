@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 android {
     buildFeatures {
         buildConfig = true
+        prefab = true
     }
     buildToolsVersion "37.0.0"
     compileSdk 37
@@ -10,6 +11,11 @@ android {
         applicationId "app.usp"
         minSdkVersion 23
         targetSdkVersion 37
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
     }
 
     buildTypes {
@@ -44,4 +50,5 @@ dependencies {
     implementation 'com.google.android.material:material:1.14.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.11.0'
+    implementation 'com.google.oboe:oboe:1.10.0'
 }

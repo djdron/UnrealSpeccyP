@@ -52,10 +52,6 @@
     <string name="filtering">Φιλτράρισμα</string>
     <string name="gigascreen_desc">Περισσότερα χρώματα λιγότερο τρέμουλο</string>
     <string name="black_and_white">Ασπρόμαυρο</string>
-    <string name="av_timer_sync">Συγχρονισμός A/V με το χρόνο</string>
-    <string name="av_timer_sync_desc">Ομαλότερη αναπαραγωγή σε ορισμένες συσκευές</string>
-    <string name="skip_frames">Παράλειψη καρέ</string>
-    <string name="skip_frames_none">Κανένα</string>
 
     <string name="theme">θέμα</string>
     <string name="theme_dark">Σκούρο</string>

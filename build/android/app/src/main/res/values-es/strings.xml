@@ -38,10 +38,6 @@
     <string name="filtering">Filtrado</string>
     <string name="gigascreen_desc">Más colores menos parpadeos</string>
     <string name="black_and_white">El modo de blanco y negro</string>
-    <string name="av_timer_sync">Sincronismo A/V por temporizador</string>
-    <string name="av_timer_sync_desc">Visualización más fluida en algunos dispositivos</string>
-    <string name="skip_frames">Saltear cuadros</string>
-    <string name="skip_frames_none">Ninguno</string>
 
     <string name="theme">Tema</string>
     <string name="theme_dark">Oscuro</string>
