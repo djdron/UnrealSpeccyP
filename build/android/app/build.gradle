@@ -1,8 +1,27 @@
 apply plugin: 'com.android.application'
+
+tasks.register('updateGitSubmodules', Exec) {
+    description = 'Update git submodules'
+    group = 'Initialization'
+    def rootProjectDir = "${projectDir}/../../.."
+    def oboeDir = file("${rootProjectDir}/3rdparty/oboe")
+    onlyIf {
+        !oboeDir.exists() || oboeDir.list()?.length == 0
+    }
+    workingDir = rootProjectDir
+    executable = 'git'
+    args = ['submodule', 'update', '--init', '3rdparty/oboe']
+    doFirst {
+        println "Updating git submodules..."
+    }
+}
+tasks.matching { it.name == 'preBuild' }.configureEach {
+    dependsOn updateGitSubmodules
+}
+
 android {
     buildFeatures {
         buildConfig = true
-        prefab = true
     }
     buildToolsVersion "37.0.0"
     compileSdk 37
@@ -13,7 +32,7 @@ android {
         targetSdkVersion 37
         externalNativeBuild {
             cmake {
-                arguments "-DANDROID_STL=c++_shared"
+                arguments "-DANDROID_STL=c++_static"
             }
         }
     }
@@ -50,5 +69,4 @@ dependencies {
     implementation 'com.google.android.material:material:1.14.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.11.0'
-    implementation 'com.google.oboe:oboe:1.10.0'
 }
