@@ -97,7 +97,7 @@ void UpdateAudio()
 	SDL_LockAudioDevice(device);
 	sound_mixer.Update();
 	static bool audio_filled = false;
-	bool audio_filled_new = !OpSpeed() && sound_mixer.Ready() > 44100*2*2/50*7; // 7-frame data
+	bool audio_filled_new = !OpSpeed() && sound_mixer.Ready() > 44100*2*2/50*3; // 3-frame data
 	if(audio_filled != audio_filled_new)
 	{
 		audio_filled = audio_filled_new;
