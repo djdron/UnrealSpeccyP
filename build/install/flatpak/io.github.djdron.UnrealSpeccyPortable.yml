@@ -1,0 +1,95 @@
+# Flatpak manifest for Unreal Speccy Portable
+# App ID: io.github.djdron.UnrealSpeccyPortable
+#
+# Layout inside the sandbox (mirrors classic deb layout):
+#   /app/bin/unreal-speccy-portable              — launcher (cd + exec)
+#   /app/lib/unreal-speccy-portable/             — binary + res/
+
+app-id: io.github.djdron.UnrealSpeccyPortable
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+
+command: unreal-speccy-portable
+
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --socket=pulseaudio
+  - --filesystem=home
+  - --share=network
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/man
+  - /share/doc
+  - '*.a'
+  - '*.la'
+
+modules:
+  - name: unreal-speccy-portable
+    buildsystem: simple
+    build-commands:
+      - cmake -S build/cmake -B _build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_INSTALL_PREFIX=/app
+          -DUSE_SDL2=ON
+          -DUSE_SDL=OFF
+          -DUSE_WX_WIDGETS=OFF
+          -DUSE_BENCHMARK=OFF
+          -DUSE_LIBRARY=OFF
+          -DUSE_WEB=ON
+      - cmake --build _build --parallel $FLATPAK_BUILDER_N_JOBS
+      - cmake --install _build || true
+
+      # App data dir: binary + res/
+      - mkdir -p /app/lib/unreal-speccy-portable /app/bin
+      - |
+        if [ -f /app/bin/unreal_speccy_portable ]; then
+          mv /app/bin/unreal_speccy_portable /app/lib/unreal-speccy-portable/unreal_speccy_portable
+        elif [ -f /app/bin/unreal-speccy-portable ]; then
+          mv /app/bin/unreal-speccy-portable /app/lib/unreal-speccy-portable/unreal_speccy_portable
+        elif [ -f _build/unreal_speccy_portable ]; then
+          install -m 755 _build/unreal_speccy_portable /app/lib/unreal-speccy-portable/unreal_speccy_portable
+        elif [ -f _build/unreal-speccy-portable ]; then
+          install -m 755 _build/unreal-speccy-portable /app/lib/unreal-speccy-portable/unreal_speccy_portable
+        else
+          echo "ERROR: binary not found" >&2
+          find _build -type f -executable 2>/dev/null | head -30 >&2
+          exit 1
+        fi
+      - cp -a res /app/lib/unreal-speccy-portable/
+
+      # Launcher (cd into lib dir so res/rom resolves)
+      - |
+        mkdir -p /app/bin
+        printf '%s\n' \
+          '#!/bin/sh' \
+          'BIN_PATH=/app/lib/unreal-speccy-portable/' \
+          'cd "${BIN_PATH}" || exit 1' \
+          'exec "${BIN_PATH}unreal_speccy_portable" "$@"' \
+          > /app/bin/unreal-speccy-portable
+        chmod 755 /app/bin/unreal-speccy-portable
+
+      # Desktop, MIME, AppStream
+      - install -Dm644 unreal-speccy-portable.desktop
+          /app/share/applications/io.github.djdron.UnrealSpeccyPortable.desktop
+      - install -Dm644 unreal_speccy_portable.xml
+          /app/share/mime/packages/unreal_speccy_portable.xml
+      - install -Dm644 io.github.djdron.UnrealSpeccyPortable.metainfo.xml
+          /app/share/metainfo/io.github.djdron.UnrealSpeccyPortable.metainfo.xml
+      - |
+        if [ -d icons ]; then
+          for size in 16x16 22x22 24x24 32x32 48x48 64x64 128x128; do
+            if [ -f "icons/$size/unreal_speccy_portable.png" ]; then
+              install -Dm644 "icons/$size/unreal_speccy_portable.png" \
+                "/app/share/icons/hicolor/$size/apps/io.github.djdron.UnrealSpeccyPortable.png"
+            fi
+          done
+        fi
+    sources:
+      - type: dir
+        path: source

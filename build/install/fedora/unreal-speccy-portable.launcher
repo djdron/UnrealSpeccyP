@@ -1,0 +1,9 @@
+#!/bin/sh
+# Starts Unreal Speccy Portable
+# Binary + res/ live under /usr/lib/unreal-speccy-portable/
+# so relative paths like res/rom/*.rom resolve correctly.
+
+BIN_PATH=/usr/lib/unreal-speccy-portable/
+
+cd "${BIN_PATH}" || exit 1
+exec "${BIN_PATH}unreal_speccy_portable" "$@"

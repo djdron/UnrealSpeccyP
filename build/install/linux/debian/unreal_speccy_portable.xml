@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/usp-zx-snapshot">
+    <comment>ZX Spectrum snapshot</comment>
+    <glob pattern="*.sna"/>
+    <glob pattern="*.z80"/>
+    <glob pattern="*.szx"/>
+  </mime-type>
+  <mime-type type="application/usp-zx-disk">
+    <comment>ZX Spectrum disk image</comment>
+    <glob pattern="*.trd"/>
+    <glob pattern="*.scl"/>
+    <glob pattern="*.fdi"/>
+    <glob pattern="*.td0"/>
+    <glob pattern="*.udi"/>
+  </mime-type>
+  <mime-type type="application/usp-zx-replay">
+    <comment>ZX Spectrum replay file</comment>
+    <glob pattern="*.rzx"/>
+  </mime-type>
+  <mime-type type="application/usp-zx-tape">
+    <comment>ZX Spectrum tape file</comment>
+    <glob pattern="*.tap"/>
+    <glob pattern="*.tzx"/>
+    <glob pattern="*.csw"/>
+  </mime-type>
+</mime-info>

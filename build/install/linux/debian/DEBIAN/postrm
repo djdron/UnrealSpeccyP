@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -e
-
-if [ -x /usr/bin/update-menus ]; then update-menus; fi
-if [ -x /usr/sbin/update-mime ]; then update-mime; fi
-if [ -x /usr/bin/update-desktop-database ]; then update-desktop-database -q; fi
-if [ -x /usr/bin/update-mime-database ]; then update-mime-database /usr/share/mime; fi

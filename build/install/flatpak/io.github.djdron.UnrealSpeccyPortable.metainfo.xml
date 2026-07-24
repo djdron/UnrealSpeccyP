@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.djdron.UnrealSpeccyPortable</id>
+  <name>Unreal Speccy Portable</name>
+  <summary>Portable ZX Spectrum emulator</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer_name>djdron, scor (portable); SMT et al. (original)</developer_name>
+  <url type="homepage">https://github.com/djdron/UnrealSpeccyP</url>
+  <url type="bugtracker">https://github.com/djdron/UnrealSpeccyP/issues</url>
+  <description>
+    <p>
+      Portable ZX-Spectrum emulator based on UnrealSpeccy.
+      Supports Z80 128K (Pentagon), AY/YM, Beeper, Beta Disk, Tape,
+      Kempston Joystick/Mouse, Snapshots and Replays.
+    </p>
+    <p>
+      Supported formats: sna, z80, szx, rzx, tap, tzx, csw,
+      trd, scl, fdi, td0, udi, zip.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.djdron.UnrealSpeccyPortable.desktop</launchable>
+  <provides>
+    <binary>unreal-speccy-portable</binary>
+  </provides>
+  <categories>
+    <category>Game</category>
+    <category>Emulator</category>
+  </categories>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.0.86.28" date="2026-07-16"/>
+  </releases>
+</component>

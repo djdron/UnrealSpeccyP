@@ -1,0 +1,71 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_CFLAGS_MAINT_APPEND  = -Wall
+export DEB_CXXFLAGS_MAINT_APPEND = -Wall
+
+# Upstream CMakeLists.txt lives in build/cmake/
+CMAKE_SOURCE = build/cmake
+LIBDIR = usr/lib/unreal-speccy-portable
+
+%:
+	dh $@ --buildsystem=cmake --builddirectory=obj-$(DEB_HOST_GNU_TYPE)
+
+override_dh_auto_configure:
+	dh_auto_configure --sourcedirectory=$(CMAKE_SOURCE) -- \
+		-DUSE_SDL2=ON \
+		-DUSE_SDL=OFF \
+		-DUSE_WX_WIDGETS=OFF \
+		-DUSE_BENCHMARK=OFF \
+		-DUSE_LIBRARY=OFF \
+		-DUSE_WEB=ON \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr
+
+override_dh_auto_install:
+	dh_auto_install --destdir=debian/tmp
+
+	# --- binary -> /usr/lib/unreal-speccy-portable/unreal_speccy_portable ---
+	mkdir -p debian/tmp/$(LIBDIR)
+	if [ -f debian/tmp/usr/bin/unreal_speccy_portable ]; then \
+		mv debian/tmp/usr/bin/unreal_speccy_portable \
+		   debian/tmp/$(LIBDIR)/unreal_speccy_portable ; \
+	elif [ -f debian/tmp/usr/bin/unreal-speccy-portable ]; then \
+		mv debian/tmp/usr/bin/unreal-speccy-portable \
+		   debian/tmp/$(LIBDIR)/unreal_speccy_portable ; \
+	elif [ -f obj-$(DEB_HOST_GNU_TYPE)/unreal_speccy_portable ]; then \
+		install -m 755 obj-$(DEB_HOST_GNU_TYPE)/unreal_speccy_portable \
+			debian/tmp/$(LIBDIR)/unreal_speccy_portable ; \
+	elif [ -f obj-$(DEB_HOST_GNU_TYPE)/unreal-speccy-portable ]; then \
+		install -m 755 obj-$(DEB_HOST_GNU_TYPE)/unreal-speccy-portable \
+			debian/tmp/$(LIBDIR)/unreal_speccy_portable ; \
+	else \
+		echo "ERROR: built binary not found" >&2 ; \
+		find obj-$(DEB_HOST_GNU_TYPE) -type f -executable 2>/dev/null | head -20 >&2 ; \
+		exit 1 ; \
+	fi
+	rmdir debian/tmp/usr/bin 2>/dev/null || true
+
+	# --- res/ (ROMs, fonts) next to the binary ---
+	cp -a res debian/tmp/$(LIBDIR)/
+
+	# --- launcher script in /usr/bin ---
+	install -D -m 755 debian/unreal-speccy-portable.launcher \
+		debian/tmp/usr/bin/unreal-speccy-portable
+
+	# --- desktop, MIME, icons ---
+	install -D -m 644 debian/unreal-speccy-portable.desktop \
+		debian/tmp/usr/share/applications/unreal-speccy-portable.desktop
+	install -D -m 644 debian/unreal_speccy_portable.xml \
+		debian/tmp/usr/share/mime/packages/unreal_speccy_portable.xml
+	if [ -d debian/icons ]; then \
+		for size in 16x16 22x22 24x24 32x32 48x48 64x64 128x128; do \
+			if [ -f debian/icons/$$size/unreal_speccy_portable.png ]; then \
+				install -D -m 644 debian/icons/$$size/unreal_speccy_portable.png \
+					debian/tmp/usr/share/icons/hicolor/$$size/apps/unreal_speccy_portable.png ; \
+			fi ; \
+		done ; \
+	fi
+
+override_dh_shlibdeps:
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
