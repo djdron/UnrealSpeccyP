@@ -1,0 +1,15 @@
+unreal-speccy-portable (0.0.86.28-1) unstable; urgency=medium
+
+  * Rebuild packaging as proper source-based Debian package.
+  * Switch to CMake + SDL2.
+  * Use debhelper-compat 13.
+  * Update dependencies for modern Debian/Ubuntu.
+  * Keep MIME types, desktop entry and icons from previous packaging.
+
+ -- Andrey Dj <djdron@gmail.com>  Fri, 24 Jul 2026 00:20:00 +0200
+
+unreal-speccy-portable (0.0.83-1) unstable; urgency=medium
+
+  * Previous binary-only packaging.
+
+ -- Andrey Dj <djdron@gmail.com>  Sat, 28 Apr 2018 00:00:00 +0000

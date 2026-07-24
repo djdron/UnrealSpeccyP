@@ -1,7 +1,0 @@
-#!/bin/sh
-# Starts Unreal Speccy Portable
-
-BIN_PATH=/usr/lib/unreal-speccy-portable/
-
-cd ${BIN_PATH}
-exec ${BIN_PATH}unreal_speccy_portable "$@"

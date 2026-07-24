@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Unreal Speccy Portable
+GenericName=ZX Spectrum Emulator
+Comment=Portable ZX-Spectrum emulator
+Exec=unreal-speccy-portable %F
+Icon=unreal_speccy_portable
+Terminal=false
+Categories=Game;Emulator;
+StartupNotify=true
+MimeType=application/usp-zx-snapshot;application/usp-zx-disk;application/usp-zx-replay;application/usp-zx-tape;
+Keywords=spectrum;zx;emulator;retro;

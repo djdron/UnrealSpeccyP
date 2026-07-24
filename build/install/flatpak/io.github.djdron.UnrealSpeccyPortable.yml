@@ -1,0 +1,69 @@
+# Flatpak manifest for Unreal Speccy Portable
+# App ID: io.github.djdron.UnrealSpeccyPortable
+
+app-id: io.github.djdron.UnrealSpeccyPortable
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+
+command: unreal-speccy-portable
+
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --socket=pulseaudio
+  - --filesystem=home
+  - --share=network
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/man
+  - /share/doc
+  - '*.a'
+  - '*.la'
+
+modules:
+  - name: unreal-speccy-portable
+    buildsystem: simple
+    build-commands:
+      # CMakeLists.txt lives in build/cmake/
+      - cmake -S build/cmake -B _build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_INSTALL_PREFIX=/app
+          -DUSE_SDL2=ON
+          -DUSE_SDL=OFF
+          -DUSE_WX_WIDGETS=OFF
+          -DUSE_BENCHMARK=OFF
+          -DUSE_LIBRARY=OFF
+          -DUSE_WEB=ON
+      - cmake --build _build --parallel $FLATPAK_BUILDER_N_JOBS
+      - cmake --install _build
+      # Normalize binary name
+      - |
+        if [ -f /app/bin/unreal_speccy_portable ]; then
+          mv /app/bin/unreal_speccy_portable /app/bin/unreal-speccy-portable
+        fi
+      # Desktop, MIME, AppStream
+      - install -Dm644 unreal-speccy-portable.desktop
+          /app/share/applications/io.github.djdron.UnrealSpeccyPortable.desktop
+      - install -Dm644 unreal_speccy_portable.xml
+          /app/share/mime/packages/unreal_speccy_portable.xml
+      - install -Dm644 io.github.djdron.UnrealSpeccyPortable.metainfo.xml
+          /app/share/metainfo/io.github.djdron.UnrealSpeccyPortable.metainfo.xml
+      # Icons (optional)
+      - |
+        if [ -d icons ]; then
+          for size in 16x16 22x22 24x24 32x32 48x48 64x64 128x128; do
+            if [ -f "icons/$size/unreal_speccy_portable.png" ]; then
+              install -Dm644 "icons/$size/unreal_speccy_portable.png" \
+                "/app/share/icons/hicolor/$size/apps/io.github.djdron.UnrealSpeccyPortable.png"
+            fi
+          done
+        fi
+    sources:
+      # Filled in by make_flatpak.sh — either local dir or archive
+      - type: dir
+        path: source

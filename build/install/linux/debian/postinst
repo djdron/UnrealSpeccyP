@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ] ; then
+    if [ -x /usr/bin/update-desktop-database ]; then
+        update-desktop-database -q /usr/share/applications || true
+    fi
+    if [ -x /usr/bin/update-mime-database ]; then
+        update-mime-database /usr/share/mime || true
+    fi
+    if [ -x /usr/bin/gtk-update-icon-cache ]; then
+        gtk-update-icon-cache -q /usr/share/icons/hicolor || true
+    fi
+fi
+
+#DEBHELPER#
+
+exit 0
