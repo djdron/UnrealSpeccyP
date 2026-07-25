@@ -1,0 +1,67 @@
+name: Build packages
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  deb-ubuntu:
+    name: Deb (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential debhelper devscripts cmake pkg-config \
+            libsdl2-dev libcurl4-openssl-dev zlib1g-dev libpng-dev \
+            rsync
+
+      - name: Build .deb
+        run: |
+          chmod +x build/install/linux/make_deb.sh
+          OUTPUT_DIR="${GITHUB_WORKSPACE}/artifacts" \
+            ./build/install/linux/make_deb.sh
+
+      - name: Upload .deb
+        uses: actions/upload-artifact@v6
+        with:
+          name: ubuntu-deb
+          path: artifacts/*.deb
+          if-no-files-found: error
+
+  rpm-fedora:
+    name: RPM (Fedora)
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          dnf install -y \
+            rpm-build rpmdevtools cmake gcc-c++ make \
+            SDL2-devel libcurl-devel zlib-devel libpng-devel \
+            desktop-file-utils shared-mime-info libappstream-glib \
+            rsync git findutils
+
+      - name: Build .rpm
+        run: |
+          chmod +x build/install/fedora/make_rpm.sh
+          export RPMBUILD_DIR="${GITHUB_WORKSPACE}/rpmbuild"
+          export OUTPUT_DIR="${GITHUB_WORKSPACE}/artifacts"
+          mkdir -p "$RPMBUILD_DIR"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+          mkdir -p "$OUTPUT_DIR"
+          ./build/install/fedora/make_rpm.sh
+
+      - name: Upload .rpm
+        uses: actions/upload-artifact@v6
+        with:
+          name: fedora-rpm
+          path: artifacts/*.rpm
+          if-no-files-found: error
