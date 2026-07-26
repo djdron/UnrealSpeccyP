@@ -78,43 +78,7 @@ jobs:
           if-no-files-found: warn
           path: build/cmake/build_emscripten/*.zip
 
-  # macOS: AppVeyor used build/docker/build_macos.sh on Ubuntu.
-  # Prefer native macOS runner; falls back to docker script if you enable it.
-  macos:
-    name: macOS (native)
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: recursive
-
-      - name: Install dependencies
-        run: |
-          brew install cmake sdl2 curl || true
-
-      - name: Build SDL2 (CMake)
-        run: |
-          mkdir -p build/cmake/build_macos_sdl2
-          cd build/cmake/build_macos_sdl2
-          cmake .. \
-            -DUSE_SDL=OFF \
-            -DUSE_SDL2=ON \
-            -DUSE_WX_WIDGETS=OFF \
-            -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --parallel "$(sysctl -n hw.ncpu)"
-
-      - name: Upload macOS binary
-        uses: actions/upload-artifact@v6
-        with:
-          name: macos-sdl2
-          if-no-files-found: warn
-          path: |
-            build/cmake/build_macos_sdl2/unreal_speccy_portable
-            build/cmake/build_macos_sdl2/*.app
-            build/cmake/build_macos_sdl2/*.dmg
-
   # Optional: same path as AppVeyor Ubuntu job (docker -> .dmg).
-  # Disabled by default — slow and needs docker + script working.
   macos-docker:
     name: macOS via Docker (AppVeyor script)
     runs-on: ubuntu-latest
