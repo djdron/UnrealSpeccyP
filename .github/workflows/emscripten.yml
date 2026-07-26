@@ -1,0 +1,41 @@
+# Emscripten / WebAssembly build
+name: Emscripten
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  emscripten:
+    name: Emscripten (SDL2)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Emscripten SDK
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git
+          cd emsdk
+          ./emsdk install latest
+          ./emsdk activate latest
+
+      - name: Build Emscripten target
+        run: |
+          source emsdk/emsdk_env.sh
+          mkdir -p build/cmake/build_emscripten
+          cd build/cmake/build_emscripten
+          emcmake cmake .. \
+            -DUSE_SDL=0 \
+            -DUSE_SDL2=1 \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --parallel "$(nproc)"
+          zip -9 unreal-speccy-portable_emscripten_sdl2_gles2.zip unreal_speccy_portable.*
+
+      - name: Upload Emscripten artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: emscripten
+          if-no-files-found: warn
+          path: build/cmake/build_emscripten/*.zip

@@ -1,0 +1,28 @@
+# macOS builds via Docker/osxcross (x86_64 + arm64 from build_macos.sh)
+name: macOS
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  macos-docker:
+    name: macOS via Docker osxcross (x64 + arm64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build macOS dmg (docker script)
+        run: |
+          chmod +x build/docker/build_macos.sh || true
+          cd build/docker
+          ./build_macos.sh
+
+      - name: Upload dmg
+        uses: actions/upload-artifact@v6
+        with:
+          name: macos-dmg-docker
+          if-no-files-found: warn
+          path: build/docker/*.dmg
