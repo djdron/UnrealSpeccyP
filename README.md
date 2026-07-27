@@ -1,4 +1,4 @@
-Unreal Speccy Portable [![Build status](https://ci.appveyor.com/api/projects/status/2duf5cy62p773dcc/branch/master?svg=true)](https://ci.appveyor.com/project/djdron/unrealspeccyp/branch/master)
+Unreal Speccy Portable [![Windows](https://github.com/djdron/UnrealSpeccyP/actions/workflows/windows.yml/badge.svg)](https://github.com/djdron/UnrealSpeccyP/actions/workflows/windows.yml)[![macOS](https://github.com/djdron/UnrealSpeccyP/actions/workflows/macos.yml/badge.svg)](https://github.com/djdron/UnrealSpeccyP/actions/workflows/macos.yml)[![Linux](https://github.com/djdron/UnrealSpeccyP/actions/workflows/linux.yml/badge.svg)](https://github.com/djdron/UnrealSpeccyP/actions/workflows/linux.yml)[![Emscripten](https://github.com/djdron/UnrealSpeccyP/actions/workflows/emscripten.yml/badge.svg)](https://github.com/djdron/UnrealSpeccyP/actions/workflows/emscripten.yml)
 -
 
 ### Features

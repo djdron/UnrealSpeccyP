@@ -627,7 +627,7 @@ set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/../../build/win/unreal_specc
 set(CPACK_WIX_PRODUCT_ICON ${CPACK_PACKAGE_ICON})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Unreal Speccy Portable")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ZX Spectrum emulator")
-set(CPACK_PACKAGE_FILE_NAME "unreal-speccy-portable_${CPACK_PACKAGE_VERSION}_win32")
+set(CPACK_PACKAGE_FILE_NAME "unreal-speccy-portable_win32")
 if(USE_WX_WIDGETS)
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_wxwidgets_openal")
 elseif(USE_SDL2)

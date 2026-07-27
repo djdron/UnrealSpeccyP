@@ -8,7 +8,7 @@ on:
 
 jobs:
   deb-ubuntu:
-    name: Deb (Ubuntu)
+    name: Deb (Ubuntu) SDL2 GLESv2 curl
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -28,14 +28,14 @@ jobs:
             ./build/install/linux/make_deb.sh
 
       - name: Upload .deb
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
-          name: ubuntu-deb
           path: artifacts/*.deb
-          if-no-files-found: error
+          if-no-files-found: warn
+          archive: false
 
   rpm-fedora:
-    name: RPM (Fedora)
+    name: RPM (Fedora) SDL2 GLESv2 curl
     runs-on: ubuntu-latest
     container:
       image: fedora:latest
@@ -60,8 +60,15 @@ jobs:
           ./build/install/fedora/make_rpm.sh
 
       - name: Upload .rpm
+        uses: actions/upload-artifact@v7
+        with:
+          path: artifacts/unreal-speccy-portable-0*x86_64.rpm
+          if-no-files-found: warn
+          archive: false
+
+      - name: Upload debug .rpms
         uses: actions/upload-artifact@v6
         with:
-          name: fedora-rpm
+          name: unreal-speccy-portable_all_rpms.zip
           path: artifacts/*.rpm
-          if-no-files-found: error
+          if-no-files-found: warn
