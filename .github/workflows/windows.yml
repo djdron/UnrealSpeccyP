@@ -1,4 +1,3 @@
-# Windows builds (from AppVeyor build.cmd)
 name: Windows
 
 on:
@@ -8,34 +7,121 @@ on:
   workflow_dispatch:
 
 jobs:
-  windows:
-    name: Windows (VS / CMake)
+  windows-lib:
+    name: Windows library
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build library
+        working-directory: build/cmake
+        shell: cmd
+        run: |
+          mkdir build_win32_library
+          cd build_win32_library
+          cmake .. -A x64 -DUSE_SDL=0 -DUSE_LIBRARY=1
+          cmake --build . --config Release
+
+      - name: Upload library artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: unreal-speccy-portable_win32_lib.zip
+          if-no-files-found: warn
+          path: |
+            build/cmake/build_win32_library/Release/unreal_speccy_portable.*
+
+  windows-benchmark:
+    name: Windows benchmark
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build benchmark
+        working-directory: build/cmake
+        shell: cmd
+        run: |
+          mkdir build_win32_benchmark
+          cd build_win32_benchmark
+          cmake .. -A x64 -DUSE_SDL=0 -DUSE_BENCHMARK=1
+          cmake --build . --config Release
+
+      - name: Upload benchmark artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: unreal-speccy-portable_win32_benchmark.zip
+          if-no-files-found: warn
+          path: |
+            build/cmake/build_win32_benchmark/Release/unreal_speccy_portable.exe
+
+  windows-sdl2:
+    name: Windows SDL2 GLESv2 (Angle) Curl
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download prebuilt SDL2 GLESv2 (Angle) Curl libraries
+        working-directory: build/cmake
+        shell: cmd
+        run: |
+          curl -O https://github.com/libsdl-org/SDL/releases/download/release-2.30.0/SDL2-devel-2.30.0-VC.zip --location
+          curl -O https://github.com/djdron/UnrealSpeccyP/releases/download/angle-chromium84/angle-chromium84.7z --location
+          curl -O https://github.com/djdron/UnrealSpeccyP/releases/download/angle-chromium84/curl-7.61.1.7z --location
+          7z x SDL2-devel-2.30.0-VC.zip
+          7z x angle-chromium84.7z
+          7z x curl-7.61.1.7z
+
+      - name: Build SDL2 GLESv2 (Angle) Curl version
+        working-directory: build/cmake
+        shell: cmd
+        run: |
+          mkdir build_win32_sdl2
+          cd build_win32_sdl2
+          cmake .. -A x64 -DUSE_SDL=0 -DUSE_SDL2=1 ^
+            -DANGLE_INCLUDE_DIR=%CD%/../angle-chromium84/include ^
+            -DANGLE_LIBRARY=%CD%/../angle-chromium84/lib/x64/libGLESv2.lib;%CD%/../angle-chromium84/lib/x64/libEGL.lib ^
+            -DSDL2_INCLUDE_DIRS=%CD%/../SDL2-2.30.0/include ^
+            -DSDL2_LIBRARIES=%CD%/../SDL2-2.30.0/lib/x64/SDL2main.lib;%CD%/../SDL2-2.30.0/lib/x64/SDL2.lib ^
+            -DCURL_INCLUDE_DIR=%CD%/../curl-7.61.1/include ^
+            -DCURL_LIBRARY=%CD%/../curl-7.61.1/lib/x64/libcurl.lib
+          cmake --build . --config Release --target PACKAGE
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          if-no-files-found: warn
+          path: |
+            build/cmake/build_win32_sdl2/*.msi
+
+  windows-wx:
+    name: Windows wxWidgets OpenAL Soft
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
         with:
           submodules: recursive
 
-      - name: Install WiX Toolset
-        run: choco install -y wixtoolset
-
-      - name: Add WiX to PATH
-        shell: bash
-        run: |
-          echo "C:/Program Files (x86)/WiX Toolset v3.11/bin" >> "$GITHUB_PATH"
-          echo "C:/Program Files/WiX Toolset v3.11/bin" >> "$GITHUB_PATH"
-
-      - name: Build (build.cmd)
+      - name: Download prebuilt OpenAL Soft library
+        working-directory: build/cmake
         shell: cmd
-        run: build\appveyor\build.cmd
+        run: |
+          curl -O https://github.com/kcat/openal-soft/releases/download/1.23.1/openal-soft-1.23.1-bin.zip --location
+          7z x openal-soft-1.23.1-bin.zip
 
-      - name: Upload Windows artifacts
-        uses: actions/upload-artifact@v6
+      - name: Build wxWidgets OpenAL Soft version
+        working-directory: build/cmake
+        shell: cmd
+        run: |
+          mkdir build_win32_wxwidgets
+          cd build_win32_wxwidgets
+          set OPENALDIR=%CD%/../openal-soft-1.23.1-bin
+          cmake .. -A x64 -DUSE_SDL=0 -DUSE_WX_WIDGETS=1
+          cmake --build . --config Release --target PACKAGE
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v7
         with:
-          name: windows
+          archive: false
           if-no-files-found: warn
           path: |
-            build/cmake/build_win32_library/Release/unreal_speccy_portable.*
-            build/cmake/build_win32_benchmark/Release/unreal_speccy_portable.exe
-            build/cmake/build_win32_sdl2/*.msi
             build/cmake/build_win32_wxwidgets/*.msi

@@ -1,4 +1,3 @@
-# Emscripten / WebAssembly build
 name: Emscripten
 
 on:
@@ -9,7 +8,7 @@ on:
 
 jobs:
   emscripten:
-    name: Emscripten (SDL2)
+    name: Emscripten (SDL2 GLESv2)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -26,16 +25,12 @@ jobs:
           source emsdk/emsdk_env.sh
           mkdir -p build/cmake/build_emscripten
           cd build/cmake/build_emscripten
-          emcmake cmake .. \
-            -DUSE_SDL=0 \
-            -DUSE_SDL2=1 \
-            -DCMAKE_BUILD_TYPE=Release
+          emcmake cmake .. -DUSE_SDL=0 -DUSE_SDL2=1 -DCMAKE_BUILD_TYPE=Release
           cmake --build . --parallel "$(nproc)"
-          zip -9 unreal-speccy-portable_emscripten_sdl2_gles2.zip unreal_speccy_portable.*
 
       - name: Upload Emscripten artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: emscripten
+          name: unreal-speccy-portable_emscripten_sdl2_gles2.zip
           if-no-files-found: warn
-          path: build/cmake/build_emscripten/*.zip
+          path: build/cmake/build_emscripten/unreal_speccy_portable.*
