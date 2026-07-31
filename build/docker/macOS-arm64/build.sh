@@ -42,6 +42,10 @@ sed -i 's/\/opt\/local\/lib\/libGLESv2.dylib/libGLESv2.dylib\x00\x00\x00\x00\x00
 sed -i 's/\/opt\/local\/lib\/libEGL.dylib/libEGL.dylib\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00/g' ./libSDL2-2.0.0.dylib
 export OTOOL=$OSXCROSS_HOST-otool
 export INTOOL=$OSXCROSS_HOST-install_name_tool
+export LIPO=${OSXCROSS_HOST}-lipo
+$LIPO -thin arm64 ./libEGL.dylib -output ./libEGL.dylib.tmp && mv ./libEGL.dylib.tmp ./libEGL.dylib
+$LIPO -thin arm64 ./libGLESv2.dylib -output ./libGLESv2.dylib.tmp && mv ./libGLESv2.dylib.tmp ./libGLESv2.dylib
+$LIPO -thin arm64 ./libSDL2-2.0.0.dylib -output ./libSDL2-2.0.0.dylib.tmp && mv ./libSDL2-2.0.0.dylib.tmp ./libSDL2-2.0.0.dylib
 $INTOOL -id @rpath/libEGL.dylib ./libEGL.dylib
 $INTOOL -id @rpath/libGLESv2.dylib ./libGLESv2.dylib
 $INTOOL -id @rpath/libSDL2-2.0.0.dylib ./libSDL2-2.0.0.dylib
