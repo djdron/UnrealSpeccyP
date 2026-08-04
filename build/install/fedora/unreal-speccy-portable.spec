@@ -87,11 +87,14 @@ install -D -m 644 build/install/fedora/unreal-speccy-portable.desktop \
 install -D -m 644 build/install/fedora/unreal_speccy_portable.xml \
     %{buildroot}%{_datadir}/mime/packages/unreal_speccy_portable.xml
 
-# Icons (optional)
-if [ -d build/install/fedora/icons ]; then
-    for size in 16x16 22x22 24x24 32x32 48x48 64x64 128x128; do
-        if [ -f build/install/fedora/icons/$size/unreal_speccy_portable.png ]; then
-            install -D -m 644 build/install/fedora/icons/$size/unreal_speccy_portable.png \
+# Icons (optional) — shared tree build/install/linux/icons/<WxH>/
+if [ -d build/install/linux/icons ]; then
+    for dir in build/install/linux/icons/*/ ; do
+        [ -d "$dir" ] || continue
+        size=$(basename "$dir")
+        f="$dir/unreal_speccy_portable.png"
+        if [ -f "$f" ]; then
+            install -D -m 644 "$f" \
                 %{buildroot}%{_datadir}/icons/hicolor/$size/apps/unreal_speccy_portable.png
         fi
     done

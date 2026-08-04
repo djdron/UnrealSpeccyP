@@ -58,10 +58,14 @@ override_dh_auto_install:
 		debian/tmp/usr/share/applications/unreal-speccy-portable.desktop
 	install -D -m 644 debian/unreal_speccy_portable.xml \
 		debian/tmp/usr/share/mime/packages/unreal_speccy_portable.xml
-	if [ -d debian/icons ]; then \
-		for size in 16x16 22x22 24x24 32x32 48x48 64x64 128x128; do \
-			if [ -f debian/icons/$$size/unreal_speccy_portable.png ]; then \
-				install -D -m 644 debian/icons/$$size/unreal_speccy_portable.png \
+	# Icons from shared build/install/linux/icons/<WxH>/
+	if [ -d build/install/linux/icons ]; then \
+		for dir in build/install/linux/icons/*/ ; do \
+			[ -d "$$dir" ] || continue ; \
+			size=$$(basename "$$dir") ; \
+			f="$$dir/unreal_speccy_portable.png" ; \
+			if [ -f "$$f" ]; then \
+				install -D -m 644 "$$f" \
 					debian/tmp/usr/share/icons/hicolor/$$size/apps/unreal_speccy_portable.png ; \
 			fi ; \
 		done ; \
