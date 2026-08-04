@@ -83,11 +83,16 @@ modules:
           /app/share/metainfo/io.github.djdron.UnrealSpeccyPortable.metainfo.xml
       - |
         if [ -d icons ]; then
-          for size in 16x16 22x22 24x24 32x32 48x48 64x64 128x128; do
-            if [ -f "icons/$size/unreal_speccy_portable.png" ]; then
-              install -Dm644 "icons/$size/unreal_speccy_portable.png" \
+          for dir in icons/*/ ; do
+            [ -d "$dir" ] || continue
+            size=$(basename "$dir")
+            f="$dir/unreal_speccy_portable.png"
+            if [ -f "$f" ]; then
+              install -Dm644 "$f" \
                 "/app/share/icons/hicolor/$size/apps/io.github.djdron.UnrealSpeccyPortable.png"
             fi
+          done
+        fi
           done
         fi
     sources:

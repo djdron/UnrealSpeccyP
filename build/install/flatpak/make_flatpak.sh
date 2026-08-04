@@ -53,8 +53,11 @@ rsync -a \
 cp -a "$SCRIPT_DIR/unreal-speccy-portable.desktop" "$SCRIPT_DIR/source/"
 cp -a "$SCRIPT_DIR/unreal_speccy_portable.xml" "$SCRIPT_DIR/source/"
 cp -a "$SCRIPT_DIR/io.github.djdron.UnrealSpeccyPortable.metainfo.xml" "$SCRIPT_DIR/source/"
-if [ -d "$SCRIPT_DIR/icons" ]; then
-    cp -a "$SCRIPT_DIR/icons" "$SCRIPT_DIR/source/"
+# Shared icons: build/install/linux/icons
+if [ -d "$REPO_ROOT/build/install/linux/icons" ]; then
+    cp -a "$REPO_ROOT/build/install/linux/icons" "$SCRIPT_DIR/source/icons"
+elif [ -d "$SCRIPT_DIR/icons" ]; then
+    cp -a "$SCRIPT_DIR/icons" "$SCRIPT_DIR/source/icons"
 fi
 
 echo "==> Building Flatpak (this may take a while)..."
