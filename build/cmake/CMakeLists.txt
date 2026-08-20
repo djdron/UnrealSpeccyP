@@ -197,7 +197,7 @@ list(APPEND SRCCXX ${SRCCXX_PLATFORM_WINDOWS})
 list(APPEND SRCH ${SRCH_PLATFORM_WINDOWS})
 source_group("platform\\windows" FILES ${SRCCXX_PLATFORM_WINDOWS} ${SRCH_PLATFORM_WINDOWS})
 add_definitions(-D_WINAPI)
-elseif(UNIX)
+elseif(UNIX OR NINTENDO_SWITCH)
 file(GLOB SRCCXX_PLATFORM_LINUX "../../platform/linux/*.cpp")
 file(GLOB SRCH_PLATFORM_LINUX "../../platform/linux/*.h")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_LINUX})
@@ -427,10 +427,20 @@ target_link_libraries(${PROJECT} ${SDL_LIBRARY})
 elseif(USE_SDL2)
 
 #SDL2
+if(NINTENDO_SWITCH)
+find_package(SDL2 REQUIRED)
+find_package(OpenGL REQUIRED)
+list(APPEND THIRDPARTY_LIBRARIES SDL2::SDL2 OpenGL::EGL GLESv2 CURL::libcurl)
+file(GLOB SRCCXX_PLATFORM_SWITCH "../../platform/switch/*.cpp")
+list(APPEND SRCCXX ${SRCCXX_PLATFORM_SWITCH})
+source_group("platform\\switch" FILES ${SRCCXX_PLATFORM_SWITCH})
+add_definitions(-D_SWITCH -DSDL_USE_FIXED_WINDOW -DSDL_PROFILE_FOLDER="sdmc:/switch/.usp/")
+else(NINTENDO_SWITCH)
 if(NOT EMSCRIPTEN AND NOT WIN32)
 find_package(SDL2 REQUIRED)
 endif(NOT EMSCRIPTEN AND NOT WIN32)
 list(APPEND THIRDPARTY_LIBRARIES ${SDL2_LIBRARIES})
+endif(NINTENDO_SWITCH)
 
 if(UWP)
 find_package(SDL2 REQUIRED)
@@ -489,10 +499,10 @@ list(APPEND THIRDPARTY_LIBRARIES ${OPENGLES2_LIBRARIES})
 endif(NOT EMSCRIPTEN)
 endif(UNIX)
 
-if(NOT EMSCRIPTEN AND NOT UWP)
+if(NOT EMSCRIPTEN AND NOT UWP AND NOT NINTENDO_SWITCH)
 include_directories("${OPENGLES2_INCLUDE_DIR}")
 include_directories("${SDL2_INCLUDE_DIRS}")
-endif(NOT EMSCRIPTEN AND NOT UWP)
+endif(NOT EMSCRIPTEN AND NOT UWP AND NOT NINTENDO_SWITCH)
 file(GLOB SRCCXX_PLATFORM_SDL2 "../../platform/sdl2/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_SDL2})
 source_group("platform\\sdl2" FILES ${SRCCXX_PLATFORM_SDL2})
@@ -505,7 +515,7 @@ endif(USE_WEB AND NOT EMSCRIPTEN)
 if(EMSCRIPTEN)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_SDL=2 -sUSE_ZLIB=1")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sUSE_ZLIB=1")
-add_definitions(-DSDL_NO_MAIN -DUSE_EMSCRIPTEN -DSDL_DEFAULT_FOLDER="/cache/")
+add_definitions(-DSDL_NO_MAIN -DUSE_EMSCRIPTEN -DSDL_PROFILE_FOLDER="/cache/")
 file(GLOB SRCCXX_PLATFORM_EMSCRIPTEN "../../platform/emscripten/*.cpp")
 list(APPEND SRCCXX ${SRCCXX_PLATFORM_EMSCRIPTEN})
 source_group("platform\\emscripten" FILES ${SRCCXX_PLATFORM_EMSCRIPTEN})
@@ -558,6 +568,22 @@ set_source_files_properties(${_file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resourc
 endforeach(_file)
 
 endif(APPLE)
+
+if(NINTENDO_SWITCH)
+set(ROMFS_DIR ${CMAKE_BINARY_DIR}/romfs)
+file(MAKE_DIRECTORY ${ROMFS_DIR})
+file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/../../res ${ROMFS_DIR}/res SYMBOLIC)
+nx_generate_nacp(usp.nacp
+    NAME "Unreal Speccy Portable"
+    AUTHOR "djdron"
+    VERSION "0.0.90"
+)
+nx_create_nro(${PROJECT}
+    NACP usp.nacp
+    ICON ${CMAKE_CURRENT_SOURCE_DIR}/../install/switch/unreal_speccy_portable.jpg
+    ROMFS ${ROMFS_DIR}
+)
+endif(NINTENDO_SWITCH)
 
 elseif(USE_BENCHMARK)
 

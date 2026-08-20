@@ -53,9 +53,9 @@ std::string GetURL(const char* path, const char* header)
 	curl_easy_setopt(curl, CURLOPT_URL, path);
 	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
-#ifdef _UWP
+#if defined(_UWP) || defined(_SWITCH)
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-#endif//_UWP
+#endif//_UWP || _SWITCH
 	std::string file_data;
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file_data);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _write_callback);

@@ -66,7 +66,7 @@ void ProcessJoy(SDL_Event& e);
 static SDL_GameController* controller = NULL;
 #endif//SDL_USE_JOYSTICK
 
-#ifndef SDL_DEFAULT_FOLDER
+#ifndef SDL_PROFILE_FOLDER
 const char* GetHomePath()
 {
 	static char home_path[xIo::MAX_PATH_LEN];
@@ -111,7 +111,7 @@ static const char* USP_HomePath()
 	}
 	return NULL;
 }
-#endif//SDL_DEFAULT_FOLDER
+#endif//SDL_PROFILE_FOLDER
 
 void LoopUpdate();
 int SDLCALL EventFilter(void* userdata, SDL_Event* event)
@@ -123,7 +123,7 @@ int SDLCALL EventFilter(void* userdata, SDL_Event* event)
 
 bool Init()
 {
-#ifndef SDL_DEFAULT_FOLDER
+#ifndef SDL_PROFILE_FOLDER
 	const char* usp_home_path = USP_HomePath();
 	if(usp_home_path)
 	{
@@ -131,10 +131,11 @@ bool Init()
 		xIo::SetProfilePath(usp_home_path);
 		OpLastFile(usp_home_path);
 	}
-#else//SDL_DEFAULT_FOLDER
-	xIo::SetProfilePath(SDL_DEFAULT_FOLDER);
-	OpLastFile(SDL_DEFAULT_FOLDER);
-#endif//SDL_DEFAULT_FOLDER
+#else//SDL_PROFILE_FOLDER
+	xIo::PathCreate(SDL_PROFILE_FOLDER);
+	xIo::SetProfilePath(SDL_PROFILE_FOLDER);
+	OpLastFile(SDL_PROFILE_FOLDER);
+#endif//SDL_PROFILE_FOLDER
 	Handler()->OnInit();
 
 	Uint32 init_flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO;

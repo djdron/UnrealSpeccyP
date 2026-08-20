@@ -31,6 +31,8 @@ SDL_Window* window = NULL;
 static SDL_GLContext context = NULL;
 static eGLES2* gles2 = NULL;
 
+#ifndef SDL_USE_FIXED_WINDOW
+
 class eOptionWindowState : public xOptions::eOptionString
 {
 public:
@@ -112,6 +114,8 @@ static struct eOptionFullScreen : public xOptions::eOptionBool
 	}
 } op_full_screen;
 
+#endif//SDL_USE_FIXED_WINDOW
+
 bool InitVideo()
 {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -119,6 +123,7 @@ bool InitVideo()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
 
+#ifndef SDL_USE_FIXED_WINDOW
 	ePoint pos, size;
 	bool maximized;
 	op_window_state.Get(&pos, &size, &maximized);
@@ -128,6 +133,9 @@ bool InitVideo()
 	if(op_full_screen)
 		flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 	window = SDL_CreateWindow(Handler()->WindowCaption(), pos.x, pos.y, size.x, size.y, flags);
+#else//SDL_USE_FIXED_WINDOW
+	window = SDL_CreateWindow(Handler()->WindowCaption(), 0, 0, 1280, 720, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+#endif//SDL_USE_FIXED_WINDOW
 	if(!window)
 		return false;
 	context = SDL_GL_CreateContext(window);
@@ -163,8 +171,10 @@ void DoneVideo()
 
 void UpdateScreen()
 {
+#ifndef SDL_USE_FIXED_WINDOW
 	op_window_state.Update();
 	op_full_screen.Update();
+#endif//SDL_USE_FIXED_WINDOW
 
 	ePoint s;
 	SDL_GL_GetDrawableSize(window, &s.x, &s.y);
