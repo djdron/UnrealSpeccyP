@@ -8,8 +8,12 @@ on:
 
 jobs:
   deb-ubuntu:
-    name: Deb (Ubuntu) SDL2 GLESv2 curl
-    runs-on: ubuntu-latest
+    name: Deb (${{ matrix.runner }}) SDL2 GLESv2 curl
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v7
 
@@ -30,13 +34,22 @@ jobs:
       - name: Upload .deb
         uses: actions/upload-artifact@v7
         with:
+          name: linux-${{ matrix.runner }}
           path: artifacts/*.deb
           if-no-files-found: warn
           archive: false
 
   rpm-fedora:
-    name: RPM (Fedora) SDL2 GLESv2 curl
-    runs-on: ubuntu-latest
+    name: RPM (Fedora ${{ matrix.arch }}) SDL2 GLESv2 curl
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: x86_64
+          - runner: ubuntu-24.04-arm
+            arch: aarch64
+    runs-on: ${{ matrix.runner }}
     container:
       image: fedora:latest
     steps:
@@ -62,13 +75,14 @@ jobs:
       - name: Upload .rpm
         uses: actions/upload-artifact@v7
         with:
-          path: artifacts/unreal-speccy-portable-0*x86_64.rpm
+          name: rpm-${{ matrix.arch }}
+          path: artifacts/unreal-speccy-portable-0*.${{ matrix.arch }}.rpm
           if-no-files-found: warn
           archive: false
 
       - name: Upload debug .rpms
         uses: actions/upload-artifact@v6
         with:
-          name: unreal-speccy-portable_all_rpms.zip
+          name: unreal-speccy-portable-rpm-all-${{ matrix.arch }}.zip
           path: artifacts/*.rpm
           if-no-files-found: warn
