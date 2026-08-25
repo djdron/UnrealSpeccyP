@@ -116,8 +116,7 @@ jobs:
         with:
           archive: false
           if-no-files-found: warn
-          path: |
-            build/cmake/build_win32_sdl2/*.msi
+          path: build/cmake/build_win32_sdl2/*.msi
 
   windows-wx:
     name: Windows wxWidgets OpenAL Soft
@@ -159,5 +158,4 @@ jobs:
         with:
           archive: false
           if-no-files-found: warn
-          path: |
-            build/cmake/build_win32_wxwidgets/*.msi
+          path: build/cmake/build_win32_wxwidgets/*.msi
