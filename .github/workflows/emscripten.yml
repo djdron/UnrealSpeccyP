@@ -12,6 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 100
+          fetch-tags: true
+
+      - id: ver
+        run: |
+          v=$(git describe --tags --always --dirty="-dev" 2>/dev/null || echo "unknown")
+          echo "version=${v#v}" >> $GITHUB_OUTPUT
 
       - name: Install Emscripten SDK
         run: |
@@ -31,6 +39,6 @@ jobs:
       - name: Upload Emscripten artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: unreal-speccy-portable_emscripten_sdl2_gles2.zip
+          name: unreal-speccy-portable-${{ steps.ver.outputs.version }}_emscripten_sdl2_gles2.zip
           if-no-files-found: warn
           path: build/cmake/build_emscripten/unreal_speccy_portable.*
