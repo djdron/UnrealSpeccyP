@@ -12,6 +12,15 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 100
+          fetch-tags: true
+
+      - id: ver
+        shell: bash
+        run: |
+          v=$(git describe --tags --always --dirty="-dev" 2>/dev/null || echo "unknown")
+          echo "version=${v#v}" >> $GITHUB_OUTPUT
 
       - name: Build library
         working-directory: build/cmake
@@ -25,16 +34,24 @@ jobs:
       - name: Upload library artifact
         uses: actions/upload-artifact@v6
         with:
-          name: unreal-speccy-portable_win32_lib.zip
+          name: unreal-speccy-portable-${{ steps.ver.outputs.version }}_win32_lib.zip
           if-no-files-found: warn
-          path: |
-            build/cmake/build_win32_library/Release/unreal_speccy_portable.*
+          path: build/cmake/build_win32_library/Release/unreal_speccy_portable.*
 
   windows-benchmark:
     name: Windows benchmark
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 100
+          fetch-tags: true
+
+      - id: ver
+        shell: bash
+        run: |
+          v=$(git describe --tags --always --dirty="-dev" 2>/dev/null || echo "unknown")
+          echo "version=${v#v}" >> $GITHUB_OUTPUT
 
       - name: Build benchmark
         working-directory: build/cmake
@@ -48,16 +65,24 @@ jobs:
       - name: Upload benchmark artifact
         uses: actions/upload-artifact@v6
         with:
-          name: unreal-speccy-portable_win32_benchmark.zip
+          name: unreal-speccy-portable-${{ steps.ver.outputs.version }}_win32_benchmark.zip
           if-no-files-found: warn
-          path: |
-            build/cmake/build_win32_benchmark/Release/unreal_speccy_portable.exe
+          path: build/cmake/build_win32_benchmark/Release/unreal_speccy_portable.exe
 
   windows-sdl2:
     name: Windows SDL2 GLESv2 (ANGLE) curl
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 100
+          fetch-tags: true
+
+      - id: ver
+        shell: bash
+        run: |
+          v=$(git describe --tags --always --dirty="-dev" 2>/dev/null || echo "unknown")
+          echo "version=${v#v}" >> $GITHUB_OUTPUT
 
       - name: Download prebuilt SDL2 GLESv2 (ANGLE) curl libraries
         working-directory: build/cmake
@@ -84,6 +109,7 @@ jobs:
             -DCURL_INCLUDE_DIR=%CD%/../curl-7.61.1/include ^
             -DCURL_LIBRARY=%CD%/../curl-7.61.1/lib/x64/libcurl.lib
           cmake --build . --config Release --target PACKAGE
+          ren *.msi unreal-speccy-portable-${{ steps.ver.outputs.version }}_win32_sdl2_gles2_angle_curl.msi
 
       - name: Upload installer
         uses: actions/upload-artifact@v7
@@ -100,6 +126,14 @@ jobs:
       - uses: actions/checkout@v7
         with:
           submodules: recursive
+          fetch-depth: 100
+          fetch-tags: true
+
+      - id: ver
+        shell: bash
+        run: |
+          v=$(git describe --tags --always --dirty="-dev" 2>/dev/null || echo "unknown")
+          echo "version=${v#v}" >> $GITHUB_OUTPUT
 
       - name: Download prebuilt OpenAL Soft library
         working-directory: build/cmake
@@ -118,6 +152,7 @@ jobs:
           set OPENALDIR=%CD%/../openal-soft-1.25.2-bin
           cmake .. -A x64 -DUSE_SDL=0 -DUSE_WX_WIDGETS=1
           cmake --build . --config Release --target PACKAGE
+          ren *.msi unreal-speccy-portable-${{ steps.ver.outputs.version }}_win32_wxwidgets_openal.msi
 
       - name: Upload installer
         uses: actions/upload-artifact@v7
