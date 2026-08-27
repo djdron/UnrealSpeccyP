@@ -1,0 +1,47 @@
+﻿name: Switch
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  switch-sdl2:
+    name: Switch (SDL2 GLESv2 curl)
+    runs-on: ubuntu-latest
+    container:
+      image: devkitpro/devkita64:latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 100
+          fetch-tags: true
+
+      - id: ver
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          v=$(git describe --tags --always --dirty="-dev" 2>/dev/null || echo "unknown")
+          echo "version=${v#v}" >> $GITHUB_OUTPUT
+
+      - name: Update switch packages
+        run: |
+          dkp-pacman -Syu --noconfirm
+          dkp-pacman -S --needed --noconfirm \
+          switch-dev switch-sdl2 switch-mesa switch-libdrm_nouveau switch-curl
+
+      - name: Build Switch target
+        run: |
+          . /opt/devkitpro/switchvars.sh
+          mkdir -p build/cmake/build_switch
+          cd build/cmake/build_switch
+          aarch64-none-elf-cmake .. -DUSE_SDL=0 -DUSE_SDL2=1 -DCMAKE_BUILD_TYPE=Release
+          aarch64-none-elf-cmake --build . --parallel"$(nproc)"
+          mv *.nro unreal-speccy-portable-${{ steps.ver.outputs.version }}_sdl2_gles2_curl.nro
+
+      - name: Upload .nro
+        uses: actions/upload-artifact@v7
+        with:
+          path: build/cmake/build_switch/*.nro
+          if-no-files-found: warn
+          archive: false
