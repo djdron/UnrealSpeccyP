@@ -93,8 +93,6 @@ modules:
             fi
           done
         fi
-          done
-        fi
     sources:
       - type: dir
         path: source
